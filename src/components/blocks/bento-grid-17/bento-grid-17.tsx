@@ -1,4 +1,5 @@
 import type { Transition } from 'motion/react'
+import { useTranslations } from 'next-intl'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { MotionPreset } from '@/components/ui/motion-preset'
@@ -9,36 +10,6 @@ import EnterpriseCollaboration from '@/components/blocks/bento-grid-17/enterpris
 import { Cover } from '@/components/blocks/bento-grid-17/cover'
 import Globe from '@/components/blocks/bento-grid-17/globe'
 
-const TeamImages: TeamImagesType[] = [
-  {
-    images: [
-      { index: 0, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-81.png' },
-      { index: 2, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-79.png' },
-      { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' },
-      { index: 7, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-80.png' }
-    ],
-    team: '专业交易员'
-  },
-  {
-    images: [
-      { index: 1, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-76.png' },
-      { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-77.png' },
-      { index: 5, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-82.png' },
-      { index: 8, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' }
-    ],
-    team: '带单KOL'
-  },
-  {
-    images: [
-      { index: 0, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' },
-      { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-81.png' },
-      { index: 5, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-80.png' },
-      { index: 7, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-77.png' }
-    ],
-    team: '交易社群'
-  }
-]
-
 /** tween 比默认 spring 更省算力；时长短一点进视口更干脆 */
 const bentoEnter: Transition = {
   type: 'tween',
@@ -47,11 +18,40 @@ const bentoEnter: Transition = {
 }
 
 const BentoGrid = () => {
+  const t = useTranslations('BentoGrid')
+
+  const TeamImages: TeamImagesType[] = [
+    {
+      images: [
+        { index: 0, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-81.png' },
+        { index: 2, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-79.png' },
+        { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' },
+        { index: 7, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-80.png' }
+      ],
+      team: t('targetGroup.team1')
+    },
+    {
+      images: [
+        { index: 1, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-76.png' },
+        { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-77.png' },
+        { index: 5, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-82.png' },
+        { index: 8, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' }
+      ],
+      team: t('targetGroup.team2')
+    },
+    {
+      images: [
+        { index: 0, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' },
+        { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-81.png' },
+        { index: 5, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-80.png' },
+        { index: 7, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-77.png' }
+      ],
+      team: t('targetGroup.team3')
+    }
+  ]
+
   return (
-    <section
-      id='features'
-      className='bg-background [content-visibility:auto] py-8 sm:py-16 lg:py-24'
-    >
+    <section id='features' className='bg-background py-8 [content-visibility:auto] sm:py-16 lg:py-24'>
       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
         <MotionPreset
           fade
@@ -59,11 +59,11 @@ const BentoGrid = () => {
           transition={bentoEnter}
           className='mb-12 space-y-4 text-center sm:mb-16 lg:mb-24'
         >
-          <p className='text-primary text-sm font-medium uppercase'>产品功能</p>
+          <p className='text-primary text-sm font-medium uppercase'>{t('badge')}</p>
 
-          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>功能强大，易于使用</h2>
+          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
 
-          <p className='text-muted-foreground mx-auto max-w-2xl text-xl'>全球服务节点，极速跟单。</p>
+          <p className='text-muted-foreground mx-auto max-w-2xl text-xl'>{t('subtitle')}</p>
         </MotionPreset>
 
         <div className='grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3'>
@@ -76,12 +76,7 @@ const BentoGrid = () => {
           {/* Column 2 */}
           <div className='grid grid-rows-[auto_auto] gap-6'>
             {/* Boost Efficiency Card */}
-            <MotionPreset
-              fade
-              slide={{ direction: 'down', offset: 12 }}
-              delay={0.08}
-              transition={bentoEnter}
-            >
+            <MotionPreset fade slide={{ direction: 'down', offset: 12 }} delay={0.08} transition={bentoEnter}>
               <Card className='h-full'>
                 <Cover className='flex h-27 items-center justify-center overflow-hidden'>
                   <img
@@ -93,30 +88,21 @@ const BentoGrid = () => {
                   />
                 </Cover>
                 <CardContent className='flex flex-col gap-1'>
-                  <h3 className='text-lg font-medium'>极速跟单</h3>
-                  <p className='text-muted-foreground'>
-                    紧靠交易所机房，实时毫秒级跟单，将跟单滑点降至最低。
-                  </p>
+                  <h3 className='text-lg font-medium'>{t('speed.title')}</h3>
+                  <p className='text-muted-foreground'>{t('speed.desc')}</p>
                 </CardContent>
               </Card>
             </MotionPreset>
 
             {/* Enterprise collaboration Card */}
-            <MotionPreset
-              fade
-              slide={{ direction: 'down', offset: 12 }}
-              delay={0.12}
-              transition={bentoEnter}
-            >
+            <MotionPreset fade slide={{ direction: 'down', offset: 12 }} delay={0.12} transition={bentoEnter}>
               <Card className='flex flex-col justify-between gap-0 overflow-hidden p-0'>
                 <div className='relative flex w-full flex-1 items-center justify-center'>
                   <EnterpriseCollaboration />
                 </div>
                 <CardContent className='flex w-full flex-col gap-1 p-6 pt-0'>
-                  <h3 className='text-lg font-medium'>多交易所支持</h3>
-                  <p className='text-muted-foreground'>
-                    支持全球主流交易所，如币安、欧意。自动转换交易对代码，按比例计算交易量，实现跨交易所实时跟单。
-                  </p>
+                  <h3 className='text-lg font-medium'>{t('exchanges.title')}</h3>
+                  <p className='text-muted-foreground'>{t('exchanges.desc')}</p>
                 </CardContent>
               </Card>
             </MotionPreset>
@@ -133,10 +119,8 @@ const BentoGrid = () => {
           >
             <Card className='h-full justify-between overflow-hidden pb-0'>
               <CardContent className='flex flex-col gap-1'>
-                <h3 className='text-lg font-medium'>全球节点部署</h3>
-                <p className='text-muted-foreground'>
-                  全球多个地区部署服务，自建全球代理IP池，毫秒级爬虫服务，确保跟单服务快速稳定。
-                </p>
+                <h3 className='text-lg font-medium'>{t('global.title')}</h3>
+                <p className='text-muted-foreground'>{t('global.desc')}</p>
               </CardContent>
               <div className='relative flex-1'>
                 <Globe className='-bottom-70 -left-12 size-200 md:max-xl:-bottom-90 md:max-xl:left-1/2 md:max-xl:-translate-x-1/2' />

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import Autoplay from 'embla-carousel-autoplay'
 import { motion, AnimatePresence } from 'motion/react'
+import { useTranslations } from 'next-intl'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Carousel, CarouselContent, CarouselItem, type CarouselApi } from '@/components/ui/carousel'
@@ -19,6 +20,7 @@ export type TeamImagesType = {
 }
 
 const AssignTaskCard = ({ TeamImages }: { TeamImages: TeamImagesType[] }) => {
+  const t = useTranslations('BentoGrid')
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(0)
 
@@ -37,9 +39,9 @@ const AssignTaskCard = ({ TeamImages }: { TeamImages: TeamImagesType[] }) => {
   return (
     <Card className='h-full justify-between'>
       <CardContent className='flex flex-col gap-1'>
-        <h3 className='text-lg font-medium'>产品适合群体</h3>
+        <h3 className='text-lg font-medium'>{t('targetGroup.title')}</h3>
         <p className='text-muted-foreground'>
-          无论你是普通交易员，还是带单KOL，亦或是交易社群组织者，都适合使用本产品开展自己的业务。
+          {t('targetGroup.desc')}
         </p>
       </CardContent>
       <div className='flex flex-col gap-8 py-5'>

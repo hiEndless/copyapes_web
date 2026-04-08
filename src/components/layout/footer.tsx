@@ -1,6 +1,8 @@
 'use client'
 
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+
+import { Link } from '@/i18n/routing'
 
 import { Separator } from '@/components/ui/separator'
 
@@ -9,6 +11,9 @@ import SectionSeparator from '@/components/section-separator'
 import HoverText from '@/components/blocks/footer/hover-text'
 
 const Footer = () => {
+  const t = useTranslations('Footer')
+  const tn = useTranslations('Navigation')
+
   return (
     <footer>
       <SectionSeparator />
@@ -17,9 +22,7 @@ const Footer = () => {
           <Link href='/#home'>
             <Logo />
           </Link>
-          <p className='text-muted-foreground'>
-            自由组合不同交易所的顶级带单员，平衡收益和风险，打造专属您个人的跟单策略，让全球顶级交易员为你打工。
-          </p>
+          <p className='text-muted-foreground'>{t('desc')}</p>
           <Separator className='w-35!' />
           {/*<div className='flex items-center gap-4'>*/}
           {/*  <Link href='#' aria-label='Github Link'>*/}
@@ -37,32 +40,32 @@ const Footer = () => {
           {/*</div>*/}
           <div className='flex justify-start text-sm'>
             <p className='text-muted-foreground text-left text-balance'>
-              {`©${new Date().getFullYear()}`} Made with ❤️ by CopyApes.
+              {`©${new Date().getFullYear()}`} {t('copyright')}
             </p>
           </div>
         </div>
         <div className='col-span-full grid grid-cols-2 gap-6 sm:grid-cols-4 lg:col-span-4 lg:gap-8'>
           <div className='flex flex-col gap-5'>
-            <div className='text-lg font-medium'>产品</div>
+            <div className='text-lg font-medium'>{t('product')}</div>
             <ul className='text-muted-foreground space-y-3'>
               <li>
                 <Link href='/#testimonials' className='hover:text-foreground transition-colors duration-300'>
-                  用户评价
+                  {tn('testimonials')}
                 </Link>
               </li>
               <li>
                 <Link href='/#features' className='hover:text-foreground transition-colors duration-300'>
-                  产品功能
+                  {tn('features')}
                 </Link>
               </li>
               <li>
                 <Link href='/#benefits' className='hover:text-foreground transition-colors duration-300'>
-                  产品优势
+                  {tn('benefits')}
                 </Link>
               </li>
               <li>
                 <Link href='/pricing' className='hover:text-foreground transition-colors duration-300'>
-                  产品价格
+                  {tn('pricing')}
                 </Link>
               </li>
               {/* <li>
@@ -73,11 +76,11 @@ const Footer = () => {
             </ul>
           </div>
           <div className='flex flex-col gap-5'>
-            <div className='text-lg font-medium'>帮助</div>
+            <div className='text-lg font-medium'>{t('help')}</div>
             <ul className='text-muted-foreground space-y-3'>
               <li>
                 <Link href='#contact' className='hover:text-foreground transition-colors duration-300'>
-                  联系我们
+                  {tn('contact')}
                 </Link>
               </li>
               <li>
@@ -85,7 +88,7 @@ const Footer = () => {
                   href='https://docs.lichaoyuan.com/copyapes/protocol'
                   className='hover:text-foreground transition-colors duration-300'
                 >
-                  用户协议
+                  {t('terms')}
                 </Link>
               </li>
               <li>
@@ -93,7 +96,7 @@ const Footer = () => {
                   href='https://docs.lichaoyuan.com/copyapes/step'
                   className='hover:text-foreground transition-colors duration-300'
                 >
-                  使用教程
+                  {t('tutorial')}
                 </Link>
               </li>
             </ul>
@@ -103,16 +106,20 @@ const Footer = () => {
             <div>
               {/* <p className='mb-3 text-lg font-medium'>徽章区</p> */}
               <div className='flex flex-wrap gap-4'>
-                <img src='/images/brand-logos/bestofjs-logo-bw.webp' alt='bestofjs' className='h-5 dark:invert' />
+                <img src='/images/brand-logos/bestofjs-logo-bw.webp' alt='Best of JS' className='h-5 dark:invert' />
                 <img
                   src='/images/brand-logos/product-hunt-logo-bw.webp'
-                  alt='producthunt'
+                  alt='Product Hunt'
                   className='h-5 dark:invert'
                 />
-                <img src='/images/brand-logos/reddit-logo-bw.webp' alt='reddit' className='h-5 dark:invert' />
-                <img src='/images/brand-logos/medium-logo-bw.webp' alt='medium' className='h-5 dark:invert' />
-                <img src='/images/brand-logos/ycombinator-logo-bw.webp' alt='ycombinator' className='h-5 dark:invert' />
-                <img src='/images/brand-logos/launchtory-logo-bw.webp' alt='launchtory' className='h-5 dark:invert' />
+                <img src='/images/brand-logos/reddit-logo-bw.webp' alt='Reddit' className='h-5 dark:invert' />
+                <img src='/images/brand-logos/medium-logo-bw.webp' alt='Medium' className='h-5 dark:invert' />
+                <img
+                  src='/images/brand-logos/ycombinator-logo-bw.webp'
+                  alt='Y Combinator'
+                  className='h-5 dark:invert'
+                />
+                <img src='/images/brand-logos/launchtory-logo-bw.webp' alt='Launchtory' className='h-5 dark:invert' />
               </div>
             </div>
           </div>

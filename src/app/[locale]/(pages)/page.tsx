@@ -29,11 +29,11 @@ const ContactUs = dynamic(() => import('@/components/blocks/contact-us-page-02/c
 })
 
 // import { logos } from '@/assets/data/trusted-brands'
-import { plans } from '@/assets/data/pricing'
-import { testimonials } from '@/assets/data/testimonials-component-06'
-import { faqItems } from '@/assets/data/faqs'
+import { usePricingPlans } from '@/assets/data/pricing'
+import { useTestimonials } from '@/assets/data/testimonials-component-06'
+import { useFaqItems } from '@/assets/data/faqs'
 
-import { benefits } from '@/assets/data/benefits'
+import { useBenefits } from '@/assets/data/benefits'
 import { avatarMotionData } from '@/assets/data/hero-section'
 
 import SectionSeparator from '@/components/section-separator'
@@ -55,6 +55,11 @@ const jsonLd = {
 }
 
 const Home = () => {
+  const benefits = useBenefits()
+  const testimonials = useTestimonials()
+  const plans = usePricingPlans()
+  const faqItems = useFaqItems()
+
   return (
     <>
       <HeroSection avatarMotion={avatarMotionData} />

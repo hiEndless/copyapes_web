@@ -2,11 +2,11 @@
 
 import { useState } from 'react'
 
-import { useRouter } from 'next/navigation'
+import { useRouter } from '@/i18n/routing'
 
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'

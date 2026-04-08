@@ -2,12 +2,15 @@
 
 import { useEffect, useRef, useState } from 'react'
 
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+
+import { Link } from '@/i18n/routing'
 
 import Logo from '@/components/logo'
 
 import { PrimaryFlowButton, SecondaryFlowButton } from '@/components/ui/flow-button'
 import { ModeToggle } from '@/components/layout/mode-toggle'
+import { LocaleSwitcher } from '@/components/layout/locale-switcher'
 
 import { HeaderNavigation, HeaderNavigationSmallScreen, type Navigation } from '@/components/layout/header-navigation'
 
@@ -19,6 +22,7 @@ type HeaderProps = {
 }
 
 const Header = ({ navigationData, className }: HeaderProps) => {
+  const t = useTranslations('Header')
   const [isScrolled, setIsScrolled] = useState(false)
 
   const scrollRaf = useRef<number | null>(null)
@@ -46,7 +50,7 @@ const Header = ({ navigationData, className }: HeaderProps) => {
   return (
     <header
       className={cn(
-        'sticky top-0 z-50 h-16 w-full transition-all duration-300',
+        'bg-background sticky top-0 z-50 h-16 w-full transition-all duration-300',
         {
           'bg-card/75 backdrop-blur-sm': isScrolled
         },
@@ -67,17 +71,18 @@ const Header = ({ navigationData, className }: HeaderProps) => {
 
         {/* Actions */}
         <div className='flex gap-4 sm:gap-6'>
+          <LocaleSwitcher />
           <ModeToggle />
 
           <SecondaryFlowButton size='default' className='max-sm:hidden' asChild>
-            <Link href='/login'>登录</Link>
+            <Link href='/login'>{t('login')}</Link>
           </SecondaryFlowButton>
 
           <PrimaryFlowButton size='default' className='max-sm:hidden' asChild>
-            <Link href='#'>注册</Link>
+            <Link href='/register'>{t('register')}</Link>
           </PrimaryFlowButton>
 
-          <HeaderNavigationSmallScreen navigationData={navigationData} />
+          <HeaderNavigationSmallScreen navigationData={navigationData} t={t} />
         </div>
       </div>
     </header>

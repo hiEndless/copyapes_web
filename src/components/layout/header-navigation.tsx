@@ -2,12 +2,13 @@
 
 import { useEffect, useState, type ReactNode } from 'react'
 
-import { usePathname } from 'next/navigation'
-
-import Link from 'next/link'
-
 import { useMedia } from 'react-use'
+
 import { ChevronRightIcon, CircleSmallIcon, MenuIcon } from 'lucide-react'
+
+import { usePathname } from '@/i18n/routing'
+
+import { Link } from '@/i18n/routing'
 
 import { useActiveSection } from '@/hooks/use-active-section'
 
@@ -299,11 +300,13 @@ const HeaderNavigation = ({
 const HeaderNavigationSmallScreen = ({
   navigationData,
   triggerClassName,
-  screenSize = 1023
+  screenSize = 1023,
+  t
 }: {
   navigationData: Navigation[]
   triggerClassName?: string
   screenSize?: number
+  t: any
 }) => {
   const [open, setOpen] = useState(false)
   const isMobile = useMedia(`(max-width: ${screenSize}px)`, false)
@@ -505,10 +508,10 @@ const HeaderNavigationSmallScreen = ({
           })}
           <div className='mt-auto flex flex-col gap-3 pt-6 pb-4'>
             <Button variant='outline' className='w-full' onClick={handleLinkClick} asChild>
-              <Link href='/login'>登录</Link>
+              <Link href='/login'>{t('login')}</Link>
             </Button>
             <Button className='w-full' onClick={handleLinkClick} asChild>
-              <Link href='#'>注册</Link>
+              <Link href='/register'>{t('register')}</Link>
             </Button>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { Marquee } from '@/components/ui/marquee'
 
 import TestimonialCard from '@/components/blocks/testimonials-component-06/testimonial-card'
 import type { TestimonialItem } from '@/assets/data/testimonials-component-06'
+import { useTranslations } from 'next-intl'
 import { MotionPreset } from '@/components/ui/motion-preset'
 
 type TestimonialsComponentProps = {
@@ -9,6 +10,8 @@ type TestimonialsComponentProps = {
 }
 
 const TestimonialsComponent = ({ testimonials }: TestimonialsComponentProps) => {
+  const t = useTranslations('Testimonials')
+
   return (
     <section id='testimonials' className='space-y-12 py-8 sm:space-y-16 sm:py-16 lg:space-y-24 lg:py-24'>
       {/* Section Header */}
@@ -19,11 +22,11 @@ const TestimonialsComponent = ({ testimonials }: TestimonialsComponentProps) => 
         blur
         transition={{ duration: 0.5 }}
       >
-        <p className='text-primary text-sm font-medium uppercase'>用户评价</p>
+        <p className='text-primary text-sm font-medium uppercase'>{t('badge')}</p>
 
-        <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>受到聪明的交易者信赖</h2>
+        <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
 
-        <p className='text-muted-foreground text-xl'>用户通过跟单猿实现盈利增长和社群增长的故事。</p>
+        <p className='text-muted-foreground text-xl'>{t('subtitle')}</p>
       </MotionPreset>
 
       {/* Testimonials Marquee */}

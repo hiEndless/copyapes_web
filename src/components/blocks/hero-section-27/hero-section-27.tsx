@@ -2,6 +2,8 @@ import * as motion from 'motion/react-client'
 
 import { ArrowRightIcon } from 'lucide-react'
 
+import { useTranslations } from 'next-intl'
+
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -23,19 +25,21 @@ type AvatarProps = {
 }
 
 const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
+  const t = useTranslations('Hero')
+
   return (
     <section id='home' className='relative flex-1 overflow-hidden pt-32 pb-8'>
       <StarsBackground className='absolute inset-0 flex items-center justify-center' />
       <div className='relative mx-auto flex max-w-7xl flex-col items-center gap-8 px-4 sm:gap-16 sm:px-6 lg:gap-24 lg:px-8'>
         {/* Hero Content */}
         <div className='flex max-w-3xl flex-col items-center gap-4 text-center'>
-          <MotionPreset fade slide transition={{ duration: 0.5 }}>
+          <MotionPreset fade transition={{ duration: 0.5 }}>
             <Badge className='px-2.5 py-1 shadow-none' variant='outline'>
               <span className='relative flex size-2'>
                 <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-green-600 opacity-75 dark:bg-green-400'></span>
                 <span className='relative inline-flex size-2 rounded-full bg-green-600 dark:bg-green-400'></span>
               </span>
-              已稳定运行3年
+              {t('badge')}
             </Badge>
           </MotionPreset>
 
@@ -47,7 +51,7 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
             transition={{ duration: 0.5, ease: 'easeOut' }}
             className='text-2xl font-semibold sm:text-3xl lg:text-5xl lg:font-bold'
           >
-            让全世界顶级交易员为你打工
+            {t('title')}
           </MotionPreset>
 
           <MotionPreset
@@ -58,7 +62,7 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
             transition={{ duration: 0.5, ease: 'easeOut' }}
             className='text-muted-foreground max-w-2xl text-xl'
           >
-            全自动合约跟单交易助手。没有交易员盈利抽成，没有跟单席位限制，支持跨交易所和模拟盘跟单。对接交易所官方API，秒级跟单。
+            {t('description')}
           </MotionPreset>
 
           <MotionPreset
@@ -70,11 +74,11 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
           >
             <BounceButton className='z-10 h-10 gap-3 rounded-lg text-base has-[>svg]:px-6'>
               <a href='#' className='flex items-center gap-2'>
-                立刻开始跟单 <ArrowRightIcon />
+                {t('startCopying')} <ArrowRightIcon />
               </a>
             </BounceButton>
             <Button size='lg' asChild className='bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-base'>
-              <a href='#'>免费注册</a>
+              <a href='#'>{t('freeRegister')}</a>
             </Button>
           </MotionPreset>
 
@@ -113,7 +117,7 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
               </Avatar>
             </div>
             <p className='text-muted-foreground px-2 text-xs'>
-              被超过 <span className='text-primary'>+23k</span> 人使用
+              {t('usedBy')} <span className='text-primary'>+23k</span> {t('people')}
             </p>
           </MotionPreset>
         </div>

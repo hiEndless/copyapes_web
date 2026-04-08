@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { usePathname } from 'next/navigation'
+import { usePathname } from '@/i18n/routing'
 
 export const useActiveSection = (sectionIds: string[]) => {
   const [activeSection, setActiveSection] = useState<string>('')

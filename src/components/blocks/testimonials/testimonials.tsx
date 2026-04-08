@@ -1,6 +1,6 @@
 import { ExternalLinkIcon, StarIcon } from 'lucide-react'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 
 import TestimonialCard from '@/components/blocks/testimonials/testimonial-card'
 import type { TestimonialItem } from '@/components/blocks/testimonials/testimonial-card'

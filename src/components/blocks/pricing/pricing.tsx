@@ -4,10 +4,11 @@ import { useState, type ReactNode } from 'react'
 
 import { CheckIcon, CircleIcon } from 'lucide-react'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 
 import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { useTranslations } from 'next-intl'
 import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 
@@ -34,6 +35,7 @@ export type Plans = {
 
 const Pricing = ({ plans }: { plans: Plans }) => {
   const [billingPeriod, setBillingPeriod] = useState('monthly')
+  const t = useTranslations('Pricing')
 
   return (
     <section id='pricing' className='relative overflow-hidden py-8 sm:py-16 lg:py-24'>
@@ -46,11 +48,13 @@ const Pricing = ({ plans }: { plans: Plans }) => {
           blur
           transition={{ duration: 0.5 }}
         >
-          <p className='text-primary text-sm font-medium uppercase'>产品价格</p>
+          <p className='text-primary text-sm font-medium uppercase'>{t('badge')}</p>
 
-          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>灵活定价，满足不同需求</h2>
+          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
 
-          <p className='text-muted-foreground text-xl'>选择适合您的套餐，开启智能跟单之旅。</p>
+          <p className='text-muted-foreground mx-auto max-w-2xl text-xl'>
+            {t('subtitle')}
+          </p>
 
           {/*<div className='mx-auto mb-9 w-fit rounded-lg border border-dashed px-2 py-0.5'>*/}
           {/*  <p className='text-muted-foreground'>*/}
@@ -71,14 +75,14 @@ const Pricing = ({ plans }: { plans: Plans }) => {
                   className='data-[state=active]:bg-background data-[state=active]:text-muted dark:data-[state=active]:text-muted dark:data-[state=active]:bg-background px-3 py-1 data-[state=active]:shadow-sm dark:data-[state=active]:border-transparent'
                   aria-hidden
                 >
-                  <span className='text-foreground text-base'>月付</span>
+                  <span className='text-foreground text-base'>{t('monthly')}</span>
                 </TabsTrigger>
                 <TabsTrigger
                   value='yearly'
                   className='data-[state=active]:bg-background data-[state=active]:text-muted dark:data-[state=active]:text-muted dark:data-[state=active]:bg-background px-3 py-1 data-[state=active]:shadow-sm dark:data-[state=active]:border-transparent'
                   aria-hidden
                 >
-                  <span className='text-foreground text-base'>年付</span>
+                  <span className='text-foreground text-base'>{t('yearly')}</span>
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -110,7 +114,7 @@ const Pricing = ({ plans }: { plans: Plans }) => {
                   </Avatar>
                   {plan.isPopular && (
                     <Badge variant='destructive' className='z-10'>
-                      Trending
+                      {t('popular')}
                     </Badge>
                   )}
                 </div>

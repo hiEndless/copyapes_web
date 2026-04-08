@@ -1,5 +1,6 @@
 import { MailIcon } from 'lucide-react'
 import { IconBrandWechat, IconBrandTelegram } from '@tabler/icons-react'
+import { useTranslations } from 'next-intl'
 
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -8,12 +9,14 @@ import { InViewBorderBeam } from '@/components/blocks/contact-us-page-02/in-view
 import DottedSheet from '@/assets/svg/dotted-sheet'
 
 const ContactUs = () => {
+  const t = useTranslations('ContactUs')
+
   return (
     <section id='contact' className='relative z-1 [content-visibility:auto] py-8 sm:py-16 lg:py-24'>
       <div className='mx-auto max-w-7xl px-4 sm:px-6 lg:px-8'>
         <div className='mb-12 space-y-4 text-center sm:mb-16 lg:mb-24'>
-          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>我们如何为您提供帮助？</h2>
-          <p className='text-muted-foreground text-xl'>如果你有任何产品方面的疑问，或者合作需求，请联系我们。</p>
+          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
+          <p className='text-muted-foreground text-xl'>{t('subtitle')}</p>
         </div>
 
         <div className='relative overflow-hidden rounded-xl'>
@@ -23,8 +26,8 @@ const ContactUs = () => {
               <Card className='bg-primary py-8 shadow-none md:col-span-3 xl:col-span-2'>
                 <CardContent className='text-primary-foreground space-y-7'>
                   <div className='space-y-2'>
-                    <h2 className='text-2xl font-semibold'>联系方式</h2>
-                    <p>产品合作 / 社区合作 / 定制开发</p>
+                    <h2 className='text-2xl font-semibold'>{t('contact')}</h2>
+                    <p>{t('desc')}</p>
                   </div>
 
                   <div className='space-y-7'>
@@ -53,7 +56,7 @@ const ContactUs = () => {
                     <div className='flex items-start gap-4 text-lg font-semibold'>
                       <IconBrandTelegram className='size-7 shrink-0' />
                       <a className='text-lg font-semibold' href='https://t.me/copyapes_cn'>
-                        点击加入TG社区
+                        {t('joinTg')}
                       </a>
                     </div>
                   </div>

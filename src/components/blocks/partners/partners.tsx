@@ -1,3 +1,4 @@
+import { useTranslations } from 'next-intl'
 import { ArrowRightIcon } from 'lucide-react'
 
 const data = [
@@ -77,6 +78,7 @@ const data = [
       />
     )
   }
+
   // {
   //   name: 'BYBIT',
   //   href: 'https://partner.bybit.com/b/ddddao',
@@ -156,14 +158,13 @@ const data = [
 ]
 
 const Partners = () => {
+  const t = useTranslations('Partners')
+
   return (
     <section id='company' className='relative flex w-full flex-col items-center justify-center gap-10 px-6 py-10 pt-32'>
-      {/*<div>*/}
-      {/*  <p className='text-foreground/70 font-medium'>我们的合作伙伴</p>*/}
-      {/*</div>*/}
       <div className='mb-12 space-y-4 text-center sm:mb-16 lg:mb-24'>
-        <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>我们的合作伙伴</h2>
-        <p className='text-muted-foreground text-xl'>使用我们的邀请链接进行注册，可享20%高额交易返佣。</p>
+        <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
+        <p className='text-muted-foreground text-xl'>{t('subtitle')}</p>
       </div>
       <div className='border-border z-20 grid w-full max-w-7xl grid-cols-2 items-center justify-center overflow-hidden border-y md:grid-cols-4'>
         {data.map((item, i) => (
@@ -172,7 +173,7 @@ const Partners = () => {
             className='group before:bg-border after:bg-border relative flex h-28 w-full items-center justify-center p-4 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'
           >
             <a target='_blank' rel='noopener noreferrer' className='absolute inset-0 z-20' href={item.href}>
-              <span className='sr-only'>了解更多</span>
+              <span className='sr-only'>{t('learnMore')}</span>
             </a>
             <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
             <div className='absolute inset-0 overflow-hidden'>
@@ -183,7 +184,7 @@ const Partners = () => {
             </div>
             <div className='pointer-events-none absolute inset-0 flex translate-y-6 items-center justify-center pt-8 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100'>
               <span className='text-primary flex items-center gap-2 text-sm font-medium'>
-                了解更多 <ArrowRightIcon className='h-4 w-4' />
+                {t('learnMore')} <ArrowRightIcon className='h-4 w-4' />
               </span>
             </div>
             <div className='pointer-events-none absolute top-0 right-0 h-8 w-8 opacity-0 transition-opacity duration-300 group-hover:opacity-100'>

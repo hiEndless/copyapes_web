@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 
 import { HelpCircleIcon } from 'lucide-react'
 
@@ -16,6 +17,8 @@ export type FAQs = {
 }[]
 
 const FAQ = ({ faqItems }: { faqItems: FAQs }) => {
+  const t = useTranslations('FAQ')
+
   useEffect(() => {
     const all = document.querySelectorAll('.card')
 
@@ -62,12 +65,12 @@ const FAQ = ({ faqItems }: { faqItems: FAQs }) => {
           transition={{ duration: 0.5 }}
           className='mb-12 space-y-4 text-center sm:mb-16 lg:mb-24'
         >
-          <p className='text-primary text-sm font-medium uppercase'>FAQ</p>
+          <p className='text-primary text-sm font-medium uppercase'>{t('badge')}</p>
 
-          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>常见问题解答</h2>
+          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
 
           <p className='text-muted-foreground mx-auto max-w-2xl text-xl'>
-            解答您关于跟单猿的常见问题。如果您有其他问题，请随时联系我们。
+            {t('subtitle')}
           </p>
         </MotionPreset>
 

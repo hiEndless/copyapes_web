@@ -4,8 +4,9 @@ import { type ReactNode } from 'react'
 
 import { ArrowUpRightIcon } from 'lucide-react'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 
+import { useTranslations } from 'next-intl'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Card, CardContent } from '@/components/ui/card'
 import { PrimaryFlowButton, SecondaryFlowButton } from '@/components/ui/flow-button'
@@ -18,6 +19,8 @@ export type Features = {
 }[]
 
 const Benefits = ({ featuresList }: { featuresList: Features }) => {
+  const t = useTranslations('Benefits')
+
   return (
     <section id='benefits' className='py-8 sm:py-16 lg:py-24'>
       {/* Header */}
@@ -28,18 +31,18 @@ const Benefits = ({ featuresList }: { featuresList: Features }) => {
         transition={{ duration: 0.5 }}
         className='mb-12 space-y-4 text-center max-md:px-4 sm:mb-16 lg:mb-24'
       >
-        <p className='text-primary text-sm font-medium uppercase'>产品优势</p>
+        <p className='text-primary text-sm font-medium uppercase'>{t('badge')}</p>
 
-        <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>跟单猿如何帮助您</h2>
+        <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
 
         <p className='text-muted-foreground mx-auto max-w-3xl text-xl'>
-          简化您的跟单流程，节约您的跟单成本，放大您的跟单收益。
+          {t('subtitle')}
         </p>
 
         <div className='flex flex-wrap items-center justify-center gap-4 text-center'>
           <PrimaryFlowButton size='lg' asChild>
             <Link href='#'>
-              立刻开始跟单
+              {t('button')}
               <ArrowUpRightIcon />
             </Link>
           </PrimaryFlowButton>

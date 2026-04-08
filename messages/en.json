@@ -1,0 +1,218 @@
+{
+  "Metadata": {
+    "titleTemplate": "%s - CopyApes",
+    "titleDefault": "CopyApes - Cross-Exchange Crypto Copy Trading",
+    "description": "CopyApes is a fully automated crypto futures copy trading assistant. Supports cross-platform copy trading for Binance and OKX. 0% profit sharing, letting top traders work for you.",
+    "keywords": [
+      "copy trading",
+      "crypto copy trading",
+      "automated trading",
+      "Binance copy trading",
+      "OKX copy trading",
+      "cross-exchange copy trading",
+      "crypto futures",
+      "CopyApes"
+    ],
+    "siteName": "CopyApes"
+  },
+  "Header": {
+    "login": "Login",
+    "register": "Sign Up"
+  },
+  "Navigation": {
+    "home": "Home",
+    "features": "Features",
+    "benefits": "Benefits",
+    "testimonials": "Testimonials",
+    "pricing": "Pricing",
+    "faq": "FAQ",
+    "contact": "Contact Us"
+  },
+  "Logo": {
+    "brandName": "CopyApes"
+  },
+  "Hero": {
+    "badge": "Stable running for 3 years",
+    "title": "Let The World's Top Traders Work For You",
+    "description": "Fully automated contract copy trading assistant. No profit sharing with traders, no copy seat limits, supports cross-exchange and simulated copy trading. Official exchange API integration, second-level copy trading.",
+    "startCopying": "Start Copy Trading Now",
+    "freeRegister": "Sign Up for Free",
+    "usedBy": "Used by over",
+    "people": "people"
+  },
+  "BentoGrid": {
+    "badge": "Features",
+    "title": "Powerful Features, Simple to Use",
+    "subtitle": "Global service nodes, lightning-fast copy trading.",
+    "targetGroup": {
+      "title": "Suitable For",
+      "desc": "Whether you are a regular trader, a copy-trading KOL, or a trading community organizer, this product is suitable for your business.",
+      "team1": "Pro Traders",
+      "team2": "Copy-Trading KOLs",
+      "team3": "Trading Communities"
+    },
+    "speed": {
+      "title": "Lightning Fast",
+      "desc": "Located close to exchange server rooms, millisecond-level real-time copying minimizes slippage."
+    },
+    "exchanges": {
+      "title": "Multi-Exchange",
+      "desc": "Supports mainstream global exchanges like Binance and OKX. Automatically converts trading pair codes and calculates volume proportionally for real-time cross-exchange copying."
+    },
+    "global": {
+      "title": "Global Deployment",
+      "desc": "Services deployed in multiple regions globally, with self-built global proxy IP pools and millisecond-level crawler services to ensure fast and stable copying."
+    }
+  },
+  "Benefits": {
+    "badge": "Benefits",
+    "title": "How CopyApes Helps You",
+    "subtitle": "Simplify your copying process, save your copying costs, and magnify your copying returns.",
+    "button": "Start Copy Trading Now"
+  },
+  "BenefitsData": {
+    "crossPlatform": {
+      "title": "Cross-Platform Copying:",
+      "desc": "Use your OKX account to copy Binance traders, or use your Binance account to copy OKX traders."
+    },
+    "apiCopy": {
+      "title": "API Copying/Leading:",
+      "desc": "Customize and upload the API you want to copy, and you or others can trade following this API."
+    },
+    "reverseCopy": {
+      "title": "Reverse Copying:",
+      "desc": "Trade in the opposite direction of the trader. If they go long, you go short. Synchronize opening and closing positions in real-time."
+    },
+    "privateCopy": {
+      "title": "Private Domain Copying:",
+      "desc": "Copy traders who operate in private domains or hide their real trading data."
+    },
+    "whitelist": {
+      "title": "Black/Whitelist Copying:",
+      "desc": "Customize trading pair blacklists or whitelists to independently control the trading assets."
+    },
+    "profitCondition": {
+      "title": "Profit Condition Copying:",
+      "desc": "Set profit conditions for traders, and only copy their trades when the conditions are met."
+    }
+  },
+  "Testimonials": {
+    "badge": "Testimonials",
+    "title": "Trusted By Smart Traders",
+    "subtitle": "Stories of users achieving profit growth and community expansion with CopyApes."
+  },
+  "TestimonialsData": {
+    "1": "Following top traders on Binance and OKX at the same time is something other platforms can't do. The cross-exchange portfolio strategy smooths out my profit curve. Low latency, fast execution, very professional.",
+    "2": "0.1-second lightning-fast copying is really fast, almost perfectly synchronized with the lead trader. This speed advantage is crucial for short-term trading and worth the investment.",
+    "3": "The API security design gives me peace of mind. My funds always stay in my own exchange account, and the platform only places orders without touching my funds. This model allows me to use the auto-copying feature safely.",
+    "4": "The refined risk control features allow me to set different parameters for each lead trader, achieving true personalized risk management. This professional-level feature is rare on other platforms.",
+    "5": "Customer service is fast, and the community atmosphere is great. Everyone shares and communicates information about lead traders, making me feel like I found a reliable trading community. It feels great not fighting alone.",
+    "6": "As a beginner who knows nothing about technical analysis, following the platform's recommended traders got me a 25% profit in two months. The platform's risk control is solid, and timely stop-losses let me sleep well.",
+    "7": "Using the copy-trading feature for three months, by diversifying my investment across multiple excellent traders, my profit stability increased by 40%, and the maximum drawdown was halved. Truly achieved a balance between profit and risk.",
+    "8": "Deploying my own copy-trading portfolio strategy as a lead trader not only earns me strategy profits but also profit-sharing from my followers. This dual-income model is truly innovative and kills two birds with one stone."
+  },
+  "Pricing": {
+    "badge": "Pricing",
+    "title": "Choose The Right Plan For You",
+    "subtitle": "Flexible pricing options to meet the needs of different traders.",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save": "Save 10%",
+    "popular": "Most Popular"
+  },
+  "PricingData": {
+    "free": {
+      "title": "Free Plan",
+      "description": "Experience basic copy trading for free",
+      "button": "Start for Free",
+      "f1": "1 Exchange API Authorization",
+      "f2": "1 Copy Trading Task",
+      "f3": "Authorized API cumulative trading funds not exceeding 1000 USDT",
+      "f4": "Only supports OKX, Gate, Bitget APIs"
+    },
+    "vip": {
+      "title": "VIP Plan",
+      "description": "Services for professional traders",
+      "button": "Start Now",
+      "f1": "Supports Lead Trader API Key Integration",
+      "f2": "Supports Binance Exchange API",
+      "f3": "5 Exchange API Authorizations",
+      "f4": "15 Copy Trading Tasks",
+      "f5": "Authorized API cumulative trading funds not exceeding 5000 USDT",
+      "ef1": "Copy Trading Notifications",
+      "ef2": "Lightning Fast Trading"
+    },
+    "pro": {
+      "title": "VIP Pro Plan",
+      "description": "More professional copy trading services",
+      "button": "Start Now",
+      "f1": "Supports Lead Trader API Key Integration",
+      "f2": "Supports Binance Exchange API",
+      "f3": "♾️ Exchange API Authorizations",
+      "f4": "♾️ Copy Trading Tasks",
+      "f5": "Authorized API cumulative trading funds not exceeding 20000 USDT",
+      "ef1": "Millisecond Ultra-low Latency",
+      "ef2": "Exclusive Customer Support"
+    }
+  },
+  "FAQ": {
+    "badge": "FAQ",
+    "title": "How Can We Help You?",
+    "subtitle": "Find answers to frequently asked questions about our product. If you need additional help, feel free to contact us."
+  },
+  "FAQData": {
+    "1": {
+      "q": "What is copy trading?",
+      "a": "Follow the best traders in the market. When the trader buys, we buy; when the trader sells, we sell simultaneously. No manual operation required. Just connect your exchange API Key, configure the traders you want to follow on the CopyApes platform, and you can start fully automated copy trading in 5 minutes. If you connect a Lead Trader API Key, you can also run your copy trading strategy as a lead trader and earn additional profit-sharing income. You can use any exchange you prefer for copy trading."
+    },
+    "2": {
+      "q": "How is CopyApes different from exchange's built-in copy trading?",
+      "a": "Many exchanges now have built-in copy trading features, but you can only follow lead traders within that specific exchange. For example, you cannot follow an excellent OKX trader on Binance. On CopyApes, you can follow all excellent lead traders across the entire platform, including Binance, OKX, ByBit, and Bitget. You can even follow any trader on Bicoin and HyperLiquid. More importantly, you can combine multiple traders into a copy-trading portfolio to diversify risk and enhance returns."
+    },
+    "3": {
+      "q": "Can I use my OKX account to follow a Binance lead trader?",
+      "a": "Yes! Absolutely. We support major exchanges including Binance, OKX, ByBit, Bitget, Gate, HTX, and HyperLiquid, with more to come. You can deploy your copy trading strategy on any exchange. Some influential lead traders manage large amounts of funds on their native platforms, and their trades might cause significant slippage. At this time, following that lead trader and executing orders on another exchange might actually get you a better price than the lead trader themselves! However, please note that if the trading pair the lead trader is trading does not exist on your exchange, that order will not be executed."
+    },
+    "4": {
+      "q": "What is the copy trading latency?",
+      "a": "We use the industry's top copy trading technology to ensure extremely low latency. Most trades for private deployment users have a latency of a few hundred milliseconds, and during high throughput periods, the latency might be around 1 second. We also provide enterprise-grade WebSocket network technology for private deployment users, which can reduce latency to just a few milliseconds."
+    },
+    "5": {
+      "q": "Is there a free trial?",
+      "a": "Of course! We are the only copy trading product in the industry that offers a long-term free trial. You can try it for free long-term under certain restrictions. You can resolve any issues encountered during use by yourself through our provided tutorial documents and videos."
+    },
+    "6": {
+      "q": "How secure is CopyApes?",
+      "a": "The safety of users' funds and trading security is always our top priority. We provide security protection from several dimensions:\n1. Your funds stay in your own account. The API Key used by the platform only needs trading permissions; do not enable fund transfer permissions.\n2. Ensure you fill in the IP whitelist when creating the API Key.\n3. The platform uses bank-grade encryption algorithms to store API Key information securely.\n4. In terms of trading security, the platform has designed multiple strategy stop-loss checks to ensure that strategy funds can stop losses in time when encountering extreme market conditions."
+    }
+  },
+  "Partners": {
+    "title": "Our Partners",
+    "subtitle": "Register using our invitation link to enjoy up to 20% high trading commission rebates.",
+    "learnMore": "Learn More"
+  },
+  "ContactUs": {
+    "title": "How Can We Help You?",
+    "subtitle": "If you have any questions about the product or partnership inquiries, please contact us.",
+    "contact": "Contact Us",
+    "desc": "Product Partnership / Community Partnership / Custom Development",
+    "joinTg": "Join Telegram Community"
+  },
+  "ContactForm": {
+    "name": "How should we address you",
+    "namePlaceholder": "Your name...",
+    "contact": "Your contact info",
+    "contactPlaceholder": "Enter your contact info...",
+    "message": "Message",
+    "messagePlaceholder": "Leave your message here, and we will contact you as soon as possible! We welcome media, KOLs, traders, and private community owners to discuss partnerships!",
+    "submit": "Send Message"
+  },
+  "Footer": {
+    "desc": "Freely combine top lead traders from different exchanges, balance return and risk, create your exclusive copy trading strategy, and let the world's top traders work for you.",
+    "product": "Product",
+    "help": "Help",
+    "terms": "Terms of Service",
+    "tutorial": "Tutorial",
+    "copyright": "Made with ❤️ by CopyApes."
+  }
+}

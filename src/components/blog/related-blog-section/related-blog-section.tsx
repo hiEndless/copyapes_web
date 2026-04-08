@@ -1,6 +1,6 @@
 import { ArrowRightIcon, CalendarDaysIcon } from 'lucide-react'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 
 import { Badge } from '@/components/ui/badge'
 import { SecondaryFlowButton } from '@/components/ui/flow-button'

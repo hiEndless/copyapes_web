@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { CircleIcon } from 'lucide-react'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { cn } from '@/lib/utils'

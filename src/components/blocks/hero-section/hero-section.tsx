@@ -5,7 +5,7 @@ import { useRef, useState, useEffect } from 'react'
 import { ArrowUpRightIcon, CircleCheckIcon, LoaderIcon } from 'lucide-react'
 import { useScroll } from 'motion/react'
 
-import Link from 'next/link'
+import { Link } from '@/i18n/routing'
 
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
