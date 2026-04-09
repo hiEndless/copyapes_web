@@ -103,10 +103,10 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
                 <AvatarImage src='/face/face-3.png' alt='Hallie Richards' />
                 <AvatarFallback>HR</AvatarFallback>
               </Avatar>
-              <Avatar className='ring-background size-10.5 ring-2'>
+              {/* <Avatar className='ring-background size-10.5 ring-2'>
                 <AvatarImage src='/face/face-5.png' alt='Jenny Wilson' />
                 <AvatarFallback>JW</AvatarFallback>
-              </Avatar>
+              </Avatar>*/}
               <Avatar className='ring-background size-10.5 ring-2'>
                 <AvatarImage src='/face/face-6.png' alt='Jenny Wilson' />
                 <AvatarFallback>JW</AvatarFallback>
@@ -124,7 +124,13 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
         <div className='relative w-full max-w-5xl'>
           <div className='from-background pointer-events-none absolute inset-y-0 left-0 z-1 w-15 bg-gradient-to-r via-85% to-transparent' />
           <div className='from-background pointer-events-none absolute inset-y-0 right-0 z-1 w-15 bg-gradient-to-l via-85% to-transparent' />
-          <MotionPreset fade slide={{ direction: 'down', offset: 50 }} delay={1.1} transition={{ duration: 0.5 }}>
+          <MotionPreset
+            fade
+            slide={{ direction: 'down', offset: 50 }}
+            delay={1.1}
+            transition={{ duration: 0.5 }}
+            inView={false}
+          >
             <Marquee pauseOnHover duration={20} reverse gap={4} className='*:items-center'>
               <img
                 src='/exchanges/binance/logo.svg'
@@ -161,7 +167,7 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
         </div>
 
         {/* Left Avatars */}
-        <MotionPreset fade delay={1.4}>
+        <MotionPreset fade delay={1.4} inView={false}>
           {avatarMotion.map((item, index) => (
             <motion.div
               key={index}

@@ -1,17 +1,16 @@
 import type { ReactNode } from 'react'
 
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages, getTranslations } from 'next-intl/server'
+import { notFound } from 'next/navigation'
 import { Geist, Geist_Mono } from 'next/font/google'
 import type { Metadata } from 'next'
 
+import { routing } from '@/i18n/routing'
 import { ThemeProvider } from '@/components/theme-provider'
 import { TooltipProvider } from '@/components/ui/tooltip'
 
 import { cn } from '@/lib/utils'
-
-import { NextIntlClientProvider } from 'next-intl'
-import { getMessages, getTranslations } from 'next-intl/server'
-import { notFound } from 'next/navigation'
-import { routing } from '@/i18n/routing'
 
 import '../globals.css'
 
@@ -112,7 +111,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 }
 
 export function generateStaticParams() {
-  return routing.locales.map((locale) => ({ locale }))
+  return routing.locales.map(locale => ({ locale }))
 }
 
 const RootLayout = async ({
@@ -138,7 +137,7 @@ const RootLayout = async ({
     >
       <body className='flex min-h-full w-full flex-auto flex-col'>
         <NextIntlClientProvider messages={messages}>
-          <ThemeProvider attribute='class' enableSystem={false} disableTransitionOnChange>
+          <ThemeProvider attribute='class' defaultTheme='dark' enableSystem={false} disableTransitionOnChange>
             <TooltipProvider>{children}</TooltipProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
