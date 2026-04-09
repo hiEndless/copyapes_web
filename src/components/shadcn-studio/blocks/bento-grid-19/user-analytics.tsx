@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 
 import Funnel from '@/assets/svg/funnel'
-import Logo from '@/assets/svg/logo'
+import Logo from '@/assets/svg/copyapes-logo'
 
 const avatars = [
   {

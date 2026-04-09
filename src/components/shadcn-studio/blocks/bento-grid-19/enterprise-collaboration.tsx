@@ -1,6 +1,6 @@
 import { Orbiting } from '@/components/ui/orbiting'
 
-import Logo from '@/assets/svg/logo'
+import Logo from '@/assets/svg/copyapes-logo'
 
 const EnterpriseCollaboration = () => {
   return (

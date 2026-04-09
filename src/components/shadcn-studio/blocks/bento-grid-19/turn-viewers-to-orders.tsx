@@ -3,7 +3,7 @@ import { BadgeCheckIcon } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Marquee } from '@/components/ui/marquee'
 
-import Logo from '@/assets/svg/logo'
+import Logo from '@/assets/svg/copyapes-logo'
 import CardBannerEdge from '@/assets/svg/card-banner-edge'
 
 const TurnViewersToOrders = () => {

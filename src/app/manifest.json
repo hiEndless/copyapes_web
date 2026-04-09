@@ -18,27 +18,27 @@
   ],
   "icons": [
     {
-      "src": "/favicon/android-chrome-192x192.png",
+      "src": "/favicon/favicon.ico",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/favicon/android-chrome-512x512.png",
+      "src": "/favicon/favicon.ico",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/favicon/apple-touch-icon.png",
+      "src": "/favicon/favicon.ico",
       "sizes": "180x180",
       "type": "image/png"
     },
     {
-      "src": "/favicon/favicon-32x32.png",
+      "src": "/favicon/favicon.ico",
       "sizes": "32x32",
       "type": "image/png"
     },
     {
-      "src": "/favicon/favicon-16x16.png",
+      "src": "/favicon/favicon.ico",
       "sizes": "16x16",
       "type": "image/png"
     }

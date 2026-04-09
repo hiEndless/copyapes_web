@@ -12,7 +12,7 @@ import { NumberTicker } from '@/components/ui/number-ticker'
 
 import RegularUpdatesRippleBg from '@/components/blocks/features/regular-updates-ripple-bg'
 
-import Logo from '@/assets/svg/logo'
+import Logo from '@/assets/svg/copyapes-logo'
 
 export type NotificationCard = {
   id: string
