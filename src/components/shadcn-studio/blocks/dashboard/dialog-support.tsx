@@ -10,7 +10,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
-  const [activeContact, setActiveContact] = useState<'qq' | 'wechat' | 'telegram' | 'email'>('telegram')
+  const [activeContact, setActiveContact] = useState<'qq' | 'wechat' | 'telegram' | 'email'>('wechat')
 
   const contactInfo = {
     qq: {
