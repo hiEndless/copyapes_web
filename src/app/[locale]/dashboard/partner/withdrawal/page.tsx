@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 export default function WithdrawalPage() {
   return (
     <div className="flex h-full items-center justify-center">

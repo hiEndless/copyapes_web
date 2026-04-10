@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 export default function BicoinTaskPage() {
   return (
     <div className="flex h-full items-center justify-center">

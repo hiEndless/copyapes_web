@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import type { Metadata } from 'next'
 
 import ForgotPassword from '@/components/auth/forgot-password/forgot-password'

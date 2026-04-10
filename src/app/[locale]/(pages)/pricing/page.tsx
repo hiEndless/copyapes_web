@@ -1,4 +1,3 @@
-export const runtime = 'edge';
 import type { Metadata } from 'next'
 
 import CTASection from '@/components/blocks/cta/cta'
