@@ -1,7 +1,5 @@
 import dynamic from 'next/dynamic'
 
-export const runtime = 'edge'
-
 import HeroSection from '@/components/blocks/hero-section-27/hero-section-27'
 
 // import TrustedBrands from '@/components/blocks/trusted-brands/trusted-brands'

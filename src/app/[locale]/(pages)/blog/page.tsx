@@ -6,8 +6,6 @@ import SectionSeparator from '@/components/section-separator'
 import BlogSection from '@/components/blog/blog-section/blog-section'
 import { getPosts } from '@/lib/posts'
 
-export const runtime = 'edge'
-
 export const metadata: Metadata = {
   title: 'Blog',
   description: 'Welcome to our blog. Stay updated with the latest news and articles.',

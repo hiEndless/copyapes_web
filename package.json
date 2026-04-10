@@ -59,9 +59,11 @@
     "wrangler": "^4.81.1"
   },
   "resolutions": {
-    "framer-motion": "12.29.2"
+    "framer-motion": "12.29.2",
+    "lru-cache": "10.4.3"
   },
   "overrides": {
-    "framer-motion": "12.29.2"
+    "framer-motion": "12.29.2",
+    "lru-cache": "10.4.3"
   }
 }

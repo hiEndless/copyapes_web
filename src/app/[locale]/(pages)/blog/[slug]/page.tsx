@@ -1,12 +1,10 @@
-import { Link } from '@/i18n/routing'
-
 import { notFound } from 'next/navigation'
-
-export const runtime = 'edge'
 
 import type { Metadata } from 'next'
 
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
+
+import { Link } from '@/i18n/routing'
 
 import {
   Breadcrumb,
