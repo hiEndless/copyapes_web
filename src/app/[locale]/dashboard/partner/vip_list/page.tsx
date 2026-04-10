@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 export default function VipListPage() {
   return (
     <div className="flex h-full items-center justify-center">

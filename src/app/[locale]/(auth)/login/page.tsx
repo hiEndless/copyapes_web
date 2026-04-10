@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import type { Metadata } from 'next'
 
 import Login from '@/components/auth/login/login'

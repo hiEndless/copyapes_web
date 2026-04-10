@@ -1,3 +1,4 @@
+export const runtime = 'edge';
 import type { Metadata } from 'next'
 
 import ResetPassword from '@/components/auth/reset-password/reset-password'
