@@ -8,13 +8,8 @@ import {
   BellIcon,
   BellRingIcon,
   BookMarkedIcon,
-  CalendarIcon,
-  ChartLineIcon,
-  ChartPieIcon,
   ChevronRightIcon,
   CircleOffIcon,
-  CircleQuestionMarkIcon,
-  CircleUserIcon,
   CopyIcon,
   DollarSignIcon,
   FacebookIcon,
@@ -40,7 +35,16 @@ import {
   TrendingUpIcon,
   TriangleAlertIcon,
   TwitterIcon,
-  UserIcon
+  UserIcon,
+  Share2,
+  Cookie,
+  LandPlot,
+  Flame,
+  UserStar,
+  ShieldUser,
+  Unplug,
+  MessageCircleWarning,
+  Bug
 } from 'lucide-react'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -105,135 +109,101 @@ type MenuItem = {
 
 const menuItems: MenuItem[] = [
   {
-    icon: ChartPieIcon,
-    label: 'Dashboard',
-    href: '#'
-  }
-]
-
-const pagesItems: MenuItem[] = [
-  {
-    icon: CircleUserIcon,
-    label: 'User Profile',
-    href: '#'
-  },
-  {
-    icon: SettingsIcon,
-    label: 'Account Settings',
-    href: '#'
-  },
-  {
-    icon: CircleQuestionMarkIcon,
-    label: 'FAQ',
+    icon: LayoutGridIcon,
+    label: '首页',
     href: '#'
   },
   {
     icon: DollarSignIcon,
-    label: 'Pricing',
-    href: '#',
-    badge: '3'
+    label: '订阅服务',
+    href: '#'
   },
   {
-    icon: LayoutGridIcon,
-    label: 'Misc',
-    items: [
-      { label: 'Error', href: '#' },
-      { label: 'Coming Soon', href: '#' },
-      { label: 'Not Authorized', href: '#' },
-      { label: 'Under Maintenance', href: '#' }
-    ]
+    icon: Share2,
+    label: '邀请好友',
+    href: '#'
+  }
+]
+
+const adminItems: MenuItem[] = [
+  {
+    icon: ShieldUser,
+    label: '系统后台',
+    href: '#'
   },
   {
-    icon: LockKeyholeIcon,
-    label: 'Authentication',
+    icon: UserStar,
+    label: '代理商后台',
     items: [
-      { label: 'Login', href: '#' },
-      { label: 'Register', href: '#' },
-      { label: 'Verify Email', href: '#' },
-      { label: 'Forget Password', href: '#' },
-      { label: 'Reset Password', href: '#' },
-      { label: 'Two Steps', href: '#' }
+      { label: '代理设置', href: '#' },
+      { label: '返佣设置', href: '#' },
+      { label: '兑换码创建', href: '#' },
+      { label: '推广用户列表', href: '#' },
+      { label: 'VIP 客户列表', href: '#' },
+      { label: '收益流水', href: '#' },
+      { label: '提现流水', href: '#' }
     ]
-  },
+  }
+]
+
+const copyItems: MenuItem[] = [
   {
     icon: LayoutListIcon,
-    label: 'Wizard Examples',
-    items: [
-      { label: 'Checkout', href: '#' },
-      { label: 'Property Listing', href: '#' },
-      { label: 'Create Deal', href: '#' }
-    ]
+    label: '跟单任务列表',
+    href: '#'
   },
   {
     icon: CopyIcon,
-    label: 'Modal Examples',
+    label: '创建跟单',
+    items: [
+      { label: '交易所', href: '#' },
+      { label: '币coin', href: '#' },
+      { label: 'HyperLiquid', href: '#' },
+      { label: 'API 跟单', href: '#' },
+      { label: '交易所 Cookie 跟单', href: '#' }
+    ]
+  },
+  {
+    icon: Flame,
+    label: '热门推荐',
+    href: '#'
+  },
+  {
+    icon: Flame,
+    label: 'HyperLiquid推荐',
     href: '#'
   }
 ]
 
-const chartMapsItems: MenuItem[] = [
+const toolsItems: MenuItem[] = [
   {
-    icon: ChartLineIcon,
-    label: 'Charts',
+    icon: Cookie,
+    label: 'Cookie 获取',
     href: '#'
   },
   {
-    icon: MapPinIcon,
-    label: 'Maps',
-    href: '#'
+    icon: LandPlot,
+    label: '跟单抢位',
+    href: '#',
+    badge: '4天必中'
   }
 ]
 
-const applicationsItems: MenuItem[] = [
+const settingsItems: MenuItem[] = [
   {
-    icon: MailIcon,
-    label: 'Email',
+    icon: Unplug,
+    label: 'API 管理',
     href: '#'
   },
   {
-    icon: MessageSquareTextIcon,
-    label: 'Chat',
+    icon: SettingsIcon,
+    label: '账户设置',
     href: '#'
   },
   {
-    icon: UserIcon,
-    label: 'Users',
-    items: [
-      { label: 'List', href: '#' },
-      { label: 'View', href: '#' }
-    ]
-  },
-  {
-    icon: ShieldCheckIcon,
-    label: 'Roles & Permissions',
-    items: [
-      { label: 'Roles', href: '#', badge: '4' },
-      { label: 'Permissions', href: '#' }
-    ]
-  },
-  {
-    icon: CalendarIcon,
-    label: 'Calendar',
+    icon: MessageCircleWarning,
+    label: '消息通知',
     href: '#'
-  },
-  {
-    icon: FolderIcon,
-    label: 'File Manager',
-    href: '#'
-  },
-  {
-    icon: LayoutGridIcon,
-    label: 'Kanban',
-    href: '#'
-  },
-  {
-    icon: TrendingUpIcon,
-    label: 'Point of Sale',
-    items: [
-      { label: 'New Order', href: '#' },
-      { label: 'Order List', href: '#' },
-      { label: 'Customers', href: '#' }
-    ]
   }
 ]
 
@@ -728,9 +698,10 @@ const DashboardShell = () => {
           </SidebarHeader>
           <SidebarContent>
             <SidebarGroupedMenuItems data={menuItems} />
-            <SidebarGroupedMenuItems data={pagesItems} groupLabel='Pages' />
-            <SidebarGroupedMenuItems data={chartMapsItems} groupLabel='Charts & Maps' />
-            <SidebarGroupedMenuItems data={applicationsItems} groupLabel='Applications' />
+            <SidebarGroupedMenuItems data={adminItems} groupLabel='系统服务' />
+            <SidebarGroupedMenuItems data={copyItems} groupLabel='跟单服务' />
+            <SidebarGroupedMenuItems data={toolsItems} groupLabel='工具服务' />
+            <SidebarGroupedMenuItems data={settingsItems} groupLabel='系统设置' />
           </SidebarContent>
         </Sidebar>
         <div className='flex flex-1 flex-col'>
@@ -739,7 +710,7 @@ const DashboardShell = () => {
               <div className='flex items-center gap-1.5 sm:gap-4'>
                 <SidebarTrigger className='[&_svg]:!size-5' />
                 <Separator orientation='vertical' className='hidden !h-4 sm:block' />
-                <SearchDialog
+                {/* <SearchDialog
                   trigger={
                     <>
                       <Button variant='ghost' className='hidden !bg-transparent px-1 py-0 font-normal sm:block'>
@@ -754,7 +725,7 @@ const DashboardShell = () => {
                       </Button>
                     </>
                   }
-                />
+                /> */}
               </div>
               <div className='flex items-center gap-1.5'>
                 <LanguageDropdown
@@ -778,6 +749,13 @@ const DashboardShell = () => {
                   trigger={
                     <Button variant='ghost' size='icon'>
                       <ActivityIcon />
+                    </Button>
+                  }
+                />
+                <ActivityDialog
+                  trigger={
+                    <Button variant='ghost' size='icon'>
+                      <Bug />
                     </Button>
                   }
                 />
@@ -856,26 +834,22 @@ const DashboardShell = () => {
           <footer>
             <div className='text-muted-foreground mx-auto flex size-full max-w-7xl items-center justify-between gap-3 px-4 py-3 max-sm:flex-col sm:gap-6 sm:px-6'>
               <p className='text-sm text-balance max-sm:text-center'>
-                {`©${new Date().getFullYear()}`}{' '}
-                <a href='#' className='text-primary'>
-                  shadcn/studio
-                </a>
-                , Made for better web design
+                {`©${new Date().getFullYear()}`} Made with ❤️ by CopyApes.
               </p>
-              <div className='flex items-center gap-5'>
-                <a href='#'>
-                  <FacebookIcon className='size-4' />
-                </a>
-                <a href='#'>
-                  <InstagramIcon className='size-4' />
-                </a>
-                <a href='#'>
-                  <LinkedinIcon className='size-4' />
-                </a>
-                <a href='#'>
-                  <TwitterIcon className='size-4' />
-                </a>
-              </div>
+              {/*<div className='flex items-center gap-5'>*/}
+              {/*  <a href='#'>*/}
+              {/*    <FacebookIcon className='size-4' />*/}
+              {/*  </a>*/}
+              {/*  <a href='#'>*/}
+              {/*    <InstagramIcon className='size-4' />*/}
+              {/*  </a>*/}
+              {/*  <a href='#'>*/}
+              {/*    <LinkedinIcon className='size-4' />*/}
+              {/*  </a>*/}
+              {/*  <a href='#'>*/}
+              {/*    <TwitterIcon className='size-4' />*/}
+              {/*  </a>*/}
+              {/*</div>*/}
             </div>
           </footer>
         </div>
