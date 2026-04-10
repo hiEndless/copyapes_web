@@ -490,4 +490,4 @@ const DemoPage = () => {
   )
 }
 
-export default DashboardPage
+export default DemoPage
