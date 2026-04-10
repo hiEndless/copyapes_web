@@ -1,4 +1,5 @@
 import { Link } from '@/i18n/routing'
+
 import { notFound } from 'next/navigation'
 
 export const runtime = 'edge'
@@ -27,12 +28,6 @@ import RelatedBlogSection from '@/components/blog/related-blog-section/related-b
 import SectionSeparator from '@/components/section-separator'
 import CTASection from '@/components/blocks/cta/cta'
 import { SecondaryFlowButton } from '@/components/ui/flow-button'
-
-export async function generateStaticParams() {
-  const posts = await getPosts()
-
-  return posts.map(post => ({ slug: post.slug }))
-}
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
