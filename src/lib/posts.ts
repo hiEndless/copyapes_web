@@ -1,6 +1,3 @@
-import fs from 'fs' // Comment this line if using remote fetching
-import path from 'path' // Comment this line if using remote fetching
-
 import matter from 'gray-matter'
 
 export type Post = {
@@ -24,26 +21,19 @@ export type PostMetadata = {
   keywords?: string[]
 }
 
-// local content directory (comment below line if using remote fetching)
-const rootDirectory = path.join(process.cwd(), 'src', 'content', 'blog')
-
 // Remote repository details
-// const GITHUB_USERNAME = 'yourusername'
-// const GITHUB_REPO = 'reponame'
-// const GITHUB_BRANCH = 'main'
-// const CONTENT_PATH = 'content/blog'
+const GITHUB_USERNAME = process.env.GITHUB_USERNAME || 'copyapes'
+const GITHUB_REPO = process.env.GITHUB_REPO || 'copyapes_web'
+const GITHUB_BRANCH = process.env.GITHUB_BRANCH || 'main'
+const CONTENT_PATH = 'src/content/blog'
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
   try {
-    // LOCAL LOGIC:
-    const filePath = path.join(rootDirectory, `${slug}.mdx`)
-    const fileContent = fs.readFileSync(filePath, { encoding: 'utf8' })
-
-    // REMOTE LOGIC (commented for reference):
-    // const res = await fetch(
-    //   `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/refs/heads/${GITHUB_BRANCH}/${CONTENT_PATH}/${slug}.mdx`
-    // )
-    // const fileContent = await res.text()
+    const res = await fetch(
+      `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/refs/heads/${GITHUB_BRANCH}/${CONTENT_PATH}/${slug}.mdx`
+    )
+    if (!res.ok) throw new Error('Failed to fetch')
+    const fileContent = await res.text()
 
     const { data, content } = matter(fileContent)
 
@@ -55,17 +45,16 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 
 export async function getPosts(limit?: number): Promise<PostMetadata[]> {
   try {
-    // LOCAL LOGIC:
-    const files = fs.readdirSync(rootDirectory)
-    const posts = await Promise.all(files.map(async (file: any) => await getPostMetadata(file)))
-
-    // REMOTE LOGIC (commented for reference):
-    // const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${CONTENT_PATH}`)
-    // const files = await res.json()
-    // // Filter only .mdx files
-    // const mdxFiles = files.filter((file: any) => file.name.endsWith('.mdx'))
-    // // Fetch metadata for each file
-    // const posts = await Promise.all(mdxFiles.map(async (file: any) => await getPostMetadata(file.name)))
+    const res = await fetch(`https://api.github.com/repos/${GITHUB_USERNAME}/${GITHUB_REPO}/contents/${CONTENT_PATH}`, {
+      headers: process.env.GITHUB_TOKEN ? { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` } : undefined
+    })
+    if (!res.ok) throw new Error('Failed to fetch directory')
+    const files = await res.json()
+    
+    // Filter only .mdx files
+    const mdxFiles = files.filter((file: any) => file.name.endsWith('.mdx'))
+    // Fetch metadata for each file
+    const posts = await Promise.all(mdxFiles.map(async (file: any) => await getPostMetadata(file.name)))
 
     // Sort posts by published date
     const sortedPosts = posts.sort((a, b) => {
@@ -83,7 +72,6 @@ export async function getPosts(limit?: number): Promise<PostMetadata[]> {
     return sortedPosts
   } catch (error) {
     console.error('Error fetching posts:', error)
-
     return []
   }
 }
@@ -92,22 +80,17 @@ export async function getPostMetadata(filepath: string): Promise<PostMetadata> {
   try {
     const slug = filepath.replace(/\.mdx$/, '')
 
-    // LOCAL LOGIC:
-    const filePath = path.join(rootDirectory, filepath)
-    const fileContent = fs.readFileSync(filePath, { encoding: 'utf8' })
-
-    // REMOTE LOGIC (commented for reference):
-    // const res = await fetch(
-    //   `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/refs/heads/${GITHUB_BRANCH}/${CONTENT_PATH}/${filepath}`
-    // )
-    // const fileContent = await res.text()
+    const res = await fetch(
+      `https://raw.githubusercontent.com/${GITHUB_USERNAME}/${GITHUB_REPO}/refs/heads/${GITHUB_BRANCH}/${CONTENT_PATH}/${filepath}`
+    )
+    if (!res.ok) throw new Error('Failed to fetch metadata')
+    const fileContent = await res.text()
 
     const { data } = matter(fileContent)
 
     return { ...data, slug }
   } catch (error) {
     console.error(`Error fetching metadata for ${filepath}:`, error)
-
     return { slug: filepath.replace(/\.mdx$/, '') }
   }
 }

@@ -1,5 +1,7 @@
 import dynamic from 'next/dynamic'
 
+export const runtime = 'edge'
+
 import HeroSection from '@/components/blocks/hero-section-27/hero-section-27'
 
 // import TrustedBrands from '@/components/blocks/trusted-brands/trusted-brands'
@@ -12,10 +14,10 @@ const BentoGrid = dynamic(() => import('@/components/blocks/bento-grid-17/bento-
 
 const Benefits = dynamic(() => import('@/components/blocks/benefits/benefits'), { ssr: true, loading: () => null })
 
-const Testimonials = dynamic(
-  () => import('@/components/blocks/testimonials-component-06/testimonials-component-06'),
-  { ssr: true, loading: () => null }
-)
+const Testimonials = dynamic(() => import('@/components/blocks/testimonials-component-06/testimonials-component-06'), {
+  ssr: true,
+  loading: () => null
+})
 
 const Pricing = dynamic(() => import('@/components/blocks/pricing/pricing'), { ssr: true, loading: () => null })
 
