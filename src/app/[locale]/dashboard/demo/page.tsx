@@ -436,10 +436,56 @@ const userData: Item[] = [
   }
 ]
 
-const DashboardPage = () => {
+const DemoPage = () => {
   return (
-    <div className="flex h-full items-center justify-center">
-      <h1 className="text-2xl font-semibold">dashboard</h1>
+    <div className='grid grid-cols-2 gap-6 xl:grid-cols-3'>
+      <div className='col-span-2 grid grid-cols-2 gap-6 xl:grid-cols-4'>
+        {StatisticsCardData.map((card, index) => (
+          <StatisticsCard
+            key={index}
+            icon={card.icon}
+            title={card.title}
+            value={card.value}
+            trend={card.trend}
+            changePercentage={card.changePercentage}
+            badgeContent={card.badgeContent}
+            className='shadow-none'
+            iconClassName={card.iconClassName}
+          />
+        ))}
+      </div>
+
+      <StatisticsCardWithSvg
+        title='Customers'
+        badgeContent='Daily customers'
+        value='42.4k'
+        changePercentage={9.2}
+        svg={<CustomersCardSvg />}
+        className='shadow-none max-xl:col-span-full'
+      />
+
+      <TotalIncomeCard className='col-span-2 shadow-none' />
+
+      <MonthlyCampaignCard
+        title='Monthly campaign state'
+        subTitle='7.58k Social Visitors'
+        campaignData={campaignData}
+        className='justify-between shadow-none max-sm:col-span-full md:max-lg:col-span-full'
+      />
+
+      <TotalEarningCard className='justify-between shadow-none max-sm:col-span-full md:max-lg:col-span-full [&>[data-slot=card-content]]:space-y-6' />
+
+      <ForBusinessSharkCard className='shadow-none max-sm:col-span-full md:max-lg:col-span-full' />
+
+      <VehiclesConditionCard
+        title='Vehicles Condition'
+        vehicleConditionData={vehicleConditionData}
+        className='justify-between gap-6 shadow-none max-sm:col-span-full md:max-lg:col-span-full'
+      />
+
+      <Card className='col-span-full py-0 shadow-none'>
+        <UserDatatable data={userData} />
+      </Card>
     </div>
   )
 }
