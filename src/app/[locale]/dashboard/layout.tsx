@@ -149,11 +149,11 @@ const copyItems: MenuItem[] = [
     icon: CopyIcon,
     label: '创建跟单',
     items: [
-      { label: '交易所', href: '/dashboard/add_task/exchange_task' },
-      { label: '币coin', href: '/dashboard/add_task/bicoin_task' },
-      { label: 'HyperLiquid', href: '/dashboard/add_task/hyper_task' },
+      { label: '交易所自选', href: '/dashboard/add_task/exchange_task' },
+      { label: '币coin 自选', href: '/dashboard/add_task/bicoin_task' },
+      { label: 'HyperLiquid 自选', href: '/dashboard/add_task/hyper_task' },
       { label: 'API 跟单', href: '/dashboard/add_task/api_task' },
-      { label: '交易所 Cookie 跟单', href: '/dashboard/add_task/cookie_task' }
+      { label: 'Cookie 跟单', href: '/dashboard/add_task/cookie_task' }
     ]
   },
   {
