@@ -63,12 +63,12 @@ export default function ExchangeTaskPage() {
             {/* 1. 选择目标交易所 */}
             <div className='space-y-3'>
               <Label>选择目标交易所</Label>
-              <div className='grid grid-cols-2 gap-4'>
+              <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                 <button
                   type='button'
                   onClick={() => handleExchangeChange('okx')}
                   className={cn(
-                    'hover:bg-muted/50 flex h-24 items-center justify-center rounded-xl border-2 p-4 transition-all',
+                    'hover:bg-muted/50 flex h-16 items-center justify-center rounded-xl border-2 p-3 transition-all sm:h-20 sm:p-4',
                     exchange === 'okx'
                       ? 'border-primary bg-primary/5'
                       : 'bg-muted/30 hover:border-primary/20 border-transparent'
@@ -77,16 +77,16 @@ export default function ExchangeTaskPage() {
                   <Image
                     src='/exchanges/okx/logo-light.svg'
                     alt='OKX'
-                    width={120}
-                    height={40}
-                    className='h-6 w-auto object-contain dark:hidden'
+                    width={100}
+                    height={32}
+                    className='h-5 w-auto object-contain sm:h-6 dark:hidden'
                   />
                   <Image
                     src='/exchanges/okx/logo-dark.png'
                     alt='OKX'
-                    width={120}
-                    height={40}
-                    className='hidden h-8 w-auto object-contain dark:block'
+                    width={100}
+                    height={32}
+                    className='hidden h-6 w-auto object-contain sm:h-7 dark:block'
                   />
                 </button>
 
@@ -94,7 +94,7 @@ export default function ExchangeTaskPage() {
                   type='button'
                   onClick={() => handleExchangeChange('binance')}
                   className={cn(
-                    'hover:bg-muted/50 flex h-24 items-center justify-center rounded-xl border-2 p-4 transition-all',
+                    'hover:bg-muted/50 flex h-16 items-center justify-center rounded-xl border-2 p-3 transition-all sm:h-20 sm:p-4',
                     exchange === 'binance'
                       ? 'border-primary bg-primary/5'
                       : 'bg-muted/30 hover:border-primary/20 border-transparent'
@@ -103,9 +103,9 @@ export default function ExchangeTaskPage() {
                   <Image
                     src='/exchanges/binance/logo.svg'
                     alt='Binance'
-                    width={120}
-                    height={40}
-                    className='h-8 w-auto object-contain'
+                    width={100}
+                    height={32}
+                    className='h-6 w-auto object-contain sm:h-7'
                   />
                 </button>
               </div>
@@ -160,7 +160,11 @@ export default function ExchangeTaskPage() {
                   value={traderUrl}
                   onChange={e => setTraderUrl(e.target.value)}
                 />
-                <Button onClick={handleParseUrl} variant='secondary'>
+                <Button
+                  onClick={handleParseUrl}
+                  className='dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80 dark:border-border dark:border'
+                  variant='secondary'
+                >
                   解析
                 </Button>
               </div>
@@ -200,7 +204,10 @@ export default function ExchangeTaskPage() {
             )}
           </CardContent>
           <CardFooter className='flex justify-end gap-2'>
-            <Button disabled={!exchange || !uniqueName || !traderType} onClick={() => setIsConfigOpen(true)}>
+            <Button
+              disabled={!exchange || !uniqueName || uniqueName === '无效的链接格式' || !traderType}
+              onClick={() => setIsConfigOpen(true)}
+            >
               创建跟单
             </Button>
           </CardFooter>
