@@ -1,445 +1,262 @@
 'use client'
 
-import {
-  BookMarkedIcon,
-  CircleOffIcon,
-  DollarSignIcon,
-  MailIcon,
-  MailOpenIcon,
-  MousePointerClickIcon,
-  BellRingIcon,
-  ShoppingCartIcon,
-  TicketCheckIcon,
-  TriangleAlertIcon
-} from 'lucide-react'
-
-import { Card } from '@/components/ui/card'
-import MonthlyCampaignCard from '@/components/shadcn-studio/blocks/dashboard/widget-monthly-campaign'
-import StatisticsCard, {
-  type StatisticsCardProps
-} from '@/components/shadcn-studio/blocks/dashboard/statistics-card-03'
-import StatisticsCardWithSvg from '@/components/shadcn-studio/blocks/dashboard/statistics-card-04'
-import TotalEarningCard from '@/components/shadcn-studio/blocks/dashboard/chart-total-earning'
-import TotalIncomeCard from '@/components/shadcn-studio/blocks/dashboard/chart-total-income'
-import ForBusinessSharkCard from '@/components/shadcn-studio/blocks/dashboard/widget-for-business-shark'
-import VehiclesConditionCard from '@/components/shadcn-studio/blocks/dashboard/widget-vehicles-condition'
-import UserDatatable, { type Item } from '@/components/shadcn-studio/blocks/dashboard/datatable-user'
-
-import CustomersCardSvg from '@/assets/svg/customers-card-svg'
-
-// Statistics card data
-const StatisticsCardData: StatisticsCardProps[] = [
-  {
-    icon: <TicketCheckIcon />,
-    title: 'Total Sales',
-    value: '$13.4k',
-    trend: 'up',
-    changePercentage: '+38%',
-    badgeContent: 'Last 6 months',
-    iconClassName: 'bg-chart-1/10 text-chart-1'
-  },
-  {
-    icon: <ShoppingCartIcon />,
-    title: 'Total Orders',
-    value: '155K',
-    trend: 'up',
-    changePercentage: '+22%',
-    badgeContent: 'Last 4 months',
-    iconClassName: 'bg-chart-2/10 text-chart-2'
-  },
-  {
-    icon: <DollarSignIcon />,
-    title: 'Total Profit',
-    value: '$89.34k',
-    trend: 'down',
-    changePercentage: '-16%',
-    badgeContent: 'Last One year',
-    iconClassName: 'bg-chart-3/10 text-chart-3'
-  },
-  {
-    icon: <BookMarkedIcon />,
-    title: 'Bookmarks',
-    value: '$1,200',
-    trend: 'up',
-    changePercentage: '+38%',
-    badgeContent: 'Last 6 months',
-    iconClassName: 'bg-chart-4/10 text-chart-4'
-  }
-]
-
-// Campaigns data
-const campaignData = [
-  {
-    icon: MailIcon,
-    title: 'Emails',
-    value: '14,250',
-    percentage: '0.3%',
-    avatarClassName: 'bg-chart-1/10 text-chart-1'
-  },
-  {
-    icon: MailOpenIcon,
-    title: 'Opened',
-    value: '4,523',
-    percentage: '3.1%',
-    avatarClassName: 'bg-chart-2/10 text-chart-2'
-  },
-  {
-    icon: MousePointerClickIcon,
-    title: 'Clicked',
-    value: '1,250',
-    percentage: '1.3%',
-    avatarClassName: 'bg-chart-4/10 text-chart-4'
-  },
-  {
-    icon: BellRingIcon,
-    title: 'Subscribed',
-    value: '750',
-    percentage: '9.8%',
-    avatarClassName: 'bg-chart-3/10 text-chart-3'
-  },
-  {
-    icon: TriangleAlertIcon,
-    title: 'Errors',
-    value: '20',
-    percentage: '1.5%',
-    avatarClassName: 'bg-chart-5/10 text-chart-5'
-  },
-  {
-    icon: CircleOffIcon,
-    title: 'Unsubscribed',
-    value: '86',
-    percentage: '0.6%'
-  }
-]
-
-// Vehicle condition data
-const vehicleConditionData = [
-  {
-    condition: 'Excellent',
-    details: '12% increase',
-    progressValue: 55,
-    changePercentage: '+25%',
-    progressClassName: 'stroke-chart-1'
-  },
-  {
-    condition: 'Good',
-    details: '24 vehicles',
-    progressValue: 20,
-    changePercentage: '+30%',
-    progressClassName: 'stroke-chart-2'
-  },
-  {
-    condition: 'Average',
-    details: '182 Tasks',
-    progressValue: 12,
-    changePercentage: '-15%',
-    progressClassName: 'stroke-chart-3'
-  },
-  {
-    condition: 'Bad',
-    details: '9 vehicles',
-    progressValue: 7,
-    changePercentage: '+35%',
-    progressClassName: 'stroke-chart-4'
-  },
-  {
-    condition: 'Not Working',
-    details: '3 vehicles',
-    progressValue: 4,
-    changePercentage: '-2%',
-    progressClassName: 'stroke-chart-5'
-  },
-  {
-    condition: 'Scraped',
-    details: '2 vehicles',
-    progressValue: 2,
-    changePercentage: '+1%'
-  }
-]
-
-// User data for datatable
-const userData: Item[] = [
-  {
-    id: '1',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png',
-    fallback: 'JA',
-    user: 'Jack Alfredo',
-    email: 'jack.alfredo@shadcnstudio.com',
-    role: 'maintainer',
-    plan: 'enterprise',
-    billing: 'auto-debit',
-    status: 'active'
-  },
-  {
-    id: '2',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-2.png',
-    fallback: 'SM',
-    user: 'Sarah Mitchell',
-    email: 'sarah.mitchell@company.com',
-    role: 'admin',
-    plan: 'enterprise',
-    billing: 'auto-debit',
-    status: 'active'
-  },
-  {
-    id: '3',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-3.png',
-    fallback: 'RC',
-    user: 'Robert Chen',
-    email: 'robert.chen@startup.io',
-    role: 'editor',
-    plan: 'team',
-    billing: 'manual-paypal',
-    status: 'pending'
-  },
-  {
-    id: '4',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-4.png',
-    fallback: 'EW',
-    user: 'Emily Wilson',
-    email: 'emily.wilson@freelance.com',
-    role: 'author',
-    plan: 'basic',
-    billing: 'manual-cash',
-    status: 'inactive'
-  },
-  {
-    id: '5',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png',
-    fallback: 'DG',
-    user: 'David Garcia',
-    email: 'david.garcia@agency.net',
-    role: 'subscriber',
-    plan: 'company',
-    billing: 'auto-debit',
-    status: 'active'
-  },
-  {
-    id: '6',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-6.png',
-    fallback: 'LT',
-    user: 'Lisa Thompson',
-    email: 'lisa.thompson@design.co',
-    role: 'editor',
-    plan: 'team',
-    billing: 'manual-paypal',
-    status: 'active'
-  },
-  {
-    id: '7',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-7.png',
-    fallback: 'MA',
-    user: 'Michael Anderson',
-    email: 'michael.anderson@tech.com',
-    role: 'maintainer',
-    plan: 'enterprise',
-    billing: 'auto-debit',
-    status: 'pending'
-  },
-  {
-    id: '8',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-8.png',
-    fallback: 'JR',
-    user: 'Jessica Rodriguez',
-    email: 'jessica.rodriguez@startup.com',
-    role: 'author',
-    plan: 'basic',
-    billing: 'manual-cash',
-    status: 'active'
-  },
-  {
-    id: '9',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-9.png',
-    fallback: 'CB',
-    user: 'Christopher Brown',
-    email: 'chris.brown@corporate.org',
-    role: 'admin',
-    plan: 'company',
-    billing: 'auto-debit',
-    status: 'inactive'
-  },
-  {
-    id: '10',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-10.png',
-    fallback: 'AD',
-    user: 'Amanda Davis',
-    email: 'amanda.davis@marketing.io',
-    role: 'subscriber',
-    plan: 'basic',
-    billing: 'manual-paypal',
-    status: 'active'
-  },
-  {
-    id: '11',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-11.png',
-    fallback: 'JJ',
-    user: 'James Johnson',
-    email: 'james.johnson@development.com',
-    role: 'maintainer',
-    plan: 'team',
-    billing: 'auto-debit',
-    status: 'pending'
-  },
-  {
-    id: '12',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-12.png',
-    fallback: 'MW',
-    user: 'Maria Williams',
-    email: 'maria.williams@creative.net',
-    role: 'editor',
-    plan: 'company',
-    billing: 'manual-cash',
-    status: 'active'
-  },
-  {
-    id: '13',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-13.png',
-    fallback: 'RT',
-    user: 'Ryan Taylor',
-    email: 'ryan.taylor@studio.com',
-    role: 'author',
-    plan: 'enterprise',
-    billing: 'auto-debit',
-    status: 'inactive'
-  },
-  {
-    id: '14',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-14.png',
-    fallback: 'NK',
-    user: 'Nicole Kim',
-    email: 'nicole.kim@digital.agency',
-    role: 'subscriber',
-    plan: 'team',
-    billing: 'manual-paypal',
-    status: 'active'
-  },
-  {
-    id: '15',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-15.png',
-    fallback: 'AL',
-    user: 'Andrew Lee',
-    email: 'andrew.lee@consulting.biz',
-    role: 'admin',
-    plan: 'enterprise',
-    billing: 'auto-debit',
-    status: 'pending'
-  },
-  {
-    id: '16',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-16.png',
-    fallback: 'SM',
-    user: 'Stephanie Martinez',
-    email: 'stephanie.martinez@media.com',
-    role: 'editor',
-    plan: 'basic',
-    billing: 'manual-cash',
-    status: 'active'
-  },
-  {
-    id: '17',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-17.png',
-    fallback: 'KW',
-    user: 'Kevin White',
-    email: 'kevin.white@innovation.co',
-    role: 'maintainer',
-    plan: 'company',
-    billing: 'auto-debit',
-    status: 'inactive'
-  },
-  {
-    id: '18',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-18.png',
-    fallback: 'RH',
-    user: 'Rachel Harris',
-    email: 'rachel.harris@solutions.org',
-    role: 'author',
-    plan: 'team',
-    billing: 'manual-paypal',
-    status: 'active'
-  },
-  {
-    id: '19',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-19.png',
-    fallback: 'BT',
-    user: 'Brian Turner',
-    email: 'brian.turner@platform.io',
-    role: 'subscriber',
-    plan: 'enterprise',
-    billing: 'auto-debit',
-    status: 'pending'
-  },
-  {
-    id: '20',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-20.png',
-    fallback: 'CM',
-    user: 'Catherine Moore',
-    email: 'catherine.moore@ventures.com',
-    role: 'admin',
-    plan: 'basic',
-    billing: 'manual-cash',
-    status: 'active'
-  },
-  {
-    id: '21',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-21.png',
-    fallback: 'TN',
-    user: 'Thomas Nelson',
-    email: 'thomas.nelson@design.studio',
-    role: 'editor',
-    plan: 'enterprise',
-    billing: 'auto-debit',
-    status: 'active'
-  },
-  {
-    id: '22',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-22.png',
-    fallback: 'SP',
-    user: 'Sophie Parker',
-    email: 'sophie.parker@freelance.pro',
-    role: 'author',
-    plan: 'team',
-    billing: 'manual-paypal',
-    status: 'inactive'
-  },
-  {
-    id: '23',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-23.png',
-    fallback: 'AR',
-    user: 'Alexander Reed',
-    email: 'alex.reed@innovation.labs',
-    role: 'maintainer',
-    plan: 'company',
-    billing: 'manual-cash',
-    status: 'pending'
-  },
-  {
-    id: '24',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-24.png',
-    fallback: 'MG',
-    user: 'Maya Gonzalez',
-    email: 'maya.gonzalez@creative.agency',
-    role: 'subscriber',
-    plan: 'basic',
-    billing: 'auto-debit',
-    status: 'active'
-  },
-  {
-    id: '25',
-    avatar: 'https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-25.png',
-    fallback: 'JS',
-    user: 'Jordan Smith',
-    email: 'jordan.smith@tech.solutions',
-    role: 'admin',
-    plan: 'enterprise',
-    billing: 'manual-paypal',
-    status: 'pending'
-  }
-]
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 const DashboardPage = () => {
   return (
-    <div className="flex h-full items-center justify-center">
-      <h1 className="text-2xl font-semibold">dashboard</h1>
+    <div className='grid h-full grid-cols-1 gap-4 p-4 lg:grid-cols-2'>
+      {/* 左侧区域 (50%) */}
+      <div className='flex flex-col gap-4 lg:col-span-1'>
+        {/* 公告栏 Card */}
+        <Card className='gap-3 py-4 shadow-none'>
+          <CardHeader className='px-4 pb-0'>
+            <CardTitle className='text-sm'>公告栏</CardTitle>
+          </CardHeader>
+          <CardContent className='px-4'>
+            <p className='text-muted-foreground text-xs leading-relaxed'>
+              这里是大段文字的公告内容。这里是大段文字的公告内容。这里是大段文字的公告内容。
+              这里是大段文字的公告内容。这里是大段文字的公告内容。这里是大段文字的公告内容。
+              这里是大段文字的公告内容。这里是大段文字的公告内容。这里是大段文字的公告内容。
+            </p>
+          </CardContent>
+        </Card>
+
+        {/* 注册交易所返佣 Card */}
+        <Card className='gap-3 py-4 shadow-none'>
+          <CardHeader className='px-4 pb-0'>
+            <CardTitle className='flex items-center justify-between text-sm'>合作交易所</CardTitle>
+            <CardDescription className='text-xs'>
+              点击注册享受 <span className='text-primary font-medium'>20%</span> 手续费返佣，年费 VIP PRO 可享高达{' '}
+              <span className='text-primary font-medium'>40%</span> 返佣
+            </CardDescription>
+          </CardHeader>
+          <CardContent className='px-4 pt-4'>
+            <div className='border-border z-20 grid w-full grid-cols-4 items-center justify-center overflow-hidden'>
+              {/* Binance */}
+              <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <a
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='absolute inset-0 z-20'
+                  href='https://www.binance.com/join?ref=COPYAPES'
+                >
+                  <span className='sr-only'>Binance</span>
+                </a>
+                <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                <div className='absolute inset-0 overflow-hidden'>
+                  <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
+                </div>
+                <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <img
+                    alt='BINANCE'
+                    loading='lazy'
+                    width='100'
+                    height='28'
+                    className='h-6 w-auto object-contain transition-all duration-300'
+                    src='/exchanges/binance/logo.svg'
+                  />
+                </div>
+              </div>
+
+              {/* Bitget */}
+              <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <a
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='absolute inset-0 z-20'
+                  href='https://partner.hdmune.cn/bg/japhe6xs'
+                >
+                  <span className='sr-only'>Bitget</span>
+                </a>
+                <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                <div className='absolute inset-0 overflow-hidden'>
+                  <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
+                </div>
+                <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <img
+                    alt='BITGET'
+                    loading='lazy'
+                    width='100'
+                    height='28'
+                    className='h-6 w-auto object-contain transition-all duration-300'
+                    src='/exchanges/bitget/logo.png'
+                  />
+                </div>
+              </div>
+
+              {/* OKX */}
+              <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <a
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='absolute inset-0 z-20'
+                  href='https://www.okx.com/join/COPY02'
+                >
+                  <span className='sr-only'>OKX</span>
+                </a>
+                <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                <div className='absolute inset-0 overflow-hidden'>
+                  <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
+                </div>
+                <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <img
+                    alt='OKX'
+                    loading='lazy'
+                    width='100'
+                    height='28'
+                    className='h-5 w-auto object-contain dark:hidden'
+                    src='/exchanges/okx/logo-light.svg'
+                  />
+                  <img
+                    alt='OKX'
+                    loading='lazy'
+                    width='100'
+                    height='28'
+                    className='hidden h-6 w-auto object-contain dark:block'
+                    src='/exchanges/okx/logo-dark.png'
+                  />
+                </div>
+              </div>
+
+              {/* Gate */}
+              <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <a
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className='absolute inset-0 z-20'
+                  href='https://www.gate.io/share/COPYAPES'
+                >
+                  <span className='sr-only'>Gate</span>
+                </a>
+                <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                <div className='absolute inset-0 overflow-hidden'>
+                  <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
+                </div>
+                <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <img
+                    alt='GATE'
+                    loading='lazy'
+                    width='100'
+                    height='28'
+                    className='h-6 w-auto object-contain dark:hidden'
+                    src='/exchanges/gate/logo.png'
+                  />
+                  <img
+                    alt='GATE'
+                    loading='lazy'
+                    width='100'
+                    height='28'
+                    className='hidden h-8 w-auto object-contain dark:block'
+                    src='/exchanges/gate/logo-dark.png'
+                  />
+                </div>
+              </div>
+            </div>
+            {/*<div className='border-border z-20 grid w-full grid-cols-4 items-center justify-center overflow-hidden'>*/}
+            {/*  /!* Weex *!/*/}
+            {/*  <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>*/}
+            {/*    <a*/}
+            {/*      target='_blank'*/}
+            {/*      rel='noopener noreferrer'*/}
+            {/*      className='absolute inset-0 z-20'*/}
+            {/*      href='https://www.binance.com/join?ref=COPYAPES'*/}
+            {/*    >*/}
+            {/*      <span className='sr-only'>Binance</span>*/}
+            {/*    </a>*/}
+            {/*    <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>*/}
+            {/*    <div className='absolute inset-0 overflow-hidden'>*/}
+            {/*      <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>*/}
+            {/*    </div>*/}
+            {/*    <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>*/}
+            {/*      <img*/}
+            {/*        alt='BINANCE'*/}
+            {/*        loading='lazy'*/}
+            {/*        width='100'*/}
+            {/*        height='28'*/}
+            {/*        className='h-6 w-auto object-contain transition-all duration-300'*/}
+            {/*        src='/exchanges/binance/logo.svg'*/}
+            {/*      />*/}
+            {/*    </div>*/}
+            {/*  </div>*/}
+            {/*</div>*/}
+          </CardContent>
+        </Card>
+
+        {/* 兑换码核销 Card */}
+        <Card className='gap-3 py-4 shadow-none'>
+          <CardHeader className='px-4 pb-0'>
+            <CardTitle className='text-sm'>兑换码核销</CardTitle>
+            <CardDescription className='text-xs'>请输入您的兑换码进行核销</CardDescription>
+          </CardHeader>
+          <CardContent className='flex gap-3 px-4'>
+            <Input placeholder='请输入兑换码' className='h-8 flex-1 text-xs' />
+            <Button size='sm' className='h-8 text-xs'>
+              核销确认
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* 免责声明 Card */}
+        <Card className='gap-3 py-4 shadow-none'>
+          <CardHeader className='px-4 pb-0'>
+            <CardTitle className='text-sm'>免责申明</CardTitle>
+          </CardHeader>
+          <CardContent className='px-4'>
+            <p className='text-muted-foreground text-xs leading-relaxed'>
+              跟单猿（以下称为&quot;本软件&quot;）为第三方辅助工具，不能完全替代手动交易和人工盯盘。本软件不是交易所，不做任何数字货币承兑，不触碰任何用户的资产，无法对用户的账户进行转账操作。使用本软件，需要提供交易所
+              API，使用跟单功能，默认授权本软件可以通过 API
+              对您的交易所账户进行合约交易，采用的交易参数为您设置的任务参数。本软件会尽力保证服务的正常使用，因外部不可抗力因素，如网络攻击、交易所接口发生变更等，导致本软件无法提供正常服务，或因用户的交易参数设置导致无法进行交易，本软件不承担任何责任。使用本软件提供的跟单服务，默认知晓以上信息。
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 右侧区域 (50%) */}
+      <div className='flex flex-col gap-4 lg:col-span-1'>
+        {/* 赞助商广告 */}
+        <Card className='gap-3 py-4 shadow-none'>
+          <CardHeader className='px-4 pb-0'>
+            <CardTitle className='text-sm'>赞助商广告</CardTitle>
+          </CardHeader>
+          <CardContent className='grid grid-cols-3 gap-2 px-4'>
+            {[1, 2, 3].map(i => (
+              <div
+                key={i}
+                className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed'
+              >
+                <span className='text-muted-foreground text-center text-xs leading-tight'>
+                  Logo
+                  <br />
+                  {i}
+                </span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* 其他产品 */}
+        <Card className='gap-3 py-4 shadow-none'>
+          <CardHeader className='px-4 pb-0'>
+            <CardTitle className='text-sm'>其他产品</CardTitle>
+          </CardHeader>
+          <CardContent className='grid grid-cols-3 gap-2 px-4'>
+            {[1, 2, 3].map(i => (
+              <div
+                key={i}
+                className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed'
+              >
+                <span className='text-muted-foreground text-center text-xs leading-tight'>
+                  产品
+                  <br />
+                  {i}
+                </span>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
