@@ -53,7 +53,7 @@ export default function ExchangeTaskPage() {
 
   return (
     <div className='flex h-full items-start justify-center overflow-y-auto p-4 lg:p-8'>
-      <div className='mt-10 w-full max-w-2xl'>
+      <div className='w-full max-w-2xl'>
         <Card>
           <CardHeader>
             <CardTitle>创建交易所跟单任务</CardTitle>
