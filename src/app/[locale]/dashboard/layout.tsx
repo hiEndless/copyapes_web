@@ -46,7 +46,8 @@ import {
   ShieldUser,
   Unplug,
   MessageCircleWarning,
-  Bug
+  Bug,
+  ListChecks
 } from 'lucide-react'
 
 import NextTopLoader from 'nextjs-toploader'
@@ -179,6 +180,11 @@ const toolsItems: MenuItem[] = [
     label: '跟单抢位',
     href: '/dashboard/grab',
     badge: '4天必中'
+  },
+  {
+    icon: ListChecks,
+    label: '持仓管理',
+    href: '/dashboard/positions',
   }
 ]
 
