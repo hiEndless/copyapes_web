@@ -303,7 +303,7 @@ export function CopyTaskConfigSheet({
 
                 {formData.follow_type === '2' && (
                   <div className='space-y-2'>
-                    <label className='mb-2 block text-sm font-medium text-red-500'>* 投资额 (USDT)</label>
+                    <label className='mb-2 block text-sm font-medium'>投资额 (USDT)</label>
                     <Input
                       value={formData.investment}
                       onChange={e => updateForm('investment', e.target.value)}
