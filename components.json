@@ -10,7 +10,6 @@
     "cssVariables": true,
     "prefix": ""
   },
-  "iconLibrary": "lucide",
   "aliases": {
     "components": "@/components",
     "utils": "@/lib/utils",
@@ -19,6 +18,7 @@
     "hooks": "@/hooks"
   },
   "registries": {
-    "@ss-themes": "https://shadcnstudio.com/r/themes/{name}.json"
-  }
+    "@ss-components": "https://shadcnstudio.com/r/components/{name}.json"
+  },
+  "iconLibrary": "lucide"
 }

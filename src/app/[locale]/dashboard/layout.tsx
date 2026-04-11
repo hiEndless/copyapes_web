@@ -302,7 +302,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
           </SidebarContent>
         </Sidebar>
         <div className='flex flex-1 flex-col'>
-          <header className='before:bg-background/60 sticky top-0 z-50 before:absolute before:inset-0 before:mask-[linear-gradient(var(--card),var(--card)_18%,transparent_100%)] before:backdrop-blur-md'>
+          <header className='before:bg-background/60 before:mask-[linear-gradient(var(--card),var(--card)_18%,transparent_100%)] sticky top-0 z-50 before:absolute before:inset-0 before:backdrop-blur-md'>
             <div className='bg-card relative z-51 mx-auto mt-3 flex w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] items-center justify-between rounded-xl border px-6 py-2 sm:w-[calc(100%-3rem)]'>
               <div className='flex items-center gap-1.5 sm:gap-4'>
                 <SidebarTrigger className='[&_svg]:!size-5' />
