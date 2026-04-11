@@ -2,12 +2,15 @@
 
 import { useState, useEffect } from 'react'
 
+import { CircleHelp } from 'lucide-react'
+
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 // --- Utility Component for Tags ---
 function TagInput({
@@ -111,7 +114,7 @@ export function CopyTaskConfigSheet({
   // Form State
   const [formData, setFormData] = useState({
     api_id: '',
-    follow_type: '2', // 智能跟单
+    follow_type: '2', // 固定比例
     benchMark: '',
     investment: '',
     lever_set: platform !== 'hot' ? 1 : 2,
@@ -252,7 +255,22 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('follow_type', '2')
                       }}
                     />
-                    <span className='text-sm'>智能跟单</span>
+                    <div className='flex items-center gap-1'>
+                      <span className='text-sm'>固定比例</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CircleHelp className='text-muted-foreground h-4 w-4' />
+                          </TooltipTrigger>
+                          <TooltipContent className='max-w-[240px]'>
+                            <p>
+                              跟单比例 = 跟单投资额 / 对标交易员本金 ×
+                              倍数。跟单投资额只用于计算交易比例，不代表实际使用资金上限。
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </label>
                 </div>
               </div>
@@ -261,7 +279,23 @@ export function CopyTaskConfigSheet({
               {formData.follow_type === '2' && (
                 <div className='bg-muted/20 rounded-md border p-3'>
                   <div className='flex items-center justify-between'>
-                    <div className='text-sm font-medium'>倍投模式 (可选)</div>
+                    <div className='flex items-center gap-1'>
+                      <div className='text-sm font-medium'>倍投模式 (可选)</div>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CircleHelp className='text-muted-foreground h-4 w-4' />
+                          </TooltipTrigger>
+                          <TooltipContent className='max-w-[240px]'>
+                            <p>
+                              在基础的跟单比例上，额外再乘以此倍数。例如：如果原本按比例应开仓 10 USDT，设置倍投为 2
+                              后，实际开仓将变为 20
+                              USDT。只适用于经常小金额高杠杆交易的交易员，避免因为交易员开仓量过低，导致无法跟单。
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                     <Switch
                       checked={toggles.multiple_visible}
                       onCheckedChange={(val: boolean) => updateToggle('multiple_visible', val)}
@@ -335,7 +369,21 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('lever_set', 2)
                       }}
                     />
-                    <span className='text-sm'>自定义杠杆</span>
+                    <div className='flex items-center gap-1'>
+                      <span className='text-sm'>自定义杠杆</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CircleHelp className='text-muted-foreground h-4 w-4' />
+                          </TooltipTrigger>
+                          <TooltipContent className='max-w-[240px]'>
+                            <p>
+                              交易所对新账号有风控保护，有时候无法跟随交易员开同样的高杠杆。调整杠杆不会影响实际的交易量，只会影响保证金占用。固定使用您自己设置的杠杆倍数进行跟单，不跟随交易员的杠杆变化。
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </label>
                 </div>
               </div>
@@ -374,7 +422,21 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('first_open_type', 2)
                       }}
                     />
-                    <span className='text-sm'>区间委托</span>
+                    <div className='flex items-center gap-1'>
+                      <span className='text-sm'>区间委托</span>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <CircleHelp className='text-muted-foreground h-4 w-4' />
+                          </TooltipTrigger>
+                          <TooltipContent className='max-w-[240px]'>
+                            <p>
+                              当交易员收益率在设定区间内时才会开仓，避免在高位或低位盲目追单，有效控制首单滑点和建仓风险。不论交易员在此之前补仓多少次，当条件达成时会一次性一起按比例复制总仓位。区间限价开仓只在交易员新开仓时生效，加仓时不生效。
+                            </p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </label>
                 </div>
               </div>
