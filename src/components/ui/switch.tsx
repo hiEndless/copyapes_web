@@ -32,7 +32,7 @@ function Switch({
       defaultChecked={defaultChecked}
       onCheckedChange={handleCheckedChange}
       className={cn(
-        'peer data-[state=unchecked]:bg-input data-[state=checked]:bg-primary dark:data-[state=unchecked]:bg-input/80 focus-visible:border-ring focus-visible:ring-ring/50 inline-flex shrink-0 items-center rounded-full border border-transparent shadow-xs transition-colors outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
+        'peer data-[state=unchecked]:bg-input data-[state=checked]:bg-primary dark:data-[state=unchecked]:bg-input/80 focus-visible:border-ring focus-visible:ring-ring/50 inline-flex shrink-0 items-center overflow-hidden rounded-full border border-transparent shadow-xs transition-colors outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
         className
       )}
       style={{
@@ -47,7 +47,7 @@ function Switch({
     >
       <SwitchPrimitive.Thumb
         data-slot='switch-thumb'
-        className='bg-background dark:data-[state=checked]:bg-primary-foreground pointer-events-none block h-5 w-5 rounded-full ring-0 shadow-sm transition-transform data-[state=checked]:translate-x-[22px] data-[state=unchecked]:translate-x-[2px]'
+        className='bg-background dark:data-[state=checked]:bg-primary-foreground pointer-events-none block h-5 w-5 rounded-full shadow-sm ring-0'
         style={{
           transform: `translateX(${isChecked ? 22 : 2}px)`,
           transition: 'transform 150ms ease'

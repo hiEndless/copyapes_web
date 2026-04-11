@@ -195,7 +195,7 @@ export function CopyTaskConfigSheet({
       <SheetContent side='right' className='flex flex-col p-0 sm:max-w-lg'>
         <SheetHeader className='px-6 pt-6 pb-2'>
           <SheetTitle>
-            跟单配置 - <span className='text-red-500'>{traderName || traderId}</span>
+            跟单配置 - <span>{traderName || traderId}</span>
           </SheetTitle>
           <SheetDescription>配置详细的跟单参数</SheetDescription>
         </SheetHeader>
@@ -214,7 +214,7 @@ export function CopyTaskConfigSheet({
             <TabsContent value='basic' className='mt-0 space-y-6'>
               {/* 选择跟单 API */}
               <div>
-                <div className='mb-2 text-sm font-medium text-red-500'>选择你的跟单API</div>
+                <div className='mb-2 text-sm font-medium'>选择你的跟单 API</div>
                 <div className='flex flex-wrap gap-2'>
                   {apiOptions.map(api => {
                     const active = formData.api_id === api.id
@@ -243,7 +243,7 @@ export function CopyTaskConfigSheet({
 
               {/* 跟单模式 */}
               <div className='space-y-2'>
-                <label className='text-sm font-medium'>跟单模式</label>
+                <label className='mb-2 block text-sm font-medium'>跟单模式</label>
                 <div className='flex items-center gap-4'>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
@@ -269,7 +269,7 @@ export function CopyTaskConfigSheet({
                   </div>
                   {toggles.multiple_visible && (
                     <div className='animate-in fade-in mt-4 space-y-2'>
-                      <label className='text-sm font-medium'>加倍倍数 (默认为1)</label>
+                      <label className='mb-2 block text-sm font-medium'>加倍倍数 (默认为1)</label>
                       <Input
                         type='number'
                         min='1'
@@ -288,7 +288,7 @@ export function CopyTaskConfigSheet({
               {/* 本金与投资额 */}
               <div className='space-y-4'>
                 <div className='space-y-2'>
-                  <label className='text-sm font-medium'>交易员本金对标 (USDT)</label>
+                  <label className='mb-2 block text-sm font-medium'>交易员本金对标 (USDT)</label>
                   <div className='flex gap-2'>
                     <Input
                       value={formData.benchMark}
@@ -303,7 +303,7 @@ export function CopyTaskConfigSheet({
 
                 {formData.follow_type === '2' && (
                   <div className='space-y-2'>
-                    <label className='text-sm font-medium text-red-500'>* 投资额 (USDT)</label>
+                    <label className='mb-2 block text-sm font-medium text-red-500'>* 投资额 (USDT)</label>
                     <Input
                       value={formData.investment}
                       onChange={e => updateForm('investment', e.target.value)}
@@ -315,7 +315,7 @@ export function CopyTaskConfigSheet({
 
               {/* 杠杆模式 */}
               <div className='space-y-2'>
-                <label className='text-sm font-medium'>杠杆模式</label>
+                <label className='mb-2 block text-sm font-medium'>杠杆模式</label>
                 <div className='flex items-center gap-4'>
                   {platform !== 'hot' && (
                     <label className='flex cursor-pointer items-center gap-2'>
@@ -356,7 +356,7 @@ export function CopyTaskConfigSheet({
 
               {/* 开仓模式 */}
               <div className='space-y-2'>
-                <label className='text-sm font-medium'>开仓模式</label>
+                <label className='mb-2 block text-sm font-medium'>开仓模式</label>
                 <div className='flex items-center gap-4'>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
@@ -381,7 +381,7 @@ export function CopyTaskConfigSheet({
 
               {formData.first_open_type === 2 && (
                 <div className='animate-in fade-in space-y-2'>
-                  <label className='text-sm font-medium'>交易员收益区间 (%)</label>
+                  <label className='mb-2 block text-sm font-medium'>交易员收益区间 (%)</label>
                   <Input
                     value={formData.uplRatio}
                     onChange={e => updateForm('uplRatio', e.target.value)}
@@ -393,7 +393,7 @@ export function CopyTaskConfigSheet({
 
               {/* 首单交易设置 */}
               <div className='space-y-2'>
-                <label className='text-sm font-medium'>首单交易设置</label>
+                <label className='mb-2 block text-sm font-medium'>首单交易设置</label>
                 <div className='flex flex-col gap-2'>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
