@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { Search, Loader2 } from 'lucide-react'
+import { Info, Search, Loader2 } from 'lucide-react'
 
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { MotionPreset } from '@/components/ui/motion-preset'
@@ -176,6 +176,20 @@ export default function BicoinTaskPage() {
               <CardDescription>关联您的币Coin账号并选择目标交易员</CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
+              {/* 延迟提示信息 */}
+              <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
+                <Info className='mt-0.5 h-4 w-4 shrink-0' />
+                <div className='flex flex-col gap-1'>
+                  <p className='font-semibold'>币Coin平台限制提示：</p>
+                  <p className='mb-2 text-xs text-blue-700/80 dark:text-blue-300/80'>
+                    此延迟由第三方数据平台和获取策略限制所导致，非跟单工具所导致！
+                  </p>
+                  <p className='text-xs'>
+                    币coin的数据有缓存，所以不能做到绝对的秒级延迟。操作记录的跟单速度略快于合约仓位跟单，合约仓位的跟单稳定性高于操作记录跟单。如果交易员的操作记录中有现货交易，或者为买卖模式，则无法跟单，可联系客服处理。
+                  </p>
+                </div>
+              </div>
+
               {/* 1. 账号关联 */}
               <div className='space-y-3'>
                 <Label className='flex items-center gap-1'>
