@@ -70,9 +70,10 @@ export default function ExchangeTaskPage() {
                 </p>
               </div>
               <div className='flex items-center justify-center pb-6 sm:my-auto sm:min-w-56 sm:pb-0'>
-                <div className='flex gap-3 sm:gap-4'>
-                  {/* 第一列 */}
-                  <div className='flex flex-col gap-3 sm:gap-4'>
+                {/* Logo 云布局：移动端一行四列，大屏两行两列错位 */}
+                <div className='flex flex-row gap-3 sm:flex-row sm:gap-4'>
+                  {/* 第一组：在移动端是前两个，大屏是第一列 */}
+                  <div className='flex flex-row gap-3 sm:flex-col sm:gap-4'>
                     <motion.div
                       className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-blue-600 shadow-lg backdrop-blur-sm sm:h-14 sm:w-14'
                       animate={{ scale: [1, 1.08, 1], y: [0, -5, 0] }}
@@ -81,7 +82,7 @@ export default function ExchangeTaskPage() {
                       <img
                         src='/exchanges/binance.png'
                         alt='binance'
-                        className='h-full w-full object-contain transition-all duration-300 hover:scale-110 sm:h-10 sm:w-10'
+                        className='object-over h-full w-full transition-all duration-300 hover:scale-110 sm:h-10 sm:w-10'
                       />
                     </motion.div>
                     <motion.div
@@ -96,8 +97,8 @@ export default function ExchangeTaskPage() {
                       />
                     </motion.div>
                   </div>
-                  {/* 第二列，错位排布 */}
-                  <div className='mt-6 flex flex-col gap-3 sm:mt-8 sm:gap-4'>
+                  {/* 第二组：在移动端是后两个，大屏是第二列（错位排布） */}
+                  <div className='flex flex-row gap-3 sm:mt-8 sm:flex-col sm:gap-4'>
                     <motion.div
                       className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white shadow-lg backdrop-blur-sm sm:h-14 sm:w-14'
                       animate={{ scale: [1, 1.08, 1], y: [0, 5, 0] }}
