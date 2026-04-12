@@ -153,7 +153,10 @@ export default function ExchangeTaskPage() {
 
             {/* 2. 提交交易员主页地址 */}
             <div className='space-y-2'>
-              <Label>交易员主页链接</Label>
+              <Label className='flex items-center gap-1'>
+                <span className='text-destructive'>*</span>
+                交易员主页链接
+              </Label>
               <div className='flex gap-2'>
                 <Input
                   placeholder='请输入交易员主页链接 (例如 https://...)'
@@ -173,7 +176,10 @@ export default function ExchangeTaskPage() {
             {/* 解析出的 UniqueName */}
             {uniqueName && (
               <div className='space-y-2'>
-                <Label>交易员 （ UID 或 带单项目 ID）</Label>
+                <Label className='flex items-center gap-1'>
+                  <span className='text-destructive'>*</span>
+                  交易员 （ UID 或 带单项目 ID）
+                </Label>
                 <Input value={uniqueName} readOnly className='bg-muted' />
               </div>
             )}
@@ -181,7 +187,10 @@ export default function ExchangeTaskPage() {
             {/* 3. 选择交易员类型 */}
             {exchange && (
               <div className='space-y-2'>
-                <Label>交易员类型</Label>
+                <Label className='flex items-center gap-1'>
+                  <span className='text-destructive'>*</span>
+                  交易员类型
+                </Label>
                 <Select onValueChange={setTraderType} value={traderType}>
                   <SelectTrigger className='w-full'>
                     <SelectValue placeholder='请选择交易员类型' />

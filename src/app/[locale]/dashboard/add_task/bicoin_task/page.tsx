@@ -349,7 +349,7 @@ export default function BicoinTaskPage() {
                 <div className='space-y-3'>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
-                    跟单数据源 (交易员类型)
+                    跟单数据源
                   </Label>
                   <Select value={traderType} onValueChange={setTraderType}>
                     <SelectTrigger>
