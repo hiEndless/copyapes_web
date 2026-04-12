@@ -134,7 +134,7 @@ export default function BicoinTaskPage() {
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
                 <img src='/exchanges/bicoin/logo-bicoin.png' alt='bicoin logo' className='h-8 w-auto max-sm:mx-auto' />
                 <p className='mb-3 text-sm text-white/70'>
-                  只要可以看到交易员操作记录和交易持仓就可以进行跟单！注意平台可能会免费用户封号，但是你可以大量0成本注册账号。
+                  只要可以看到交易员操作记录和交易持仓就可以进行跟单！注意平台可能会对免费用户进行短时间封号，及时重新注册即可。
                 </p>
                 <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'>
                   {downloadPlatforms.map(platform => (
