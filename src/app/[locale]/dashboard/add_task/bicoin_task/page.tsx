@@ -132,9 +132,9 @@ export default function BicoinTaskPage() {
           >
             <CardContent className='flex gap-6 px-6 max-sm:flex-col max-sm:gap-2 max-sm:text-center sm:px-10'>
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
-                <img src='/exchanges/bicoin/logo-bicoin.png' alt='bicoin logo' className='h-8 w-auto max-sm:mx-auto' />
+                <img src='/exchanges/bicoin/logo-bicoin.png' alt='bicoin logo' className='h-6 w-auto max-sm:mx-auto' />
                 <p className='mb-3 text-sm text-white/70'>
-                  只要可以看到交易员操作记录和交易持仓就可以进行跟单！注意平台可能会对免费用户进行短时间封号，及时重新注册即可。
+                  只要可以看到交易员操作记录或交易持仓就可以进行跟单！注意平台可能会对免费用户进行短时间封号，及时重新注册即可。
                 </p>
                 <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'>
                   {downloadPlatforms.map(platform => (
