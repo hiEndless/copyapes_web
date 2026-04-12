@@ -130,8 +130,8 @@ export default function BicoinTaskPage() {
           <Card
             className={`overflow-hidden rounded-3xl border-none bg-blue-600 bg-[url('https://cdn.shadcnstudio.com/ss-assets/blocks/marketing/download/image-09.png')] bg-cover bg-center p-0 pt-6 shadow-lg sm:pt-8`}
           >
-            <CardContent className='flex gap-6 px-6 max-sm:flex-col max-sm:text-center sm:px-10'>
-              <div className='space-y-3 pb-6 sm:flex-1 sm:pb-8'>
+            <CardContent className='flex gap-6 px-6 max-sm:flex-col max-sm:gap-2 max-sm:text-center sm:px-10'>
+              <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
                 <img src='/exchanges/bicoin/logo-bicoin.png' alt='bicoin logo' className='h-8 w-auto max-sm:mx-auto' />
                 <p className='mb-3 text-sm text-white/70'>
                   只要可以看到交易员操作记录和交易持仓就可以进行跟单！注意平台可能会免费用户封号，但是你可以大量0成本注册账号。
@@ -162,8 +162,12 @@ export default function BicoinTaskPage() {
                   ))}
                 </div>
               </div>
-              <div className='mt-auto flex items-end justify-center sm:min-w-56'>
-                <img src='/exchanges/bicoin/phone-bicoin.png' alt='bicoin App Interface' className='w-48 sm:w-56' />
+              <div className='mt-auto flex items-end justify-center max-sm:h-40 max-sm:overflow-hidden sm:min-w-56'>
+                <img
+                  src='/exchanges/bicoin/phone-bicoin.png'
+                  alt='bicoin App Interface'
+                  className='w-64 max-sm:translate-y-10 sm:w-56'
+                />
               </div>
             </CardContent>
           </Card>
@@ -196,27 +200,33 @@ export default function BicoinTaskPage() {
                   <span className='text-destructive'>*</span>
                   关联币coin账号
                 </Label>
-                <div className='flex items-end gap-3'>
-                  <div className='flex-1 space-y-1'>
-                    <Label className='text-muted-foreground text-xs'>手机号</Label>
-                    <Input
-                      placeholder='请输入手机号'
-                      value={phone}
-                      onChange={e => setPhone(e.target.value)}
-                      disabled={isAccountSaved}
-                    />
+                <div className='flex flex-col items-end gap-3 sm:flex-row'>
+                  <div className='flex w-full flex-col gap-3 sm:flex-1 sm:flex-row'>
+                    <div className='flex-1 space-y-1'>
+                      <Label className='text-muted-foreground hidden text-xs sm:block'>手机号</Label>
+                      <Input
+                        placeholder='请输入手机号'
+                        value={phone}
+                        onChange={e => setPhone(e.target.value)}
+                        disabled={isAccountSaved}
+                      />
+                    </div>
+                    <div className='flex-1 space-y-1'>
+                      <Label className='text-muted-foreground hidden text-xs sm:block'>密码</Label>
+                      <Input
+                        type='password'
+                        placeholder='请输入密码'
+                        value={password}
+                        onChange={e => setPassword(e.target.value)}
+                        disabled={isAccountSaved}
+                      />
+                    </div>
                   </div>
-                  <div className='flex-1 space-y-1'>
-                    <Label className='text-muted-foreground text-xs'>密码</Label>
-                    <Input
-                      type='password'
-                      placeholder='请输入密码'
-                      value={password}
-                      onChange={e => setPassword(e.target.value)}
-                      disabled={isAccountSaved}
-                    />
-                  </div>
-                  <Button onClick={handleSaveAccount} variant={isAccountSaved ? 'secondary' : 'default'}>
+                  <Button
+                    onClick={handleSaveAccount}
+                    variant={isAccountSaved ? 'secondary' : 'default'}
+                    className='w-full sm:w-auto'
+                  >
                     {isAccountSaved ? '修改' : '确认保存'}
                   </Button>
                 </div>
@@ -263,7 +273,32 @@ export default function BicoinTaskPage() {
                           </Avatar>
                           <div className='flex flex-col gap-0.5 overflow-hidden'>
                             <h6 className='truncate text-[13px] font-medium sm:text-sm'>{trader.leaderName}</h6>
-                            <p className='text-muted-foreground truncate text-[11px]'>{trader.slogen || '暂无签名'}</p>
+                            <p className='text-muted-foreground hidden truncate text-[11px] sm:block'>
+                              {trader.slogen || '暂无签名'}
+                            </p>
+                            <div className='flex items-center gap-2 sm:hidden'>
+                              <p className='text-muted-foreground flex items-center text-[10px]'>
+                                {trader.exchImage && (
+                                  <img
+                                    src={trader.exchImage}
+                                    alt={trader.exchange}
+                                    className='mr-1 h-3 w-3 object-contain'
+                                  />
+                                )}
+                                {trader.exchange}
+                              </p>
+                              <Badge
+                                variant='secondary'
+                                className={cn(
+                                  'h-3.5 px-1 py-0 text-[9px] font-normal',
+                                  trader.status === 1
+                                    ? 'bg-blue-50 text-blue-600 hover:bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400'
+                                    : 'bg-muted text-muted-foreground hover:bg-muted'
+                                )}
+                              >
+                                {trader.statusStr}
+                              </Badge>
+                            </div>
                           </div>
                         </div>
 
