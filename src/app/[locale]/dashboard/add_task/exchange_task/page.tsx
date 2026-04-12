@@ -62,7 +62,7 @@ export default function ExchangeTaskPage() {
           >
             <CardContent className='flex gap-6 px-6 max-sm:flex-col max-sm:gap-2 max-sm:text-center sm:px-10'>
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
-                <h2 className='text-2xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-2xl md:text-2xl'>
+                <h2 className='text-xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-xl md:text-xl'>
                   交易所自选跟单
                 </h2>
                 <p className='mb-3 text-sm text-white/70'>
