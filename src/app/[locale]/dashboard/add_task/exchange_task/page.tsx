@@ -4,7 +4,7 @@ import * as React from 'react'
 
 import { Info } from 'lucide-react'
 import Image from 'next/image'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
