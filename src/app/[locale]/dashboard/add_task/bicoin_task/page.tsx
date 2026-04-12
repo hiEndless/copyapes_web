@@ -169,7 +169,7 @@ export default function BicoinTaskPage() {
           </Card>
         </MotionPreset>
 
-        <MotionPreset fade blur slide={{ direction: 'up' }} delay={0.8} transition={{ duration: 0.5 }}>
+        <MotionPreset fade blur slide={{ direction: 'down' }} delay={0.8} transition={{ duration: 0.5 }}>
           <Card>
             <CardHeader>
               <CardTitle>创建币Coin跟单任务</CardTitle>
