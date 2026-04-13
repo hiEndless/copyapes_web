@@ -10,6 +10,17 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
 
 export default function TaskDetailPage() {
   const router = useRouter()
@@ -75,6 +86,20 @@ export default function TaskDetailPage() {
   }
 
   const isRunning = task.status === 1
+
+  const handleTerminateTask = async () => {
+    // 模拟向后端发起终止命令的异步请求
+    try {
+      // 假设：await api.terminateTask(task.id)
+      console.log('发起终止跟单请求，任务 ID:', task.id)
+      alert('已发起终止跟单请求')
+
+      // TODO: 更新状态或者重新拉取数据
+    } catch (error) {
+      console.error('终止请求失败:', error)
+      alert('终止请求失败，请重试')
+    }
+  }
 
   // 构建需要展示的参数列表，过滤掉无效/0/空数组的值
   const parameterList = React.useMemo(() => {
@@ -184,9 +209,30 @@ export default function TaskDetailPage() {
                 <span className='ml-1 text-sm font-medium'>{isRunning ? 'Running' : 'Stop'}</span>
               </div>
               {isRunning && (
-                <Button variant='destructive' size='sm' className='h-7 bg-red-500 text-xs hover:bg-red-600'>
-                  终止跟单
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant='destructive' size='sm' className='h-7 bg-red-500 text-xs hover:bg-red-600'>
+                      终止跟单
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>确认终止跟单？</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        终止任务不会进行平仓，当前如有持仓，后续请自行平仓。
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>取消</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={handleTerminateTask}
+                        className='bg-red-500 text-white hover:bg-red-600'
+                      >
+                        确认终止
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
               )}
             </div>
           </div>
