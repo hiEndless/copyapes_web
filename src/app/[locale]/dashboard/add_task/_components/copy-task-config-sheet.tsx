@@ -99,6 +99,7 @@ export interface CopyTaskConfigSheetProps {
   traderName?: string
   platform: 'binance' | 'okx' | 'cookie' | 'exchange' | 'hyper' | 'hot' | string
   roleType?: string // 交易员实盘类型，由上一级页面传入
+  cookieId?: string
 }
 
 export function CopyTaskConfigSheet({
@@ -107,7 +108,8 @@ export function CopyTaskConfigSheet({
   traderId,
   traderName,
   platform,
-  roleType = '1'
+  roleType,
+  cookieId
 }: CopyTaskConfigSheetProps) {
   const [isLoading, setIsLoading] = useState(false)
 

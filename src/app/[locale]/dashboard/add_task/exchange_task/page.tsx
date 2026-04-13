@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { Info } from 'lucide-react'
+import { Info, UserCheck } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
 
@@ -62,7 +62,8 @@ export default function ExchangeTaskPage() {
           >
             <CardContent className='flex gap-6 px-6 max-sm:flex-col max-sm:gap-2 max-sm:text-center sm:px-10'>
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
-                <h2 className='text-xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-xl md:text-xl'>
+                <h2 className='flex items-center gap-2 text-xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-xl md:text-xl'>
+                  <UserCheck className='h-6 w-6' />
                   交易所自选跟单
                 </h2>
                 <p className='mb-3 text-sm text-white/70'>
