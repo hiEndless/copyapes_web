@@ -3,11 +3,13 @@
 import * as React from 'react'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { ArrowLeft, Activity } from 'lucide-react'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 export default function TaskDetailPage() {
   const router = useRouter()
@@ -131,7 +133,7 @@ export default function TaskDetailPage() {
   }, [task])
 
   return (
-    <div className='bg-muted/20 flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
+    <div className='bg-muted/20 dark:bg-background flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
       {/* 头部导航 */}
       <div className='flex items-center gap-4'>
         <Button variant='outline' size='icon' onClick={() => router.back()} className='h-8 w-8 rounded-full'>
@@ -142,13 +144,13 @@ export default function TaskDetailPage() {
 
       {/* 上半部分：任务参数（表格形式卡片） */}
       <Card className='overflow-hidden border shadow-sm'>
-        <div className='grid grid-cols-1 md:grid-cols-4 [&>div]:border-r [&>div]:border-b md:[&>div:nth-child(4n)]:border-r-0 md:[&>div:nth-last-child(-n+4)]:border-b-0'>
+        <div className='bg-border grid grid-cols-1 gap-[1px] md:grid-cols-4'>
           {parameterList.map((item, index) => (
-            <div key={index} className='flex items-stretch'>
+            <div key={index} className='dark:bg-background flex items-stretch bg-white'>
               <div className='bg-muted/50 flex w-24 shrink-0 items-center border-r p-4'>
                 <span className='text-muted-foreground text-xs'>{item.label}</span>
               </div>
-              <div className='dark:bg-background flex flex-1 items-center bg-white p-4'>
+              <div className='flex flex-1 items-center p-4'>
                 <span className='truncate text-xs font-medium'>{item.value}</span>
               </div>
             </div>
@@ -156,18 +158,18 @@ export default function TaskDetailPage() {
 
           {/* 补充空余的网格单元格以保持表格边框对齐 */}
           {Array.from({ length: (4 - (parameterList.length % 4)) % 4 }).map((_, index) => (
-            <div key={`empty-${index}`} className='flex items-stretch'>
+            <div key={`empty-${index}`} className='dark:bg-background flex items-stretch bg-white'>
               <div className='bg-muted/50 flex w-24 shrink-0 items-center border-r p-4'></div>
-              <div className='dark:bg-background flex flex-1 items-center bg-white p-4'></div>
+              <div className='flex flex-1 items-center p-4'></div>
             </div>
           ))}
 
-          {/* 任务状态（固定占据最后一行整行或者作为独立模块，这里按原样放到底部） */}
-          <div className='flex items-stretch border-t md:col-span-4'>
+          {/* 任务状态（固定占据最后一行整行） */}
+          <div className='dark:bg-background flex items-stretch bg-white md:col-span-4'>
             <div className='bg-muted/50 flex w-24 shrink-0 items-center border-r p-4'>
               <span className='text-muted-foreground text-xs'>任务状态</span>
             </div>
-            <div className='dark:bg-background flex flex-1 items-center gap-4 bg-white p-4'>
+            <div className='flex flex-1 items-center gap-4 p-4'>
               <div className='flex items-center gap-1.5'>
                 {isRunning ? (
                   <span className='relative flex h-2.5 w-2.5'>
@@ -192,51 +194,168 @@ export default function TaskDetailPage() {
       </Card>
 
       {/* 下半部分：时间轴区域 */}
-      <div className='grid grid-cols-1 gap-6 md:grid-cols-2'>
+      <div className='block md:hidden'>
+        <Tabs defaultValue='trader' className='w-full'>
+          <TabsList className='mb-4 grid w-full grid-cols-2'>
+            <TabsTrigger value='trader'>交易记录</TabsTrigger>
+            <TabsTrigger value='follower'>跟单记录</TabsTrigger>
+          </TabsList>
+          <TabsContent value='trader' className='mt-0'>
+            <Card className='border shadow-sm dark:bg-[#1e1e1e] dark:text-white'>
+              <CardContent className='p-6'>
+                <div className='mb-6 flex items-center gap-2'>
+                  <div className='bg-muted dark:bg-muted/20 flex h-8 w-8 items-center justify-center rounded-full'>
+                    <Activity className='h-4 w-4 dark:text-white' />
+                  </div>
+                  <h2 className='text-lg font-bold'>交易员交易记录</h2>
+                </div>
+
+                {/* 时间轴容器 */}
+                <div className='border-muted relative ml-3 space-y-8 border-l-2 pb-4 dark:border-zinc-700'>
+                  {/* 事件项 1 */}
+                  <div className='relative pl-6'>
+                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了平仓操作</p>
+                      <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:35:00</p>
+                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
+                        品种: ETH-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>long</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 事件项 2 */}
+                  <div className='relative pl-6'>
+                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了平仓操作</p>
+                      <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:32:46</p>
+                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
+                        品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>short</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 事件项 3 */}
+                  <div className='relative pl-6'>
+                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了开仓操作</p>
+                      <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:32:20</p>
+                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
+                        品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>short</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+          <TabsContent value='follower' className='mt-0'>
+            <Card className='border bg-[#1e1e1e] text-white shadow-sm'>
+              <CardContent className='p-6'>
+                <div className='mb-6 flex items-center gap-3'>
+                  <div className='flex h-8 w-8 items-center justify-center overflow-hidden rounded-full'>
+                    <Image src='/site_logo/logo-small.png' alt='Logo' width={32} height={32} />
+                  </div>
+                  <h2 className='flex items-center gap-2 text-lg font-bold'>
+                    跟单猿跟单记录
+                    <Badge
+                      variant='destructive'
+                      className='h-5 rounded-sm bg-red-500 px-1.5 text-[10px] hover:bg-red-600'
+                    >
+                      反向跟单
+                    </Badge>
+                  </h2>
+                </div>
+
+                {/* 时间轴容器 */}
+                <div className='relative ml-3 space-y-8 border-l-2 border-zinc-700 pb-4'>
+                  {/* 事件项 1 */}
+                  <div className='relative pl-6'>
+                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-green-500'></div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold text-white'>进行Gate.io平仓操作</p>
+                      <p className='text-xs text-zinc-400'>2026-04-13 23:35:01</p>
+                      <p className='mt-2 text-sm text-zinc-300'>
+                        品种: ETH_USDT, 平仓量: 44.0张, 方向: <span className='text-white'>SHORT</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 事件项 2（失败） */}
+                  <div className='relative pl-6'>
+                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-red-500'></div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold text-white'>交易失败</p>
+                      <p className='text-xs text-zinc-400'>2026-04-13 23:35:01</p>
+                      <p className='mt-2 text-sm text-zinc-300'>ETH_USDT没有可平仓位</p>
+                    </div>
+                  </div>
+
+                  {/* 事件项 3 */}
+                  <div className='relative pl-6'>
+                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-green-500'></div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold text-white'>进行Gate.io平仓操作</p>
+                      <p className='text-xs text-zinc-400'>2026-04-13 23:32:47</p>
+                      <p className='mt-2 text-sm text-zinc-300'>
+                        品种: 币安人生_USDT, 平仓量: 57.0张, 方向: <span className='text-white'>LONG</span>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+        </Tabs>
+      </div>
+
+      <div className='hidden grid-cols-1 gap-6 md:grid md:grid-cols-2'>
         {/* 左侧：交易员交易记录 */}
-        <Card className='border shadow-sm'>
+        <Card className='border shadow-sm dark:bg-[#1e1e1e] dark:text-white'>
           <CardContent className='p-6'>
             <div className='mb-6 flex items-center gap-2'>
-              <div className='bg-muted flex h-8 w-8 items-center justify-center rounded-full'>
-                <Activity className='h-4 w-4' />
+              <div className='bg-muted dark:bg-muted/20 flex h-8 w-8 items-center justify-center rounded-full'>
+                <Activity className='h-4 w-4 dark:text-white' />
               </div>
               <h2 className='text-lg font-bold'>交易员交易记录</h2>
             </div>
 
             {/* 时间轴容器 */}
-            <div className='border-muted relative ml-3 space-y-8 border-l-2 pb-4'>
+            <div className='border-muted relative ml-3 space-y-8 border-l-2 pb-4 dark:border-zinc-700'>
               {/* 事件项 1 */}
               <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500'></div>
+                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
                 <div className='space-y-1'>
-                  <p className='text-sm font-bold'>交易员{task.uniqueName}进行了平仓操作</p>
-                  <p className='text-muted-foreground text-xs'>2026-04-13 23:35:00</p>
-                  <p className='text-muted-foreground mt-2 text-sm'>
-                    品种: ETH-USDT-SWAP, 方向: <span className='text-foreground'>long</span>
+                  <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了平仓操作</p>
+                  <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:35:00</p>
+                  <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
+                    品种: ETH-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>long</span>
                   </p>
                 </div>
               </div>
 
               {/* 事件项 2 */}
               <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500'></div>
+                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
                 <div className='space-y-1'>
-                  <p className='text-sm font-bold'>交易员{task.uniqueName}进行了平仓操作</p>
-                  <p className='text-muted-foreground text-xs'>2026-04-13 23:32:46</p>
-                  <p className='text-muted-foreground mt-2 text-sm'>
-                    品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground'>short</span>
+                  <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了平仓操作</p>
+                  <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:32:46</p>
+                  <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
+                    品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>short</span>
                   </p>
                 </div>
               </div>
 
               {/* 事件项 3 */}
               <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500'></div>
+                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
                 <div className='space-y-1'>
-                  <p className='text-sm font-bold'>交易员{task.uniqueName}进行了开仓操作</p>
-                  <p className='text-muted-foreground text-xs'>2026-04-13 23:32:20</p>
-                  <p className='text-muted-foreground mt-2 text-sm'>
-                    品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground'>short</span>
+                  <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了开仓操作</p>
+                  <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:32:20</p>
+                  <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
+                    品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>short</span>
                   </p>
                 </div>
               </div>
@@ -248,9 +367,8 @@ export default function TaskDetailPage() {
         <Card className='border bg-[#1e1e1e] text-white shadow-sm'>
           <CardContent className='p-6'>
             <div className='mb-6 flex items-center gap-3'>
-              <div className='flex h-8 w-8 items-center justify-center rounded-full bg-blue-500/20'>
-                {/* 占位猿猴头像 */}
-                <span className='text-lg'>🐵</span>
+              <div className='flex h-8 w-8 items-center justify-center overflow-hidden rounded-full'>
+                <Image src='/site_logo/logo-small.png' alt='Logo' width={32} height={32} />
               </div>
               <h2 className='flex items-center gap-2 text-lg font-bold'>
                 跟单猿跟单记录
