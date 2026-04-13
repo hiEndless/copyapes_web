@@ -23,6 +23,17 @@ import { Button } from '@/components/ui/button'
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from '@/components/ui/pagination'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
 
 import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib/utils'
@@ -110,6 +121,19 @@ const columns: ColumnDef<TaskItem>[] = [
     header: () => '操作',
     cell: function Cell({ row }) {
       const router = useRouter()
+      const isRunning = row.original.status === 1
+
+      const handleTerminateTask = async () => {
+        try {
+          console.log('发起终止跟单请求，任务 ID:', row.original.id)
+          alert('已发起终止跟单请求')
+
+          // TODO: 更新状态或者重新拉取数据
+        } catch (error) {
+          console.error('终止请求失败:', error)
+          alert('终止请求失败，请重试')
+        }
+      }
 
       return (
         <div className='flex items-center gap-1'>
@@ -128,16 +152,34 @@ const columns: ColumnDef<TaskItem>[] = [
               <p>查看详情</p>
             </TooltipContent>
           </Tooltip>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant='ghost' size={'icon'} aria-label='终止跟单'>
-                <BanIcon className='text-destructive size-4.5' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>终止跟单</p>
-            </TooltipContent>
-          </Tooltip>
+          {isRunning && (
+            <AlertDialog>
+              <Tooltip>
+                <AlertDialogTrigger asChild>
+                  <TooltipTrigger asChild>
+                    <Button variant='ghost' size={'icon'} aria-label='终止跟单'>
+                      <BanIcon className='text-destructive size-4.5' />
+                    </Button>
+                  </TooltipTrigger>
+                </AlertDialogTrigger>
+                <TooltipContent>
+                  <p>终止跟单</p>
+                </TooltipContent>
+              </Tooltip>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>确认终止跟单？</AlertDialogTitle>
+                  <AlertDialogDescription>终止任务不会进行平仓，当前如有持仓，后续请自行平仓。</AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleTerminateTask} className='bg-red-500 text-white hover:bg-red-600'>
+                    确认终止
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       )
     },
