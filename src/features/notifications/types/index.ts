@@ -1,4 +1,4 @@
-export type NotificationChannelType = 'smtp_email' | 'telegram_bot' | 'dingtalk_bot' | 'qq_email';
+export type NotificationChannelType = 'smtp_email' | 'telegram_bot' | 'dingtalk_bot' | 'qq_email' | 'wechat_official';
 
 export interface NotificationConfig {
   smtp_host?: string;
@@ -15,6 +15,8 @@ export interface NotificationConfig {
 
   dingtalk_webhook?: string;
   dingtalk_secret?: string;
+  
+  wechat_auth_code?: string;
 
   webhook_url?: string;
   api_key?: string;

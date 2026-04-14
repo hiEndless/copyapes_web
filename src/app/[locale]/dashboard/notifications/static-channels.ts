@@ -1,4 +1,4 @@
-import { NotificationChannel } from '@/features/notifications/types'
+import type { NotificationChannel } from '@/features/notifications/types'
 
 export const STATIC_CHANNELS: NotificationChannel[] = [
   // {
@@ -26,10 +26,10 @@ export const STATIC_CHANNELS: NotificationChannel[] = [
   //   updated_at: new Date().toISOString(),
   // },
   {
-    id: 'dingtalk_bot',
-    channel_type: 'dingtalk_bot',
-    name: '钉钉机器人',
-    logo: 'dingtalk',
+    id: 'wechat_official',
+    channel_type: 'wechat_official',
+    name: '微信公众号',
+    logo: 'wechat',
     is_active: false,
     config: {},
     recipients: [],
@@ -42,6 +42,18 @@ export const STATIC_CHANNELS: NotificationChannel[] = [
     channel_type: 'qq_email',
     name: 'QQ Mail',
     logo: 'qq_email',
+    is_active: false,
+    config: {},
+    recipients: [],
+    triggers: [],
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString()
+  },
+  {
+    id: 'dingtalk_bot',
+    channel_type: 'dingtalk_bot',
+    name: '钉钉机器人',
+    logo: 'dingtalk',
     is_active: false,
     config: {},
     recipients: [],

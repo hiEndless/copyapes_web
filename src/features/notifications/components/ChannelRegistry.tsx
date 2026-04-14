@@ -6,12 +6,14 @@ import { EmailChannel } from './channels/EmailChannel';
 import { TelegramChannel } from './channels/TelegramChannel';
 import { DingTalkChannel } from './channels/DingTalkChannel';
 import { QQEmailChannel } from './channels/QQEmailChannel';
+import { WeChatChannel } from './channels/WeChatChannel';
 
-export const ChannelRegistry: Record<NotificationChannelType, React.ComponentType<{ form: UseFormReturn<NotificationChannelUpdate> }>> = {
-  'smtp_email': EmailChannel,
-  'telegram_bot': TelegramChannel,
-  'dingtalk_bot': DingTalkChannel,
-  'qq_email': QQEmailChannel,
+export const ChannelRegistry: Record<NotificationChannelType, React.FC<{ form: UseFormReturn<NotificationChannelUpdate> }>> = {
+  smtp_email: EmailChannel,
+  telegram_bot: TelegramChannel,
+  dingtalk_bot: DingTalkChannel,
+  qq_email: QQEmailChannel,
+  wechat_official: WeChatChannel,
 };
 
 export const ChannelLabels: Record<NotificationChannelType, string> = {
@@ -19,6 +21,7 @@ export const ChannelLabels: Record<NotificationChannelType, string> = {
   'telegram_bot': 'Telegram',
   'dingtalk_bot': 'DingTalk',
   'qq_email': 'QQ Email',
+  'wechat_official': 'WeChat',
 };
 
 export const ChannelIcons: Record<NotificationChannelType, string> = {
@@ -26,4 +29,5 @@ export const ChannelIcons: Record<NotificationChannelType, string> = {
   'telegram_bot': 'send',
   'dingtalk_bot': 'webhook',
   'qq_email': 'mail',
+  'wechat_official': 'message-circle',
 };

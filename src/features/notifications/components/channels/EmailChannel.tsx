@@ -1,28 +1,29 @@
-'use client';
+'use client'
 
-import { UseFormReturn } from 'react-hook-form';
-import { NotificationChannel, NotificationChannelUpdate } from '../../types';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import type { UseFormReturn } from 'react-hook-form'
+
+import type { NotificationChannelUpdate } from '../../types'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
 
 interface ChannelProps {
-  form: UseFormReturn<NotificationChannelUpdate>;
+  form: UseFormReturn<NotificationChannelUpdate>
 }
 
 export function EmailChannel({ form }: ChannelProps) {
   return (
-    <div className="space-y-4">
-      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">SMTP Server Configuration</h3>
+    <div className='space-y-4'>
+      <h3 className='text-muted-foreground text-sm font-medium tracking-wider uppercase'>SMTP 服务器配置</h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
         <FormField
           control={form.control}
-          name="config.smtp_host"
+          name='config.smtp_host'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>SMTP Host</FormLabel>
+              <FormLabel>SMTP 服务器地址</FormLabel>
               <FormControl>
-                <Input placeholder="smtp.example.com" {...field} value={field.value || ''} />
+                <Input placeholder='smtp.example.com' {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -30,14 +31,14 @@ export function EmailChannel({ form }: ChannelProps) {
         />
         <FormField
           control={form.control}
-          name="config.smtp_port"
+          name='config.smtp_port'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>SMTP Port</FormLabel>
+              <FormLabel>SMTP 端口</FormLabel>
               <FormControl>
                 <Input
-                  type="number"
-                  placeholder="587"
+                  type='number'
+                  placeholder='587'
                   {...field}
                   value={field.value || ''}
                   onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
@@ -49,15 +50,15 @@ export function EmailChannel({ form }: ChannelProps) {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className='grid grid-cols-1 gap-4 md:grid-cols-2'>
         <FormField
           control={form.control}
-          name="config.smtp_username"
+          name='config.smtp_username'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>用户名</FormLabel>
               <FormControl>
-                <Input placeholder="user@example.com" {...field} value={field.value || ''} />
+                <Input placeholder='user@example.com' {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -65,12 +66,12 @@ export function EmailChannel({ form }: ChannelProps) {
         />
         <FormField
           control={form.control}
-          name="config.smtp_password"
+          name='config.smtp_password'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
+              <FormLabel>密码</FormLabel>
               <FormControl>
-                <Input type="password" placeholder="••••••••" {...field} value={field.value || ''} />
+                <Input type='password' placeholder='••••••••' {...field} value={field.value || ''} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -80,14 +81,14 @@ export function EmailChannel({ form }: ChannelProps) {
 
       <FormField
         control={form.control}
-        name="config.email_from"
+        name='config.email_from'
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Sender Address (From)</FormLabel>
+            <FormLabel>发件人地址</FormLabel>
             <FormControl>
-              <Input placeholder="notifications@example.com" {...field} value={field.value || ''} />
+              <Input placeholder='notifications@example.com' {...field} value={field.value || ''} />
             </FormControl>
-            <FormDescription>The email address displayed as the sender.</FormDescription>
+            <FormDescription>作为发件人显示的邮箱地址。</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -95,18 +96,18 @@ export function EmailChannel({ form }: ChannelProps) {
 
       <FormField
         control={form.control}
-        name="config.email_address"
+        name='config.email_address'
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Recipient Address (To)</FormLabel>
+            <FormLabel>收件人地址</FormLabel>
             <FormControl>
-              <Input placeholder="admin@example.com" {...field} value={field.value || ''} />
+              <Input placeholder='admin@example.com' {...field} value={field.value || ''} />
             </FormControl>
-            <FormDescription>Where to send the notifications.</FormDescription>
+            <FormDescription>接收通知的邮箱地址。</FormDescription>
             <FormMessage />
           </FormItem>
         )}
       />
     </div>
-  );
+  )
 }
