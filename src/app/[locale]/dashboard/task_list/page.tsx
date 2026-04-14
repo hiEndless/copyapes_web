@@ -4,14 +4,14 @@ import { Card } from '@/components/ui/card'
 import TaskDatatable, { type TaskItem } from './_components/task-datatable'
 
 const mockData: TaskItem[] = [
-  {
-    id: 766,
-    uniqueName: 'Cryptoxn(隐毒素)',
-    trader_platform: 4,
-    api_name: 'ok模拟2',
-    create_datetime: '2025-01-16T20:33:14',
-    status: 1
-  }
+  // {
+  //   id: 766,
+  //   uniqueName: 'Cryptoxn(隐毒素)',
+  //   trader_platform: 4,
+  //   api_name: 'ok模拟2',
+  //   create_datetime: '2025-01-16T20:33:14',
+  //   status: 1
+  // }
 ]
 
 export default function TaskListPage() {
