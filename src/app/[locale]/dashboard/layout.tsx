@@ -47,7 +47,8 @@ import {
   Unplug,
   MessageCircleWarning,
   Bug,
-  ListChecks
+  ListChecks,
+  Boxes
 } from 'lucide-react'
 
 import NextTopLoader from 'nextjs-toploader'
@@ -180,6 +181,14 @@ const toolsItems: MenuItem[] = [
     label: '跟单抢位',
     href: '/dashboard/grab',
     badge: '4天必中'
+  }
+]
+
+const studioToolsItems: MenuItem[] = [
+  {
+    icon: Boxes,
+    label: '高级任务管理',
+    href: '/dashboard/studio_tasks'
   },
   {
     icon: ListChecks,
@@ -313,6 +322,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
           <SidebarContent>
             <SidebarGroupedMenuItems data={menuItems} />
             <SidebarGroupedMenuItems data={adminItems} groupLabel='系统服务' />
+            <SidebarGroupedMenuItems data={studioToolsItems} groupLabel='工作室服务' />
             <SidebarGroupedMenuItems data={copyItems} groupLabel='跟单服务' />
             <SidebarGroupedMenuItems data={toolsItems} groupLabel='工具服务' />
             <SidebarGroupedMenuItems data={settingsItems} groupLabel='系统设置' />
