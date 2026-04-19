@@ -94,7 +94,7 @@ export default function CookiePage() {
           <AlertTitle className='font-semibold'>Cookie 提交说明</AlertTitle>
           <AlertDescription className='text-sm'>
             每个交易所平台只能绑定一个 Cookie 信息。如果您需要绑定同一个交易所的多个
-            Cookie，可以免费注册多个跟单猿账号进行添加和使用。
+            Cookie，可以免费注册多个本平台账号进行添加和使用。
           </AlertDescription>
         </Alert>
       </div>
