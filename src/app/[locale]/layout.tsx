@@ -77,13 +77,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         }
       ]
     },
-    metadataBase: new URL(
-      process.env.NEXT_PUBLIC_APP_URL
-        ? process.env.NEXT_PUBLIC_APP_URL.startsWith('http')
-          ? process.env.NEXT_PUBLIC_APP_URL
-          : `https://${process.env.NEXT_PUBLIC_APP_URL}`
-        : 'http://localhost:3000'
-    ),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL !== '' ? process.env.NEXT_PUBLIC_APP_URL : 'http://localhost:3000'),
     openGraph: {
       title: {
         template: t('titleTemplate'),
@@ -92,11 +86,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description: t('description'),
       type: 'website',
       siteName: t('siteName'),
-      url: process.env.NEXT_PUBLIC_APP_URL
-        ? process.env.NEXT_PUBLIC_APP_URL.startsWith('http')
-          ? process.env.NEXT_PUBLIC_APP_URL
-          : `https://${process.env.NEXT_PUBLIC_APP_URL}`
-        : 'http://localhost:3000',
+      url: process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL !== '' ? process.env.NEXT_PUBLIC_APP_URL : 'http://localhost:3000',
       images: [
         {
           url: '/images/og-image.png',
@@ -126,9 +116,9 @@ export function generateStaticParams() {
 }
 
 const RootLayout = async ({
-  children,
-  params
-}: Readonly<{
+                            children,
+                            params
+                          }: Readonly<{
   children: ReactNode
   params: Promise<{ locale: string }>
 }>) => {
@@ -146,14 +136,14 @@ const RootLayout = async ({
       className={cn(geistSans.variable, geistMono.variable, 'flex min-h-full w-full scroll-smooth antialiased')}
       suppressHydrationWarning
     >
-      <body className='flex min-h-full w-full flex-auto flex-col'>
-        <NextIntlClientProvider messages={messages}>
-          <ThemeProvider attribute='class' defaultTheme='dark' enableSystem={false} disableTransitionOnChange>
-            <TooltipProvider>{children}</TooltipProvider>
-            <Toaster position='bottom-right' />
-          </ThemeProvider>
-        </NextIntlClientProvider>
-      </body>
+    <body className='flex min-h-full w-full flex-auto flex-col'>
+    <NextIntlClientProvider messages={messages}>
+      <ThemeProvider attribute='class' defaultTheme='dark' enableSystem={false} disableTransitionOnChange>
+        <TooltipProvider>{children}</TooltipProvider>
+        <Toaster position='bottom-right' />
+      </ThemeProvider>
+    </NextIntlClientProvider>
+    </body>
     </html>
   )
 }
