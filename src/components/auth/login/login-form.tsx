@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 
-import { useRouter } from '@/i18n/routing'
-
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
+
+import { useRouter } from '@/i18n/routing'
 
 import { Link } from '@/i18n/routing'
 
@@ -27,16 +27,16 @@ const LoginForm = () => {
     <form className='space-y-4' onSubmit={handleSubmit}>
       {/* Email */}
       <div className='space-y-1'>
-        <Label className='leading-5' htmlFor='userEmail'>
-          Email address*
+        <Label className='leading-5' htmlFor='username'>
+          用户名 / 邮箱地址*
         </Label>
-        <Input type='email' id='userEmail' placeholder='Enter your email address' />
+        <Input type='text' id='username' placeholder='请输入您的用户名或邮箱地址' />
       </div>
 
       {/* Password */}
       <div className='w-full space-y-1'>
         <Label className='leading-5' htmlFor='password'>
-          Password*
+          密码*
         </Label>
         <div className='relative'>
           <Input id='password' type={isVisible ? 'text' : 'password'} placeholder='••••••••••••••••' className='pr-9' />
@@ -47,7 +47,7 @@ const LoginForm = () => {
             className='text-muted-foreground focus-visible:ring-ring/50 absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent'
           >
             {isVisible ? <EyeOffIcon /> : <EyeIcon />}
-            <span className='sr-only'>{isVisible ? 'Hide password' : 'Show password'}</span>
+            <span className='sr-only'>{isVisible ? '隐藏密码' : '显示密码'}</span>
           </Button>
         </div>
       </div>
@@ -56,16 +56,16 @@ const LoginForm = () => {
       <div className='flex items-center justify-between gap-y-2'>
         <div className='flex items-center gap-3'>
           <Checkbox id='rememberMe' className='size-6' />
-          <Label htmlFor='rememberMe'> Remember Me</Label>
+          <Label htmlFor='rememberMe'>记住我</Label>
         </div>
 
         <Link href='/forgot-password' className='hover:underline'>
-          Forgot Password?
+          忘记密码？
         </Link>
       </div>
 
       <PrimaryFlowButton className='w-full *:w-full [&>button]:after:-inset-55' type='submit'>
-        Login to flow
+        登录
       </PrimaryFlowButton>
     </form>
   )

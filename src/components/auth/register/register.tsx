@@ -14,8 +14,8 @@ const Register = () => {
       </Link>
 
       <div>
-        <h1 className='mb-2 text-2xl font-semibold'>Sign Up to Flow</h1>
-        <p className='text-muted-foreground'>Ship Faster and Focus on Growth.</p>
+        <h1 className='mb-2 text-2xl font-semibold'>注册</h1>
+        <p className='text-muted-foreground'>开始您的免费体验</p>
       </div>
 
       {/* Form */}
@@ -23,13 +23,13 @@ const Register = () => {
 
       <div className='space-y-4'>
         <p className='text-muted-foreground text-center'>
-          Already have an account?{' '}
+          已有账号？{' '}
           <Link href='/login' className='text-foreground hover:underline'>
-            Login instead
+            登录
           </Link>
         </p>
 
-        <div className='flex items-center gap-4'>
+        {/* <div className='flex items-center gap-4'>
           <Separator className='flex-1' />
           <p>or</p>
           <Separator className='flex-1' />
@@ -37,7 +37,7 @@ const Register = () => {
 
         <Button variant='ghost' className='w-full' asChild>
           <Link href='#'>Sign up with google</Link>
-        </Button>
+        </Button> */}
       </div>
     </div>
   )

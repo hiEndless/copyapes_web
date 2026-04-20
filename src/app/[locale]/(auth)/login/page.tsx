@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Login from '@/components/auth/login/login'
 
 export const metadata: Metadata = {
-  title: 'Login',
+  title: '登录',
   robots: 'noindex,nofollow',
   alternates: {
     canonical: `${process.env.NEXT_PUBLIC_APP_URL}/login`

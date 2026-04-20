@@ -28,29 +28,29 @@ const RegisterForm = () => {
       {/* Username */}
       <div className='space-y-1'>
         <Label className='leading-5' htmlFor='username'>
-          Username*
+          用户名*
         </Label>
-        <Input type='text' id='username' placeholder='Enter your username' />
+        <Input type='text' id='username' placeholder='请输入您的用户名' />
       </div>
 
       {/* Email */}
-      <div className='space-y-1'>
+      {/* <div className='space-y-1'>
         <Label className='leading-5' htmlFor='userEmail'>
-          Email address*
+          邮箱地址*
         </Label>
-        <Input type='email' id='userEmail' placeholder='Enter your email address' />
-      </div>
+        <Input type='email' id='userEmail' placeholder='请输入您的邮箱地址' />
+      </div> */}
 
       {/* Password */}
       <div className='w-full space-y-1'>
         <Label className='leading-5' htmlFor='password'>
-          Password*
+          密码*
         </Label>
         <div className='relative'>
           <Input
             id='password'
             type={isPasswordVisible ? 'text' : 'password'}
-            placeholder='••••••••••••••••'
+            placeholder='请输入您的密码'
             className='pr-9'
           />
           <Button
@@ -60,7 +60,7 @@ const RegisterForm = () => {
             className='text-muted-foreground focus-visible:ring-ring/50 absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent'
           >
             {isPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
-            <span className='sr-only'>{isPasswordVisible ? 'Hide password' : 'Show password'}</span>
+            <span className='sr-only'>{isPasswordVisible ? '隐藏密码' : '显示密码'}</span>
           </Button>
         </div>
       </div>
@@ -68,7 +68,7 @@ const RegisterForm = () => {
       {/* Confirm Password */}
       <div className='w-full space-y-1'>
         <Label className='leading-5' htmlFor='confirmPassword'>
-          Confirm password*
+          确认密码*
         </Label>
         <div className='relative'>
           <Input
@@ -84,7 +84,7 @@ const RegisterForm = () => {
             className='text-muted-foreground focus-visible:ring-ring/50 absolute inset-y-0 right-0 rounded-l-none hover:bg-transparent'
           >
             {isConfirmPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
-            <span className='sr-only'>{isConfirmPasswordVisible ? 'Hide password' : 'Show password'}</span>
+            <span className='sr-only'>{isConfirmPasswordVisible ? '隐藏密码' : '显示密码'}</span>
           </Button>
         </div>
       </div>
@@ -92,11 +92,11 @@ const RegisterForm = () => {
       {/* Privacy policy */}
       <div className='flex items-center gap-3'>
         <Checkbox id='rememberMe' className='size-6' />
-        <Label htmlFor='rememberMe'>I agree to privacy policy & terms</Label>
+        <Label htmlFor='rememberMe'>同意隐私政策 & 服务条款</Label>
       </div>
 
       <PrimaryFlowButton className='w-full *:w-full [&>button]:after:-inset-55' type='submit'>
-        Sign up to flow
+        注册
       </PrimaryFlowButton>
     </form>
   )
