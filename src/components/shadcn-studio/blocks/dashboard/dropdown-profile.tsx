@@ -44,34 +44,34 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
   return (
     <DropdownMenu defaultOpen={defaultOpen}>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
-      <DropdownMenuContent className='w-80' align={align || 'end'}>
-        <DropdownMenuLabel className='flex items-center gap-4 px-4 py-2.5 font-normal'>
+      <DropdownMenuContent className='w-64' align={align || 'end'}>
+        <DropdownMenuLabel className='flex items-center gap-3 px-3 py-2 font-normal'>
           <div className='relative'>
-            <Avatar className='size-10'>
+            <Avatar className='size-8'>
               <AvatarImage src='https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png' alt='John Doe' />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
             <span className='ring-card absolute right-0 bottom-0 block size-2 rounded-full bg-green-600 ring-2' />
           </div>
           <div className='flex flex-1 flex-col items-start'>
-            <span className='text-foreground text-lg font-semibold'>John Doe</span>
-            <span className='text-muted-foreground text-base'>john.doe@example.com</span>
+            <span className='text-foreground text-sm font-semibold'>John Doe</span>
+            <span className='text-muted-foreground text-xs'>john.doe@example.com</span>
           </div>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem className='px-4 py-2.5 text-base'>
-            <UserIcon className='text-foreground size-5' />
+          <DropdownMenuItem className='px-3 py-2 text-sm'>
+            <UserIcon className='text-foreground mr-2 size-4' />
             <span>My account</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className='px-4 py-2.5 text-base'>
-            <SettingsIcon className='text-foreground size-5' />
+          <DropdownMenuItem className='px-3 py-2 text-sm'>
+            <SettingsIcon className='text-foreground mr-2 size-4' />
             <span>Settings</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className='px-4 py-2.5 text-base'>
-            <CreditCardIcon className='text-foreground size-5' />
+          <DropdownMenuItem className='px-3 py-2 text-sm'>
+            <CreditCardIcon className='text-foreground mr-2 size-4' />
             <span>Billing</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -79,24 +79,24 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
-          <DropdownMenuItem className='px-4 py-2.5 text-base'>
-            <UsersIcon className='text-foreground size-5' />
+          <DropdownMenuItem className='px-3 py-2 text-sm'>
+            <UsersIcon className='text-foreground mr-2 size-4' />
             <span>Manage team</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className='px-4 py-2.5 text-base'>
-            <SquarePenIcon className='text-foreground size-5' />
+          <DropdownMenuItem className='px-3 py-2 text-sm'>
+            <SquarePenIcon className='text-foreground mr-2 size-4' />
             <span>Customization</span>
           </DropdownMenuItem>
-          <DropdownMenuItem className='px-4 py-2.5 text-base'>
-            <CirclePlusIcon className='text-foreground size-5' />
+          <DropdownMenuItem className='px-3 py-2 text-sm'>
+            <CirclePlusIcon className='text-foreground mr-2 size-4' />
             <span>Add team account</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem variant='destructive' className='px-4 py-2.5 text-base' onClick={handleLogout}>
-          <LogOutIcon className='size-5' />
+        <DropdownMenuItem variant='destructive' className='px-3 py-2 text-sm' onClick={handleLogout}>
+          <LogOutIcon className='mr-2 size-4' />
           <span>退出登录</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
