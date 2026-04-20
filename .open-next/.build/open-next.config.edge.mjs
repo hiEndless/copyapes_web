@@ -146,8 +146,8 @@ function isUserWorkerFirst(runWorkerFirst, pathname) {
 var asset_resolver_default = resolver;
 
 // node_modules/.pnpm/@opennextjs+cloudflare@1.19.0_next@16.1.1_@babel+core@7.29.0_react-dom@19.2.3_react@19._d13c1875f50fa4743c6c2dfb94a2b3bd/node_modules/@opennextjs/cloudflare/dist/api/config.js
-function defineCloudflareConfig(config = {}) {
-  const { incrementalCache, tagCache, queue, cachePurge, enableCacheInterception = false, routePreloadingBehavior = "none" } = config;
+function defineCloudflareConfig(config2 = {}) {
+  const { incrementalCache, tagCache, queue, cachePurge, enableCacheInterception = false, routePreloadingBehavior = "none" } = config2;
   return {
     default: {
       override: {
@@ -209,11 +209,12 @@ function resolveCdnInvalidation(value = "dummy") {
 }
 
 // open-next.config.ts
-var open_next_config_default = defineCloudflareConfig({
-  // For best results consider enabling R2 caching
-  // See https://opennext.js.org/cloudflare/caching for more details
-  // incrementalCache: r2IncrementalCache
-});
+var config = defineCloudflareConfig({});
+config.build = config.build || {};
+config.build.esbuild = config.build.esbuild || {};
+config.build.esbuild.minify = true;
+config.build.esbuild.external = ["@swc/core", "@swc/wasm", "@swc/core-darwin-x64", "node:diagnostics_channel", "@vercel/og", "yoga.wasm", "resvg.wasm"];
+var open_next_config_default = config;
 export {
   open_next_config_default as default
 };
