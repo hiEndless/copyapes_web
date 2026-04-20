@@ -3,8 +3,12 @@
 import React, { useEffect, useId, useState, useRef } from 'react'
 
 import { AnimatePresence, motion } from 'motion/react'
+import dynamic from 'next/dynamic'
 
-import { SparklesCore } from '@/components/blocks/bento-grid-17/sparkles'
+const SparklesCore = dynamic(
+  () => import('@/components/blocks/bento-grid-17/sparkles').then(mod => mod.SparklesCore),
+  { ssr: false }
+)
 
 import { cn } from '@/lib/utils'
 

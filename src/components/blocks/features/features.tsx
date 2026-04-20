@@ -22,9 +22,11 @@ import { cn } from '@/lib/utils'
 
 import StatCard from '@/components/blocks/features/stat-card'
 import GoalAndTargetCard from '@/components/blocks/features/goal-and-target-card'
-import SalesGrowthCard from '@/components/blocks/features/sales-growth-card'
 import TargetVisibilityRippleBg from '@/components/blocks/features/target-visibility-ripple-bg'
 import RegularUpdatesCard from '@/components/blocks/features/regular-updates-card'
+import dynamic from 'next/dynamic'
+
+const SalesGrowthCard = dynamic(() => import('@/components/blocks/features/sales-growth-card'), { ssr: false })
 
 const visitorData = [
   {

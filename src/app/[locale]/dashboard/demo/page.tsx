@@ -19,8 +19,10 @@ import StatisticsCard, {
   type StatisticsCardProps
 } from '@/components/shadcn-studio/blocks/dashboard/statistics-card-03'
 import StatisticsCardWithSvg from '@/components/shadcn-studio/blocks/dashboard/statistics-card-04'
-import TotalEarningCard from '@/components/shadcn-studio/blocks/dashboard/chart-total-earning'
-import TotalIncomeCard from '@/components/shadcn-studio/blocks/dashboard/chart-total-income'
+import dynamic from 'next/dynamic'
+
+const TotalEarningCard = dynamic(() => import('@/components/shadcn-studio/blocks/dashboard/chart-total-earning'), { ssr: false })
+const TotalIncomeCard = dynamic(() => import('@/components/shadcn-studio/blocks/dashboard/chart-total-income'), { ssr: false })
 import ForBusinessSharkCard from '@/components/shadcn-studio/blocks/dashboard/widget-for-business-shark'
 import VehiclesConditionCard from '@/components/shadcn-studio/blocks/dashboard/widget-vehicles-condition'
 import UserDatatable, { type Item } from '@/components/shadcn-studio/blocks/dashboard/datatable-user'

@@ -1,8 +1,9 @@
 import { MotionPreset } from '@/components/ui/motion-preset'
+import dynamic from 'next/dynamic'
 
 import UserAnalytics from '@/components/shadcn-studio/blocks/bento-grid-19/user-analytics'
 import ProductMetrics from '@/components/shadcn-studio/blocks/bento-grid-19/product-metrics'
-import CheckOrdersStatus from '@/components/shadcn-studio/blocks/bento-grid-19/check-orders-status'
+const CheckOrdersStatus = dynamic(() => import('@/components/shadcn-studio/blocks/bento-grid-19/check-orders-status'), { ssr: false })
 import EnterpriseCollaboration from '@/components/shadcn-studio/blocks/bento-grid-19/enterprise-collaboration'
 import StayInformed from '@/components/shadcn-studio/blocks/bento-grid-19/stay-informed'
 import TurnViewersToOrders from '@/components/shadcn-studio/blocks/bento-grid-19/turn-viewers-to-orders'
