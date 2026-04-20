@@ -9,6 +9,9 @@ import {
   CirclePlusIcon,
   LogOutIcon
 } from 'lucide-react'
+import { toast } from 'sonner'
+
+import { useRouter } from '@/i18n/routing'
 
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -28,6 +31,16 @@ type Props = {
 }
 
 const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
+  const router = useRouter()
+
+  const handleLogout = () => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('userInfo')
+    document.cookie = 'token=; path=/; max-age=0;'
+    toast.success('已退出登录')
+    router.push('/login')
+  }
+
   return (
     <DropdownMenu defaultOpen={defaultOpen}>
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
@@ -82,9 +95,9 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
 
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem variant='destructive' className='px-4 py-2.5 text-base'>
+        <DropdownMenuItem variant='destructive' className='px-4 py-2.5 text-base' onClick={handleLogout}>
           <LogOutIcon className='size-5' />
-          <span>Logout</span>
+          <span>退出登录</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

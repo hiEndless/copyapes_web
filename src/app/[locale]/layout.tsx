@@ -9,6 +9,7 @@ import type { Metadata } from 'next'
 import { routing } from '@/i18n/routing'
 import { ThemeProvider } from '@/components/theme-provider'
 import { TooltipProvider } from '@/components/ui/tooltip'
+import { Toaster } from '@/components/ui/sonner'
 
 import { cn } from '@/lib/utils'
 
@@ -76,7 +77,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         }
       ]
     },
-    metadataBase: new URL(`${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}`),
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL !== '' ? process.env.NEXT_PUBLIC_APP_URL : 'http://localhost:3000'),
     openGraph: {
       title: {
         template: t('titleTemplate'),
@@ -85,7 +86,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description: t('description'),
       type: 'website',
       siteName: t('siteName'),
-      url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}`,
+      url: process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL !== '' ? process.env.NEXT_PUBLIC_APP_URL : 'http://localhost:3000',
       images: [
         {
           url: '/images/og-image.png',
@@ -139,6 +140,7 @@ const RootLayout = async ({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider attribute='class' defaultTheme='dark' enableSystem={false} disableTransitionOnChange>
             <TooltipProvider>{children}</TooltipProvider>
+            <Toaster position='bottom-right' />
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
