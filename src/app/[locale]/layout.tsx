@@ -77,7 +77,13 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         }
       ]
     },
-    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL !== '' ? process.env.NEXT_PUBLIC_APP_URL : 'http://localhost:3000'),
+    metadataBase: new URL(
+      process.env.NEXT_PUBLIC_APP_URL
+        ? process.env.NEXT_PUBLIC_APP_URL.startsWith('http')
+          ? process.env.NEXT_PUBLIC_APP_URL
+          : `https://${process.env.NEXT_PUBLIC_APP_URL}`
+        : 'http://localhost:3000'
+    ),
     openGraph: {
       title: {
         template: t('titleTemplate'),
@@ -86,7 +92,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description: t('description'),
       type: 'website',
       siteName: t('siteName'),
-      url: process.env.NEXT_PUBLIC_APP_URL && process.env.NEXT_PUBLIC_APP_URL !== '' ? process.env.NEXT_PUBLIC_APP_URL : 'http://localhost:3000',
+      url: process.env.NEXT_PUBLIC_APP_URL
+        ? process.env.NEXT_PUBLIC_APP_URL.startsWith('http')
+          ? process.env.NEXT_PUBLIC_APP_URL
+          : `https://${process.env.NEXT_PUBLIC_APP_URL}`
+        : 'http://localhost:3000',
       images: [
         {
           url: '/images/og-image.png',
