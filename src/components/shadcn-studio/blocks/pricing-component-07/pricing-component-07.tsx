@@ -133,7 +133,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
         <div className='flex flex-col gap-4 lg:flex-row lg:items-stretch'>
           <div className='flex flex-1 flex-col gap-2.5'>
             <div className='mb-2 text-sm font-medium text-muted-foreground'>订阅付费</div>
-            {plans.filter(plan => plan.id !== 'team').map((plan, index) => {
+            {plans.filter(plan => plan.id.toLowerCase().includes('vip')).map((plan, index) => {
               const { main, suffix } = priceLabel(plan, billing)
 
               return (
@@ -182,7 +182,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
             <div className='my-2 border-t border-dashed border-border' />
             <div className='mb-2 text-sm font-medium text-muted-foreground'>功能付费</div>
-            {plans.filter(plan => plan.id === 'team').map((plan, index) => {
+            {plans.filter(plan => !plan.id.toLowerCase().includes('vip')).map((plan, index) => {
               const { main, suffix } = priceLabel(plan, billing)
 
               return (
@@ -246,57 +246,64 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
               <p className='text-primary-foreground/90 text-xs'>{selectedPlanData.subtitle}</p>
             </div>
 
-            <Card className='gap-0 py-0 shadow-none'>
-              <CardContent className='flex flex-col gap-3 px-4 py-3'>
-                <div className='flex flex-col gap-0.5'>
-                  {billing === 'year' &&
-                    selectedPlanData.oneTimePrice == null &&
-                    selectedPlanData.priceMonthly > 0 && (
-                    <span className='text-muted-foreground text-sm line-through tabular-nums'>
-                      {formatYuan(yearlyOriginalTotal(selectedPlanData.priceMonthly))}/年
-                    </span>
-                  )}
-                  <div className='flex items-end gap-0.5'>
-                    <span className='text-2xl font-semibold tabular-nums'>
-                      {priceLabel(selectedPlanData, billing).main}
-                    </span>
-                    <span className='text-muted-foreground text-sm'>
-                      {priceLabel(selectedPlanData, billing).suffix}
-                    </span>
-                  </div>
-                </div>
-                <div className='flex flex-col gap-1'>
-                  {selectedPlanData.features.map((feature, index) => (
-                    <div key={index} className='flex items-start gap-2 py-0.5'>
-                      <CheckIcon className='mt-0.5 size-3.5 shrink-0' />
-                      <span className='text-sm font-medium leading-snug'>{feature}</span>
+            <Card className='gap-0 py-0 shadow-none '>
+              <CardContent className='flex flex-col justify-between gap-3 px-4 py-3 min-h-[440px] h-full'>
+                <div className='flex flex-col gap-3'>
+                  <div className='flex flex-col gap-0.5'>
+                    {billing === 'year' &&
+                      selectedPlanData.oneTimePrice == null &&
+                      selectedPlanData.priceMonthly > 0 && (
+                      <span className='text-muted-foreground text-sm line-through tabular-nums'>
+                        {formatYuan(yearlyOriginalTotal(selectedPlanData.priceMonthly))}/年
+                      </span>
+                    )}
+                    <div className='flex items-end gap-0.5'>
+                      <span className='text-2xl font-semibold tabular-nums'>
+                        {priceLabel(selectedPlanData, billing).main}
+                      </span>
+                      <span className='text-muted-foreground text-sm'>
+                        {priceLabel(selectedPlanData, billing).suffix}
+                      </span>
                     </div>
-                  ))}
-                </div>
-                <div className='flex flex-col gap-1.5'>
-                  <span className='text-muted-foreground text-xs'>支付方式</span>
-                  <div
-                    className='flex items-center gap-2'
-                    role='status'
-                    aria-label='支付方式：交易所转账（已选定）'
-                  >
-                    <span
-                      className='border-primary flex size-4 shrink-0 items-center justify-center rounded-full border-2 bg-background'
-                      aria-hidden
-                    >
-                      <span className='bg-primary size-2 rounded-full' />
-                    </span>
-                    <span className='text-sm font-normal'>交易所转账</span>
+                  </div>
+                  <div className='flex flex-col gap-1'>
+                    {selectedPlanData.features.map((feature, index) => (
+                      <div key={index} className='flex items-start gap-2 py-0.5'>
+                        <CheckIcon className='mt-0.5 size-3.5 shrink-0' />
+                        <span className='text-sm font-medium leading-snug'>{feature}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-                <Button
-                  size='sm'
-                  className='shadow-none'
-                  type='button'
-                  onClick={() => setPayDialogOpen(true)}
-                >
-                  {selectedPlanData.buttonText}
-                </Button>
+
+                {paymentAmountUsdt > 0 && (
+                <div className='flex flex-col gap-3'>
+                  <div className='flex flex-col gap-1.5'>
+                    <span className='text-muted-foreground text-xs'>支付方式</span>
+                    <div
+                      className='flex items-center gap-2'
+                      role='status'
+                      aria-label='支付方式：交易所转账（已选定）'
+                    >
+                      <span
+                        className='border-primary flex size-4 shrink-0 items-center justify-center rounded-full border-2 bg-background'
+                        aria-hidden
+                      >
+                        <span className='bg-primary size-2 rounded-full' />
+                      </span>
+                      <span className='text-sm font-normal'>交易所转账</span>
+                    </div>
+                  </div>
+                  <Button
+                    size='sm'
+                    className='shadow-none w-full'
+                    type='button'
+                    onClick={() => setPayDialogOpen(true)}
+                  >
+                    {selectedPlanData.buttonText}
+                  </Button>
+                </div>
+                )}
               </CardContent>
             </Card>
           </MotionPreset>

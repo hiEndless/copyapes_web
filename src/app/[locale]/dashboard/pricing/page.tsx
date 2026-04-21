@@ -10,41 +10,71 @@ import { settingsApi } from '@/api/settings';
 
 const defaultPlans: Plan[] = [
   {
-    id: 'vip',
-    name: 'VIP',
-    subtitle: '适合小型工作室',
-    priceMonthly: 200,
-    accounts: '5 个信号 API，1 个交易 API',
-    features: ['5 个信号 API', '1 个交易 API', '信号交易记录', '7×24 客服支持'],
+    id: 'free_vip',
+    name: '免费体验',
+    subtitle: '适合个人交易',
+    priceMonthly: 0,
+    accounts: '1 个交易 API，1 个跟单任务',
+    features: ['1 个交易 API', '1 个跟单任务', '授权交易 API 累计资金不超过 1,000 USDT', '只能添加 OKX / Gate / Bitget 交易所 API', '不支持带单 API', '交易消息通知', '普通客服支持'],
     buttonText: '开通 VIP'
   },
   {
-    id: 'vip_plus',
-    name: 'VIP PLUS',
-    subtitle: '适合成长型工作室',
-    priceMonthly: 320,
-    accounts: '15 个信号 API，5 个交易 API',
-    features: ['15 个信号 API', '5 个交易 API', '信号交易记录', '7×24 客服支持'],
-    buttonText: '开通 VIP PLUS'
+    id: 'vip',
+    name: 'VIP',
+    subtitle: '适合个人交易',
+    priceMonthly: 40,
+    accounts: '5 个交易 API，15 个跟单任务',
+    features: ['5 个交易 API', '15 个跟单任务', '授权交易 API 累计资金不超过 5,000 USDT', '可添加任意交易所 API', '支持带单 API', '交易消息通知', '7 * 24 小时专业客服支持'],
+    buttonText: '开通 VIP'
   },
   {
-    id: 'vip_pro',
-    name: 'VIP PRO',
-    subtitle: '适合大型工作室',
-    priceMonthly: 600,
-    accounts: '∞ 个信号 API，∞ 个交易 API',
-    features: ['∞ 个信号 API', '∞ 个交易 API', '信号交易记录', '专属支持'],
+    id: 'studio_vip',
+    name: '工作室 VIP',
+    subtitle: '适合小型跟单工作室',
+    priceMonthly: 200,
+    accounts: '10 个交易 API，不限制跟单任务数量',
+    features: ['10 个交易 API', '不限制跟单任务数量', '授权交易 API 累计资金不超过 200,000 USDT', '可添加任意交易所 API','支持带单 API', '交易消息通知', '专属工作室管理功能', '7 * 24 小时专业客服支持', '支持功能定制'],
     buttonText: '开通 VIP PRO'
   },
   {
-    id: 'team',
-    name: '团队管理权限',
-    subtitle: '组建自己的工作室团队',
+    id: 'permanent',
+    name: '永久 VIP',
+    subtitle: '适合个人交易',
     priceMonthly: 0,
-    oneTimePrice: 4000,
-    accounts: '组建自己的工作室团队',
-    features: ['组建工作室团队', '邀请工作室加入', '查看使用工作室团队全部信号', '工作室管理后台', '专属支持'],
-    buttonText: '开通团队管理权限'
+    oneTimePrice: 1500,
+    accounts: '5 个交易 API，15 个跟单任务',
+    features: ['5 个交易 API', '15 个跟单任务', '授权交易 API 累计资金不超过 5,000 USDT', '可添加任意交易所 API', '支持带单 API', '交易消息通知', '7 * 24 小时专业客服支持', '支持功能定制'],
+    buttonText: '开通永久 VIP'
+  },
+  {
+    id: 'balance',
+    name: 'VIP 资金限额提额',
+    subtitle: '提升资金限额至 20,000 USDT',
+    priceMonthly: 0,
+    oneTimePrice: 100,
+    accounts: '提升资金限额至 20,000 USDT',
+    features: ['VIP 有效期内，永久提升资金限额至 20,000 USDT', 'VIP 到期后，资金额度提升失效', '仅限个人 VIP 用户购买'],
+    buttonText: '购买 VIP 资金提额'
+  },
+  {
+    id: 'studio_balance',
+    name: '工作室 VIP 资金限额提额',
+    subtitle: '提升资金限额至 500,000 USDT',
+    priceMonthly: 0,
+    oneTimePrice: 1000,
+    accounts: '提升资金限额至 500,000 USDT',
+    features: ['工作室VIP 有效期内，永久提升资金限额至 500,000 USDT', '工作室VIP 到期后，资金额度提升失效', '仅限工作室 VIP 用户购买'],
+    buttonText: '购买工作室 VIP 资金提额'
+  },
+  {
+    id: 'studio_api',
+    name: '工作室 VIP 提升 API 授权数量',
+    subtitle: '提升 API 授权数量',
+    priceMonthly: 0,
+    oneTimePrice: 300,
+    accounts: '提升添加交易 API 的授权数量',
+    features: ['工作室VIP 有效期内，永久提升 API 授权数量 5个，可叠加', '工作室VIP 到期后，授权数量提升失效', '仅限工作室 VIP 用户购买'],
+    buttonText: '购买工作室 VIP API 授权数量'
   }
 ];
 
