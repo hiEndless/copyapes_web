@@ -73,7 +73,7 @@ const PLATFORM_MAP: Record<number, { name: string; logo: string | React.ReactNod
   6: { name: 'OKX API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
   7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
   8: { name: 'OKX Cookie', logo: '/exchanges/okx.png' },
-  9: { name: 'Hyperliquid', logo: '/exchanges/logos/nof1.png' },
+  9: { name: 'Hyperliquid', logo: '/exchanges/hlq_logo.png' },
   10: { name: 'Bitget', logo: '/exchanges/hlq_logo.png' }
 }
 
