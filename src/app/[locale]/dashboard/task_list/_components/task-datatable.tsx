@@ -2,7 +2,15 @@
 
 import { useState } from 'react'
 
-import { EyeIcon, BanIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from 'lucide-react'
+import {
+  EyeIcon,
+  BanIcon,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+  Flame
+} from 'lucide-react'
 import type { ColumnDef, ColumnFiltersState, PaginationState } from '@tanstack/react-table'
 import {
   flexRender,
@@ -55,11 +63,11 @@ export type TaskItem = {
   pnl?: string | number
 }
 
-const PLATFORM_MAP: Record<number, { name: string; logo: string }> = {
+const PLATFORM_MAP: Record<number, { name: string; logo: string | React.ReactNode }> = {
   1: { name: 'OKX', logo: '/exchanges/okx.png' },
   2: { name: 'Binance', logo: '/exchanges/binance.png' },
   3: { name: '币coin', logo: '/exchanges/bicoin.png' },
-  4: { name: '热门', logo: '/exchanges/img-logo.png' },
+  4: { name: '热门', logo: <Flame className='text-orange-500 h-full w-full' /> },
   5: { name: 'Binance API', logo: '/exchanges/binance.png' },
   6: { name: 'OKX API', logo: '/exchanges/okx.png' },
   7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
@@ -81,7 +89,11 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
       return (
         <div className='flex items-center gap-2'>
           <div className='bg-muted/50 flex h-9 w-9 shrink-0 items-center justify-center rounded-full p-1.5'>
-            <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-contain' />
+            {typeof platformInfo.logo === 'string' ? (
+              <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-contain' />
+            ) : (
+              platformInfo.logo
+            )}
           </div>
           <div className='flex flex-col'>
             <span className='font-medium max-w-[200px] break-words whitespace-normal leading-snug'>{row.getValue('uniqueName')}</span>
