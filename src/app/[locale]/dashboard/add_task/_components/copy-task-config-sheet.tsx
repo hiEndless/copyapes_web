@@ -226,7 +226,7 @@ export function CopyTaskConfigSheet({
       // 默认先映射成 '1' 如果传入的是非数字的字符串
       let mappedRoleType = roleType || '1'
 
-      if (mappedRoleType === 'public' || mappedRoleType === 'contract') {
+      if (mappedRoleType === 'public' || mappedRoleType === 'contract' || mappedRoleType === 'api' || mappedRoleType === 'cookie' || mappedRoleType === 'hyper' || mappedRoleType === 'hot' || mappedRoleType === 'exchange') {
         mappedRoleType = '1'
       } else if (mappedRoleType === 'hidden') {
         mappedRoleType = '2' // 聪明钱对应 2，如果后端有别的要求请调整

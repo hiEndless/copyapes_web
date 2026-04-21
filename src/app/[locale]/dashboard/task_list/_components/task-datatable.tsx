@@ -9,7 +9,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   ChevronUpIcon,
-  Flame
+  Flame,
+  Unplug
 } from 'lucide-react'
 import type { ColumnDef, ColumnFiltersState, PaginationState } from '@tanstack/react-table'
 import {
@@ -68,8 +69,8 @@ const PLATFORM_MAP: Record<number, { name: string; logo: string | React.ReactNod
   2: { name: 'Binance', logo: '/exchanges/binance.png' },
   3: { name: '币coin', logo: '/exchanges/bicoin.png' },
   4: { name: '热门', logo: <Flame className='text-orange-500 h-full w-full' /> },
-  5: { name: 'Binance API', logo: '/exchanges/binance.png' },
-  6: { name: 'OKX API', logo: '/exchanges/okx.png' },
+  5: { name: 'Binance API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
+  6: { name: 'OKX API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
   7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
   8: { name: 'OKX Cookie', logo: '/exchanges/okx.png' },
   9: { name: 'Hyperliquid', logo: '/exchanges/logos/nof1.png' },
