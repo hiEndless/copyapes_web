@@ -194,8 +194,10 @@ export default function CookiePage() {
                 <ShieldCheck className='h-4 w-4 text-green-500' /> 支持自动保活和更新
               </li>
             </ul>
-            <Button className='w-full sm:w-auto' variant='secondary'>
-              下载 Chrome 插件
+            <Button className='w-full sm:w-auto' variant='secondary' asChild>
+              <a href='https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub?from=from_copylink' target='_blank' rel='noreferrer'>
+                下载 Chrome 插件
+              </a>
             </Button>
             <Accordion type='single' collapsible className='mt-4 w-full'>
               <AccordionItem value='how-to' className='border-none'>
