@@ -4,6 +4,10 @@ import * as React from 'react'
 
 import { Info, Search, Loader2 } from 'lucide-react'
 
+import { toast } from 'sonner'
+
+import { getBicoinInfo, updateBicoinInfo, searchBicoinTrader } from '@/api/task'
+
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { Input } from '@/components/ui/input'
@@ -79,49 +83,67 @@ export default function BicoinTaskPage() {
   const [traderType, setTraderType] = React.useState('1') // '1' = 操作记录, '2' = 合约仓位
   const [isConfigOpen, setIsConfigOpen] = React.useState(false)
 
-  const handleSaveAccount = () => {
+  const handleSaveAccount = async () => {
     if (isAccountSaved) {
       setIsAccountSaved(false)
     } else {
       if (phone && password) {
-        setIsAccountSaved(true)
+        setIsSearching(true)
+
+        try {
+          const res = await updateBicoinInfo({ phone, password })
+
+          if (res.code === 0) {
+            toast.success('币coin账号保存成功')
+            setIsAccountSaved(true)
+          } else {
+            toast.error(res.error || '保存失败')
+          }
+        } catch (error) {
+          console.error(error)
+          toast.error('请求失败')
+        } finally {
+          setIsSearching(false)
+        }
       }
     }
   }
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) return
     setIsSearching(true)
 
-    // 模拟API调用
-    setTimeout(() => {
-      setSearchResults([
-        {
-          leaderId: '1001',
-          leaderName: '币Coin高手 - ' + searchQuery,
-          slogen: '稳健盈利，长期复利',
-          img: '',
-          balance: '120,500',
-          exchange: 'Binance',
-          exchImage: '/exchanges/binance.png',
-          status: 1,
-          statusStr: '免费订阅'
-        },
-        {
-          leaderId: '1002',
-          leaderName: '激进合约 - ' + searchQuery,
-          slogen: '高杠杆高收益',
-          img: '',
-          balance: '5,000',
-          exchange: 'OKX',
-          exchImage: '/exchanges/okx.png',
-          status: 2,
-          statusStr: '付费订阅'
-        }
-      ])
+    try {
+      const res = await searchBicoinTrader({ search_name: searchQuery })
+
+      if (res.code === 0 && Array.isArray(res.data)) {
+        setSearchResults(res.data)
+      } else {
+        toast.error(res.error || '未找到相关交易员')
+        setSearchResults([])
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('搜索失败')
+      setSearchResults([])
+    } finally {
       setIsSearching(false)
-    }, 800)
+    }
   }
+
+  React.useEffect(() => {
+    getBicoinInfo()
+      .then(res => {
+        if (res.code === 0 && res.data) {
+          setPhone((res.data as any).phone || '')
+          setPassword((res.data as any).password || '')
+          setIsAccountSaved(true)
+        }
+      })
+      .catch(() => {
+        // 忽略错误，因为未配置时接口可能返回错误或空
+      })
+  }, [])
 
   return (
     <div className='flex h-full items-start justify-center overflow-y-auto p-4 lg:p-8'>

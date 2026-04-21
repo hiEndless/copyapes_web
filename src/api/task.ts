@@ -57,3 +57,24 @@ export function stopTask(id: string | number) {
     body: { task_id: id, status: '2' },
   });
 }
+
+// 币coin API
+export function getBicoinInfo() {
+  return request('/bicoin/', {
+    method: 'GET',
+  });
+}
+
+export function updateBicoinInfo(data: any) {
+  return request('/bicoin/', {
+    method: 'PATCH',
+    body: data,
+  });
+}
+
+export function searchBicoinTrader(data: { search_name: string }) {
+  return request('/bicoin/', {
+    method: 'POST',
+    body: data,
+  });
+}

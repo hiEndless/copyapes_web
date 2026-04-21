@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { Search, Unplug } from 'lucide-react'
 import { motion } from 'motion/react'
@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { searchApi } from '@/api/apiadd'
+import { getApiOptions } from '@/api/task'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 
 type ApiTrader = {
@@ -22,11 +23,11 @@ type ApiTrader = {
   platform: 'okx' | 'binance' | 'bitget' | 'gate'
 }
 
-// 模拟的“我的 API”数据
-const MY_APIS: ApiTrader[] = [
-  { id: 'my-1', name: '我的币安主账户', balance: 12500.5, platform: 'binance' },
-  { id: 'my-2', name: 'OKX高频策略专用', balance: 3420.0, platform: 'okx' }
-]
+// 移除模拟的“我的 API”数据
+// const MY_APIS: ApiTrader[] = [
+//   { id: 'my-1', name: '我的币安主账户', balance: 12500.5, platform: 'binance' },
+//   { id: 'my-2', name: 'OKX高频策略专用', balance: 3420.0, platform: 'okx' }
+// ]
 
 const featureActions = [
   {
@@ -39,6 +40,49 @@ export default function ApiTaskPage() {
   const [selectedTrader, setSelectedTrader] = useState<ApiTrader | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<ApiTrader[] | null>(null)
+  const [myApis, setMyApis] = useState<ApiTrader[]>([])
+  const [isLoadingMyApis, setIsLoadingMyApis] = useState(false)
+
+  useEffect(() => {
+    fetchMyApis()
+  }, [])
+
+  const fetchMyApis = async () => {
+    setIsLoadingMyApis(true)
+
+    try {
+      const res = await getApiOptions()
+
+      if (res.code === 0 && Array.isArray(res.data)) {
+        // 只筛选出只读 API (is_readonly === 1)
+        const readonlyApis = res.data.filter((api: any) => api.is_readonly === true)
+
+        const formattedApis: ApiTrader[] = readonlyApis.map((c: any) => {
+          const p = String(c.exchange)
+          let platform: 'okx' | 'binance' | 'gate' | 'bitget' = 'okx'
+
+          if (p === '1') platform = 'okx'
+          if (p === '2') platform = 'binance'
+          if (p === '3') platform = 'gate'
+          if (p === '4') platform = 'bitget'
+
+          return {
+            id: String(c.id), // 注意：如果是自己的API，通常使用 id 或者 api_id
+            name: c.name || c.api_name,
+            owner: c.username || '我',
+            balance: c.usdt || 0,
+            platform
+          }
+        })
+
+        setMyApis(formattedApis)
+      }
+    } catch (error) {
+      console.error('Failed to fetch my apis', error)
+    } finally {
+      setIsLoadingMyApis(false)
+    }
+  }
 
   const handleSearch = async () => {
     if (!searchQuery.trim()) {
@@ -188,41 +232,51 @@ export default function ApiTaskPage() {
 
                 {/* 1. 我的 API 列表 */}
                 <TabsContent value='my-api' className='space-y-4'>
-                  <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
-                    {MY_APIS.map(api => (
-                      <Card
-                        key={api.id}
-                        className='hover:border-primary/50 flex flex-col justify-between p-4 transition-colors'
-                      >
-                        <div className='mb-4 flex items-start gap-3'>
-                          <div className='bg-muted/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-2'>
-                            <img
-                              src={`/exchanges/${api.platform}.png`}
-                              alt={api.platform}
-                              className='h-full w-full object-contain'
-                            />
-                          </div>
-                          <div className='flex-1 overflow-hidden'>
-                            <h3 className='truncate text-sm font-semibold'>{api.name}</h3>
-                            {api.owner && (
+                  {isLoadingMyApis ? (
+                    <div className='text-muted-foreground py-8 text-center text-sm'>
+                      加载中...
+                    </div>
+                  ) : myApis.length > 0 ? (
+                    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                      {myApis.map(api => (
+                        <Card
+                          key={api.id}
+                          className='hover:border-primary/50 flex flex-col justify-between p-4 transition-colors'
+                        >
+                          <div className='mb-4 flex items-start gap-3'>
+                            <div className='bg-muted/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-2'>
+                              <img
+                                src={`/exchanges/${api.platform}.png`}
+                                alt={api.platform}
+                                className='h-full w-full object-contain'
+                              />
+                            </div>
+                            <div className='flex-1 overflow-hidden'>
+                              <h3 className='truncate text-sm font-semibold'>{api.name}</h3>
+                              {api.owner && (
+                                <p className='text-muted-foreground mt-1 text-xs'>
+                                  创建者: <span className='text-foreground'>{api.owner}</span>
+                                </p>
+                              )}
                               <p className='text-muted-foreground mt-1 text-xs'>
-                                创建者: <span className='text-foreground'>{api.owner}</span>
+                                余额:{' '}
+                                <span className='text-foreground font-medium'>
+                                  ${api.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                </span>
                               </p>
-                            )}
-                            <p className='text-muted-foreground mt-1 text-xs'>
-                              余额:{' '}
-                              <span className='text-foreground font-medium'>
-                                ${api.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                              </span>
-                            </p>
+                            </div>
                           </div>
-                        </div>
-                        <Button className='w-full' disabled={api.platform !== 'okx'} onClick={() => handleCopy(api)}>
-                          {api.platform !== 'okx' ? '暂不支持该平台' : '发起跟单'}
-                        </Button>
-                      </Card>
-                    ))}
-                  </div>
+                          <Button className='w-full' disabled={api.platform !== 'okx' && api.platform !== 'binance'} onClick={() => handleCopy(api)}>
+                            {api.platform !== 'okx' && api.platform !== 'binance' ? '暂不支持该平台' : '发起跟单'}
+                          </Button>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className='text-muted-foreground py-8 text-center text-sm'>
+                      暂无只读 API 信号
+                    </div>
+                  )}
                 </TabsContent>
 
                 {/* 2. 发现其他 API (搜索) */}
