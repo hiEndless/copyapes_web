@@ -21,3 +21,11 @@ export function updateApiName(data: { api_id: string | number; api_name: string 
     body: data,
   });
 }
+
+// 搜索 API
+export function searchApi(search_name: string) {
+  return request('/speedtrade/apisearch/', {
+    method: 'POST',
+    body: { search_name },
+  });
+}

@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 
-import { getCookies } from '@/api/cookie'
+import { getCookies, searchCookie } from '@/api/cookie'
 import { cn } from '@/lib/utils'
 
 type CookieTrader = {
@@ -25,14 +25,6 @@ type CookieTrader = {
   status: 'active' | 'expired'
   platform: 'okx' | 'binance' | 'bitget' | 'gate'
 }
-
-// 模拟的“其他用户 Cookie”数据
-const OTHER_COOKIES: CookieTrader[] = [
-  { id: 'other-1', name: '加密大猩猩 (稳健)', owner: 'ape***@gmail.com', status: 'active', platform: 'binance' },
-  { id: 'other-2', name: '合约狙击手', owner: 'sni***@yahoo.com', status: 'active', platform: 'okx' },
-  { id: 'other-3', name: '量化搬砖机器人', owner: 'bot***@outlook.com', status: 'active', platform: 'bitget' },
-  { id: 'other-4', name: '现货囤币党', owner: 'hod***@gmail.com', status: 'active', platform: 'gate' }
-]
 
 const featureActions = [
   {
@@ -76,16 +68,33 @@ export default function CookieTaskPage() {
     fetchMyCookies()
   }, [])
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
       setSearchResults(null)
 
       return
     }
 
-    const results = OTHER_COOKIES.filter(cookie => cookie.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    try {
+      const res = await searchCookie(searchQuery)
 
-    setSearchResults(results)
+      if (res.code === 0 && Array.isArray(res.data)) {
+        const results: CookieTrader[] = res.data.map((c: any) => ({
+          id: String(c.curl_id),
+          name: c.curl_name,
+          owner: c.username || '匿名用户',
+          status: c.available ? 'active' : 'expired',
+          platform: String(c.exchange) === '1' ? 'okx' : 'binance'
+        }))
+
+        setSearchResults(results)
+      } else {
+        setSearchResults([])
+      }
+    } catch (error) {
+      console.error('Failed to search cookies', error)
+      setSearchResults([])
+    }
   }
 
   const handleCopy = (trader: CookieTrader) => {

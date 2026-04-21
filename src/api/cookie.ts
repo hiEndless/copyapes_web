@@ -28,3 +28,12 @@ export function updateCookieName(data: {
     body: data,
   });
 }
+
+// 搜索 Cookie
+export function searchCookie(search_name: string) {
+  return request('/speedtrade/curlsearch/', {
+    method: 'POST',
+    body: { search_name },
+  });
+}
+

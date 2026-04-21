@@ -36,10 +36,10 @@ export default function ApiPage() {
   const getPlatformString = (platformId: number | string) => {
     const p = String(platformId)
 
-    if (p === '1' || p === '6') return 'okx'
-    if (p === '2' || p === '5') return 'binance'
-    if (p === '9') return 'hyperliquid'
-    if (p === '10') return 'bitget'
+    if (p === '1') return 'okx'
+    if (p === '2') return 'binance'
+    if (p === '3') return 'gate'
+    if (p === '4') return 'bitget'
 
     return 'okx' // default fallback
   }

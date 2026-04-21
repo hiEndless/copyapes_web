@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
+import { searchApi } from '@/api/apiadd'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 
 type ApiTrader = {
@@ -27,14 +28,6 @@ const MY_APIS: ApiTrader[] = [
   { id: 'my-2', name: 'OKX高频策略专用', balance: 3420.0, platform: 'okx' }
 ]
 
-// 模拟的“其他用户 API”数据
-const OTHER_APIS: ApiTrader[] = [
-  { id: 'other-1', name: '加密大猩猩 (稳健)', owner: 'ape***@gmail.com', balance: 150000.0, platform: 'binance' },
-  { id: 'other-2', name: '合约狙击手', owner: 'sni***@yahoo.com', balance: 8900.0, platform: 'okx' },
-  { id: 'other-3', name: '量化搬砖机器人', owner: 'bot***@outlook.com', balance: 45000.0, platform: 'bitget' },
-  { id: 'other-4', name: '现货囤币党', owner: 'hod***@gmail.com', balance: 210000.0, platform: 'gate' }
-]
-
 const featureActions = [
   {
     title: '工作室版本可联系客服了解详情',
@@ -47,16 +40,43 @@ export default function ApiTaskPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<ApiTrader[] | null>(null)
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!searchQuery.trim()) {
       setSearchResults(null)
 
       return
     }
 
-    const results = OTHER_APIS.filter(api => api.name.toLowerCase().includes(searchQuery.toLowerCase()))
+    try {
+      const res = await searchApi(searchQuery)
 
-    setSearchResults(results)
+      if (res.code === 0 && Array.isArray(res.data)) {
+        const results: ApiTrader[] = res.data.map((c: any) => {
+          const p = String(c.exchange)
+          let platform: 'okx' | 'binance' | 'gate' | 'bitget' = 'okx'
+
+          if (p === '1') platform = 'okx'
+          if (p === '2') platform = 'binance'
+          if (p === '3') platform = 'gate'
+          if (p === '4') platform = 'bitget'
+
+          return {
+            id: String(c.api_id),
+            name: c.api_name,
+            owner: c.username || '匿名用户',
+            balance: c.usdt || 0,
+            platform
+          }
+        })
+
+        setSearchResults(results)
+      } else {
+        setSearchResults([])
+      }
+    } catch (error) {
+      console.error('Failed to search apis', error)
+      setSearchResults([])
+    }
   }
 
   const handleCopy = (trader: ApiTrader) => {
