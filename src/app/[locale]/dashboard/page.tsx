@@ -28,8 +28,7 @@ const DashboardPage = () => {
           <CardHeader className='px-4 pb-0'>
             <CardTitle className='flex items-center justify-between text-sm'>合作交易所</CardTitle>
             <CardDescription className='text-xs'>
-              点击注册享受 <span className='text-primary font-medium'>20%</span> 手续费返佣，年费 VIP PRO 可享高达{' '}
-              <span className='text-primary font-medium'>40%</span> 返佣
+              点击注册享受 <span className='text-primary font-medium'>20%</span> 交易手续费返佣
             </CardDescription>
           </CardHeader>
           <CardContent className='px-4 pt-4'>
