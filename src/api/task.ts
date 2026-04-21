@@ -44,9 +44,15 @@ export function addTask(data: any) {
 }
 
 // 获取任务列表
-export function getTaskList() {
+export function getTaskList(params?: {
+  page?: number
+  page_size?: number
+  limit?: number
+  offset?: number
+}) {
   return request('/taskadd/', {
     method: 'GET',
+    params,
   });
 }
 

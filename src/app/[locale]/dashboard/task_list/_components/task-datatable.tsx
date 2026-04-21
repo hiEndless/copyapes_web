@@ -5,23 +5,19 @@ import { useState } from 'react'
 import {
   EyeIcon,
   BanIcon,
-  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ChevronUpIcon,
   Flame,
   Unplug
 } from 'lucide-react'
-import type { ColumnDef, ColumnFiltersState, PaginationState } from '@tanstack/react-table'
+import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'
 import {
   flexRender,
   getCoreRowModel,
   getFacetedMinMaxValues,
   getFacetedRowModel,
-  getPaginationRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
@@ -31,7 +27,7 @@ import { stopTask } from '@/api/task'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from '@/components/ui/pagination'
+import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
@@ -46,7 +42,6 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 
-import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib/utils'
 
 export type TaskItem = {
@@ -239,41 +234,42 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
   }
 ]
 
-const TaskDatatable = ({ data, onRefresh }: { data: TaskItem[]; onRefresh?: () => void }) => {
+const TaskDatatable = ({
+  data,
+  loading = false,
+  currentPage = 1,
+  pageSize = 10,
+  hasNextPage = false,
+  onPrevPage,
+  onNextPage,
+  onRefresh
+}: {
+  data: TaskItem[]
+  loading?: boolean
+  currentPage?: number
+  pageSize?: number
+  hasNextPage?: boolean
+  onPrevPage?: () => void
+  onNextPage?: () => void
+  onRefresh?: () => void
+}) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const columns = getColumns(onRefresh)
-
-  const pageSize = 10
-
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: pageSize
-  })
 
   const table = useReactTable({
     data,
     columns,
     state: {
-      columnFilters,
-      pagination
+      columnFilters
     },
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
-    enableSortingRemoval: false,
-    getPaginationRowModel: getPaginationRowModel(),
-    onPaginationChange: setPagination
-  })
-
-  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
-    currentPage: table.getState().pagination.pageIndex + 1,
-    totalPages: table.getPageCount(),
-    paginationItemsToDisplay: 3
+    enableSortingRemoval: false
   })
 
   return (
@@ -290,23 +286,7 @@ const TaskDatatable = ({ data, onRefresh }: { data: TaskItem[]; onRefresh?: () =
                       style={{ width: `${header.getSize()}px` }}
                       className='text-muted-foreground first:pl-4 last:px-4'
                     >
-                      {header.isPlaceholder ? null : header.column.getCanSort() ? (
-                        <div
-                          className={cn(
-                            header.column.getCanSort() &&
-                              'flex h-full cursor-pointer items-center justify-between gap-2 select-none'
-                          )}
-                          onClick={header.column.getToggleSortingHandler()}
-                        >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                          {{
-                            asc: <ChevronUpIcon className='shrink-0 opacity-60' size={16} aria-hidden='true' />,
-                            desc: <ChevronDownIcon className='shrink-0 opacity-60' size={16} aria-hidden='true' />
-                          }[header.column.getIsSorted() as string] ?? null}
-                        </div>
-                      ) : (
-                        flexRender(header.column.columnDef.header, header.getContext())
-                      )}
+                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                     </TableHead>
                   )
                 })}
@@ -337,19 +317,7 @@ const TaskDatatable = ({ data, onRefresh }: { data: TaskItem[]; onRefresh?: () =
 
       <div className='flex items-center justify-between gap-3 px-6 py-4 max-sm:flex-col md:max-lg:flex-col'>
         <p className='text-muted-foreground text-sm whitespace-nowrap' aria-live='polite'>
-          显示{' '}
-          <span>
-            {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} 到{' '}
-            {Math.min(
-              Math.max(
-                table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
-                  table.getState().pagination.pageSize,
-                0
-              ),
-              table.getRowCount()
-            )}
-          </span>{' '}
-          条，共 <span>{table.getRowCount().toString()}</span> 条数据
+          第 <span>{currentPage}</span> 页，当前 <span>{table.getRowCount().toString()}</span> 条数据
         </p>
 
         <div>
@@ -359,50 +327,26 @@ const TaskDatatable = ({ data, onRefresh }: { data: TaskItem[]; onRefresh?: () =
                 <Button
                   className='disabled:pointer-events-none disabled:opacity-50'
                   variant={'ghost'}
-                  onClick={() => table.previousPage()}
-                  disabled={!table.getCanPreviousPage()}
+                  onClick={onPrevPage}
+                  disabled={loading || currentPage <= 1}
                   aria-label='Go to previous page'
                 >
                   <ChevronLeftIcon aria-hidden='true' />
                   上一页
                 </Button>
               </PaginationItem>
-
-              {showLeftEllipsis && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              {pages.map(page => {
-                const isActive = page === table.getState().pagination.pageIndex + 1
-
-                return (
-                  <PaginationItem key={page}>
-                    <Button
-                      size='icon'
-                      className={`${!isActive && 'bg-primary/10 text-primary hover:bg-primary/20 focus-visible:ring-primary/20 dark:focus-visible:ring-primary/40'}`}
-                      onClick={() => table.setPageIndex(page - 1)}
-                      aria-current={isActive ? 'page' : undefined}
-                    >
-                      {page}
-                    </Button>
-                  </PaginationItem>
-                )
-              })}
-
-              {showRightEllipsis && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
+              <PaginationItem>
+                <Button size='icon' variant='outline' disabled>
+                  {currentPage}
+                </Button>
+              </PaginationItem>
 
               <PaginationItem>
                 <Button
                   className='disabled:pointer-events-none disabled:opacity-50'
                   variant={'ghost'}
-                  onClick={() => table.nextPage()}
-                  disabled={!table.getCanNextPage()}
+                  onClick={onNextPage}
+                  disabled={loading || !hasNextPage}
                   aria-label='Go to next page'
                 >
                   下一页

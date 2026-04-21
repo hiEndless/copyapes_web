@@ -15,13 +15,17 @@ export default function TaskListPage() {
   const [data, setData] = useState<TaskItem[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'all' | 'online' | 'stop'>('online')
+  const [page, setPage] = useState(1)
+  const [pageSize] = useState(10)
+  const [hasNextPage, setHasNextPage] = useState(false)
 
-  const fetchData = async () => {
+  const fetchData = async (nextPage = page) => {
     try {
       setLoading(true)
-      const res = await getTaskList()
+      const res = await getTaskList({ page: nextPage, page_size: pageSize })
       if (res.code === 0 && Array.isArray(res.data)) {
         setData(res.data)
+        setHasNextPage(res.data.length >= pageSize)
       } else {
         toast.error(res.error || '获取任务列表失败')
       }
@@ -34,8 +38,8 @@ export default function TaskListPage() {
   }
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData(page)
+  }, [page, pageSize])
 
   const filteredData = useMemo(() => {
     if (filter === 'all') return data
@@ -51,7 +55,14 @@ export default function TaskListPage() {
           <p className='text-muted-foreground text-sm'>查看和管理您的跟单任务</p>
         </div>
         <div className='flex items-center gap-4'>
-          <Tabs value={filter} onValueChange={(v: any) => setFilter(v)} className='w-full sm:w-auto'>
+          <Tabs
+            value={filter}
+            onValueChange={(v: any) => {
+              setFilter(v)
+              setPage(1)
+            }}
+            className='w-full sm:w-auto'
+          >
             <TabsList className='grid w-full grid-cols-3 sm:w-auto'>
               <TabsTrigger value='all'>全部</TabsTrigger>
               <TabsTrigger value='online'>进行中</TabsTrigger>
@@ -66,7 +77,16 @@ export default function TaskListPage() {
       </div>
 
       <Card className='col-span-full py-0 shadow-none'>
-        <TaskDatatable data={filteredData} onRefresh={fetchData} />
+        <TaskDatatable
+          data={filteredData}
+          loading={loading}
+          currentPage={page}
+          pageSize={pageSize}
+          hasNextPage={hasNextPage}
+          onPrevPage={() => setPage(prev => Math.max(1, prev - 1))}
+          onNextPage={() => setPage(prev => prev + 1)}
+          onRefresh={() => fetchData(page)}
+        />
       </Card>
     </div>
   )
