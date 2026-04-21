@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { Info, Cookie, Search } from 'lucide-react'
+import { Cookie, Search } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
 
@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 
+import { getCookies } from '@/api/cookie'
 import { cn } from '@/lib/utils'
 
 type CookieTrader = {
@@ -24,12 +25,6 @@ type CookieTrader = {
   status: 'active' | 'expired'
   platform: 'okx' | 'binance' | 'bitget' | 'gate'
 }
-
-// 模拟的“我的 Cookie”数据
-const MY_COOKIES: CookieTrader[] = [
-  { id: 'my-1', name: '我的币安主账号 Cookie', status: 'active', platform: 'binance' },
-  { id: 'my-2', name: 'OKX高频策略 Cookie', status: 'expired', platform: 'okx' }
-]
 
 // 模拟的“其他用户 Cookie”数据
 const OTHER_COOKIES: CookieTrader[] = [
@@ -47,6 +42,7 @@ const featureActions = [
 ]
 
 export default function CookieTaskPage() {
+  const [myCookies, setMyCookies] = React.useState<CookieTrader[]>([])
   const [exchange, setExchange] = React.useState<'okx' | 'binance' | ''>('okx')
   const [traderUrl, setTraderUrl] = React.useState('')
   const [uniqueName, setUniqueName] = React.useState('')
@@ -56,6 +52,29 @@ export default function CookieTaskPage() {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [searchResults, setSearchResults] = React.useState<CookieTrader[] | null>(null)
   const [selectedTrader, setSelectedTrader] = React.useState<CookieTrader | null>(null)
+
+  React.useEffect(() => {
+    const fetchMyCookies = async () => {
+      try {
+        const res = await getCookies()
+
+        if (res.code === 0 && Array.isArray(res.data)) {
+          const mappedCookies: CookieTrader[] = res.data.map((c: any) => ({
+            id: String(c.curl_id),
+            name: c.curl_name,
+            status: c.available ? 'active' : 'expired',
+            platform: String(c.exchange) === '1' ? 'okx' : 'binance'
+          }))
+
+          setMyCookies(mappedCookies)
+        }
+      } catch (error) {
+        console.error('Failed to fetch cookies', error)
+      }
+    }
+
+    fetchMyCookies()
+  }, [])
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -74,15 +93,18 @@ export default function CookieTaskPage() {
   }
 
   // 获取当前交易所的我自己的 Cookie
-  const currentMyCookie = MY_COOKIES.find(c => c.platform === exchange)
+  const currentMyCookies = myCookies.filter(c => c.platform === exchange)
 
   React.useEffect(() => {
-    if (currentMyCookie && currentMyCookie.status === 'active') {
-      setSelectedTrader(currentMyCookie)
+    // 切换交易所或加载数据时，默认选中第一个有效的 Cookie
+    const firstActive = currentMyCookies.find(c => c.status === 'active')
+
+    if (firstActive) {
+      setSelectedTrader(firstActive)
     } else {
       setSelectedTrader(null)
     }
-  }, [currentMyCookie])
+  }, [exchange, myCookies])
 
   // 解析交易员主页链接获取 uniqueName
   const handleParseUrl = () => {
@@ -294,45 +316,50 @@ export default function CookieTaskPage() {
 
                 {/* 1. 我的 Cookie */}
                 <TabsContent value='my-cookie' className='space-y-4'>
-                  {currentMyCookie ? (
-                    <Card
-                      className={cn(
-                        'relative flex cursor-pointer flex-col justify-between p-4 transition-colors',
-                        currentMyCookie.status === 'active'
-                          ? 'hover:border-primary/50'
-                          : 'cursor-not-allowed opacity-60',
-                        selectedTrader?.id === currentMyCookie.id ? 'border-primary bg-primary/5' : ''
-                      )}
-                      onClick={() => {
-                        if (currentMyCookie.status === 'active') {
-                          handleCopy(currentMyCookie)
-                        }
-                      }}
-                    >
-                      <div className='flex items-start gap-3'>
-                        <div className='bg-muted/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-2'>
-                          <img
-                            src={`/exchanges/${currentMyCookie.platform}.png`}
-                            alt={currentMyCookie.platform}
-                            className='h-full w-full object-contain'
-                          />
-                        </div>
-                        <div className='flex-1 overflow-hidden'>
-                          <h3 className='truncate text-sm font-semibold'>{currentMyCookie.name}</h3>
-                          <p className='text-muted-foreground mt-1 text-xs'>
-                            状态:{' '}
-                            <span
-                              className={cn(
-                                'font-medium',
-                                currentMyCookie.status === 'active' ? 'text-green-500' : 'text-destructive'
-                              )}
-                            >
-                              {currentMyCookie.status === 'active' ? '有效' : '已失效'}
-                            </span>
-                          </p>
-                        </div>
-                      </div>
-                    </Card>
+                  {currentMyCookies.length > 0 ? (
+                    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                      {currentMyCookies.map(cookie => (
+                        <Card
+                          key={cookie.id}
+                          className={cn(
+                            'relative flex cursor-pointer flex-col justify-between p-4 transition-colors',
+                            cookie.status === 'active'
+                              ? 'hover:border-primary/50'
+                              : 'cursor-not-allowed opacity-60',
+                            selectedTrader?.id === cookie.id ? 'border-primary bg-primary/5' : ''
+                          )}
+                          onClick={() => {
+                            if (cookie.status === 'active') {
+                              handleCopy(cookie)
+                            }
+                          }}
+                        >
+                          <div className='flex items-start gap-3'>
+                            <div className='bg-muted/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-2'>
+                              <img
+                                src={`/exchanges/${cookie.platform}.png`}
+                                alt={cookie.platform}
+                                className='h-full w-full object-contain'
+                              />
+                            </div>
+                            <div className='flex-1 overflow-hidden'>
+                              <h3 className='truncate text-sm font-semibold'>{cookie.name}</h3>
+                              <p className='text-muted-foreground mt-1 text-xs'>
+                                状态:{' '}
+                                <span
+                                  className={cn(
+                                    'font-medium',
+                                    cookie.status === 'active' ? 'text-green-500' : 'text-destructive'
+                                  )}
+                                >
+                                  {cookie.status === 'active' ? '有效' : '已失效'}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
                   ) : (
                     <div className='text-muted-foreground py-8 text-center text-sm'>
                       未找到您在 {exchange === 'okx' ? '欧易' : exchange === 'binance' ? '币安' : exchange} 的
@@ -497,6 +524,7 @@ export default function CookieTaskPage() {
         traderId={uniqueName}
         traderName={uniqueName}
         platform={exchange}
+        traderPlatform={exchange === 'binance' ? 7 : 8}
         roleType={traderType}
         cookieId={selectedTrader?.id}
       />

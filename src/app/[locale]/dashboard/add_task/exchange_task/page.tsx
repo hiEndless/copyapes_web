@@ -306,6 +306,7 @@ export default function ExchangeTaskPage() {
         traderId={uniqueName}
         traderName={uniqueName}
         platform={exchange}
+        traderPlatform={exchange === 'binance' ? 2 : 1}
         roleType={traderType}
       />
     </div>

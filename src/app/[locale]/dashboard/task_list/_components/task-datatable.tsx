@@ -15,8 +15,10 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
+import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/routing'
+import { stopTask } from '@/api/task'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -44,17 +46,29 @@ export type TaskItem = {
   trader_platform: number // 1: OKX, 2: Binance, 3: 币coin ...
   api_name: string
   create_datetime: string
-  status: number // 1: 进行中, 其他: 已结束 (根据实际情况调整)
+  status: number // 1: 进行中, 2: 已结束
+  posSide_set?: number
+  lever_set?: number
+  role_type?: number
+  follow_type?: number
+  flag?: string | number
+  pnl?: string | number
 }
 
 const PLATFORM_MAP: Record<number, { name: string; logo: string }> = {
   1: { name: 'OKX', logo: '/exchanges/okx.png' },
   2: { name: 'Binance', logo: '/exchanges/binance.png' },
   3: { name: '币coin', logo: '/exchanges/bicoin.png' },
-  4: { name: '热门', logo: '/exchanges/okx.png' } // 示例数据中 trader_platform 是 4
+  4: { name: '热门', logo: '/exchanges/img-logo.png' },
+  5: { name: 'Binance API', logo: '/exchanges/binance.png' },
+  6: { name: 'OKX API', logo: '/exchanges/okx.png' },
+  7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
+  8: { name: 'OKX Cookie', logo: '/exchanges/okx.png' },
+  9: { name: 'Hyperliquid', logo: '/exchanges/logos/nof1.png' },
+  10: { name: 'Bitget', logo: '/exchanges/hlq_logo.png' }
 }
 
-const columns: ColumnDef<TaskItem>[] = [
+const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
   {
     header: '跟单对象',
     accessorKey: 'uniqueName',
@@ -70,8 +84,13 @@ const columns: ColumnDef<TaskItem>[] = [
             <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-contain' />
           </div>
           <div className='flex flex-col'>
-            <span className='font-medium'>{row.getValue('uniqueName')}</span>
-            <span className='text-muted-foreground text-xs'>任务ID: {row.original.id}</span>
+            <span className='font-medium max-w-[200px] break-words whitespace-normal leading-snug'>{row.getValue('uniqueName')}</span>
+            <div className='flex items-center gap-1 text-muted-foreground text-xs mt-0.5'>
+              <span>任务ID: {row.original.id}</span>
+              {row.original.posSide_set === 2 && (
+                <span className='bg-red-500 text-white rounded-[2px] px-1 py-0.5 scale-90 origin-left'>反</span>
+              )}
+            </div>
           </div>
         </div>
       )
@@ -81,17 +100,34 @@ const columns: ColumnDef<TaskItem>[] = [
   {
     header: 'API 名称',
     accessorKey: 'api_name',
-    cell: ({ row }) => <span className='text-muted-foreground'>{row.getValue('api_name')}</span>
+    cell: ({ row }) => {
+      const flag = row.original.flag
+      const isPrimary = String(flag) === '1'
+      const apiName = row.getValue('api_name') as string
+
+      return (
+        <Badge
+          className={cn(
+            'rounded-sm border-none focus-visible:outline-none',
+            isPrimary
+              ? 'bg-blue-600/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400'
+              : 'bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400'
+          )}
+        >
+          {apiName && apiName.length > 6 ? apiName.slice(0, 6) + '...' : apiName}
+        </Badge>
+      )
+    }
   },
   {
     header: '创建时间',
     accessorKey: 'create_datetime',
     cell: ({ row }) => {
       const dateStr = row.getValue('create_datetime') as string
-
-      // 简单格式化时间：替换 T 为空格
-      const formattedDate = dateStr ? dateStr.replace('T', ' ') : '-'
-
+      let formattedDate = '-'
+      if (dateStr) {
+        formattedDate = dateStr.replace('T', '  ').substring(2, 20).replace(/-/g, '/')
+      }
       return <span className='text-muted-foreground'>{formattedDate}</span>
     }
   },
@@ -125,13 +161,16 @@ const columns: ColumnDef<TaskItem>[] = [
 
       const handleTerminateTask = async () => {
         try {
-          console.log('发起终止跟单请求，任务 ID:', row.original.id)
-          alert('已发起终止跟单请求')
-
-          // TODO: 更新状态或者重新拉取数据
+          const res = await stopTask(row.original.id)
+          if (res.code === 0) {
+            toast.success('终止跟单成功')
+            onRefresh?.()
+          } else {
+            toast.error(res.error || '终止跟单失败')
+          }
         } catch (error) {
           console.error('终止请求失败:', error)
-          alert('终止请求失败，请重试')
+          toast.error('终止请求失败，请重试')
         }
       }
 
@@ -187,8 +226,10 @@ const columns: ColumnDef<TaskItem>[] = [
   }
 ]
 
-const TaskDatatable = ({ data }: { data: TaskItem[] }) => {
+const TaskDatatable = ({ data, onRefresh }: { data: TaskItem[]; onRefresh?: () => void }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+
+  const columns = getColumns(onRefresh)
 
   const pageSize = 10
 

@@ -381,6 +381,7 @@ export default function BicoinTaskPage() {
         traderId={selectedTrader?.leaderId || null}
         traderName={selectedTrader?.leaderName || ''}
         platform={selectedTrader?.exchange?.toLowerCase() === 'binance' ? 'binance' : 'okx'}
+        traderPlatform={3}
         roleType={traderType}
       />
     </div>

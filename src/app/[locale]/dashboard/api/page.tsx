@@ -1,43 +1,53 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
+import { toast } from 'sonner'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import ApiDatatable, { type ApiItem } from './_components/api-datatable'
 import { ApiAddButton } from './_components/api-add-button'
-
-const mockData: ApiItem[] = [
-  {
-    id: 1,
-    platform: 'okx',
-    api_name: 'OKX 主力跟单账户',
-    uid: '458923192',
-    usdt: 12500.5,
-    created_at: '2025-01-15T14:20:00',
-    is_readonly: false,
-    status: 1
-  },
-  {
-    id: 2,
-    platform: 'binance',
-    api_name: 'Binance 带单测试',
-    uid: '8839120',
-    usdt: 3200.0,
-    created_at: '2025-02-10T09:15:30',
-    is_readonly: true,
-    status: 1
-  },
-  {
-    id: 3,
-    platform: 'okx',
-    api_name: '已失效账户',
-    uid: '2193810',
-    usdt: 0,
-    created_at: '2024-12-05T18:45:12',
-    is_readonly: false,
-    status: 0
-  }
-]
+import { getApiList } from '@/api/apiadd'
 
 export default function ApiPage() {
+  const [data, setData] = useState<ApiItem[]>([])
+
+  const fetchData = async () => {
+    try {
+      const res = await getApiList()
+
+      if (res.code === 0 && Array.isArray(res.data)) {
+        // Map backend platform ID to string keys if needed
+        const mappedData = res.data.map((item: any) => ({
+          ...item,
+          platform: getPlatformString(item.platform)
+        }))
+
+        setData(mappedData)
+      } else {
+        toast.error(res.error || '获取 API 列表失败')
+      }
+    } catch (error) {
+      console.error('获取 API 列表出错:', error)
+      toast.error('获取 API 列表失败')
+    }
+  }
+
+  const getPlatformString = (platformId: number | string) => {
+    const p = String(platformId)
+
+    if (p === '1' || p === '6') return 'okx'
+    if (p === '2' || p === '5') return 'binance'
+    if (p === '9') return 'hyperliquid'
+    if (p === '10') return 'bitget'
+
+    return 'okx' // default fallback
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
   return (
     <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
       <div className='flex flex-col gap-2'>
@@ -54,7 +64,7 @@ export default function ApiPage() {
           <ApiAddButton />
         </CardHeader>
         <CardContent className='p-0'>
-          <ApiDatatable data={mockData} />
+          <ApiDatatable data={data} onRefresh={fetchData} />
         </CardContent>
       </Card>
     </div>

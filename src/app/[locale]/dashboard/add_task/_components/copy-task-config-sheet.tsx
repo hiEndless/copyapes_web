@@ -2,6 +2,10 @@
 
 import { useState, useEffect } from 'react'
 
+import { useRouter } from 'next/navigation'
+
+import { toast } from 'sonner'
+
 import { CircleHelp } from 'lucide-react'
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet'
@@ -11,6 +15,8 @@ import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
+
+import { getApiOptions, getTraderBalance, addTask } from '@/api/task'
 
 // --- Utility Component for Tags ---
 function TagInput({
@@ -98,6 +104,7 @@ export interface CopyTaskConfigSheetProps {
   traderId: string | null
   traderName?: string
   platform: 'binance' | 'okx' | 'cookie' | 'exchange' | 'hyper' | 'hot' | string
+  traderPlatform?: number | string // 交易员平台 ID (1: OKX, 2: Binance, 3: 币coin, 4: 热门, 5: Cookie, 6: API, 7: 币安带单, 8: OKX带单, 9: Hyperliquid, 10: Bitget)
   roleType?: string // 交易员实盘类型，由上一级页面传入
   cookieId?: string
 }
@@ -108,10 +115,17 @@ export function CopyTaskConfigSheet({
   traderId,
   traderName,
   platform,
+  traderPlatform,
   roleType,
   cookieId
 }: CopyTaskConfigSheetProps) {
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [apiOptions, setApiOptions] = useState<any[]>([])
+  const [user, setUser] = useState('')
+
+  const hideFollowLeverage =
+    traderPlatform === 4 || traderPlatform === '4' || (String(traderPlatform) === '3' && String(roleType) === '1')
 
   // Form State
   const [formData, setFormData] = useState({
@@ -119,7 +133,7 @@ export function CopyTaskConfigSheet({
     follow_type: '2', // 固定比例
     benchMark: '',
     investment: '',
-    lever_set: platform !== 'hot' ? 1 : 2,
+    lever_set: hideFollowLeverage ? 2 : 1,
     leverage: '1',
     first_open_type: 1,
     uplRatio: '0',
@@ -147,21 +161,37 @@ export function CopyTaskConfigSheet({
     black_list: [] as string[]
   })
 
-  // Mock API Options
-  const apiOptions = [
-    { id: '1', api_name: '我的币安API-01', scope_source: 'admin_owned' },
-    { id: '2', api_name: '我的OKX-02', scope_source: 'user_owned' }
-  ]
+  // Load APIs
+  useEffect(() => {
+    if (isOpen) {
+      getApiOptions().then(res => {
+        if (res.code === 0 && Array.isArray(res.data)) {
+          if (res.data.length > 0) {
+            setUser(res.data[0].user)
+          }
+
+          const validApis = res.data.filter((item: any) => item.is_readonly === false)
+
+          setApiOptions(validApis)
+
+          // 默认选中第一个可用的 API
+          if (validApis.length > 0 && !formData.api_id) {
+            setFormData(prev => ({ ...prev, api_id: String(validApis[0].id) }))
+          }
+        }
+      })
+    }
+  }, [isOpen, formData.api_id])
 
   // Effect to reset/init form when traderId changes
   useEffect(() => {
     if (isOpen && traderId) {
       setFormData(prev => ({
         ...prev,
-        lever_set: platform !== 'hot' ? 1 : 2
+        lever_set: hideFollowLeverage ? 2 : 1
       }))
     }
-  }, [isOpen, traderId, platform])
+  }, [isOpen, traderId, platform, hideFollowLeverage])
 
   const updateForm = (key: keyof typeof formData, value: any) => {
     setFormData(prev => ({ ...prev, [key]: value }))
@@ -171,21 +201,83 @@ export function CopyTaskConfigSheet({
     setToggles(prev => ({ ...prev, [key]: value }))
   }
 
+  const fetchBenchMark = async () => {
+    if (!traderPlatform || !traderId) return
+
+    const res = await getTraderBalance({
+      trader_platform: traderPlatform,
+      role_type: roleType || '1',
+      uniqueName: traderId
+    })
+
+    if (res.code === 0) {
+      updateForm('benchMark', res.data)
+      toast.success(res.message || '获取成功')
+    } else {
+      toast.error(res.error || '获取预估本金失败')
+    }
+  }
+
   const handleSubmit = async () => {
     setIsLoading(true)
 
     try {
+      // role_type 映射: 'public' => '1', 'hidden' => '2', 'contract' => '1' 或后端对应的值
+      // 默认先映射成 '1' 如果传入的是非数字的字符串
+      let mappedRoleType = roleType || '1'
+
+      if (mappedRoleType === 'public' || mappedRoleType === 'contract') {
+        mappedRoleType = '1'
+      } else if (mappedRoleType === 'hidden') {
+        mappedRoleType = '2' // 聪明钱对应 2，如果后端有别的要求请调整
+      }
+
       const payload = {
-        platform,
-        traderId, // 交易员平台ID，直接从 props 提交
-        role_type: roleType, // 实盘类型，直接从 props 提交
-        ...formData,
-        ...toggles
+        trader_platform: traderPlatform,
+        uniqueName: traderPlatform === 7 || traderPlatform === 8 ? `${traderId}-${cookieId || ''}` : traderId,
+        api: formData.api_id,
+        follow_type: formData.follow_type,
+        multiple: toggles.multiple_visible ? toggles.multiple : '1',
+        sums: '0',
+        ratio: '0',
+        lever_set: String(formData.lever_set),
+        leverage: formData.lever_set === 2 ? formData.leverage : '1',
+        first_open_type: String(formData.first_open_type),
+        uplRatio: formData.uplRatio,
+        first_order_set: String(formData.first_order_set),
+        posSide_set: toggles.posSide_set_visible ? '2' : '1',
+        user,
+        role_type: mappedRoleType,
+        reduce_ratio: '0',
+        fast_mode: toggles.fast_mode_visible ? '1' : '0',
+        benchMark: formData.benchMark,
+        investment: formData.investment,
+        trade_trigger_mode: toggles.trade_trigger_visible ? '1' : '0',
+        sl_trigger_px: toggles.sl_trigger_px,
+        tp_trigger_px: toggles.tp_trigger_px,
+        pos_mode: toggles.pos_visible ? '1' : '0',
+        pos_value: toggles.pos_value,
+        vol24h_mode: toggles.vol24h_visible ? '1' : '0',
+        vol24h_num: toggles.vol24h_num,
+        balance_monitor_mode: toggles.balance_monitor_visible ? '1' : '0',
+        balance_monitor_value: toggles.balance_monitor_value,
+        white_list_mode: toggles.white_list_visible ? '1' : '0',
+        white_list: toggles.white_list,
+        black_list_mode: toggles.black_list_visible ? '1' : '0',
+        black_list: toggles.black_list
       }
 
       console.log('Submitting Task Config:', payload)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      onClose()
+      const res = await addTask(payload)
+
+      if (res.code === 0) {
+        toast.success('创建成功')
+        onClose()
+        router.push('/dashboard/task_list')
+      } else {
+        // request method automatically handles toast
+        setIsLoading(false)
+      }
     } catch (e) {
       console.error(e)
     } finally {
@@ -331,7 +423,7 @@ export function CopyTaskConfigSheet({
                       onChange={e => updateForm('benchMark', e.target.value)}
                       placeholder='>100'
                     />
-                    <Button variant='secondary' className='px-3' onClick={() => updateForm('benchMark', '10000')}>
+                    <Button variant='secondary' className='px-3' onClick={fetchBenchMark}>
                       自动获取
                     </Button>
                   </div>
@@ -353,7 +445,7 @@ export function CopyTaskConfigSheet({
               <div className='space-y-2'>
                 <label className='mb-2 block text-sm font-medium'>杠杆模式</label>
                 <div className='flex items-center gap-4'>
-                  {platform !== 'hot' && (
+                  {!hideFollowLeverage && (
                     <label className='flex cursor-pointer items-center gap-2'>
                       <Checkbox
                         checked={formData.lever_set === 1}

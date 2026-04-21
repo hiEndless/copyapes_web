@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 
-import { Trash2Icon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, SquarePen } from 'lucide-react'
+import { Trash2Icon, SquarePen, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from 'lucide-react'
 import type { ColumnDef, ColumnFiltersState, PaginationState } from '@tanstack/react-table'
 import {
   flexRender,
@@ -15,6 +15,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
+import { toast } from 'sonner'
+
+import { deleteApi } from '@/api/apiadd'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -56,7 +59,10 @@ const PLATFORM_MAP: Record<string, { name: string; logo: string }> = {
   bitget: { name: 'Bitget', logo: '/exchanges/bitget.png' }
 }
 
-const getColumns = (onEditLabel: (item: ApiItem) => void): ColumnDef<ApiItem>[] => [
+const getColumns = (
+  onEditLabel: (item: ApiItem) => void,
+  onRefresh?: () => void
+): ColumnDef<ApiItem>[] => [
   {
     header: 'API 标签',
     accessorKey: 'api_name',
@@ -162,13 +168,16 @@ const getColumns = (onEditLabel: (item: ApiItem) => void): ColumnDef<ApiItem>[] 
     cell: function Cell({ row }) {
       const handleDelete = async () => {
         try {
-          console.log('删除 API，ID:', row.original.id)
-          alert('删除成功')
-
-          // TODO: 更新状态或者重新拉取数据
+          const res = await deleteApi(row.original.id)
+          if (res.code === 0) {
+            toast.success('删除 API 成功')
+            onRefresh?.()
+          } else {
+            toast.error(res.error || '删除 API 失败')
+          }
         } catch (error) {
           console.error('删除失败:', error)
-          alert('删除失败，请重试')
+          toast.error('删除失败，请重试')
         }
       }
 
@@ -211,7 +220,7 @@ const getColumns = (onEditLabel: (item: ApiItem) => void): ColumnDef<ApiItem>[] 
   }
 ]
 
-const ApiDatatable = ({ data }: { data: ApiItem[] }) => {
+const ApiDatatable = ({ data, onRefresh }: { data: ApiItem[]; onRefresh?: () => void }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const [editLabelOpen, setEditLabelOpen] = useState(false)
@@ -222,7 +231,7 @@ const ApiDatatable = ({ data }: { data: ApiItem[] }) => {
     setEditLabelOpen(true)
   }
 
-  const columns = useMemo(() => getColumns(handleEditLabel), [])
+  const columns = useMemo(() => getColumns(handleEditLabel, onRefresh), [onRefresh])
 
   const pageSize = 10
 
@@ -399,7 +408,7 @@ const ApiDatatable = ({ data }: { data: ApiItem[] }) => {
         onOpenChange={setEditLabelOpen}
         item={editingItem}
         onSuccess={() => {
-          // TODO: Refresh list or update state
+          onRefresh?.()
         }}
       />
     </div>

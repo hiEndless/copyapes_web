@@ -33,8 +33,12 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
   });
 
   const queryString = searchParams.toString();
-  const apiPath = endpoint.startsWith('/api') ? endpoint : `/api${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
-  const url = `${API_BASE_URL}${apiPath}${queryString ? `?${queryString}` : ''}`;
+
+  // 严格匹配是否以 /api/ 开头（而不是仅仅 startsWith('/api')，因为这会把 /apiadd/ 误判为已包含前缀）
+  const hasApiPrefix = endpoint.startsWith('/api/') || endpoint === '/api';
+  const apiPath = hasApiPrefix ? endpoint : `/api${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
+
+  const url = `${API_BASE_URL}${apiPath}${queryString ? '?' + queryString : ''}`;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',

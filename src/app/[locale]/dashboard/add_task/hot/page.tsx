@@ -105,6 +105,12 @@ const initialTraders: Trader[] = [
     avatar: '/head/default-avatar.png',
     platform: { name: 'OKX', logo: '/exchanges/okx.png' },
     balance: 0
+  },
+  {
+    name: '小周同学',
+    avatar: '/head/xiaozhou.jpg',
+    platform: { name: 'OKX', logo: '/exchanges/okx.png' },
+    balance: 0
   }
 ]
 
@@ -249,6 +255,7 @@ export default function HotTaskPage() {
         traderName={selectedTrader?.name || ''}
         platform='4' // 4 代表热门交易员
         roleType='1' // 默认传1
+        traderPlatform={4}
       />
     </div>
   )

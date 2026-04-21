@@ -3,6 +3,10 @@
 import { useState } from 'react'
 import { Loader2Icon } from 'lucide-react'
 
+import { toast } from 'sonner'
+
+import { updateApiName } from '@/api/apiadd'
+
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -42,19 +46,26 @@ export function ApiEditLabelDialog({ open, onOpenChange, item, onSuccess }: ApiE
     e.preventDefault()
     if (!item) return
 
+    if (!label.trim()) {
+      toast.error('标签名称不能为空')
+      return
+    }
+
     setLoading(true)
 
     try {
-      // 模拟 API 请求更新标签
-      console.log('修改 API 标签:', { id: item.id, newLabel: label })
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const res = await updateApiName({ api_id: item.id, api_name: label.trim() })
 
-      alert('修改成功')
-      handleClose()
-      onSuccess?.()
+      if (res.code === 0) {
+        toast.success('修改成功')
+        handleClose()
+        onSuccess?.()
+      } else {
+        toast.error(res.error || '修改失败')
+      }
     } catch (error) {
       console.error('修改失败:', error)
-      alert('修改失败')
+      toast.error('修改失败，请重试')
     } finally {
       setLoading(false)
     }

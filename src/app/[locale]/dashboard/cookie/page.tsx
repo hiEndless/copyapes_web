@@ -1,12 +1,16 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
-import { Plus, Cookie, Chrome, Upload, Trash2, ShieldCheck, Download, HelpCircle, AlertCircle } from 'lucide-react'
+import { Plus, Cookie, Chrome, Upload, ShieldCheck, HelpCircle, AlertCircle, Edit2, Clock } from 'lucide-react'
 import Image from 'next/image'
+import { toast } from 'sonner'
+
+import { getCookies, addOrUpdateCookie, updateCookieName } from '@/api/cookie'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import {
   Dialog,
   DialogContent,
@@ -24,35 +28,103 @@ import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 
 type CookieItem = {
-  id: string
-  platform: string
-  cookieStr: string
-  updatedAt: string
+  curl_id: string | number
+  curl_name: string
+  exchange: number | string
+  available: boolean
+  updated_at: string
 }
 
 export default function CookiePage() {
   const [cookies, setCookies] = useState<CookieItem[]>([])
   const [isUploadOpen, setIsUploadOpen] = useState(false)
-  const [newPlatform, setNewPlatform] = useState('binance')
+  const [newPlatform, setNewPlatform] = useState('2') // 2: 币安, 1: 欧易
   const [newCookie, setNewCookie] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
 
-  const handleUpload = () => {
-    if (!newCookie) return
+  // Edit Name State
+  const [isEditNameOpen, setIsEditNameOpen] = useState(false)
+  const [editingCookie, setEditingCookie] = useState<CookieItem | null>(null)
+  const [newCookieName, setNewCookieName] = useState('')
 
-    const newItem: CookieItem = {
-      id: Math.random().toString(36).substring(7),
-      platform: newPlatform,
-      cookieStr: newCookie,
-      updatedAt: new Date().toLocaleString()
+  const fetchCookies = async () => {
+    setIsLoading(true)
+
+    try {
+      const res = await getCookies()
+
+      if (res.code === 0 && Array.isArray(res.data)) {
+        setCookies(res.data)
+      } else {
+        toast.error(res.error || '获取数据失败')
+      }
+    } catch (e) {
+      console.error(e)
+      toast.error('暂无数据')
+    } finally {
+      setIsLoading(false)
     }
-
-    setCookies([...cookies, newItem])
-    setNewCookie('')
-    setIsUploadOpen(false)
   }
 
-  const handleDelete = (id: string) => {
-    setCookies(cookies.filter(c => c.id !== id))
+  useEffect(() => {
+    fetchCookies()
+  }, [])
+
+  const handleUpload = async () => {
+    if (!newCookie) return
+
+    setIsLoading(true)
+
+    try {
+      const res = await addOrUpdateCookie({
+        exchange: newPlatform,
+        curl_text: newCookie
+      })
+
+      if (res.code === 0) {
+        toast.success('上传成功')
+        setNewCookie('')
+        setIsUploadOpen(false)
+        fetchCookies()
+      } else {
+        // toast is handled in request.ts, but we keep this branch
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleEditName = async () => {
+    if (!editingCookie || !newCookieName) return
+
+    setIsLoading(true)
+
+    try {
+      const res = await updateCookieName({
+        curl_id: editingCookie.curl_id,
+        curl_name: newCookieName
+      })
+
+      if (res.code === 0) {
+        toast.success('修改成功')
+        setIsEditNameOpen(false)
+        setEditingCookie(null)
+        setNewCookieName('')
+        fetchCookies()
+      }
+    } catch (e) {
+      console.error(e)
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const openEditDialog = (cookie: CookieItem) => {
+    setEditingCookie(cookie)
+    setNewCookieName(cookie.curl_name || '')
+    setIsEditNameOpen(true)
   }
 
   const handleCookieChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -123,9 +195,37 @@ export default function CookiePage() {
               </li>
             </ul>
             <Button className='w-full sm:w-auto' variant='secondary'>
-              <Download className='mr-2 h-4 w-4' />
               下载 Chrome 插件
             </Button>
+            <Accordion type='single' collapsible className='mt-4 w-full'>
+              <AccordionItem value='how-to' className='border-none'>
+                <AccordionTrigger className='text-primary py-2 text-sm hover:no-underline'>
+                  <span className='flex items-center gap-1.5'>
+                    <HelpCircle className='h-4 w-4' />
+                    如何使用浏览器插件？
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className='space-y-4 pt-2'>
+                  <div className='text-muted-foreground space-y-2'>
+                    <p className='text-foreground font-medium mt-2'>使用教程：</p>
+                    <ol className='space-y-2 text-sm'>
+                      <li>
+                        ① 插件安装：
+                        <a href='https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub?from=from_copylink' className='text-primary hover:underline' target='_blank'>
+                          如何安装使用Chrome浏览器插件
+                        </a>
+                      </li>
+                      <li>② 将插件固定在浏览器上，打开插件，登录跟单猿账号</li>
+                      <li>
+                        ③
+                        打开官网，登录交易所跟单的账号，随便点击进入一个跟单项目，等待页面加载完成后，插件会自动抓取Cookie信息并提交，你可在本页面进行查看提交信息
+                      </li>
+                      <li>④ 你也可以在插件中点击刷新数据按钮，手动刷新获取Cookie信息</li>
+                    </ol>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </CardContent>
         </Card>
 
@@ -168,8 +268,8 @@ export default function CookiePage() {
                         <SelectValue placeholder='选择交易所' />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value='binance'>Binance (币安)</SelectItem>
-                        <SelectItem value='okx'>OKX (欧易)</SelectItem>
+                        <SelectItem value='2'>Binance (币安)</SelectItem>
+                        <SelectItem value='1'>OKX (欧易)</SelectItem>
                         <SelectItem value='bitget'>Bitget</SelectItem>
                       </SelectContent>
                     </Select>
@@ -271,33 +371,53 @@ export default function CookiePage() {
         ) : (
           <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
             {cookies.map(cookie => (
-              <Card key={cookie.id} className='relative overflow-hidden shadow-sm'>
-                <div className='absolute top-0 right-0 h-2 w-full bg-green-500/80'></div>
-                <CardHeader className='pb-3'>
-                  <div className='flex items-center justify-between'>
-                    <CardTitle className='flex items-center gap-2 text-lg capitalize'>
-                      {cookie.platform}
-                      <Badge
-                        variant='outline'
-                        className='border-green-200 bg-green-50 text-xs font-normal text-green-600 dark:border-green-900 dark:bg-green-950/20 dark:text-green-400'
-                      >
-                        生效中
-                      </Badge>
-                    </CardTitle>
+              <Card
+                key={cookie.curl_id}
+                className='group relative flex flex-col overflow-hidden border-border/50 bg-gradient-to-b from-background to-muted/20 shadow-sm transition-all hover:border-primary/20 hover:shadow-md'
+              >
+                <div
+                  className={`absolute inset-x-0 top-0 h-1 w-full ${
+                    cookie.available ? 'bg-gradient-to-r from-emerald-400 to-green-500' : 'bg-gradient-to-r from-red-400 to-rose-500'
+                  }`}
+                />
+                <CardHeader>
+                  <div className='flex items-start justify-between'>
+                    <div className='flex items-center gap-3'>
+                      <img
+                        src={`/exchanges/${String(cookie.exchange) === '2' ? 'binance' : 'okx'}.png`}
+                        alt={String(cookie.exchange) === '2' ? 'Binance' : 'OKX'}
+                        className='h-6 w-6 object-contain'
+                      />
+                      <div className='flex flex-col gap-1'>
+                        <CardTitle className='text-sm font-semibold tracking-tight'>
+                          {cookie.curl_name || (String(cookie.exchange) === '2' ? 'Binance (币安)' : 'OKX (欧易)')}
+                        </CardTitle>
+                        <Badge
+                          variant='secondary'
+                          className={`w-fit px-1.5 py-0 text-[9px] font-medium ${
+                            cookie.available
+                              ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400'
+                              : 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'
+                          }`}
+                        >
+                          {cookie.available ? '生效中' : '已失效'}
+                        </Badge>
+                      </div>
+                    </div>
                     <Button
                       variant='ghost'
                       size='icon'
-                      className='text-muted-foreground hover:text-destructive h-8 w-8'
-                      onClick={() => handleDelete(cookie.id)}
+                      className='h-8 w-8 shrink-0 text-muted-foreground opacity-0 transition-opacity hover:bg-primary/10 hover:text-primary group-hover:opacity-100'
+                      onClick={() => openEditDialog(cookie)}
                     >
-                      <Trash2 className='h-4 w-4' />
+                      <Edit2 className='h-4 w-4' />
                     </Button>
                   </div>
-                  <CardDescription className='text-xs'>最后更新: {cookie.updatedAt}</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className='bg-muted rounded-md p-3'>
-                    <p className='text-muted-foreground truncate font-mono text-xs'>{cookie.cookieStr}</p>
+                <CardContent className='mt-auto'>
+                  <div className='flex items-center gap-1.5 text-[10px] text-muted-foreground'>
+                    <Clock className='h-3 w-3' />
+                    <span>最后更新: {cookie.updated_at}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -305,6 +425,36 @@ export default function CookiePage() {
           </div>
         )}
       </div>
+
+      <Dialog open={isEditNameOpen} onOpenChange={setIsEditNameOpen}>
+        <DialogContent className='sm:max-w-[425px]'>
+          <DialogHeader>
+            <DialogTitle>修改名称</DialogTitle>
+            <DialogDescription>
+              自定义一个独特名字，便于自己和他人搜索使用。更改名字不会影响正在进行中的跟单。
+            </DialogDescription>
+          </DialogHeader>
+          <div className='grid gap-4 py-4'>
+            <div className='grid gap-2'>
+              <Label htmlFor='cookieName'>Cookie 名称</Label>
+              <Input
+                id='cookieName'
+                placeholder='输入修改的名字'
+                value={newCookieName}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewCookieName(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setIsEditNameOpen(false)}>
+              取消
+            </Button>
+            <Button onClick={handleEditName} disabled={!newCookieName || isLoading}>
+              {isLoading ? '保存中...' : '确认修改'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

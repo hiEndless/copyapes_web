@@ -107,6 +107,7 @@ export default function HyperliquidTaskPage() {
         traderId={walletAddress}
         traderName={walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4)}
         platform='hyperliquid'
+        traderPlatform={9}
         roleType='1'
       />
     </div>
