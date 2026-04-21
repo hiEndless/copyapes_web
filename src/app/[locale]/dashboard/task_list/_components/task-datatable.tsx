@@ -5,8 +5,10 @@ import { useState } from 'react'
 import {
   EyeIcon,
   BanIcon,
+  ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ChevronUpIcon,
   Flame,
   Unplug
 } from 'lucide-react'
@@ -18,6 +20,7 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
@@ -27,7 +30,7 @@ import { stopTask } from '@/api/task'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Pagination, PaginationContent, PaginationItem } from '@/components/ui/pagination'
+import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from '@/components/ui/pagination'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
@@ -42,6 +45,7 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 
+import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib/utils'
 
 export type TaskItem = {
@@ -239,18 +243,22 @@ const TaskDatatable = ({
   loading = false,
   currentPage = 1,
   pageSize = 10,
+  total = 0,
   hasNextPage = false,
   onPrevPage,
   onNextPage,
+  onJumpPage,
   onRefresh
 }: {
   data: TaskItem[]
   loading?: boolean
   currentPage?: number
   pageSize?: number
+  total?: number
   hasNextPage?: boolean
   onPrevPage?: () => void
   onNextPage?: () => void
+  onJumpPage?: (page: number) => void
   onRefresh?: () => void
 }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -266,10 +274,18 @@ const TaskDatatable = ({
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
     getFacetedMinMaxValues: getFacetedMinMaxValues(),
     enableSortingRemoval: false
+  })
+
+  const totalPages = Math.max(1, Math.ceil(Math.max(total, 0) / Math.max(pageSize, 1)))
+  const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
+    currentPage,
+    totalPages,
+    paginationItemsToDisplay: 3
   })
 
   return (
@@ -286,7 +302,23 @@ const TaskDatatable = ({
                       style={{ width: `${header.getSize()}px` }}
                       className='text-muted-foreground first:pl-4 last:px-4'
                     >
-                      {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.isPlaceholder ? null : header.column.getCanSort() ? (
+                        <div
+                          className={cn(
+                            header.column.getCanSort() &&
+                              'flex h-full cursor-pointer items-center justify-between gap-2 select-none'
+                          )}
+                          onClick={header.column.getToggleSortingHandler()}
+                        >
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {{
+                            asc: <ChevronUpIcon className='shrink-0 opacity-60' size={16} aria-hidden='true' />,
+                            desc: <ChevronDownIcon className='shrink-0 opacity-60' size={16} aria-hidden='true' />
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      ) : (
+                        flexRender(header.column.columnDef.header, header.getContext())
+                      )}
                     </TableHead>
                   )
                 })}
@@ -317,7 +349,11 @@ const TaskDatatable = ({
 
       <div className='flex items-center justify-between gap-3 px-6 py-4 max-sm:flex-col md:max-lg:flex-col'>
         <p className='text-muted-foreground text-sm whitespace-nowrap' aria-live='polite'>
-          第 <span>{currentPage}</span> 页，当前 <span>{table.getRowCount().toString()}</span> 条数据
+          显示{' '}
+          <span>
+            {total > 0 ? (currentPage - 1) * pageSize + 1 : 0} 到 {Math.min(currentPage * pageSize, total)}
+          </span>{' '}
+          条，共 <span>{total.toString()}</span> 条数据
         </p>
 
         <div>
@@ -335,18 +371,42 @@ const TaskDatatable = ({
                   上一页
                 </Button>
               </PaginationItem>
-              <PaginationItem>
-                <Button size='icon' variant='outline' disabled>
-                  {currentPage}
-                </Button>
-              </PaginationItem>
+
+              {showLeftEllipsis && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+
+              {pages.map(page => {
+                const isActive = page === currentPage
+                return (
+                  <PaginationItem key={page}>
+                    <Button
+                      size='icon'
+                      className={`${!isActive && 'bg-primary/10 text-primary hover:bg-primary/20 focus-visible:ring-primary/20 dark:focus-visible:ring-primary/40'}`}
+                      onClick={() => onJumpPage?.(page)}
+                      disabled={loading || isActive}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      {page}
+                    </Button>
+                  </PaginationItem>
+                )
+              })}
+
+              {showRightEllipsis && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
 
               <PaginationItem>
                 <Button
                   className='disabled:pointer-events-none disabled:opacity-50'
                   variant={'ghost'}
                   onClick={onNextPage}
-                  disabled={loading || !hasNextPage}
+                  disabled={loading || (!hasNextPage && currentPage >= totalPages)}
                   aria-label='Go to next page'
                 >
                   下一页

@@ -17,6 +17,7 @@ export default function TaskListPage() {
   const [filter, setFilter] = useState<'all' | 'online' | 'stop'>('online')
   const [page, setPage] = useState(1)
   const [pageSize] = useState(10)
+  const [total, setTotal] = useState(0)
   const [hasNextPage, setHasNextPage] = useState(false)
 
   const fetchData = async (nextPage = page) => {
@@ -25,7 +26,14 @@ export default function TaskListPage() {
       const res = await getTaskList({ page: nextPage, page_size: pageSize })
       if (res.code === 0 && Array.isArray(res.data)) {
         setData(res.data)
-        setHasNextPage(res.data.length >= pageSize)
+        const pagination = (res as any).pagination || {}
+        const resolvedTotal = Number(pagination.total ?? res.data.length ?? 0)
+        setTotal(resolvedTotal)
+        if (typeof pagination.has_next === 'boolean') {
+          setHasNextPage(pagination.has_next)
+        } else {
+          setHasNextPage(res.data.length >= pageSize)
+        }
       } else {
         toast.error(res.error || '获取任务列表失败')
       }
@@ -82,9 +90,11 @@ export default function TaskListPage() {
           loading={loading}
           currentPage={page}
           pageSize={pageSize}
+          total={total}
           hasNextPage={hasNextPage}
           onPrevPage={() => setPage(prev => Math.max(1, prev - 1))}
           onNextPage={() => setPage(prev => prev + 1)}
+          onJumpPage={next => setPage(Math.max(1, next))}
           onRefresh={() => fetchData(page)}
         />
       </Card>
