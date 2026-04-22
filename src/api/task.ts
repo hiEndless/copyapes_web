@@ -64,6 +64,27 @@ export function stopTask(id: string | number) {
   });
 }
 
+// 获取任务详情
+export function getTaskDetail(id: string | number) {
+  return request<any>(`/taskadd/${id}/`, {
+    method: 'GET',
+  });
+}
+
+// 获取交易员交易记录
+export function getTraderDetail(id: string | number) {
+  return request<any>(`/traderdetial/${id}/`, {
+    method: 'GET',
+  });
+}
+
+// 获取跟单猿跟单记录（仓位和历史）
+export function getTradeOrder(id: string | number) {
+  return request<any>(`/tradeorder/${id}/`, {
+    method: 'GET',
+  });
+}
+
 // 币coin API
 export function getBicoinInfo() {
   return request('/bicoin/', {

@@ -58,13 +58,28 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
     const response = await fetch(url, config);
     const data = await response.json();
 
+    // 兼容旧接口：如果返回值没有 code 字段，并且 HTTP 状态码正常，则默认包装一层 code: 0
+    if (response.ok && data && typeof data === 'object' && !('code' in data)) {
+      return {
+        code: 0,
+        data: data as T,
+      };
+    }
+
     if (data.code !== 0 && typeof window !== 'undefined') {
       let errorMessage = data.error || data.message || '操作失败';
 
       if (data.detail && Object.keys(data.detail).length > 0) {
         const firstErrorKey = Object.keys(data.detail)[0];
 
-        errorMessage = data.detail[firstErrorKey][0];
+        // 兼容 FastAPI 的 detail 格式，它可能是字符串或者数组对象
+        if (typeof data.detail === 'string') {
+          errorMessage = data.detail;
+        } else if (Array.isArray(data.detail)) {
+          errorMessage = data.detail[0]?.msg || errorMessage;
+        } else {
+          errorMessage = data.detail[firstErrorKey][0];
+        }
       }
 
       toast.error(errorMessage);

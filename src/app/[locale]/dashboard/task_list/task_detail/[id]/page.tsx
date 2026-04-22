@@ -6,6 +6,8 @@ import Image from 'next/image'
 import { ArrowLeft, Activity } from 'lucide-react'
 
 import { useRouter } from '@/i18n/routing'
+import { getTaskDetail, getTraderDetail, stopTask } from '@/api/task'
+import { toast } from 'sonner'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -29,136 +31,181 @@ export default function TaskDetailPage({ params }: { params: any }) {
   // React 19 Next.js Dynamic Route Param API Change
   // unwrapping safely depending on runtime
   const unwrappedParams = React.use(params instanceof Promise ? params : Promise.resolve(params))
-  const taskId = unwrappedParams?.id || params?.id || '766'
+  const taskId = unwrappedParams?.id || params?.id
 
   console.log('当前任务 ID:', taskId)
 
-  // 模拟从父组件/接口获取的任务数据，此处用 state 模拟以演示逻辑
-  const [task] = React.useState<any>({
-    id: 766,
-    benchMark: 0.0,
-    pnl: 0.0,
-    multiple: 1.0,
-    reduce_ratio: 0.0,
-    posSide_set: 1,
-    create_datetime: '2025-01-16 20:33:14',
-    ip_id: 3,
-    pos_mode: 0,
-    black_list: [],
-    follow_type: 2,
-    first_order_set: 1,
-    fast_mode: 1,
-    pos_value: '',
-    balance_monitor_mode: 0,
-    sums: 0.0,
-    status: 1,
-    trade_trigger_mode: 0,
-    vol24h_mode: 0,
-    api_id: 17,
-    ratio: 0.0,
-    private_set: 0,
-    sl_trigger_px: 0.0,
-    vol24h_num: null,
-    balance_monitor_value: 0.0,
-    uniqueName: 'Cryptoxn(隐毒素)',
-    lever_set: 2,
-    user_id: 1,
-    tp_trigger_px: 0.0,
-    white_list_mode: 0,
-    deleted: false,
-    role_type: 1,
-    leverage: 10,
-    first_open_type: 1,
-    white_list: [],
-    trader_platform: 4,
-    investment: 200.0,
-    uplRatio: 0.0,
-    black_list_mode: 0,
-    flag: 1,
-    api_name: 'ok模拟2'
+  const [task, setTask] = React.useState<any>(() => {
+    if (typeof window !== 'undefined') {
+      const cached = sessionStorage.getItem('current_task')
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached)
+          // 仅当缓存的 id 和当前路由 id 匹配时才使用缓存
+          if (String(parsed.id) === String(taskId)) {
+            return parsed
+          }
+        } catch (e) {
+          console.error('解析缓存任务失败', e)
+        }
+      }
+    }
+    return null
   })
+  const [spiderData, setSpiderData] = React.useState<any[]>([])
+  const [tradeData, setTradeData] = React.useState<any[]>([])
+  // 如果有缓存，初始不显示 loading
+  const [loading, setLoading] = React.useState(!task)
+
+  // 为了消除 linter error
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _loading = loading
+
+  React.useEffect(() => {
+    if (taskId) {
+      loadTaskData()
+    }
+  }, [taskId])
+
+  const loadTaskData = async () => {
+    try {
+      if (!task) {
+        setLoading(true)
+      }
+      const [taskRes, traderRes] = await Promise.all([getTaskDetail(taskId), getTraderDetail(taskId)])
+
+      if (taskRes.code === 0) {
+        setTask(taskRes.data)
+        // 顺便更新一下缓存，保证刷新后还是最新的
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('current_task', JSON.stringify(taskRes.data))
+        }
+      } else {
+        toast.error((taskRes.detail as any) || taskRes.message || '获取任务失败')
+        router.push('/dashboard/task_list' as any)
+      }
+
+      if (traderRes.code === 0 && traderRes.data) {
+        setTradeData(traderRes.data.trade || [])
+        setSpiderData(traderRes.data.spider || [])
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error('加载失败')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   // 格式化展示值的工具函数
+  const getColorClass = (color: string) => {
+    if (color === 'SUCCESS' || color === 'green') return 'bg-green-500'
+    if (color === 'WARNING' || color === 'danger') return 'bg-red-500'
+    if (color === 'INFO' || color === 'primary') return 'bg-blue-500'
+    return 'bg-gray-500'
+  }
+
   const getPlatformName = (val: number) => {
-    const map: Record<number, string> = { 1: 'OKX', 2: 'Binance', 3: '币coin', 4: '热门 KOL' }
-
-    return map[val] || '未知'
+    if (val == 1) return 'OKX'
+    if (val == 2) return 'Binance'
+    if (val == 3) return '币coin'
+    if (val == 4) return '热门交易员'
+    if (val == 5 || val == 6) return 'API'
+    if (val == 7) return 'Binance'
+    if (val == 8) return 'OKX'
+    if (val == 9) return 'NOF1'
+    if (val == 10) return 'HyperLiquid'
+    return '未知'
   }
 
-  const getFollowType = (val: number) => {
-    return val === 1 ? '固定比例开仓' : val === 2 ? '智能跟单' : '自定义'
+  const getFollowType = () => {
+    // Vue 中默认就是 '智能跟单' 或者根据业务调整，原 vue 写死为 '智能跟单'
+    return '智能跟单'
   }
 
-  const getRoleType = (val: number) => {
-    return val === 1 ? '带单项目' : val === 2 ? '隐藏实盘' : '公开实盘'
+  const getRoleType = (roleType: number, traderPlatform: number) => {
+    const rt = String(roleType)
+    const tp = String(traderPlatform)
+    if (rt === '1' && tp === '1') return '公开带单'
+    if (rt === '2' && tp === '1') return '个人交易'
+    if (rt === '1' && tp === '2') return '公开实盘'
+    if (rt === '2' && tp === '2') return '隐藏实盘'
+    if (rt === '1' && tp === '3') return '操作记录'
+    if (rt === '2' && tp === '3') return '合约仓位'
+    if (rt === '3' && tp === '3') return '操作记录'
+    if (rt === '4' && tp === '3') return '合约仓位'
+    if (rt === '1' && tp === '7') return '公开实盘'
+    if (tp === '9') return 'AI模型'
+    if (tp === '10') return '钱包地址'
+    return '交易员'
   }
 
-  const isRunning = task.status === 1
+  const isRunning = task?.status === 1
 
   const handleTerminateTask = async () => {
-    // 模拟向后端发起终止命令的异步请求
     try {
-      // 假设：await api.terminateTask(task.id)
-      console.log('发起终止跟单请求，任务 ID:', task.id)
-      alert('已发起终止跟单请求')
-
-      // TODO: 更新状态或者重新拉取数据
+      const res = await stopTask(taskId)
+      if (res.code === 0) {
+        toast.success('已发起终止跟单请求')
+        loadTaskData()
+      } else {
+        toast.error((res.detail as any) || res.message || '终止请求失败')
+      }
     } catch (error) {
       console.error('终止请求失败:', error)
-      alert('终止请求失败，请重试')
+      toast.error('终止请求失败，请重试')
     }
   }
 
   // 构建需要展示的参数列表，过滤掉无效/0/空数组的值
   const parameterList = React.useMemo(() => {
+    if (!task) return []
     const list: { label: string; value: React.ReactNode }[] = []
 
     list.push({ label: '跟单平台', value: getPlatformName(task.trader_platform) })
     list.push({ label: '跟单对象', value: task.uniqueName })
-    list.push({ label: '创建时间', value: task.create_datetime })
-    list.push({ label: '反向跟单', value: task.posSide_set === 1 ? '否' : '是' })
+    list.push({ label: '创建时间', value: task.create_datetime?.replace('T', '  ') })
+    list.push({ label: '反向跟单', value: String(task.posSide_set) === '1' ? '否' : '是' })
     list.push({ label: 'API', value: task.api_name })
-    list.push({ label: '交易员类型', value: getRoleType(task.role_type) })
-    list.push({ label: '跟单模式', value: getFollowType(task.follow_type) })
+    list.push({ label: '交易员类型', value: getRoleType(task.role_type, task.trader_platform) })
+    list.push({ label: '跟单模式', value: getFollowType() })
 
-    if (task.follow_type === 2) {
-      list.push({ label: '智能倍数', value: task.multiple })
-      list.push({ label: '投资额', value: task.investment })
+    // vue 代码里 f_t 写死为 '智能跟单'
+    list.push({ label: '智能倍数', value: task.multiple })
+    list.push({ label: '投资额', value: task.investment })
 
-      // 假设平台 1 (OKX) 且类型 2 时不展示对标资金
-      if (!(task.trader_platform === 1 && task.role_type === 2)) {
-        list.push({ label: '对标资金', value: task.benchMark })
-      }
+    if (!(String(task.trader_platform) === '1' && String(task.role_type) === '2')) {
+      list.push({ label: '对标资金', value: task.benchMark })
     }
 
-    list.push({ label: '杠杆设置', value: task.lever_set === 1 ? '跟随交易员' : task.leverage })
+    list.push({ label: '杠杆设置', value: String(task.lever_set) === '1' ? '跟随交易员' : task.leverage })
 
-    if (task.trade_trigger_mode === 1) {
-      if (task.tp_trigger_px !== 0) list.push({ label: '单笔止盈', value: `${task.tp_trigger_px}%` })
-      if (task.sl_trigger_px !== 0) list.push({ label: '单笔止损', value: `${task.sl_trigger_px}%` })
+    if (String(task.trade_trigger_mode) === '1') {
+      list.push({ label: '单笔止盈', value: String(task.tp_trigger_px) === '0' ? '未设置' : `${task.tp_trigger_px}%` })
+      list.push({ label: '单笔止损', value: String(task.sl_trigger_px) === '0' ? '未设置' : `${task.sl_trigger_px}%` })
     }
 
-    if (task.first_open_type === 2 && task.uplRatio) {
+    if (String(task.first_open_type) === '2') {
       list.push({ label: '区间委托(新开仓)', value: `收益率小于${task.uplRatio}%时跟单` })
     }
 
-    if (task.pos_mode === 1 && task.pos_value) {
+    if (String(task.pos_mode) === '1') {
       list.push({ label: '多空策略', value: task.pos_value === 'long' ? '只开多单' : '只开空单' })
     }
 
-    if (task.vol24h_mode === 1 && task.vol24h_num) {
+    if (String(task.vol24h_mode) === '1') {
       list.push({ label: '24h成交量', value: `只跟排行前${task.vol24h_num}的币种` })
     }
 
-    if (task.balance_monitor_mode === 1 && task.balance_monitor_value) {
+    if (String(task.balance_monitor_mode) === '1') {
       list.push({ label: '带单本金', value: `低于${task.balance_monitor_value}U不跟单` })
     }
 
-    if (task.white_list_mode === 1 && task.white_list && task.white_list.length > 0) {
+    if (String(task.white_list_mode) === '1' && task.white_list && task.white_list.length > 0) {
       list.push({ label: '白名单策略', value: task.white_list.join(', ') })
     }
 
-    if (task.black_list_mode === 1 && task.black_list && task.black_list.length > 0) {
+    if (String(task.black_list_mode) === '1' && task.black_list && task.black_list.length > 0) {
       list.push({ label: '黑名单策略', value: task.black_list.join(', ') })
     }
 
@@ -266,41 +313,24 @@ export default function TaskDetailPage({ params }: { params: any }) {
 
                 {/* 时间轴容器 */}
                 <div className='border-muted relative ml-3 space-y-8 border-l-2 pb-4 dark:border-zinc-700'>
-                  {/* 事件项 1 */}
-                  <div className='relative pl-6'>
-                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
-                    <div className='space-y-1'>
-                      <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了平仓操作</p>
-                      <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:35:00</p>
-                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
-                        品种: ETH-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>long</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* 事件项 2 */}
-                  <div className='relative pl-6'>
-                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
-                    <div className='space-y-1'>
-                      <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了平仓操作</p>
-                      <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:32:46</p>
-                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
-                        品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>short</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* 事件项 3 */}
-                  <div className='relative pl-6'>
-                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
-                    <div className='space-y-1'>
-                      <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了开仓操作</p>
-                      <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:32:20</p>
-                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
-                        品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>short</span>
-                      </p>
-                    </div>
-                  </div>
+                  {spiderData.length > 0 ? (
+                    spiderData.map((item, index) => (
+                      <div key={index} className='relative pl-6'>
+                        <div
+                          className={`absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white dark:border-[#1e1e1e] ${getColorClass(
+                            item.color
+                          )}`}
+                        ></div>
+                        <div className='space-y-1'>
+                          <p className='text-sm font-bold dark:text-white'>{item.title}</p>
+                          <p className='text-muted-foreground text-xs dark:text-zinc-400'>{item.date}</p>
+                          <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>{item.description}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className='pl-6 text-sm text-muted-foreground'>暂无数据</div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -314,50 +344,37 @@ export default function TaskDetailPage({ params }: { params: any }) {
                   </div>
                   <h2 className='flex items-center gap-2 text-lg font-bold'>
                     跟单猿跟单记录
-                    <Badge
-                      variant='destructive'
-                      className='h-5 rounded-sm bg-red-500 px-1.5 text-[10px] hover:bg-red-600'
-                    >
-                      反向跟单
-                    </Badge>
+                    {String(task?.posSide_set) === '2' && (
+                      <Badge
+                        variant='destructive'
+                        className='h-5 rounded-sm bg-red-500 px-1.5 text-[10px] hover:bg-red-600'
+                      >
+                        反向跟单
+                      </Badge>
+                    )}
                   </h2>
                 </div>
 
                 {/* 时间轴容器 */}
                 <div className='relative ml-3 space-y-8 border-l-2 border-zinc-700 pb-4'>
-                  {/* 事件项 1 */}
-                  <div className='relative pl-6'>
-                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-green-500'></div>
-                    <div className='space-y-1'>
-                      <p className='text-sm font-bold text-white'>进行Gate.io平仓操作</p>
-                      <p className='text-xs text-zinc-400'>2026-04-13 23:35:01</p>
-                      <p className='mt-2 text-sm text-zinc-300'>
-                        品种: ETH_USDT, 平仓量: 44.0张, 方向: <span className='text-white'>SHORT</span>
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* 事件项 2（失败） */}
-                  <div className='relative pl-6'>
-                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-red-500'></div>
-                    <div className='space-y-1'>
-                      <p className='text-sm font-bold text-white'>交易失败</p>
-                      <p className='text-xs text-zinc-400'>2026-04-13 23:35:01</p>
-                      <p className='mt-2 text-sm text-zinc-300'>ETH_USDT没有可平仓位</p>
-                    </div>
-                  </div>
-
-                  {/* 事件项 3 */}
-                  <div className='relative pl-6'>
-                    <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-green-500'></div>
-                    <div className='space-y-1'>
-                      <p className='text-sm font-bold text-white'>进行Gate.io平仓操作</p>
-                      <p className='text-xs text-zinc-400'>2026-04-13 23:32:47</p>
-                      <p className='mt-2 text-sm text-zinc-300'>
-                        品种: 币安人生_USDT, 平仓量: 57.0张, 方向: <span className='text-white'>LONG</span>
-                      </p>
-                    </div>
-                  </div>
+                  {tradeData.length > 0 ? (
+                    tradeData.map((item, index) => (
+                      <div key={index} className='relative pl-6'>
+                        <div
+                          className={`absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] ${getColorClass(
+                            item.color
+                          )}`}
+                        ></div>
+                        <div className='space-y-1'>
+                          <p className='text-sm font-bold text-white'>{item.title}</p>
+                          <p className='text-xs text-zinc-400'>{item.date}</p>
+                          <p className='mt-2 text-sm text-zinc-300'>{item.description}</p>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className='pl-6 text-sm text-zinc-400'>暂无数据</div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -378,41 +395,24 @@ export default function TaskDetailPage({ params }: { params: any }) {
 
             {/* 时间轴容器 */}
             <div className='border-muted relative ml-3 space-y-8 border-l-2 pb-4 dark:border-zinc-700'>
-              {/* 事件项 1 */}
-              <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
-                <div className='space-y-1'>
-                  <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了平仓操作</p>
-                  <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:35:00</p>
-                  <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
-                    品种: ETH-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>long</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* 事件项 2 */}
-              <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
-                <div className='space-y-1'>
-                  <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了平仓操作</p>
-                  <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:32:46</p>
-                  <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
-                    品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>short</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* 事件项 3 */}
-              <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white bg-green-500 dark:border-[#1e1e1e]'></div>
-                <div className='space-y-1'>
-                  <p className='text-sm font-bold dark:text-white'>交易员{task.uniqueName}进行了开仓操作</p>
-                  <p className='text-muted-foreground text-xs dark:text-zinc-400'>2026-04-13 23:32:20</p>
-                  <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>
-                    品种: 币安人生-USDT-SWAP, 方向: <span className='text-foreground dark:text-white'>short</span>
-                  </p>
-                </div>
-              </div>
+              {spiderData.length > 0 ? (
+                spiderData.map((item, index) => (
+                  <div key={index} className='relative pl-6'>
+                    <div
+                      className={`absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white dark:border-[#1e1e1e] ${getColorClass(
+                        item.color
+                      )}`}
+                    ></div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold dark:text-white'>{item.title}</p>
+                      <p className='text-muted-foreground text-xs dark:text-zinc-400'>{item.date}</p>
+                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>{item.description}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className='pl-6 text-sm text-muted-foreground'>暂无数据</div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -426,47 +426,34 @@ export default function TaskDetailPage({ params }: { params: any }) {
               </div>
               <h2 className='flex items-center gap-2 text-lg font-bold'>
                 跟单猿跟单记录
-                <Badge variant='destructive' className='h-5 rounded-sm bg-red-500 px-1.5 text-[10px] hover:bg-red-600'>
-                  反向跟单
-                </Badge>
+                {String(task?.posSide_set) === '2' && (
+                  <Badge variant='destructive' className='h-5 rounded-sm bg-red-500 px-1.5 text-[10px] hover:bg-red-600'>
+                    反向跟单
+                  </Badge>
+                )}
               </h2>
             </div>
 
             {/* 时间轴容器 */}
             <div className='relative ml-3 space-y-8 border-l-2 border-zinc-700 pb-4'>
-              {/* 事件项 1 */}
-              <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-green-500'></div>
-                <div className='space-y-1'>
-                  <p className='text-sm font-bold text-white'>进行Gate.io平仓操作</p>
-                  <p className='text-xs text-zinc-400'>2026-04-13 23:35:01</p>
-                  <p className='mt-2 text-sm text-zinc-300'>
-                    品种: ETH_USDT, 平仓量: 44.0张, 方向: <span className='text-white'>SHORT</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* 事件项 2（失败） */}
-              <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-red-500'></div>
-                <div className='space-y-1'>
-                  <p className='text-sm font-bold text-white'>交易失败</p>
-                  <p className='text-xs text-zinc-400'>2026-04-13 23:35:01</p>
-                  <p className='mt-2 text-sm text-zinc-300'>ETH_USDT没有可平仓位</p>
-                </div>
-              </div>
-
-              {/* 事件项 3 */}
-              <div className='relative pl-6'>
-                <div className='absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] bg-green-500'></div>
-                <div className='space-y-1'>
-                  <p className='text-sm font-bold text-white'>进行Gate.io平仓操作</p>
-                  <p className='text-xs text-zinc-400'>2026-04-13 23:32:47</p>
-                  <p className='mt-2 text-sm text-zinc-300'>
-                    品种: 币安人生_USDT, 平仓量: 57.0张, 方向: <span className='text-white'>LONG</span>
-                  </p>
-                </div>
-              </div>
+              {tradeData.length > 0 ? (
+                tradeData.map((item, index) => (
+                  <div key={index} className='relative pl-6'>
+                    <div
+                      className={`absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] ${getColorClass(
+                        item.color
+                      )}`}
+                    ></div>
+                    <div className='space-y-1'>
+                      <p className='text-sm font-bold text-white'>{item.title}</p>
+                      <p className='text-xs text-zinc-400'>{item.date}</p>
+                      <p className='mt-2 text-sm text-zinc-300'>{item.description}</p>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className='pl-6 text-sm text-zinc-400'>暂无数据</div>
+              )}
             </div>
           </CardContent>
         </Card>

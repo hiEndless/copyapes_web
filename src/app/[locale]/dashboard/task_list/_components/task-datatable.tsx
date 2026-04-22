@@ -194,7 +194,12 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
                 variant='ghost'
                 size={'icon'}
                 aria-label='查看详情'
-                onClick={() => router.push(`/dashboard/task_list/task_detail/${row.original.id}` as any)}
+                onClick={() => {
+                  if (typeof window !== 'undefined') {
+                    sessionStorage.setItem('current_task', JSON.stringify(row.original))
+                  }
+                  router.push(`/dashboard/task_list/task_detail/${row.original.id}` as any)
+                }}
               >
                 <EyeIcon className='size-4.5 text-blue-600' />
               </Button>
