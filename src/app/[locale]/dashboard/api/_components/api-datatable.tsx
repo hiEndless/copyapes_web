@@ -19,7 +19,6 @@ import { toast } from 'sonner'
 
 import { deleteApi } from '@/api/apiadd'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from '@/components/ui/pagination'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -48,8 +47,11 @@ export type ApiItem = {
   uid: string | null
   usdt: number | null
   created_at: string
+  create_datetime?: string
   is_readonly: boolean
   status: number // 1 for ok, else error
+  role_type?: number | any
+  exchange?: string
 }
 
 const PLATFORM_MAP: Record<string, { name: string; logo: string }> = {
@@ -118,9 +120,9 @@ const getColumns = (
   },
   {
     header: '创建时间',
-    accessorKey: 'created_at',
+    accessorKey: 'create_datetime',
     cell: ({ row }) => {
-      const dateStr = row.getValue('created_at') as string
+      const dateStr = row.getValue('create_datetime') as string
       const formattedDate = dateStr ? dateStr.replace('T', ' ') : '-'
 
       return <span className='text-muted-foreground text-xs'>{formattedDate}</span>
@@ -136,29 +138,8 @@ const getColumns = (
         <span
           className={cn('text-xs font-medium', isReadOnly ? 'text-green-600 dark:text-green-400' : 'text-foreground')}
         >
-          {isReadOnly ? '只读 (带单)' : '交易 (跟单)'}
+          {isReadOnly ? '只读 (信号)' : '交易 (跟单)'}
         </span>
-      )
-    }
-  },
-  {
-    header: '状态',
-    accessorKey: 'status',
-    cell: ({ row }) => {
-      const status = row.getValue('status') as number
-      const isOk = status === 1
-
-      return (
-        <Badge
-          className={cn(
-            'rounded-sm border-none focus-visible:outline-none',
-            isOk
-              ? 'bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400'
-              : 'bg-red-600/10 text-red-600 dark:bg-red-400/10 dark:text-red-400'
-          )}
-        >
-          {isOk ? '正常' : '异常'}
-        </Badge>
       )
     }
   },
@@ -169,6 +150,7 @@ const getColumns = (
       const handleDelete = async () => {
         try {
           const res = await deleteApi(row.original.id)
+
           if (res.code === 0) {
             toast.success('删除 API 成功')
             onRefresh?.()

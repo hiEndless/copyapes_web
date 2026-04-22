@@ -133,7 +133,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
             <div className='flex items-center gap-6'>
               <label className='flex cursor-pointer items-center gap-2'>
                 <Checkbox checked={formData.is_read_only} onCheckedChange={() => handleChange('is_read_only', true)} />
-                <span className='text-sm font-medium'>只读 (带单)</span>
+                <span className='text-sm font-medium'>只读 (信号)</span>
               </label>
               <label className='flex cursor-pointer items-center gap-2'>
                 <Checkbox
