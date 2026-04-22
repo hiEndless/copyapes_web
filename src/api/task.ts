@@ -106,3 +106,25 @@ export function searchBicoinTrader(data: { search_name: string }) {
     body: data,
   });
 }
+
+// 删除 API
+export function deleteApi(id: number | string) {
+  return request(`/api/apiadd/${id}`, {
+    method: 'DELETE'
+  })
+}
+
+// 获取抢位任务列表
+export function getGrabTaskList() {
+  return request<any[]>('/api/grabtask/', {
+    method: 'GET'
+  })
+}
+
+// 停止抢位任务
+export function stopGrabTask(id: number | string) {
+  return request('/api/grabtask/', {
+    method: 'PATCH',
+    body: { id }
+  })
+}

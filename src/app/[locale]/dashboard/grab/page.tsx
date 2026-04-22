@@ -6,6 +6,8 @@ import { Zap, History, Loader2, StopCircle, CheckCircle2, XCircle, Info } from '
 import Image from 'next/image'
 import { motion } from 'motion/react'
 
+import { toast } from 'sonner'
+
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -13,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { GrabTaskConfigSheet } from './_components/grab-task-config-sheet'
+import { getGrabTaskList, stopGrabTask } from '@/api/task'
 
 import {
   AlertDialog,
@@ -134,8 +137,29 @@ export default function GrabPage() {
   const [selectedTrader, setSelectedTrader] = React.useState<CookieTrader | null>(null)
 
   // 抢位任务状态
-  const [tasks, setTasks] = React.useState<GrabTask[]>(MOCK_GRAB_TASKS)
+  const [tasks, setTasks] = React.useState<GrabTask[]>([])
   const [stoppingTaskId, setStoppingTaskId] = React.useState<string | null>(null)
+
+  const fetchTasks = async () => {
+    try {
+      const res = await getGrabTaskList()
+      if (res.code === 0 && Array.isArray(res.data)) {
+        // 这里进行数据的映射和兼容处理，如果需要
+        const mappedTasks = res.data.map(item => ({
+          ...item,
+          id: String(item.id),
+          created_at: item.created_at || item.create_datetime // 兼容后端返回不同时间字段的情况
+        }))
+        setTasks(mappedTasks)
+      }
+    } catch (error) {
+      console.error('获取抢位任务失败:', error)
+    }
+  }
+
+  React.useEffect(() => {
+    fetchTasks()
+  }, [])
 
   // 获取当前交易所的我自己的 Cookie
   const currentMyCookie = MY_COOKIES.find(c => c.platform === exchange)
@@ -174,9 +198,22 @@ export default function GrabPage() {
     setExchange(value)
   }
 
-  const handleStopTask = (taskId: string) => {
-    setTasks(tasks.map(t => (t.id === taskId ? { ...t, status: 0, info: '用户手动终止' } : t)))
-    setStoppingTaskId(null)
+  const handleStopTask = async (taskId: string) => {
+    try {
+      const res = await stopGrabTask(taskId)
+      if (res.code === 0) {
+        toast.success('已终止抢位任务')
+        // 刷新列表
+        fetchTasks()
+      } else {
+        toast.error(res.error || '终止失败')
+      }
+    } catch (error) {
+      console.error(error)
+      toast.error('请求失败')
+    } finally {
+      setStoppingTaskId(null)
+    }
   }
 
   const activeTasks = tasks.filter(t => t.status === 1)
