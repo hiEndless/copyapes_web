@@ -14,6 +14,13 @@ export function deleteApi(id: string | number) {
   });
 }
 
+// 获取 IP 白名单
+export function getIpList() {
+  return request<{ ip: string; [key: string]: any }[]>('/api/ip/', {
+    method: 'GET'
+  })
+}
+
 // 更新 API 名称
 export function updateApiName(data: { api_id: string | number; api_name: string }) {
   return request('/apiname/', {

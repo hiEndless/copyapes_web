@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { PlusIcon, Loader2Icon } from 'lucide-react'
+
+import { getIpList } from '@/api/apiadd'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -40,6 +42,23 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
     api_secret: '',
     api_passphrase: ''
   })
+
+  const [ipWhitelist, setIpWhitelist] = useState<string>(EXCHANGE_IP_WHITELIST)
+
+  useEffect(() => {
+    if (open) {
+      getIpList()
+        .then(res => {
+          if (res.code === 0 && Array.isArray(res.data) && res.data.length > 0) {
+            const ips = res.data.map(item => item.ip).join(',')
+            setIpWhitelist(ips)
+          }
+        })
+        .catch(err => {
+          console.error('获取 IP 失败', err)
+        })
+    }
+  }, [open])
 
   const handleChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -93,7 +112,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
               💡
             </span>
             <p className='min-w-0 leading-relaxed'>
-              为了安全起见，请在交易所绑定 IP 白名单：<strong className='font-mono'>{EXCHANGE_IP_WHITELIST}</strong>
+              为了安全起见，请在交易所给交易权限的 API 绑定 IP 白名单（只读权限的 API 不要绑定）：<strong className='font-mono'>{ipWhitelist}</strong>
             </p>
           </div>
         </DialogHeader>
