@@ -119,8 +119,8 @@ export default function TaskDetailPage({ params }: { params: any }) {
   }
 
   const getFollowType = () => {
-    // Vue 中默认就是 '智能跟单' 或者根据业务调整，原 vue 写死为 '智能跟单'
-    return '智能跟单'
+    // Vue 中默认就是 '固定比例' 或者根据业务调整，原 vue 写死为 '固定比例'
+    return '固定比例'
   }
 
   const getRoleType = (roleType: number | string, traderPlatform: number | string) => {
@@ -179,14 +179,10 @@ export default function TaskDetailPage({ params }: { params: any }) {
     list.push({ label: '交易员类型', value: getRoleType(task.role_type, task.trader_platform) })
     list.push({ label: '跟单模式', value: getFollowType() })
 
-    // vue 代码里 f_t 写死为 '智能跟单'
+    // vue 代码里 f_t 写死为 '固定比例'
     list.push({ label: '智能倍数', value: task.multiple })
     list.push({ label: '投资额', value: task.investment })
-
-    if (!(String(task.trader_platform) === '1' && String(task.role_type) === '2')) {
-      list.push({ label: '对标资金', value: task.benchMark })
-    }
-
+    list.push({ label: '对标资金', value: task.benchMark })
     list.push({ label: '杠杆设置', value: String(task.lever_set) === '1' ? '跟随交易员' : task.leverage })
 
     if (String(task.trade_trigger_mode) === '1') {

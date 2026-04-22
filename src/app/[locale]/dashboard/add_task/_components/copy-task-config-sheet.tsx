@@ -235,7 +235,7 @@ export function CopyTaskConfigSheet({
         sums: '0',
         ratio: '0',
         lever_set: String(formData.lever_set),
-        leverage: formData.lever_set === 2 ? formData.leverage : '1',
+        leverage: String(formData.lever_set) === '2' && formData.leverage ? formData.leverage : '1',
         first_open_type: String(formData.first_open_type),
         uplRatio: formData.uplRatio,
         first_order_set: String(formData.first_order_set),
@@ -748,7 +748,15 @@ export function CopyTaskConfigSheet({
           <Button variant='outline' onClick={onClose} disabled={isLoading}>
             取消
           </Button>
-          <Button onClick={handleSubmit} disabled={isLoading || !formData.api_id || !formData.investment}>
+          <Button
+            onClick={handleSubmit}
+            disabled={
+              isLoading ||
+              !formData.api_id ||
+              !formData.investment ||
+              (formData.lever_set === 2 && !formData.leverage)
+            }
+          >
             {isLoading ? '提交中...' : '立即跟单'}
           </Button>
         </SheetFooter>
