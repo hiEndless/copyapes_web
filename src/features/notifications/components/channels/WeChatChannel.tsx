@@ -83,7 +83,13 @@ export function WeChatChannel({ form }: ChannelProps) {
                     className='bg-muted/30 font-mono'
                   />
                 </FormControl>
-                <Button type='button' variant='secondary' onClick={generateAuthCode} disabled={isGenerating}>
+                <Button 
+                  type='button' 
+                  variant='secondary' 
+                  onClick={generateAuthCode} 
+                  disabled={isGenerating}
+                  className='border border-transparent dark:border-input'
+                >
                   {isGenerating ? <RefreshCw className='mr-2 h-4 w-4 animate-spin' /> : null}
                   {authCode ? '重新生成' : '生成授权码'}
                 </Button>
