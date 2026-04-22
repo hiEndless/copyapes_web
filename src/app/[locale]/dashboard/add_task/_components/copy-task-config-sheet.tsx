@@ -208,9 +208,9 @@ export function CopyTaskConfigSheet({
 
     if (res.code === 0) {
       updateForm('benchMark', String(res.data))
-      if (!isAuto) toast.success(res.message || '获取成功')
+      if (!isAuto) toast.success(res.msg || '获取成功')
     } else {
-      if (!isAuto) toast.error(res.error || '获取预估本金失败')
+      if (!isAuto) toast.error(res.msg || '获取预估本金失败')
     }
   }
 

@@ -8,15 +8,16 @@ export function getApiOptions() {
 }
 
 // 获取预估本金
-export function getTraderBalance(data: {
-  trader_platform: string | number;
-  role_type?: string | number;
-  uniqueName: string;
-}) {
-  return request('/trader_balance/', {
+export const getTraderBalance = (params: {
+  trader_platform: string | number
+  uniqueName: string
+  role_type?: string | number
+}) => {
+  return request<number | string>('/api/trader_balance/', {
     method: 'POST',
-    body: data,
-  });
+    body: params,
+    silent: true // 防止内部 toast 弹出
+  })
 }
 
 // 获取交易员平台名称

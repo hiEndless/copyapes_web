@@ -7,16 +7,18 @@ export interface BaseResponse<T = any> {
   data?: T;
   error?: string;
   message?: string;
+  msg?: string;
   detail?: Record<string, string[]>;
 }
 
 export interface RequestOptions extends Omit<RequestInit, 'body'> {
   params?: Record<string, string | number | boolean | null | undefined>;
   body?: any;
+  silent?: boolean; // 如果为 true，遇到错误时不弹出 toast
 }
 
 export async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<BaseResponse<T>> {
-  const { params = {}, body, ...customConfig } = options;
+  const { params = {}, body, silent = false, ...customConfig } = options;
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
@@ -82,14 +84,16 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
         }
       }
 
-      toast.error(errorMessage);
+      if (!silent) {
+        toast.error(errorMessage);
+      }
     }
 
     return data as BaseResponse<T>;
   } catch (error) {
     console.error('API Request Error:', error);
 
-    if (typeof window !== 'undefined') {
+    if (!silent && typeof window !== 'undefined') {
       toast.error('网络请求失败，请稍后重试');
     }
 
