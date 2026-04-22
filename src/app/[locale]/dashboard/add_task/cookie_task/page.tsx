@@ -500,12 +500,12 @@ export default function CookieTaskPage() {
                     <SelectContent>
                       {exchange === 'okx' ? (
                         <>
-                          <SelectItem value='contract'>合约带单</SelectItem>
+                          <SelectItem value='1'>合约带单</SelectItem>
                         </>
                       ) : (
                         <>
-                          <SelectItem value='public'>带单项目</SelectItem>
-                          <SelectItem value='hidden'>聪明钱</SelectItem>
+                          <SelectItem value='1'>带单项目</SelectItem>
+                          <SelectItem value='3'>聪明钱</SelectItem>
                         </>
                       )}
                     </SelectContent>

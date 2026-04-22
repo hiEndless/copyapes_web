@@ -72,8 +72,30 @@ const PLATFORM_MAP: Record<number, { name: string; logo: string | React.ReactNod
   6: { name: 'OKX API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
   7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
   8: { name: 'OKX Cookie', logo: '/exchanges/okx.png' },
-  9: { name: 'Hyperliquid', logo: '/exchanges/hlq_logo.png' },
-  10: { name: 'Bitget', logo: '/exchanges/hlq_logo.png' }
+  9: { name: 'NOF1 / AI模型', logo: '/exchanges/default.png' }, // TODO: 更新 logo
+  10: { name: 'Hyperliquid', logo: '/exchanges/hlq_logo.png' }
+}
+
+const getRoleTypeLabel = (platform: number, roleType?: number | string) => {
+  if (!roleType) return null
+  const rt = String(roleType)
+
+  if (platform === 1 || platform === 8) {
+    // OKX 系列
+    if (rt === '1') return '合约带单'
+    if (rt === '2') return '个人概况'
+  } else if (platform === 2 || platform === 5 || platform === 7) {
+    // Binance 系列
+    if (rt === '1') return '公开带单'
+    if (rt === '2') return '隐藏带单'
+    if (rt === '3') return '聪明钱'
+  } else if (platform === 3) {
+    // 币coin
+    if (rt === '1') return '操作记录'
+    if (rt === '2') return '合约仓位'
+  }
+
+  return null
 }
 
 const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
@@ -85,6 +107,7 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
         name: '未知',
         logo: '/exchanges/default.png'
       }
+      const roleTypeLabel = getRoleTypeLabel(row.original.trader_platform, row.original.role_type)
 
       return (
         <div className='flex items-center gap-2'>
@@ -96,9 +119,16 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
             )}
           </div>
           <div className='flex flex-col'>
-            <span className='font-medium max-w-[200px] break-words whitespace-normal leading-snug'>{row.getValue('uniqueName')}</span>
-            <div className='flex items-center gap-1 text-muted-foreground text-xs mt-0.5'>
+            <span className='font-medium max-w-[200px] break-words whitespace-normal leading-snug'>
+              {row.getValue('uniqueName')}
+            </span>
+            <div className='mt-1 flex flex-wrap items-center gap-1 text-xs text-muted-foreground'>
               <span>任务ID: {row.original.id}</span>
+              {roleTypeLabel && (
+                <span className='bg-primary/10 text-primary rounded-[2px] px-1 py-0.5 scale-90 origin-left'>
+                  {roleTypeLabel}
+                </span>
+              )}
               {row.original.posSide_set === 2 && (
                 <span className='bg-red-500 text-white rounded-[2px] px-1 py-0.5 scale-90 origin-left'>反</span>
               )}

@@ -123,21 +123,30 @@ export default function TaskDetailPage({ params }: { params: any }) {
     return '智能跟单'
   }
 
-  const getRoleType = (roleType: number, traderPlatform: number) => {
+  const getRoleType = (roleType: number | string, traderPlatform: number | string) => {
     const rt = String(roleType)
     const tp = String(traderPlatform)
-    if (rt === '1' && tp === '1') return '公开带单'
-    if (rt === '2' && tp === '1') return '个人交易'
-    if (rt === '1' && tp === '2') return '公开实盘'
-    if (rt === '2' && tp === '2') return '隐藏实盘'
-    if (rt === '1' && tp === '3') return '操作记录'
-    if (rt === '2' && tp === '3') return '合约仓位'
-    if (rt === '3' && tp === '3') return '操作记录'
-    if (rt === '4' && tp === '3') return '合约仓位'
-    if (rt === '1' && tp === '7') return '公开实盘'
-    if (tp === '9') return 'AI模型'
-    if (tp === '10') return '钱包地址'
-    return '交易员'
+
+    if (tp === '1' || tp === '6' || tp === '8') {
+      // OKX 系列
+      if (rt === '1') return '合约带单'
+      if (rt === '2') return '个人概况'
+    } else if (tp === '2' || tp === '5' || tp === '7') {
+      // Binance 系列
+      if (rt === '1') return '公开带单'
+      if (rt === '2') return '隐藏带单'
+      if (rt === '3') return '聪明钱'
+    } else if (tp === '3') {
+      // 币coin
+      if (rt === '1' || rt === '3') return '操作记录'
+      if (rt === '2' || rt === '4') return '合约仓位'
+    } else if (tp === '9') {
+      return 'AI模型'
+    } else if (tp === '10') {
+      return '钱包地址'
+    }
+
+    return '未知'
   }
 
   const isRunning = task?.status === 1

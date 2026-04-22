@@ -124,8 +124,12 @@ export function CopyTaskConfigSheet({
   const [apiOptions, setApiOptions] = useState<any[]>([])
   const [user, setUser] = useState('')
 
+  const mappedRoleType = roleType || '1'
+
   const hideFollowLeverage =
-    traderPlatform === 4 || traderPlatform === '4' || (String(traderPlatform) === '3' && String(roleType) === '1')
+    String(traderPlatform) === '4' ||
+    (String(traderPlatform) === '3' && mappedRoleType === '1') ||
+    (String(traderPlatform) === '2' && mappedRoleType === '2')
 
   // Form State
   const [formData, setFormData] = useState({
@@ -134,7 +138,7 @@ export function CopyTaskConfigSheet({
     benchMark: '',
     investment: '',
     lever_set: hideFollowLeverage ? 2 : 1,
-    leverage: '1',
+    leverage: '',
     first_open_type: 1,
     uplRatio: '0',
     first_order_set: 1
@@ -222,16 +226,6 @@ export function CopyTaskConfigSheet({
     setIsLoading(true)
 
     try {
-      // role_type 映射: 'public' => '1', 'hidden' => '2', 'contract' => '1' 或后端对应的值
-      // 默认先映射成 '1' 如果传入的是非数字的字符串
-      let mappedRoleType = roleType || '1'
-
-      if (mappedRoleType === 'public' || mappedRoleType === 'contract' || mappedRoleType === 'api' || mappedRoleType === 'cookie' || mappedRoleType === 'hyper' || mappedRoleType === 'hot' || mappedRoleType === 'exchange') {
-        mappedRoleType = '1'
-      } else if (mappedRoleType === 'hidden') {
-        mappedRoleType = '2' // 聪明钱对应 2，如果后端有别的要求请调整
-      }
-
       const payload = {
         trader_platform: traderPlatform,
         uniqueName: traderPlatform === 7 || traderPlatform === 8 ? `${traderId}-${cookieId || ''}` : traderId,
@@ -484,14 +478,14 @@ export function CopyTaskConfigSheet({
 
               {formData.lever_set === 2 && (
                 <div className='animate-in fade-in space-y-2'>
-                  <label className='text-sm font-medium'>杠杆数值</label>
+                  <label className='mb-2 block text-sm font-medium'>杠杆数值</label>
                   <Input
                     type='number'
                     min='1'
                     max='75'
                     value={formData.leverage}
                     onChange={e => updateForm('leverage', e.target.value)}
-                    placeholder='1至75整数'
+                    placeholder='1至75整数（建议10到20，以免有的币种不支持高杠杆）'
                   />
                 </div>
               )}

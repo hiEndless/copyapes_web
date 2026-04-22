@@ -274,13 +274,13 @@ export default function ExchangeTaskPage() {
                     <SelectContent>
                       {exchange === 'okx' ? (
                         <>
-                          <SelectItem value='personal'>个人概况</SelectItem>
-                          <SelectItem value='contract'>合约带单</SelectItem>
+                          <SelectItem value='1'>合约带单</SelectItem>
+                          <SelectItem value='2'>个人概况</SelectItem>
                         </>
                       ) : (
                         <>
-                          <SelectItem value='public'>公开带单</SelectItem>
-                          <SelectItem value='hidden'>隐藏带单</SelectItem>
+                          <SelectItem value='1'>公开带单</SelectItem>
+                          <SelectItem value='2'>隐藏带单</SelectItem>
                         </>
                       )}
                     </SelectContent>
