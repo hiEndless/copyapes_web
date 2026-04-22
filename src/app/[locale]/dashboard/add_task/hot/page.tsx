@@ -1,11 +1,12 @@
 'use client'
 
 import * as React from 'react'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { Flame } from 'lucide-react'
 import { motion } from 'motion/react'
 
+import { request } from '@/api/request'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
@@ -115,9 +116,40 @@ const initialTraders: Trader[] = [
 ]
 
 export default function HotTaskPage() {
-  const [traders] = useState<Trader[]>(initialTraders)
+  const [traders, setTraders] = useState<Trader[]>(initialTraders)
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null)
   const [isConfigOpen, setIsConfigOpen] = useState(false)
+
+  useEffect(() => {
+    const fetchBalance = async () => {
+      try {
+        const res = await request<Record<string, number>[]>('/api/hotbalance/')
+
+        if (res.code === 0 && res.data) {
+          const balanceMap = res.data.reduce((acc, curr) => {
+            if (curr && typeof curr === 'object') {
+              Object.entries(curr).forEach(([key, value]) => {
+                acc[key] = Number(value) || 0
+              })
+            }
+
+            return acc
+          }, {} as Record<string, number>)
+
+          setTraders(prev =>
+            prev.map(trader => ({
+              ...trader,
+              balance: balanceMap[trader.name] || 0
+            }))
+          )
+        }
+      } catch (error) {
+        console.error('Failed to fetch hot balances:', error)
+      }
+    }
+
+    fetchBalance()
+  }, [])
 
   // TODO: 后续可以接入真实资金获取接口，这里仅做格式化展示
   const formatBalance = (balance: number) => {

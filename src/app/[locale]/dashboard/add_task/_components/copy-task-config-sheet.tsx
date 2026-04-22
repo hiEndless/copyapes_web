@@ -107,6 +107,7 @@ export interface CopyTaskConfigSheetProps {
   traderPlatform?: number | string // 交易员平台 ID (1: OKX, 2: Binance, 3: 币coin, 4: 热门, 5: Cookie, 6: API, 7: 币安带单, 8: OKX带单, 9: Hyperliquid, 10: Bitget)
   roleType?: string // 交易员实盘类型，由上一级页面传入
   cookieId?: string
+  initialBenchMark?: string | number // 初始本金，如已有则优先使用该值
 }
 
 export function CopyTaskConfigSheet({
@@ -117,7 +118,8 @@ export function CopyTaskConfigSheet({
   platform,
   traderPlatform,
   roleType,
-  cookieId
+  cookieId,
+  initialBenchMark
 }: CopyTaskConfigSheetProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -187,16 +189,6 @@ export function CopyTaskConfigSheet({
     }
   }, [isOpen, formData.api_id])
 
-  // Effect to reset/init form when traderId changes
-  useEffect(() => {
-    if (isOpen && traderId) {
-      setFormData(prev => ({
-        ...prev,
-        lever_set: hideFollowLeverage ? 2 : 1
-      }))
-    }
-  }, [isOpen, traderId, platform, hideFollowLeverage])
-
   const updateForm = (key: keyof typeof formData, value: any) => {
     setFormData(prev => ({ ...prev, [key]: value }))
   }
@@ -205,7 +197,7 @@ export function CopyTaskConfigSheet({
     setToggles(prev => ({ ...prev, [key]: value }))
   }
 
-  const fetchBenchMark = async () => {
+  const fetchBenchMark = async (isAuto = false) => {
     if (!traderPlatform || !traderId) return
 
     const res = await getTraderBalance({
@@ -215,12 +207,29 @@ export function CopyTaskConfigSheet({
     })
 
     if (res.code === 0) {
-      updateForm('benchMark', res.data)
-      toast.success(res.message || '获取成功')
+      updateForm('benchMark', String(res.data))
+      if (!isAuto) toast.success(res.message || '获取成功')
     } else {
-      toast.error(res.error || '获取预估本金失败')
+      if (!isAuto) toast.error(res.error || '获取预估本金失败')
     }
   }
+
+  // Effect to reset/init form when traderId changes
+  useEffect(() => {
+    if (isOpen && traderId) {
+      setFormData(prev => ({
+        ...prev,
+        lever_set: hideFollowLeverage ? 2 : 1,
+        benchMark: initialBenchMark ? String(initialBenchMark) : prev.benchMark
+      }))
+
+      // 如果没有传入初始本金，则尝试自动获取交易员本金
+      if (!initialBenchMark) {
+        fetchBenchMark(true)
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, traderId, platform, hideFollowLeverage, initialBenchMark])
 
   const handleSubmit = async () => {
     setIsLoading(true)
@@ -417,7 +426,7 @@ export function CopyTaskConfigSheet({
                       onChange={e => updateForm('benchMark', e.target.value)}
                       placeholder='>100'
                     />
-                    <Button variant='secondary' className='px-3' onClick={fetchBenchMark}>
+                    <Button variant='secondary' className='px-3' onClick={() => fetchBenchMark()}>
                       自动获取
                     </Button>
                   </div>

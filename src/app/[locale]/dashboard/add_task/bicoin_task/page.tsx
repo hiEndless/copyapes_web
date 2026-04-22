@@ -405,6 +405,7 @@ export default function BicoinTaskPage() {
         platform={selectedTrader?.exchange?.toLowerCase() === 'binance' ? 'binance' : 'okx'}
         traderPlatform={3}
         roleType={traderType}
+        initialBenchMark={selectedTrader?.balance || ''}
       />
     </div>
   )
