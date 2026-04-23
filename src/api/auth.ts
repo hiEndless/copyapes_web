@@ -18,10 +18,12 @@ export interface UserInfo {
   token: string;
   is_admin: boolean;
   is_vip: boolean;
-  is_private: boolean;
+  is_studio_vip: boolean;
   is_partner: boolean;
   is_new_user: boolean;
   is_oem: boolean;
+  vip_days?: number;
+  studio_vip_days?: number;
 }
 
 export const authApi = {

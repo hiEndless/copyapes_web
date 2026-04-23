@@ -56,7 +56,7 @@ export function WeChatChannel({ form }: ChannelProps) {
 
   return (
     <div className='space-y-4'>
-      <h3 className='text-muted-foreground text-sm font-medium tracking-wider uppercase'>微信公众号配置</h3>
+      <h3 className='text-muted-foreground text-sm font-medium tracking-wider uppercase'>微信服务号配置</h3>
 
       <Alert variant='default' className='bg-muted/50 flex flex-col justify-between gap-4 sm:flex-row sm:items-center'>
         <div>

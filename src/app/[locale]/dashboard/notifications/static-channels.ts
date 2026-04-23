@@ -28,7 +28,7 @@ export const STATIC_CHANNELS: NotificationChannel[] = [
   {
     id: 'wechat_official',
     channel_type: 'wechat_official',
-    name: '微信公众号',
+    name: '微信服务号',
     logo: 'wechat',
     is_active: false,
     config: {},

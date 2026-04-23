@@ -160,14 +160,14 @@ const copyItems: MenuItem[] = [
   },
   {
     icon: Flame,
-    label: '热门带单 KOL 推荐',
+    label: '热门带单 KOL ',
     href: '/dashboard/add_task/hot'
   },
-  {
-    icon: Flame,
-    label: 'HyperLiquid KOL 推荐',
-    href: '/dashboard/hyper_discover'
-  }
+  // {
+  //   icon: Flame,
+  //   label: 'HyperLiquid KOL ',
+  //   href: '/dashboard/hyper_discover'
+  // }
 ]
 
 const toolsItems: MenuItem[] = [
@@ -217,6 +217,8 @@ const settingsItems: MenuItem[] = [
 
 const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; groupLabel?: string }) => {
   const pathname = usePathname()
+
+  if (!data || data.length === 0) return null
 
   return (
     <SidebarGroup>
@@ -296,12 +298,30 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
 const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const [mounted, setMounted] = useState(false)
   const { resolvedTheme, setTheme } = useTheme()
+  const [isAdmin, setIsAdmin] = useState(false)
+  const [isPartner, setIsPartner] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+    try {
+      const userInfoStr = localStorage.getItem('userInfo')
+      if (userInfoStr) {
+        const userInfo = JSON.parse(userInfoStr)
+        setIsAdmin(userInfo.is_admin === true)
+        setIsPartner(userInfo.is_partner === true)
+      }
+    } catch (e) {
+      console.error('Failed to parse userInfo', e)
+    }
   }, [])
 
   if (!mounted) return null
+
+  const filteredAdminItems = adminItems.filter(item => {
+    if (item.label === '系统后台' && !isAdmin) return false
+    if (item.label === '代理商后台' && !isPartner) return false
+    return true
+  })
 
   return (
     <div className='flex min-h-dvh w-full'>
@@ -321,7 +341,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
           </SidebarHeader>
           <SidebarContent>
             <SidebarGroupedMenuItems data={menuItems} />
-            <SidebarGroupedMenuItems data={adminItems} groupLabel='系统服务' />
+            <SidebarGroupedMenuItems data={filteredAdminItems} groupLabel='系统服务' />
             <SidebarGroupedMenuItems data={studioToolsItems} groupLabel='工作室服务' />
             <SidebarGroupedMenuItems data={copyItems} groupLabel='跟单服务' />
             <SidebarGroupedMenuItems data={toolsItems} groupLabel='工具服务' />
