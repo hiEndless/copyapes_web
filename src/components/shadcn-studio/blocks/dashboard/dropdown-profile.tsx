@@ -16,7 +16,7 @@ import { toast } from 'sonner'
 import { useRouter } from '@/i18n/routing'
 import { type UserInfo } from '@/api/auth'
 
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -64,6 +64,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
         <DropdownMenuLabel className='flex items-center gap-3 px-3 py-2 font-normal'>
           <div className='relative'>
             <Avatar className='size-8'>
+              <AvatarImage src='https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png' />
               <AvatarFallback>{userInfo?.name?.[0]?.toUpperCase() || 'U'}</AvatarFallback>
             </Avatar>
             <span className='ring-card absolute right-0 bottom-0 block size-2 rounded-full bg-green-600 ring-2' />

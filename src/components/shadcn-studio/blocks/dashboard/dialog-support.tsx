@@ -15,20 +15,20 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
   const contactInfo = {
     qq: {
       title: 'QQ 客服',
-      description: '添加客服 QQ 交流群',
-      action: 'QQ: 12345678',
+      description: '添加客服 QQ ',
+      action: 'QQ: 27979831',
       icon: <MessageCircle className='size-5 text-zinc-900 dark:text-zinc-100' />
     },
     wechat: {
       title: '微信客服',
-      description: '扫码添加专属微信客服',
-      action: 'WeChat: copyapes_official',
+      description: '添加专属微信客服',
+      action: 'WeChat: copyapes_admin',
       icon: <MessageCircle className='size-5 text-zinc-900 dark:text-zinc-100' />
     },
     telegram: {
       title: 'Telegram 客服',
-      description: "We'll be back online on Monday",
-      action: 'Send us a message',
+      description: "添加 Telegram 客服",
+      action: 'https://t.me/copyapes_admin',
       icon: <Send className='size-5 text-zinc-900 dark:text-zinc-100' />
     },
     email: {
@@ -76,7 +76,7 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
           <div className='space-y-4'>
             <div>
               <h2 className='text-2xl font-semibold opacity-90'>
-                Hi User <span className='animate-wave inline-block'>👋</span>
+                Hi <span className='animate-wave inline-block'>👋</span>
               </h2>
               <h3 className='text-2xl font-bold'>联系客服与帮助</h3>
             </div>
@@ -138,17 +138,18 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
           <div className='shrink-0 overflow-hidden rounded-2xl border bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950'>
             <div className='flex flex-col'>
               {[
-                { label: 'License', href: '#' },
-                { label: 'Getting Started', href: '#' },
-                { label: 'Documentation Pro Version', href: '#' },
-                { label: 'Join Discord for Technical Support', href: '#' },
-                { label: 'Hire Us', href: '#' },
-                { label: 'Roadmap', href: '#' },
-                { label: 'Blogs', href: '#' }
+                { label: '用户协议', href: 'https://docs.lichaoyuan.com/copyapes/protocol' },
+                { label: '简易跟单流程', href: 'https://docs.lichaoyuan.com/copyapes/step' },
+                { label: '币coin 跟单介绍', href: 'https://docs.lichaoyuan.com/copyapes/vip/bicoin' },
+                { label: 'Cookie 跟单介绍', href: 'https://docs.lichaoyuan.com/copyapes/vip/cookie' },
+                { label: 'API 跟单介绍', href: 'https://docs.lichaoyuan.com/copyapes/vip/ws' },
+                { label: '如何获取交易所 Cookie', href: 'https://docs.lichaoyuan.com/copyapes/other/add-cookie' },
+                { label: '交易所跟单抢位介绍', href: 'https://docs.lichaoyuan.com/copyapes/other/grab' }
               ].map((item, index) => (
                 <a
                   key={index}
                   href={item.href}
+                  target='_blank'
                   className='flex items-center justify-between border-b border-zinc-100 px-5 py-3.5 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800/80 dark:hover:bg-zinc-900'
                 >
                   <span className='text-[15px] text-zinc-700 dark:text-zinc-300'>{item.label}</span>
