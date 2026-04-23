@@ -370,7 +370,7 @@ export default function CookieTaskPage() {
                       ))}
                     </div>
                   ) : (
-                    <div className='text-muted-foreground py-8 text-center text-sm'>
+                    <div className='text-muted-foreground py-8 text-center text-sm border border-dashed rounded-xl'>
                       未找到您在 {exchange === 'okx' ? '欧易' : exchange === 'binance' ? '币安' : exchange} 的
                       Cookie，请先前往添加
                     </div>

@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { GrabTaskConfigSheet } from './_components/grab-task-config-sheet'
 import { getGrabTaskList, stopGrabTask } from '@/api/task'
+import { getCookies } from '@/api/cookie'
 
 import {
   AlertDialog,
@@ -49,78 +50,6 @@ type GrabTask = {
   created_at: string
 }
 
-// 模拟的“我的 Cookie”数据
-const MY_COOKIES: CookieTrader[] = [
-  { id: 'my-1', name: '我的币安主账号 Cookie', status: 'active', platform: 'binance' },
-
-  // { id: 'my-2', name: 'OKX高频策略 Cookie', status: 'expired', platform: 'okx' },
-  { id: 'my-2', name: 'OKX高频策略 Cookie', status: 'active', platform: 'okx' }
-]
-
-// 模拟的抢位任务数据
-const MOCK_GRAB_TASKS: GrabTask[] = [
-  {
-    id: 'g-1',
-    exchange: 2,
-    nickname: '币安带单大神',
-    uniqueName: '1234567',
-    follow_type: '定比跟单',
-    status: 1,
-    info: '',
-    created_at: '2025-04-20 10:00:00'
-  },
-  {
-    id: 'g-2',
-    exchange: 1,
-    nickname: 'OKX稳健策略',
-    uniqueName: 'EEA569A04A98D4E9',
-    follow_type: '定比跟单',
-    status: 0,
-    info: '成功',
-    created_at: '2025-04-19 14:30:00'
-  },
-  {
-    id: 'g-3',
-    exchange: 2,
-    nickname: '热门短线交易员',
-    uniqueName: '3887627985594221568',
-    follow_type: '定额跟单',
-    status: 0,
-    info: '失败，Cookie已失效',
-    created_at: '2025-04-18 09:15:00'
-  },
-  {
-    id: 'g-4',
-    exchange: 1,
-    nickname: '测试策略1',
-    uniqueName: 'TEST1234',
-    follow_type: '定比跟单',
-    status: 0,
-    info: '成功',
-    created_at: '2025-04-17 10:00:00'
-  },
-  {
-    id: 'g-5',
-    exchange: 2,
-    nickname: '测试策略2',
-    uniqueName: 'TEST5678',
-    follow_type: '定比跟单',
-    status: 0,
-    info: '失败，余额不足',
-    created_at: '2025-04-16 10:00:00'
-  },
-  {
-    id: 'g-6',
-    exchange: 1,
-    nickname: '测试策略3',
-    uniqueName: 'TEST9012',
-    follow_type: '定比跟单',
-    status: 0,
-    info: '成功',
-    created_at: '2025-04-15 10:00:00'
-  }
-]
-
 const featureActions = [
   {
     title: '获取交易所 Cookie',
@@ -135,6 +64,7 @@ export default function GrabPage() {
   const [isConfigOpen, setIsConfigOpen] = React.useState(false)
 
   const [selectedTrader, setSelectedTrader] = React.useState<CookieTrader | null>(null)
+  const [myCookies, setMyCookies] = React.useState<CookieTrader[]>([])
 
   // 抢位任务状态
   const [tasks, setTasks] = React.useState<GrabTask[]>([])
@@ -157,12 +87,30 @@ export default function GrabPage() {
     }
   }
 
+  const fetchCookies = async () => {
+    try {
+      const res = await getCookies()
+      if (res.code === 0 && Array.isArray(res.data)) {
+        const mappedCookies: CookieTrader[] = res.data.map(c => ({
+          id: String(c.id),
+          name: c.curl_name,
+          status: c.available ? 'active' : 'expired',
+          platform: c.exchange === 2 ? 'binance' : c.exchange === 1 ? 'okx' : 'bitget'
+        }))
+        setMyCookies(mappedCookies)
+      }
+    } catch (error) {
+      console.error('获取 Cookie 失败:', error)
+    }
+  }
+
   React.useEffect(() => {
     fetchTasks()
+    fetchCookies()
   }, [])
 
   // 获取当前交易所的我自己的 Cookie
-  const currentMyCookie = MY_COOKIES.find(c => c.platform === exchange)
+  const currentMyCookie = myCookies.find(c => c.platform === exchange)
 
   React.useEffect(() => {
     if (currentMyCookie && currentMyCookie.status === 'active') {
