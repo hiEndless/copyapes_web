@@ -5,7 +5,9 @@ import { useState } from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 
 import { Info, RefreshCw } from 'lucide-react'
+import { toast } from 'sonner'
 
+import { request } from '@/api/request'
 import type { NotificationChannelUpdate } from '../../types'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
@@ -30,14 +32,21 @@ export function WeChatChannel({ form }: ChannelProps) {
     setIsGenerating(true)
 
     try {
-      // 模拟 API 请求生成授权码
-      await new Promise(resolve => setTimeout(resolve, 800))
-      const newCode = Math.random().toString(36).substring(2, 8).toUpperCase()
+      const response = await request<{ wx_code: string }>('/wx/', { method: 'POST' })
 
-      setAuthCode(newCode)
+      // request helper 已经兼容了返回格式并拦截了错误，如果 code === 0 说明成功
+      if (response.code === 0) {
+        // 兼容一下不同的数据结构层级，避免取不到值
+        const newCode = response.data?.wx_code || (response as any).wx_code
 
-      // 更新表单中的 wechat_auth_code 字段
-      form.setValue('config.wechat_auth_code', newCode)
+        if (newCode) {
+          setAuthCode(newCode)
+          form.setValue('config.wechat_auth_code', newCode, { shouldDirty: true })
+          toast.success('授权码生成成功')
+        } else {
+          toast.error('未能获取到授权码')
+        }
+      }
     } catch (error) {
       console.error('Failed to generate auth code:', error)
     } finally {
@@ -83,10 +92,10 @@ export function WeChatChannel({ form }: ChannelProps) {
                     className='bg-muted/30 font-mono'
                   />
                 </FormControl>
-                <Button 
-                  type='button' 
-                  variant='secondary' 
-                  onClick={generateAuthCode} 
+                <Button
+                  type='button'
+                  variant='secondary'
+                  onClick={generateAuthCode}
                   disabled={isGenerating}
                   className='border border-transparent dark:border-input'
                 >

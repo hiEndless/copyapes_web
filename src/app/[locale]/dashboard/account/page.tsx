@@ -5,6 +5,7 @@ import { useState } from 'react'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { request } from '@/api/request'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -41,18 +42,25 @@ export default function AccountPage() {
     setLoading(true)
 
     try {
-      // 模拟 API 请求
-      await new Promise(resolve => setTimeout(resolve, 1000))
-
-      toast.success('密码修改成功')
-      setFormData({
-        oldPassword: '',
-        newPassword: '',
-        confirmPassword: ''
+      const response = await request('/changepassword/', {
+        method: 'POST',
+        body: {
+          password: formData.oldPassword,
+          new_password: formData.newPassword,
+          confirm_password: formData.confirmPassword
+        }
       })
+
+      if (response.code === 0) {
+        toast.success('密码修改成功')
+        setFormData({
+          oldPassword: '',
+          newPassword: '',
+          confirmPassword: ''
+        })
+      }
     } catch (error) {
       console.error(error)
-      toast.error('密码修改失败，请重试')
     } finally {
       setLoading(false)
     }

@@ -1,15 +1,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLocale } from 'next-intl';
 
+import { request } from '@/api/request';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import { NotificationChannel, NotificationChannelUpdate } from '@/features/notifications/types';
+import type { NotificationChannel, NotificationChannelUpdate } from '@/features/notifications/types';
 import { ChannelConfigForm } from '@/features/notifications/components/ChannelConfigForm';
 import { ChannelLogo } from '@/features/notifications/components/ChannelLogo';
 import { STATIC_CHANNELS } from './static-channels';
@@ -29,6 +31,7 @@ const StatusDot = ({ enabled }: { enabled: boolean }) => (
 
 function getErrorMessage(error: unknown) {
   if (error instanceof Error) return error.message;
+
   try {
     return JSON.stringify(error);
   } catch {
@@ -47,11 +50,34 @@ export default function NotificationPage() {
   useEffect(() => {
     const initializeChannels = async () => {
       setIsLoading(true);
+
       try {
-        // 模拟 API 获取数据
-        await new Promise(resolve => setTimeout(resolve, 500));
-        
+        const response = await request<{
+          wx: boolean;
+          wx_code: string;
+          qq_mail: boolean;
+          qq: string;
+          password: string;
+        }>('/notify/', { method: 'GET' });
+
         const mergedChannels = [...STATIC_CHANNELS];
+
+        if (response.code === 0 && response.data) {
+          const data = response.data;
+
+          mergedChannels.forEach(channel => {
+            if (channel.id === 'wechat_official') {
+              channel.is_active = data.wx;
+              channel.config = { wechat_auth_code: data.wx_code || '' };
+            } else if (channel.id === 'qq_email') {
+              channel.is_active = data.qq_mail;
+              channel.config = {
+                qq_email_address: data.qq || '',
+                qq_auth_code: data.password || ''
+              };
+            }
+          });
+        }
 
         setChannels(mergedChannels);
         setSelectedChannelId(mergedChannels[0]?.id || null);
@@ -73,19 +99,28 @@ export default function NotificationPage() {
   const handleSave = async (data: NotificationChannelUpdate) => {
     if (!selectedChannel) return;
     setIsSaving(true);
+
     try {
+      if (selectedChannel.id === 'qq_email') {
+        const response = await request('/qqmail/', {
+          method: 'POST',
+          body: {
+            qq: data.config?.qq_email_address || '',
+            password: data.config?.qq_auth_code || ''
+          }
+        });
+
+        if (response.code !== 0) throw new Error(response.error || response.msg || '保存QQ邮箱配置失败');
+      }
+
       const channelToUpdate: NotificationChannel = {
         ...selectedChannel,
         ...data,
         config: { ...selectedChannel.config, ...data.config },
       };
 
-      // 模拟 API 保存
-      await new Promise(resolve => setTimeout(resolve, 800));
-      const updatedChannel = channelToUpdate;
-
       setChannels(prev => prev.map(c =>
-        c.channel_type === updatedChannel.channel_type ? updatedChannel : c
+        c.channel_type === channelToUpdate.channel_type ? channelToUpdate : c
       ));
 
       toast.success('配置已保存');
@@ -100,6 +135,7 @@ export default function NotificationPage() {
   const handleTest = async () => {
     if (!selectedChannelId) return;
     setIsTesting(true);
+
     try {
       // 模拟测试发送
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -113,14 +149,32 @@ export default function NotificationPage() {
 
   const handleToggleChannel = async (id: string, enabled: boolean) => {
     const channelToToggle = channels.find(c => c.id === id);
+
     if (!channelToToggle) return;
 
     // Optimistic update
     setChannels(prev => prev.map(c => c.id === id ? { ...c, is_active: enabled } : c));
 
     try {
-      // 模拟 API 状态更新
-      await new Promise(resolve => setTimeout(resolve, 300));
+      if (id === 'wechat_official') {
+        const response = await request('/wx/', {
+          method: 'PATCH',
+          body: { wx: enabled }
+        });
+
+        if (response.code !== 0) throw new Error(response.error || response.msg || '切换微信通知失败');
+      } else if (id === 'qq_email') {
+        const response = await request('/qqmail/', {
+          method: 'PATCH',
+          body: { qq_mail: enabled }
+        });
+
+        if (response.code !== 0) throw new Error(response.error || response.msg || '切换QQ邮箱通知失败');
+      } else {
+        // 模拟其他渠道 API 状态更新
+        await new Promise(resolve => setTimeout(resolve, 300));
+      }
+      
       toast.success(`${channelToToggle.name} 已${enabled ? '开启' : '关闭'}通知`);
     } catch (error) {
       // Revert on failure

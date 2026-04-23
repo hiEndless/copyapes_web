@@ -1,14 +1,20 @@
 'use client'
 
+import { useState } from 'react'
+
 import type { UseFormReturn } from 'react-hook-form'
 
-import { Info } from 'lucide-react'
+import { Info, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
+import { request } from '@/api/request'
 import type { NotificationChannelUpdate } from '../../types'
 import { NotificationChannel } from '../../types'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+
+import { Button } from '@/components/ui/button'
 
 interface ChannelProps {
   form: UseFormReturn<NotificationChannelUpdate>
@@ -34,6 +40,36 @@ const STEPS = [
 ]
 
 export function QQEmailChannel({ form }: ChannelProps) {
+  const [isValidating, setIsValidating] = useState(false)
+
+  const validateQQMail = async () => {
+    const qq = form.getValues('config.qq_email_address')
+    const authCode = form.getValues('config.qq_auth_code')
+
+    if (!qq || !authCode) {
+      toast.error('请填写 QQ 账号和授权码')
+      return
+    }
+
+    setIsValidating(true)
+    try {
+      const response = await request('/qqmail/', {
+        method: 'POST',
+        body: {
+          qq: qq,
+          password: authCode
+        }
+      })
+      if (response.code === 0) {
+        toast.success('邮箱校验成功')
+      }
+    } catch (error) {
+      console.error('校验失败:', error)
+    } finally {
+      setIsValidating(false)
+    }
+  }
+
   return (
     <div className='space-y-4'>
       <h3 className='text-muted-foreground text-sm font-medium tracking-wider uppercase'>QQ 邮箱配置</h3>
@@ -78,6 +114,12 @@ export function QQEmailChannel({ form }: ChannelProps) {
             </FormItem>
           )}
         />
+        <div className='col-span-2 flex justify-end'>
+          <Button type='button' onClick={validateQQMail} disabled={isValidating}>
+            {isValidating && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+            校验配置
+          </Button>
+        </div>
       </div>
     </div>
   )
