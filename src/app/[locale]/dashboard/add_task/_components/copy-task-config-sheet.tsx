@@ -108,6 +108,7 @@ export interface CopyTaskConfigSheetProps {
   roleType?: string // 交易员实盘类型，由上一级页面传入
   cookieId?: string
   initialBenchMark?: string | number // 初始本金，如已有则优先使用该值
+  initialTaskData?: any // 从复制任务传入的初始数据
 }
 
 export function CopyTaskConfigSheet({
@@ -119,7 +120,8 @@ export function CopyTaskConfigSheet({
   traderPlatform,
   roleType,
   cookieId,
-  initialBenchMark
+  initialBenchMark,
+  initialTaskData
 }: CopyTaskConfigSheetProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -217,19 +219,77 @@ export function CopyTaskConfigSheet({
   // Effect to reset/init form when traderId changes
   useEffect(() => {
     if (isOpen && traderId) {
-      setFormData(prev => ({
-        ...prev,
-        lever_set: hideFollowLeverage ? 2 : 1,
-        benchMark: initialBenchMark ? String(initialBenchMark) : prev.benchMark
-      }))
+      if (initialTaskData) {
+        // 当传入了初始任务数据（复制任务）时，回填各项参数
+        setFormData(prev => ({
+          ...prev,
+          api_id: initialTaskData.api_id ? String(initialTaskData.api_id) : prev.api_id,
+          follow_type: String(initialTaskData.follow_type || '2'),
+          benchMark: initialTaskData.benchMark ? String(initialTaskData.benchMark) : initialBenchMark ? String(initialBenchMark) : prev.benchMark,
+          investment: initialTaskData.investment ? String(initialTaskData.investment) : prev.investment,
+          lever_set: initialTaskData.lever_set || (hideFollowLeverage ? 2 : 1),
+          leverage: initialTaskData.leverage ? String(initialTaskData.leverage) : prev.leverage,
+          first_open_type: initialTaskData.first_open_type || 1,
+          uplRatio: initialTaskData.uplRatio ? String(initialTaskData.uplRatio) : prev.uplRatio,
+          first_order_set: initialTaskData.first_order_set || 1
+        }))
 
-      // 如果没有传入初始本金，则尝试自动获取交易员本金
-      if (!initialBenchMark) {
+        setToggles({
+          multiple_visible: Number(initialTaskData.multiple) > 1,
+          multiple: initialTaskData.multiple ? String(initialTaskData.multiple) : '1',
+          posSide_set_visible: initialTaskData.posSide_set === 2,
+          fast_mode_visible: initialTaskData.fast_mode === 1,
+          trade_trigger_visible: initialTaskData.trade_trigger_mode === 1,
+          tp_trigger_px: initialTaskData.tp_trigger_px ? String(initialTaskData.tp_trigger_px) : '0',
+          sl_trigger_px: initialTaskData.sl_trigger_px ? String(initialTaskData.sl_trigger_px) : '0',
+          pos_visible: initialTaskData.pos_mode === 1,
+          pos_value: initialTaskData.pos_value || 'long',
+          vol24h_visible: initialTaskData.vol24h_mode === 1,
+          vol24h_num: initialTaskData.vol24h_num ? String(initialTaskData.vol24h_num) : '0',
+          balance_monitor_visible: initialTaskData.balance_monitor_mode === 1,
+          balance_monitor_value: initialTaskData.balance_monitor_value ? String(initialTaskData.balance_monitor_value) : '0',
+          white_list_visible: initialTaskData.white_list_mode === 1,
+          white_list: Array.isArray(initialTaskData.white_list) ? initialTaskData.white_list : [],
+          black_list_visible: initialTaskData.black_list_mode === 1,
+          black_list: Array.isArray(initialTaskData.black_list) ? initialTaskData.black_list : []
+        })
+      } else {
+        // 普通创建任务
+        setFormData(prev => ({
+          ...prev,
+          lever_set: hideFollowLeverage ? 2 : 1,
+          benchMark: initialBenchMark ? String(initialBenchMark) : prev.benchMark
+        }))
+
+        // 重置 toggles
+        setToggles({
+          multiple_visible: false,
+          multiple: '1',
+          posSide_set_visible: false,
+          fast_mode_visible: true,
+          trade_trigger_visible: false,
+          tp_trigger_px: '0',
+          sl_trigger_px: '0',
+          pos_visible: false,
+          pos_value: 'long',
+          vol24h_visible: false,
+          vol24h_num: '0',
+          balance_monitor_visible: false,
+          balance_monitor_value: '0',
+          white_list_visible: false,
+          white_list: [],
+          black_list_visible: false,
+          black_list: []
+        })
+      }
+
+      // 如果没有传入初始本金，且也不是复制任务或者复制任务没有金额，则尝试自动获取交易员本金
+      if (!initialBenchMark && (!initialTaskData || !initialTaskData.benchMark)) {
         fetchBenchMark(true)
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, traderId, platform, hideFollowLeverage, initialBenchMark])
+  }, [isOpen, traderId, platform, hideFollowLeverage, initialBenchMark, initialTaskData])
 
   const handleSubmit = async () => {
     setIsLoading(true)

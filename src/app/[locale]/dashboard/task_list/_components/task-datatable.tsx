@@ -5,6 +5,7 @@ import { useState } from 'react'
 import {
   EyeIcon,
   BanIcon,
+  CopyIcon,
   ChevronDownIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -44,6 +45,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import { CopyTaskConfigSheet } from '../../add_task/_components/copy-task-config-sheet'
 
 import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib/utils'
@@ -107,6 +109,7 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
         name: '未知',
         logo: '/exchanges/default.png'
       }
+
       const roleTypeLabel = getRoleTypeLabel(row.original.trader_platform, row.original.role_type)
 
       return (
@@ -167,9 +170,11 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
     cell: ({ row }) => {
       const dateStr = row.getValue('create_datetime') as string
       let formattedDate = '-'
+
       if (dateStr) {
         formattedDate = dateStr.replace('T', '  ').substring(2, 20).replace(/-/g, '/')
       }
+
       return <span className='text-muted-foreground'>{formattedDate}</span>
     }
   },
@@ -200,10 +205,12 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
     cell: function Cell({ row }) {
       const router = useRouter()
       const isRunning = row.original.status === 1
+      const [isConfigOpen, setIsConfigOpen] = useState(false)
 
       const handleTerminateTask = async () => {
         try {
           const res = await stopTask(row.original.id)
+
           if (res.code === 0) {
             toast.success('终止跟单成功')
             onRefresh?.()
@@ -228,6 +235,7 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
                   if (typeof window !== 'undefined') {
                     sessionStorage.setItem('current_task', JSON.stringify(row.original))
                   }
+
                   router.push(`/dashboard/task_list/task_detail/${row.original.id}` as any)
                 }}
               >
@@ -238,6 +246,34 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
               <p>查看详情</p>
             </TooltipContent>
           </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant='ghost'
+                size={'icon'}
+                aria-label='复制任务'
+                onClick={() => setIsConfigOpen(true)}
+              >
+                <CopyIcon className='size-4.5 text-orange-500' />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>复制任务</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <CopyTaskConfigSheet
+            isOpen={isConfigOpen}
+            onClose={() => setIsConfigOpen(false)}
+            traderId={row.original.uniqueName}
+            traderName={row.original.uniqueName}
+            platform={PLATFORM_MAP[row.original.trader_platform]?.name?.toLowerCase() || 'okx'}
+            traderPlatform={row.original.trader_platform}
+            roleType={String(row.original.role_type || 1)}
+            initialTaskData={row.original}
+          />
+
           {isRunning && (
             <AlertDialog>
               <Tooltip>
@@ -317,6 +353,7 @@ const TaskDatatable = ({
   })
 
   const totalPages = Math.max(1, Math.ceil(Math.max(total, 0) / Math.max(pageSize, 1)))
+
   const { pages, showLeftEllipsis, showRightEllipsis } = usePagination({
     currentPage,
     totalPages,
@@ -415,6 +452,7 @@ const TaskDatatable = ({
 
               {pages.map(page => {
                 const isActive = page === currentPage
+
                 return (
                   <PaginationItem key={page}>
                     <Button
