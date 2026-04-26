@@ -83,6 +83,7 @@ import ProfileDropdown from '@/components/shadcn-studio/blocks/dashboard/dropdow
 import SupportDialog from '@/components/shadcn-studio/blocks/dashboard/dialog-support'
 
 import Logo from '@/components/logo'
+import { settingsApi } from '@/api/settings'
 
 type MenuSubItem = {
   label: string
@@ -313,6 +314,21 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
     } catch (e) {
       console.error('Failed to parse userInfo', e)
     }
+
+    // Load entitlement profile on app shell mount
+    const fetchEntitlementProfile = async () => {
+      try {
+        const profile = await settingsApi.getEntitlementProfile()
+        if (profile) {
+          localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+          window.dispatchEvent(new Event('entitlementProfileUpdated'))
+        }
+      } catch (err) {
+        console.error('Failed to fetch entitlement profile on mount:', err)
+      }
+    }
+
+    fetchEntitlementProfile()
   }, [])
 
   if (!mounted) return null

@@ -16,21 +16,22 @@ export interface CurrentMembershipResponse {
 }
 
 export interface EntitlementProfileResponse {
-  id: number;
+  membership_tier: string;
   is_vip: boolean;
   is_studio_vip: boolean;
   vip_days: number;
   studio_vip_days: number;
-  limit_usdt: number;
-  vip_limit_usdt_extra: number;
-  studio_limit_usdt_extra: number;
-  vip_api_slots_extra_perm: number;
-  studio_api_slots_extra_perm: number;
-  vip_task_slots_extra: number;
-  studio_task_slots_extra: number;
-  api_used_count: number;
-  task_used_count: number;
-  [key: string]: any;
+  legacy_limit_usdt: number;
+  asset_limit_usdt: number;
+  asset_limit_usdt_extra: number;
+  api_slot_limit: number;
+  api_slot_used: number;
+  api_slot_available: number;
+  task_slot_limit: number;
+  task_slot_used: number;
+  task_slot_available: number;
+  api_slot_extra_perm: number;
+  task_slot_extra: number;
 }
 
 export interface PlanPriceItem {

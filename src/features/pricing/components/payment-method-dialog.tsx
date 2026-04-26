@@ -94,29 +94,14 @@ export function PaymentMethodDialog({
         onOpenChange(false)
         setReferenceId('')
 
-        // 支付成功后获取最新的权益信息并更新本地存储
+        // 支付成功后获取最新的权益信息并单独存储
         try {
           const profile = await settingsApi.getEntitlementProfile()
 
           if (profile) {
-            const stored = localStorage.getItem('userInfo')
-
-            if (stored) {
-              const userInfo = JSON.parse(stored)
-
-              const updatedUserInfo = {
-                ...userInfo,
-                is_vip: profile.is_vip,
-                is_studio_vip: profile.is_studio_vip,
-                vip_days: profile.vip_days,
-                studio_vip_days: profile.studio_vip_days
-              }
-
-              localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo))
-
-              // 触发自定义事件，通知其他组件更新 userInfo
-              window.dispatchEvent(new Event('userInfoUpdated'))
-            }
+            localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+            // 触发自定义事件，通知其他组件更新权益信息
+            window.dispatchEvent(new Event('entitlementProfileUpdated'))
           }
         } catch (profileErr) {
           console.error('Failed to fetch updated entitlement profile:', profileErr)

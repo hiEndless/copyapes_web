@@ -22,8 +22,11 @@ export interface UserInfo {
   is_partner: boolean;
   is_new_user: boolean;
   is_oem: boolean;
-  vip_days?: number;
-  studio_vip_days?: number;
+  vip_days?: number
+  studio_vip_days?: number
+  limit_usdt?: number
+  api_limit?: number
+  task_limit?: number
 }
 
 export const authApi = {
