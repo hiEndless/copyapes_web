@@ -33,6 +33,7 @@ export type Plan = {
 
   accounts: string
   features: string[]
+  yearlyFeatures?: string[]
   buttonText: string
 }
 
@@ -103,6 +104,10 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
     : billing === 'month'
       ? selectedPlanData.monthPlanCode || selectedPlanData.id
       : selectedPlanData.yearPlanCode || selectedPlanData.id
+
+  const displayFeatures = billing === 'year' && selectedPlanData.yearlyFeatures
+    ? selectedPlanData.yearlyFeatures
+    : selectedPlanData.features
 
   return (
     <section className='py-4 sm:py-8 lg:py-10'>
@@ -261,7 +266,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
             </div>
 
             <Card className='gap-0 py-0 shadow-none '>
-              <CardContent className='flex flex-col justify-between gap-3 px-4 py-3 min-h-[440px] h-full'>
+              <CardContent className='flex flex-col justify-between gap-3 px-4 py-3 min-h-[460px] h-full'>
                 <div className='flex flex-col gap-3'>
                   <div className='flex flex-col gap-0.5'>
                     {billing === 'year' &&
@@ -281,7 +286,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                     </div>
                   </div>
                   <div className='flex flex-col gap-1'>
-                    {selectedPlanData.features.map((feature, index) => (
+                    {displayFeatures.map((feature, index) => (
                       <div key={index} className='flex items-start gap-2 py-0.5'>
                         <CheckIcon className='mt-0.5 size-3.5 shrink-0' />
                         <span className='text-sm font-medium leading-snug'>{feature}</span>
