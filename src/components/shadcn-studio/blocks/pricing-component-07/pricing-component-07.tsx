@@ -20,8 +20,17 @@ export type Plan = {
   /** 订阅月价（USDT）；一次性方案可为 0 */
   priceMonthly: number
 
+  /** 订阅年价（USDT） */
+  priceYearly?: number
+
   /** 若设置：固定金额一次性支付，不参与月付/年付 */
   oneTimePrice?: number
+
+  /** 对应的后端 plan_code */
+  monthPlanCode?: string
+  yearPlanCode?: string
+  oneTimePlanCode?: string
+
   accounts: string
   features: string[]
   buttonText: string
@@ -63,7 +72,7 @@ export function getPaymentAmountUsdt(plan: Plan, billing: BillingCycle): number 
   if (plan.priceMonthly <= 0) return 0
   if (billing === 'month') return plan.priceMonthly
 
-  return yearlyTotal(plan.priceMonthly)
+  return plan.priceYearly ?? yearlyTotal(plan.priceMonthly)
 }
 
 function priceLabel(plan: Plan, cycle: BillingCycle): { main: string; suffix: string } {
@@ -79,7 +88,7 @@ function priceLabel(plan: Plan, cycle: BillingCycle): { main: string; suffix: st
     return { main: formatYuan(plan.priceMonthly), suffix: '/月' }
   }
 
-  return { main: formatYuan(yearlyTotal(plan.priceMonthly)), suffix: '/年' }
+  return { main: formatYuan(plan.priceYearly ?? yearlyTotal(plan.priceMonthly)), suffix: '/年' }
 }
 
 const Pricing = ({ plans }: { plans: Plan[] }) => {
@@ -89,6 +98,11 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
   const selectedPlanData = plans.find(plan => plan.id === selectedPlan)!
   const paymentAmountUsdt = getPaymentAmountUsdt(selectedPlanData, billing)
+  const activePlanCode = selectedPlanData.oneTimePrice != null
+    ? selectedPlanData.oneTimePlanCode || selectedPlanData.id
+    : billing === 'month'
+      ? selectedPlanData.monthPlanCode || selectedPlanData.id
+      : selectedPlanData.yearPlanCode || selectedPlanData.id
 
   return (
     <section className='py-4 sm:py-8 lg:py-10'>
@@ -133,7 +147,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
         <div className='flex flex-col gap-4 lg:flex-row lg:items-stretch'>
           <div className='flex flex-1 flex-col gap-2.5'>
             <div className='mb-2 text-sm font-medium text-muted-foreground'>订阅付费</div>
-            {plans.filter(plan => plan.id.toLowerCase().includes('vip')).map((plan, index) => {
+            {plans.filter(plan => plan.id.toLowerCase().includes('month') || plan.id.toLowerCase().includes('year') || plan.id.toLowerCase() === 'free_vip').map((plan, index) => {
               const { main, suffix } = priceLabel(plan, billing)
 
               return (
@@ -182,7 +196,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
             <div className='my-2 border-t border-dashed border-border' />
             <div className='mb-2 text-sm font-medium text-muted-foreground'>功能付费</div>
-            {plans.filter(plan => !plan.id.toLowerCase().includes('vip')).map((plan, index) => {
+            {plans.filter(plan => !plan.id.toLowerCase().includes('month') && !plan.id.toLowerCase().includes('year') && plan.id.toLowerCase() !== 'free_vip').map((plan, index) => {
               const { main, suffix } = priceLabel(plan, billing)
 
               return (
@@ -314,8 +328,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
         open={payDialogOpen}
         onOpenChange={setPayDialogOpen}
         amountUsdt={paymentAmountUsdt}
-        planId={selectedPlanData.id}
-        billingCycle={billing}
+        planCode={activePlanCode || ''}
       />
     </section>
   )

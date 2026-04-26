@@ -18,6 +18,7 @@ import {
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { request } from '@/api/request'
+import { settingsApi } from '@/api/settings'
 
 const EXCHANGE_ACCOUNTS: Record<'binance' | 'okx', string> = {
   binance: '727380886',
@@ -37,16 +38,14 @@ export interface PaymentMethodDialogProps {
 
   /** 应付 USDT 数量（与定价区一致） */
   amountUsdt: number
-  planId: string
-  billingCycle: 'month' | 'year'
+  planCode: string
 }
 
 export function PaymentMethodDialog({
   open,
   onOpenChange,
   amountUsdt,
-  planId,
-  billingCycle
+  planCode
 }: PaymentMethodDialogProps) {
   const [exchange, setExchange] = useState<PaymentExchange>('binance')
   const [referenceId, setReferenceId] = useState('')
@@ -77,37 +76,51 @@ export function PaymentMethodDialog({
     try {
       setSubmitting(true)
 
-      const payType = exchange === 'binance' ? 1 : 2
+      const payType = exchange === 'binance' ? 5 : 4
 
-      let res;
-
-      if (planId === 'team') {
-        res = await request('/order/team-manager-upgrade/pay', {
-          method: 'POST',
-          body: {
-            pay_type: payType,
-            order_price: amountUsdt.toString(),
-            fromWdId: ref
-          }
-        })
-      } else {
-        res = await request('/order/pay', {
-          method: 'POST',
-          body: {
-            plan_code: planId,
-            pay_type: payType,
-            order_price: amountUsdt.toString(),
-            fromWdId: ref,
-            period_unit: billingCycle,
-            period_count: 1
-          }
-        })
-      }
+      const res = await request('/buyorder/', {
+        method: 'POST',
+        body: {
+          plan_code: planCode,
+          pay_type: payType,
+          order_price: amountUsdt,
+          fromWdId: ref,
+          product_id: 0
+        }
+      })
 
       if (res.code === 0) {
         toast.success('提交成功，转账金额已确认！')
         onOpenChange(false)
         setReferenceId('')
+
+        // 支付成功后获取最新的权益信息并更新本地存储
+        try {
+          const profile = await settingsApi.getEntitlementProfile()
+
+          if (profile) {
+            const stored = localStorage.getItem('userInfo')
+
+            if (stored) {
+              const userInfo = JSON.parse(stored)
+
+              const updatedUserInfo = {
+                ...userInfo,
+                is_vip: profile.is_vip,
+                is_studio_vip: profile.is_studio_vip,
+                vip_days: profile.vip_days,
+                studio_vip_days: profile.studio_vip_days
+              }
+
+              localStorage.setItem('userInfo', JSON.stringify(updatedUserInfo))
+
+              // 触发自定义事件，通知其他组件更新 userInfo
+              window.dispatchEvent(new Event('userInfoUpdated'))
+            }
+          }
+        } catch (profileErr) {
+          console.error('Failed to fetch updated entitlement profile:', profileErr)
+        }
       }
     } catch (err: any) {
       toast.error(err.message || '提交失败')

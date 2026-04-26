@@ -8,7 +8,6 @@ import {
   DollarSignIcon,
   CrownIcon,
   Users,
-  HandshakeIcon,
   UserStar
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -46,6 +45,20 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
       }
     } catch (e) {
       console.error(e)
+    }
+
+    const handleUserInfoUpdate = () => {
+      const stored = localStorage.getItem('userInfo')
+
+      if (stored) {
+        setUserInfo(JSON.parse(stored))
+      }
+    }
+
+    window.addEventListener('userInfoUpdated', handleUserInfoUpdate)
+
+    return () => {
+      window.removeEventListener('userInfoUpdated', handleUserInfoUpdate)
     }
   }, [])
 
