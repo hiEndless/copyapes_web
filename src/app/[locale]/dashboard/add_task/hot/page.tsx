@@ -271,8 +271,13 @@ export default function HotTaskPage() {
                   <span className='text-foreground text-xs font-medium'>${formatBalance(trader.balance)}</span>
                 </div>
 
-                <Button size='sm' className='h-7 w-full text-xs' onClick={() => handleFollow(trader)}>
-                  立即跟单
+                <Button
+                  size='sm'
+                  className='h-7 w-full text-xs'
+                  onClick={() => handleFollow(trader)}
+                  disabled={trader.balance === 0}
+                >
+                  {trader.balance === 0 ? '暂时无法跟单' : '立即跟单'}
                 </Button>
               </Card>
             ))}
