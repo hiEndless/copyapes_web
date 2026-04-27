@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { CheckIcon } from 'lucide-react'
 
@@ -11,6 +11,7 @@ import { PaymentMethodDialog } from '@/features/pricing/components/payment-metho
 
 import { cn } from '@/lib/utils'
 import { MotionPreset } from '@/components/ui/motion-preset'
+import { type EntitlementProfileResponse } from '@/api/settings'
 
 export type Plan = {
   id: string
@@ -96,6 +97,33 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
   const [selectedPlan, setSelectedPlan] = useState<string>(() => plans[0]?.id ?? '')
   const [billing, setBilling] = useState<BillingCycle>('month')
   const [payDialogOpen, setPayDialogOpen] = useState(false)
+  const [profile, setProfile] = useState<EntitlementProfileResponse | null>(null)
+
+  useEffect(() => {
+    try {
+      const storedProfile = localStorage.getItem('entitlementProfile')
+
+      if (storedProfile) {
+        setProfile(JSON.parse(storedProfile))
+      }
+    } catch (e) {
+      console.error(e)
+    }
+
+    const handleProfileUpdate = () => {
+      const stored = localStorage.getItem('entitlementProfile')
+
+      if (stored) {
+        setProfile(JSON.parse(stored))
+      }
+    }
+
+    window.addEventListener('entitlementProfileUpdated', handleProfileUpdate)
+
+    return () => {
+      window.removeEventListener('entitlementProfileUpdated', handleProfileUpdate)
+    }
+  }, [])
 
   const selectedPlanData = plans.find(plan => plan.id === selectedPlan)!
   const paymentAmountUsdt = getPaymentAmountUsdt(selectedPlanData, billing)
@@ -108,6 +136,23 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
   const displayFeatures = billing === 'year' && selectedPlanData.yearlyFeatures
     ? selectedPlanData.yearlyFeatures
     : selectedPlanData.features
+
+  const effectiveTier = profile?.is_studio_vip ? 'studio_vip' : profile?.is_vip ? 'vip' : 'free'
+
+  let buttonDisabled = false
+  let buttonLabel = selectedPlanData.buttonText
+
+  if (activePlanCode === 'studio_limit_pack_100000' || activePlanCode === 'studio_api_slot_pack_5') {
+    if (effectiveTier !== 'studio_vip') {
+      buttonDisabled = true
+      buttonLabel = '需先开通工作室 VIP'
+    }
+  } else if (activePlanCode === 'vip_limit_pack_20000') {
+    if (effectiveTier !== 'vip') {
+      buttonDisabled = true
+      buttonLabel = effectiveTier === 'studio_vip' ? '工作室 VIP 无需购买此包' : '需先开通 VIP'
+    }
+  }
 
   return (
     <section className='py-4 sm:py-8 lg:py-10'>
@@ -317,9 +362,10 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                     size='sm'
                     className='shadow-none w-full'
                     type='button'
+                    disabled={buttonDisabled}
                     onClick={() => setPayDialogOpen(true)}
                   >
-                    {selectedPlanData.buttonText}
+                    {buttonLabel}
                   </Button>
                 </div>
                 )}
