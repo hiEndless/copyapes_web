@@ -1,34 +1,61 @@
 'use client'
 
-import React, { type ReactNode, useState } from 'react'
+import React, { type ReactNode, useState, useEffect } from 'react'
 
 import { MessageCircle, ExternalLink, Send, Sparkles, Mail } from 'lucide-react'
-import { IconBrandWechat, IconBrandTelegram, IconBrandQq, IconMail, IconMessageChatbot } from '@tabler/icons-react'
+import { IconBrandWechat, IconBrandTelegram, IconMail, IconMessageChatbot } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
-  const [activeContact, setActiveContact] = useState<'qq' | 'wechat' | 'telegram' | 'email'>('wechat')
+  const [activeContact, setActiveContact] = useState<'wechat' | 'telegram' | 'email'>('email')
+  const [connectData, setConnectData] = useState<{ nickname?: string | null, wx?: string | null, telegram?: string | null } | null>(null)
 
-  const contactInfo = {
-    qq: {
-      title: 'QQ 客服',
-      description: '添加客服 QQ ',
-      action: 'QQ: 27979831',
-      icon: <MessageCircle className='size-5 text-zinc-900 dark:text-zinc-100' />
-    },
+  useEffect(() => {
+    const handleConnectUpdate = () => {
+      try {
+        const connectStr = localStorage.getItem('connectInfo')
+
+        if (connectStr) {
+          const data = JSON.parse(connectStr)
+
+          setConnectData(data)
+
+          if (data.wx) {
+            setActiveContact('wechat')
+          } else if (data.telegram) {
+            setActiveContact('telegram')
+          } else {
+            setActiveContact('email')
+          }
+        }
+      } catch (e) {
+        console.error('Failed to parse connect info', e)
+      }
+    }
+
+    handleConnectUpdate()
+
+    window.addEventListener('connectInfoUpdated', handleConnectUpdate)
+
+    return () => {
+      window.removeEventListener('connectInfoUpdated', handleConnectUpdate)
+    }
+  }, [])
+
+  const contactInfo: Record<string, { title: string, description: string, action: string, icon: ReactNode }> = {
     wechat: {
       title: '微信客服',
       description: '添加专属微信客服',
-      action: 'WeChat: copyapes_admin',
+      action: `WeChat: ${connectData?.wx || ''}`,
       icon: <MessageCircle className='size-5 text-zinc-900 dark:text-zinc-100' />
     },
     telegram: {
       title: 'Telegram 客服',
       description: "添加 Telegram 客服",
-      action: 'https://t.me/copyapes_admin',
+      action: connectData?.telegram?.startsWith('http') ? connectData.telegram : (connectData?.telegram ? `https://t.me/${connectData.telegram.replace('@', '')}` : ''),
       icon: <Send className='size-5 text-zinc-900 dark:text-zinc-100' />
     },
     email: {
@@ -78,36 +105,31 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
               <h2 className='text-2xl font-semibold opacity-90'>
                 Hi <span className='animate-wave inline-block'>👋</span>
               </h2>
-              <h3 className='text-2xl font-bold'>联系客服与帮助</h3>
+              <h3 className='text-2xl font-bold'>{connectData?.nickname || '联系客服与帮助'}</h3>
             </div>
             <div className='flex items-center gap-3 pt-2'>
-              <button
-                onClick={() => setActiveContact('qq')}
-                className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                  activeContact === 'qq' ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
-                }`}
-                title='QQ 客服'
-              >
-                <IconBrandQq className='size-5' />
-              </button>
-              <button
-                onClick={() => setActiveContact('wechat')}
-                className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                  activeContact === 'wechat' ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
-                }`}
-                title='微信客服'
-              >
-                <IconBrandWechat className='size-5' />
-              </button>
-              <button
-                onClick={() => setActiveContact('telegram')}
-                className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
-                  activeContact === 'telegram' ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
-                }`}
-                title='Telegram 客服'
-              >
-                <IconBrandTelegram className='size-5' />
-              </button>
+              {connectData?.wx && (
+                <button
+                  onClick={() => setActiveContact('wechat')}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                    activeContact === 'wechat' ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
+                  }`}
+                  title='微信客服'
+                >
+                  <IconBrandWechat className='size-5' />
+                </button>
+              )}
+              {connectData?.telegram && (
+                <button
+                  onClick={() => setActiveContact('telegram')}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                    activeContact === 'telegram' ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
+                  }`}
+                  title='Telegram 客服'
+                >
+                  <IconBrandTelegram className='size-5' />
+                </button>
+              )}
               <button
                 onClick={() => setActiveContact('email')}
                 className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${

@@ -52,6 +52,16 @@ export interface PriceInfoResponse {
   price_priority: string[];
 }
 
+export interface NoticeResponse {
+  notice: string | null;
+}
+
+export interface ConnectResponse {
+  nickname: string | null;
+  wx: string | null;
+  telegram: string | null;
+}
+
 export const settingsApi = {
   getEffectivePricing: () => {
     return request<EffectivePricingResponse>('/settings/memberships/pricing/effective', {
@@ -61,6 +71,18 @@ export const settingsApi = {
 
   getPriceInfo: () => {
     return request<PriceInfoResponse>('/price/', {
+      method: 'GET'
+    }).then(res => res.data);
+  },
+
+  getNoticeInfo: () => {
+    return request<NoticeResponse>('/notice/', {
+      method: 'GET'
+    }).then(res => res.data);
+  },
+
+  getConnectInfo: () => {
+    return request<ConnectResponse>('/connect/', {
       method: 'GET'
     }).then(res => res.data);
   },

@@ -1,27 +1,56 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 const DashboardPage = () => {
+  const [notice, setNotice] = useState<string | null>(null)
+
+  useEffect(() => {
+    const handleNoticeUpdate = () => {
+      try {
+        const noticeStr = localStorage.getItem('noticeInfo')
+
+        if (noticeStr) {
+          const noticeData = JSON.parse(noticeStr)
+
+          setNotice(noticeData.notice || null)
+        }
+      } catch (e) {
+        console.error('Failed to parse notice info', e)
+      }
+    }
+
+    handleNoticeUpdate()
+
+    window.addEventListener('noticeInfoUpdated', handleNoticeUpdate)
+
+    return () => {
+      window.removeEventListener('noticeInfoUpdated', handleNoticeUpdate)
+    }
+  }, [])
+
   return (
     <div className='grid h-full grid-cols-1 gap-4 p-4 lg:grid-cols-2'>
       {/* 左侧区域 (50%) */}
       <div className='flex flex-col gap-4 lg:col-span-1'>
         {/* 公告栏 Card */}
-        <Card className='gap-3 py-4 shadow-none'>
-          <CardHeader className='px-4 pb-0'>
-            <CardTitle className='text-sm'>公告栏</CardTitle>
-          </CardHeader>
-          <CardContent className='px-4'>
-            <p className='text-muted-foreground text-xs leading-relaxed'>
-              这里是大段文字的公告内容。这里是大段文字的公告内容。这里是大段文字的公告内容。
-              这里是大段文字的公告内容。这里是大段文字的公告内容。这里是大段文字的公告内容。
-              这里是大段文字的公告内容。这里是大段文字的公告内容。这里是大段文字的公告内容。
-            </p>
-          </CardContent>
-        </Card>
+        {notice && (
+          <Card className='gap-3 py-4 shadow-none'>
+            <CardHeader className='px-4 pb-0'>
+              <CardTitle className='text-sm'>公告栏</CardTitle>
+            </CardHeader>
+            <CardContent className='px-4'>
+              <div 
+                className='text-muted-foreground text-xs leading-relaxed whitespace-pre-wrap'
+                dangerouslySetInnerHTML={{ __html: notice }}
+              />
+            </CardContent>
+          </Card>
+        )}
 
         {/* 注册交易所返佣 Card */}
         <Card className='gap-3 py-4 shadow-none'>

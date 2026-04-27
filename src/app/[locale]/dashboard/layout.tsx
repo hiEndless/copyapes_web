@@ -164,6 +164,7 @@ const copyItems: MenuItem[] = [
     label: '热门带单 KOL ',
     href: '/dashboard/add_task/hot'
   },
+
   // {
   //   icon: Flame,
   //   label: 'HyperLiquid KOL ',
@@ -304,10 +305,13 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     setMounted(true)
+
     try {
       const userInfoStr = localStorage.getItem('userInfo')
+
       if (userInfoStr) {
         const userInfo = JSON.parse(userInfoStr)
+
         setIsAdmin(userInfo.is_admin === true)
         setIsPartner(userInfo.is_partner === true)
       }
@@ -319,6 +323,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
     const fetchEntitlementProfile = async () => {
       try {
         const profile = await settingsApi.getEntitlementProfile()
+
         if (profile) {
           localStorage.setItem('entitlementProfile', JSON.stringify(profile))
           window.dispatchEvent(new Event('entitlementProfileUpdated'))
@@ -328,7 +333,35 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
+    const fetchNotice = async () => {
+      try {
+        const noticeData = await settingsApi.getNoticeInfo()
+
+        if (noticeData) {
+          localStorage.setItem('noticeInfo', JSON.stringify(noticeData))
+          window.dispatchEvent(new Event('noticeInfoUpdated'))
+        }
+      } catch (err) {
+        console.error('Failed to fetch notice info on mount:', err)
+      }
+    }
+
+    const fetchConnectInfo = async () => {
+      try {
+        const connectData = await settingsApi.getConnectInfo()
+
+        if (connectData) {
+          localStorage.setItem('connectInfo', JSON.stringify(connectData))
+          window.dispatchEvent(new Event('connectInfoUpdated'))
+        }
+      } catch (err) {
+        console.error('Failed to fetch connect info on mount:', err)
+      }
+    }
+
     fetchEntitlementProfile()
+    fetchNotice()
+    fetchConnectInfo()
   }, [])
 
   if (!mounted) return null
@@ -336,6 +369,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const filteredAdminItems = adminItems.filter(item => {
     if (item.label === '系统后台' && !isAdmin) return false
     if (item.label === '代理商后台' && !isPartner) return false
+
     return true
   })
 
