@@ -2,12 +2,48 @@
 
 import { useEffect, useState } from 'react'
 
+import { toast } from 'sonner'
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { settingsApi } from '@/api/settings'
 
 const DashboardPage = () => {
   const [notice, setNotice] = useState<string | null>(null)
+  const [redeemCode, setRedeemCode] = useState('')
+  const [isRedeeming, setIsRedeeming] = useState(false)
+
+  const handleRedeem = async () => {
+    if (!redeemCode.trim()) {
+      toast.error('请输入兑换码')
+
+      return
+    }
+
+    setIsRedeeming(true)
+
+    try {
+      const res = await settingsApi.redeemCode(redeemCode.trim())
+
+      if (res.code === 0) {
+        toast.success(res.data || '兑换成功！')
+        setRedeemCode('')
+
+        // Refresh entitlement profile after successful redeem
+        const profile = await settingsApi.getEntitlementProfile()
+
+        if (profile) {
+          localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+          window.dispatchEvent(new Event('entitlementProfileUpdated'))
+        }
+      }
+    } catch (error) {
+      console.error('Redeem code failed', error)
+    } finally {
+      setIsRedeeming(false)
+    }
+  }
 
   useEffect(() => {
     const handleNoticeUpdate = () => {
@@ -44,7 +80,7 @@ const DashboardPage = () => {
               <CardTitle className='text-sm'>公告栏</CardTitle>
             </CardHeader>
             <CardContent className='px-4'>
-              <div 
+              <div
                 className='text-muted-foreground text-xs leading-relaxed whitespace-pre-wrap'
                 dangerouslySetInnerHTML={{ __html: notice }}
               />
@@ -219,9 +255,15 @@ const DashboardPage = () => {
             <CardDescription className='text-xs'>请输入您的兑换码进行核销</CardDescription>
           </CardHeader>
           <CardContent className='flex gap-3 px-4'>
-            <Input placeholder='请输入兑换码' className='h-8 flex-1 text-xs' />
-            <Button size='sm' className='h-8 text-xs'>
-              核销确认
+            <Input
+              placeholder='请输入兑换码'
+              className='h-8 flex-1 text-xs'
+              value={redeemCode}
+              onChange={(e) => setRedeemCode(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleRedeem()}
+            />
+            <Button size='sm' className='h-8 text-xs' onClick={handleRedeem} disabled={isRedeeming}>
+              {isRedeeming ? '核销中...' : '核销确认'}
             </Button>
           </CardContent>
         </Card>

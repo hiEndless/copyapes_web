@@ -63,6 +63,13 @@ export interface ConnectResponse {
 }
 
 export const settingsApi = {
+  redeemCode: (code: string) => {
+    return request<string>('/redeemcode/', {
+      method: 'POST',
+      body: { redeem_code: code }
+    });
+  },
+
   getEffectivePricing: () => {
     return request<EffectivePricingResponse>('/settings/memberships/pricing/effective', {
       method: 'GET'
