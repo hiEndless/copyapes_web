@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import ApiDatatable, { type ApiItem } from './_components/api-datatable'
 import { ApiAddButton } from './_components/api-add-button'
 import { getApiList } from '@/api/apiadd'
+import { settingsApi } from '@/api/settings'
 
 export default function ApiPage() {
   const [data, setData] = useState<ApiItem[]>([])
@@ -30,6 +31,23 @@ export default function ApiPage() {
     } catch (error) {
       console.error('获取 API 列表出错:', error)
       toast.error('获取 API 列表失败')
+    }
+  }
+
+  const handleAddSuccess = async () => {
+    // 1. 刷新列表
+    fetchData()
+
+    // 2. 刷新全局权益信息，同步剩余 API 额度
+    try {
+      const profile = await settingsApi.getEntitlementProfile()
+
+      if (profile) {
+        localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+        window.dispatchEvent(new Event('entitlementProfileUpdated'))
+      }
+    } catch (err) {
+      console.error('Failed to fetch entitlement profile after adding API:', err)
     }
   }
 
@@ -61,7 +79,7 @@ export default function ApiPage() {
             <CardTitle>交易所 API 列表</CardTitle>
             <CardDescription>配置你的交易所 API 密钥，用于同步带单信号或执行自动跟单。</CardDescription>
           </div>
-          <ApiAddButton />
+          <ApiAddButton onSuccess={handleAddSuccess} />
         </CardHeader>
         <CardContent className='p-0'>
           <ApiDatatable data={data} onRefresh={fetchData} />

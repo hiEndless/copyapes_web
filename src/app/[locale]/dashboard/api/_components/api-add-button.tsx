@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react'
 
+import { toast } from 'sonner'
 import { PlusIcon, Loader2Icon } from 'lucide-react'
 
-import { getIpList } from '@/api/apiadd'
+import { getIpList, validateApiAdd, addApi } from '@/api/apiadd'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -51,6 +52,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
         .then(res => {
           if (res.code === 0 && Array.isArray(res.data) && res.data.length > 0) {
             const ips = res.data.map(item => item.ip).join(',')
+
             setIpWhitelist(ips)
           }
         })
@@ -69,11 +71,38 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
     setLoading(true)
 
     try {
-      // 模拟 API 请求
-      console.log('提交的 API 数据:', formData)
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      let platform = 1
 
-      alert('添加成功')
+      if (formData.exchange === 'binance') platform = 2
+      else if (formData.exchange === 'gate') platform = 3
+      else if (formData.exchange === 'bitget') platform = 4
+
+      const payload = {
+        platform,
+        flag: 0, // 0为实盘，1为模拟盘
+        is_readonly: formData.is_read_only,
+        api_name: formData.api_label,
+        api_key: formData.api_key,
+        secret_key: formData.api_secret,
+        passPhrase: formData.api_passphrase
+      }
+
+      // 1. 先验证 API
+      const validateRes = await validateApiAdd(payload)
+
+      if (validateRes.code !== 0) {
+        // request内部会通过toast抛出错误，这里只需要终止即可
+        return
+      }
+
+      // 2. 验证通过后，正式添加 API
+      const addRes = await addApi(payload)
+
+      if (addRes.code !== 0) {
+        return
+      }
+
+      toast.success('添加成功')
       setOpen(false)
       setFormData({
         exchange: 'okx',
@@ -86,7 +115,6 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
       onSuccess?.()
     } catch (error) {
       console.error('添加失败:', error)
-      alert('添加失败')
     } finally {
       setLoading(false)
     }

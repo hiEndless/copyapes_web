@@ -29,6 +29,22 @@ export function updateApiName(data: { api_id: string | number; api_name: string 
   });
 }
 
+// 验证 API
+export function validateApiAdd(data: any) {
+  return request('/apiadd/validate/', {
+    method: 'POST',
+    body: data,
+  });
+}
+
+// 添加 API
+export function addApi(data: any) {
+  return request('/apiadd/', {
+    method: 'POST',
+    body: data,
+  });
+}
+
 // 搜索 API
 export function searchApi(search_name: string) {
   return request('/speedtrade/apisearch/', {

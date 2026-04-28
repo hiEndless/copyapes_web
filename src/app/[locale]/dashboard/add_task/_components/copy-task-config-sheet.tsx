@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { getApiOptions, getTraderBalance, addTask } from '@/api/task'
+import { settingsApi } from '@/api/settings'
 
 // --- Utility Component for Tags ---
 function TagInput({
@@ -339,6 +340,19 @@ export function CopyTaskConfigSheet({
 
       if (res.code === 0) {
         toast.success('创建成功')
+        
+        // 刷新全局权益信息，同步剩余跟单任务额度
+        try {
+          const profile = await settingsApi.getEntitlementProfile()
+
+          if (profile) {
+            localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+            window.dispatchEvent(new Event('entitlementProfileUpdated'))
+          }
+        } catch (err) {
+          console.error('Failed to fetch entitlement profile after adding task:', err)
+        }
+
         onClose()
         router.push('/dashboard/task_list')
       } else {

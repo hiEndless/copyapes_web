@@ -6,15 +6,6 @@ export interface EffectivePricingResponse {
   team_manager_upgrade_price: string;
 }
 
-export interface CurrentMembershipResponse {
-  studio_id: number;
-  plan_code: string;
-  plan_name: string;
-  source: string;
-  subscription_id: string | null;
-  subscription_end_at: string | null;
-}
-
 export interface EntitlementProfileResponse {
   membership_tier: string;
   is_vip: boolean;
@@ -90,12 +81,6 @@ export const settingsApi = {
 
   getConnectInfo: () => {
     return request<ConnectResponse>('/connect/', {
-      method: 'GET'
-    }).then(res => res.data);
-  },
-
-  getCurrentMembership: () => {
-    return request<CurrentMembershipResponse>('/settings/memberships/current', {
       method: 'GET'
     }).then(res => res.data);
   },
