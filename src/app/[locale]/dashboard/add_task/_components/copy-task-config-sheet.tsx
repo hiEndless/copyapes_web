@@ -110,6 +110,7 @@ export interface CopyTaskConfigSheetProps {
   cookieId?: string
   initialBenchMark?: string | number // 初始本金，如已有则优先使用该值
   initialTaskData?: any // 从复制任务传入的初始数据
+  onSuccess?: () => void // 创建成功后的回调函数，用于同页面刷新等场景
 }
 
 export function CopyTaskConfigSheet({
@@ -122,7 +123,8 @@ export function CopyTaskConfigSheet({
   roleType,
   cookieId,
   initialBenchMark,
-  initialTaskData
+  initialTaskData,
+  onSuccess
 }: CopyTaskConfigSheetProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
@@ -354,7 +356,11 @@ export function CopyTaskConfigSheet({
         }
 
         onClose()
-        router.push('/dashboard/task_list')
+        if (onSuccess) {
+          onSuccess()
+        } else {
+          router.push('/dashboard/task_list')
+        }
       } else {
         // request method automatically handles toast
         setIsLoading(false)

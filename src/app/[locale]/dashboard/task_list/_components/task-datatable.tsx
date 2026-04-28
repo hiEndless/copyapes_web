@@ -273,6 +273,7 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
             traderPlatform={row.original.trader_platform}
             roleType={String(row.original.role_type || 1)}
             initialTaskData={row.original}
+            onSuccess={onRefresh}
           />
 
           {isRunning && (
