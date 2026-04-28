@@ -104,5 +104,12 @@ export const settingsApi = {
     return request<EntitlementProfileResponse>('/entitlement/profile/', {
       method: 'GET'
     }).then(res => res.data);
+  },
+
+  sendMessage: (data: { full_name: string; connect: string; message: string }) => {
+    return request<any>('/sendmessage/', {
+      method: 'POST',
+      body: data
+    });
   }
 };

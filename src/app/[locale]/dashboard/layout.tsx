@@ -439,28 +439,28 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                   <SunIcon className='absolute scale-0 dark:scale-100' />
                   <span className='sr-only'>Toggle theme</span>
                 </Button>
-                <ActivityDialog
+                {/* <ActivityDialog
                   trigger={
                     <Button variant='ghost' size='icon'>
                       <ActivityIcon />
                     </Button>
                   }
-                />
-                <ActivityDialog
+                /> */}
+                {/* <ActivityDialog
                   trigger={
                     <Button variant='ghost' size='icon'>
                       <Bug />
                     </Button>
                   }
-                />
-                <NotificationDropdown
+                /> */}
+                {/* <NotificationDropdown
                   trigger={
                     <Button variant='ghost' size='icon' className='relative'>
                       <BellIcon />
                       <span className='bg-destructive absolute top-2 right-2.5 size-2 rounded-full' />
                     </Button>
                   }
-                />
+                /> */}
                 <ProfileDropdown
                   trigger={
                     <Button variant='ghost' size='icon' className='size-9.5'>

@@ -206,7 +206,9 @@
     "contactPlaceholder": "Enter your contact info...",
     "message": "Message",
     "messagePlaceholder": "Leave your message here, and we will contact you as soon as possible! We welcome media, KOLs, traders, and private community owners to discuss partnerships!",
-    "submit": "Send Message"
+    "submit": "Send Message",
+    "success": "Sent successfully",
+    "sending": "Sending..."
   },
   "Footer": {
     "desc": "Freely combine top lead traders from different exchanges, balance return and risk, create your exclusive copy trading strategy, and let the world's top traders work for you.",
