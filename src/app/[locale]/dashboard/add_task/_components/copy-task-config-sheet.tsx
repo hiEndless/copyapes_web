@@ -138,6 +138,7 @@ export function CopyTaskConfigSheet({
   // Form State
   const [formData, setFormData] = useState({
     api_id: '',
+    label: '',
     follow_type: '2', // 固定比例
     benchMark: '',
     investment: '',
@@ -224,6 +225,7 @@ export function CopyTaskConfigSheet({
         setFormData(prev => ({
           ...prev,
           api_id: initialTaskData.api_id ? String(initialTaskData.api_id) : prev.api_id,
+          label: initialTaskData.label ? String(initialTaskData.label) : '',
           follow_type: String(initialTaskData.follow_type || '2'),
           benchMark: initialTaskData.benchMark ? String(initialTaskData.benchMark) : initialBenchMark ? String(initialBenchMark) : prev.benchMark,
           investment: initialTaskData.investment ? String(initialTaskData.investment) : prev.investment,
@@ -258,6 +260,7 @@ export function CopyTaskConfigSheet({
         setFormData(prev => ({
           ...prev,
           lever_set: hideFollowLeverage ? 2 : 1,
+          label: '',
           benchMark: initialBenchMark ? String(initialBenchMark) : prev.benchMark
         }))
 
@@ -298,6 +301,7 @@ export function CopyTaskConfigSheet({
       const payload = {
         trader_platform: traderPlatform,
         uniqueName: traderPlatform === 7 || traderPlatform === 8 ? `${traderId}-${cookieId || ''}` : traderId,
+        label: formData.label || '',
         api: formData.api_id,
         follow_type: formData.follow_type,
         multiple: toggles.multiple_visible ? toggles.multiple : '1',
@@ -399,6 +403,16 @@ export function CopyTaskConfigSheet({
                     )
                   })}
                 </div>
+              </div>
+
+              <div className='space-y-2'>
+                <label className='mb-2 block text-sm font-medium'>任务备注标签（可选）</label>
+                <Input
+                  value={formData.label}
+                  onChange={e => updateForm('label', e.target.value)}
+                  maxLength={64}
+                  placeholder='不填时默认显示交易员ID'
+                />
               </div>
 
               {/* 跟单模式 */}

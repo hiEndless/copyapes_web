@@ -172,7 +172,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
     const list: { label: string; value: React.ReactNode }[] = []
 
     list.push({ label: '跟单平台', value: getPlatformName(task.trader_platform) })
-    list.push({ label: '跟单对象', value: task.uniqueName })
+    list.push({ label: '跟单对象', value: (task.label || '').trim() || task.uniqueName })
     list.push({ label: '创建时间', value: task.create_datetime?.replace('T', '  ') })
     list.push({ label: '反向跟单', value: String(task.posSide_set) === '1' ? '否' : '是' })
     list.push({ label: 'API', value: task.api_name })

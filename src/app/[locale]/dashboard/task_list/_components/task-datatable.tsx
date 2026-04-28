@@ -53,6 +53,7 @@ import { cn } from '@/lib/utils'
 export type TaskItem = {
   id: number
   uniqueName: string
+  label?: string
   trader_platform: number // 1: OKX, 2: Binance, 3: 币coin ...
   api_name: string
   create_datetime: string
@@ -123,7 +124,7 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
           </div>
           <div className='flex flex-col'>
             <span className='font-medium max-w-[200px] break-words whitespace-normal leading-snug'>
-              {row.getValue('uniqueName')}
+              {(row.original.label || '').trim() || (row.getValue('uniqueName') as string)}
             </span>
             <div className='mt-1 flex flex-wrap items-center gap-1 text-xs text-muted-foreground'>
               <span>任务ID: {row.original.id}</span>
@@ -267,7 +268,7 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
             isOpen={isConfigOpen}
             onClose={() => setIsConfigOpen(false)}
             traderId={row.original.uniqueName}
-            traderName={row.original.uniqueName}
+            traderName={(row.original.label || '').trim() || row.original.uniqueName}
             platform={PLATFORM_MAP[row.original.trader_platform]?.name?.toLowerCase() || 'okx'}
             traderPlatform={row.original.trader_platform}
             roleType={String(row.original.role_type || 1)}
