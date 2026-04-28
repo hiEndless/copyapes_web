@@ -23,28 +23,28 @@ const BentoGrid = () => {
   const TeamImages: TeamImagesType[] = [
     {
       images: [
-        { index: 0, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-81.png' },
-        { index: 2, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-79.png' },
-        { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' },
-        { index: 7, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-80.png' }
+        { index: 0, src: '/head/chuangtouzengzhi.jpg' },
+        { index: 2, src: '/head/bitlanglang.jpg' },
+        { index: 3, src: '/head/huangtianwa.png' },
+        { index: 7, src: '/head/xiaozhou.jpg' }
       ],
       team: t('targetGroup.team1')
     },
     {
       images: [
-        { index: 1, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-76.png' },
-        { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-77.png' },
-        { index: 5, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-82.png' },
-        { index: 8, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' }
+        { index: 1, src: '/head/xiaohuxiansheng.jpg' },
+        { index: 3, src: '/head/minghong.jpg' },
+        { index: 5, src: '/head/Melanya.jpg' },
+        { index: 8, src: '/head/MumuEcho.jpg' }
       ],
       team: t('targetGroup.team2')
     },
     {
       images: [
-        { index: 0, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-78.png' },
-        { index: 3, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-81.png' },
-        { index: 5, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-80.png' },
-        { index: 7, src: 'https://cdn.shadcnstudio.com/ss-assets/blocks/bento-grid/image-77.png' }
+        { index: 0, src: '/head/RealCryptoFox.jpg' },
+        { index: 3, src: '/head/jiezhu.jpg' },
+        { index: 5, src: '/head/baiwan.jpg' },
+        { index: 7, src: '/head/zhouwenwang.jpg' }
       ],
       team: t('targetGroup.team3')
     }
