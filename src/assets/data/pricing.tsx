@@ -49,19 +49,23 @@ export const usePricingPlans = (): Plans => {
       title: t('pro.title'),
       description: t('pro.description'),
       price: {
-        yearly: 72,
-        monthly: 80
+        yearly: 90,
+        monthly: 100
       },
       period: '/month',
       buttonText: t('pro.button'),
       features: [
+        t('pro.f5'),
         t('pro.f1'),
         t('pro.f2'),
         t('pro.f3'),
-        t('pro.f4'),
-        t('pro.f5')
       ],
-      extraFeatures: [t('pro.ef1'), t('pro.ef2')]
+      extraFeatures: [
+        t('pro.ef1'),
+        t('pro.ef2'),
+        t('pro.ef3'),
+        t('pro.ef4')
+      ]
     }
   ]
 }

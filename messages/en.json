@@ -146,13 +146,14 @@
       "title": "VIP Pro Plan",
       "description": "More professional copy trading services",
       "button": "Start Now",
-      "f1": "Supports Lead Trader API Key Integration",
-      "f2": "Supports Binance Exchange API",
-      "f3": "♾️ Exchange API Authorizations",
-      "f4": "♾️ Copy Trading Tasks",
-      "f5": "Authorized API cumulative trading funds not exceeding 20000 USDT",
-      "ef1": "Millisecond Ultra-low Latency",
-      "ef2": "Exclusive Customer Support"
+      "f1": "10 Exchange API Authorizations",
+      "f2": "50 Copy Trading Tasks",
+      "f3": "Authorized API cumulative trading funds not exceeding 20,000 USDT",
+      "f5": "Supports Lead Trader API Key Integration",
+      "ef1": "Exclusive studio management features",
+      "ef2": "24/7 professional customer support",
+      "ef3": "Supports feature customization",
+      "ef4": "Complimentary permanent agency rights"
     }
   },
   "FAQ": {
