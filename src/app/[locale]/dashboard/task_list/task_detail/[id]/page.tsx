@@ -4,10 +4,11 @@ import * as React from 'react'
 
 import Image from 'next/image'
 import { ArrowLeft, Activity } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/routing'
 import { getTaskDetail, getTraderDetail, stopTask } from '@/api/task'
-import { toast } from 'sonner'
+import { settingsApi } from '@/api/settings'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -38,9 +39,12 @@ export default function TaskDetailPage({ params }: { params: any }) {
   const [task, setTask] = React.useState<any>(() => {
     if (typeof window !== 'undefined') {
       const cached = sessionStorage.getItem('current_task')
+
       if (cached) {
         try {
           const parsed = JSON.parse(cached)
+
+
           // 仅当缓存的 id 和当前路由 id 匹配时才使用缓存
           if (String(parsed.id) === String(taskId)) {
             return parsed
@@ -50,10 +54,13 @@ export default function TaskDetailPage({ params }: { params: any }) {
         }
       }
     }
+
     return null
   })
+
   const [spiderData, setSpiderData] = React.useState<any[]>([])
   const [tradeData, setTradeData] = React.useState<any[]>([])
+
   // 如果有缓存，初始不显示 loading
   const [loading, setLoading] = React.useState(!task)
 
@@ -72,10 +79,13 @@ export default function TaskDetailPage({ params }: { params: any }) {
       if (!task) {
         setLoading(true)
       }
+
       const [taskRes, traderRes] = await Promise.all([getTaskDetail(taskId), getTraderDetail(taskId)])
 
       if (taskRes.code === 0) {
         setTask(taskRes.data)
+
+
         // 顺便更新一下缓存，保证刷新后还是最新的
         if (typeof window !== 'undefined') {
           sessionStorage.setItem('current_task', JSON.stringify(taskRes.data))
@@ -102,6 +112,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
     if (color === 'SUCCESS' || color === 'green') return 'bg-green-500'
     if (color === 'WARNING' || color === 'danger') return 'bg-red-500'
     if (color === 'INFO' || color === 'primary') return 'bg-blue-500'
+
     return 'bg-gray-500'
   }
 
@@ -115,6 +126,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
     if (val == 8) return 'OKX'
     if (val == 9) return 'NOF1'
     if (val == 10) return 'HyperLiquid'
+
     return '未知'
   }
 
@@ -154,9 +166,22 @@ export default function TaskDetailPage({ params }: { params: any }) {
   const handleTerminateTask = async () => {
     try {
       const res = await stopTask(taskId)
+
       if (res.code === 0) {
         toast.success('已发起终止跟单请求')
         loadTaskData()
+
+        // 刷新全局权益信息，同步剩余任务额度
+        try {
+          const profile = await settingsApi.getEntitlementProfile()
+
+          if (profile) {
+            localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+            window.dispatchEvent(new Event('entitlementProfileUpdated'))
+          }
+        } catch (err) {
+          console.error('Failed to fetch entitlement profile after terminating task:', err)
+        }
       } else {
         toast.error((res.detail as any) || res.message || '终止请求失败')
       }

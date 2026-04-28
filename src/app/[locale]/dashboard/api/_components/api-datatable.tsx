@@ -18,6 +18,7 @@ import {
 import { toast } from 'sonner'
 
 import { deleteApi } from '@/api/apiadd'
+import { settingsApi } from '@/api/settings'
 
 import { Button } from '@/components/ui/button'
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem } from '@/components/ui/pagination'
@@ -154,6 +155,18 @@ const getColumns = (
           if (res.code === 0) {
             toast.success('删除 API 成功')
             onRefresh?.()
+            
+            // 刷新全局权益信息，同步剩余 API 额度
+            try {
+              const profile = await settingsApi.getEntitlementProfile()
+
+              if (profile) {
+                localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+                window.dispatchEvent(new Event('entitlementProfileUpdated'))
+              }
+            } catch (err) {
+              console.error('Failed to fetch entitlement profile after deleting API:', err)
+            }
           } else {
             toast.error(res.error || '删除 API 失败')
           }

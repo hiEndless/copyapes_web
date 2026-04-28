@@ -28,6 +28,7 @@ import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/routing'
 import { stopTask } from '@/api/task'
+import { settingsApi } from '@/api/settings'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -215,6 +216,18 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
           if (res.code === 0) {
             toast.success('终止跟单成功')
             onRefresh?.()
+            
+            // 刷新全局权益信息，同步剩余任务额度
+            try {
+              const profile = await settingsApi.getEntitlementProfile()
+
+              if (profile) {
+                localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+                window.dispatchEvent(new Event('entitlementProfileUpdated'))
+              }
+            } catch (err) {
+              console.error('Failed to fetch entitlement profile after terminating task:', err)
+            }
           } else {
             toast.error(res.error || '终止跟单失败')
           }
