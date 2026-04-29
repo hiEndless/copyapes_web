@@ -74,6 +74,7 @@ export default function BicoinTaskPage() {
   const [phone, setPhone] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [isAccountSaved, setIsAccountSaved] = React.useState(false)
+  const [isSaving, setIsSaving] = React.useState(false)
 
   const [searchQuery, setSearchQuery] = React.useState('')
   const [isSearching, setIsSearching] = React.useState(false)
@@ -88,7 +89,7 @@ export default function BicoinTaskPage() {
       setIsAccountSaved(false)
     } else {
       if (phone && password) {
-        setIsSearching(true)
+        setIsSaving(true)
 
         try {
           const res = await updateBicoinInfo({ phone, password })
@@ -103,7 +104,7 @@ export default function BicoinTaskPage() {
           console.error(error)
           toast.error('请求失败')
         } finally {
-          setIsSearching(false)
+          setIsSaving(false)
         }
       }
     }
@@ -246,9 +247,11 @@ export default function BicoinTaskPage() {
                   </div>
                   <Button
                     onClick={handleSaveAccount}
+                    disabled={isSaving}
                     variant={isAccountSaved ? 'secondary' : 'default'}
                     className='w-full sm:w-auto'
                   >
+                    {isSaving && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
                     {isAccountSaved ? '修改' : '确认保存'}
                   </Button>
                 </div>
