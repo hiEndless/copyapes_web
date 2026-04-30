@@ -56,7 +56,7 @@ export function StudioTaskTableView({ groupedByApi, onOpenTaskDetail, onTerminat
                 <div className='flex items-center gap-2 text-sm font-medium'>
                   <span className='inline-block h-2 w-2 rounded-full bg-primary/70' />
                   <Badge
-                    className='bg-blue-600/10 text-blue-600 hover:bg-blue-600/10 dark:bg-blue-400/10 dark:text-blue-400 dark:hover:bg-blue-400/10 rounded-sm border-none focus-visible:outline-none'
+                    className='bg-green-600/10 text-green-600 hover:bg-green-600/10 dark:bg-green-400/10 dark:text-green-400 dark:hover:bg-green-400/10 rounded-sm border-none focus-visible:outline-none'
                   >
                     {group.apiName}
                   </Badge>
