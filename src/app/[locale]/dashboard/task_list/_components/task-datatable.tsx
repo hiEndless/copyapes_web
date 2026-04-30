@@ -381,7 +381,7 @@ const TaskDatatable = ({
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id} className='h-14 border-t'>
+              <TableRow key={headerGroup.id} className='h-14'>
                 {headerGroup.headers.map(header => {
                   return (
                     <TableHead
