@@ -85,7 +85,7 @@ const defaultPlans: Plan[] = [
     priceMonthly: 0,
     oneTimePrice: 300,
     accounts: '提升交易 API 授权数量 5个',
-    features: ['工作室VIP 有效期内，永久提升交易 API 授权数量 5个，可叠加', '工作室VIP 到期后，授权数量提升失效', '仅限工作室 VIP 用户购买'],
+    features: ['工作室VIP 有效期内，永久提升交易 API 授权数量 5 个，可叠加', '工作室VIP 有效期内，永久提升跟单任务数量 25 个，可叠加','工作室VIP 到期后，额外提升失效', '仅限工作室 VIP 用户购买'],
     buttonText: '购买工作室 VIP API 授权数量'
   }
 ];
