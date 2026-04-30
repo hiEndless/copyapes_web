@@ -55,7 +55,11 @@ export function StudioTaskTableView({ groupedByApi, onOpenTaskDetail, onTerminat
               <TableCell colSpan={5} className='py-2 first:pl-4 last:pr-4'>
                 <div className='flex items-center gap-2 text-sm font-medium'>
                   <span className='inline-block h-2 w-2 rounded-full bg-primary/70' />
-                  <Badge variant='secondary'>{group.apiName}</Badge>
+                  <Badge
+                    className='bg-blue-600/10 text-blue-600 hover:bg-blue-600/10 dark:bg-blue-400/10 dark:text-blue-400 dark:hover:bg-blue-400/10 rounded-sm border-none focus-visible:outline-none'
+                  >
+                    {group.apiName}
+                  </Badge>
                   <span className='text-muted-foreground text-xs'>共 {group.tasks.length} 个进行中任务</span>
                 </div>
               </TableCell>
