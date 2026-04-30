@@ -48,6 +48,7 @@ import {
   MessageCircleWarning,
   Bug,
   ListChecks,
+  ListCheck,
   Boxes
 } from 'lucide-react'
 
@@ -196,6 +197,11 @@ const studioToolsItems: MenuItem[] = [
     icon: ListChecks,
     label: '持仓管理',
     href: '/dashboard/positions'
+  },
+  {
+    icon: ListCheck,
+    label: '手动补仓',
+    href: '/dashboard/add_positions'
   }
 ]
 
