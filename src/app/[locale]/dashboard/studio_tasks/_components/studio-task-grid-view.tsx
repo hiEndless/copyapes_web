@@ -143,9 +143,14 @@ export function StudioTaskGridView({
                   <TableRow key={task.id} className='border-0'>
                     <TableCell className='px-1 py-1.5 text-xs'>{task.id}</TableCell>
                     <TableCell className='px-1 py-1.5'>
-                      <Badge variant='secondary' className='text-[10px]'>
-                        {task.api_name || '-'}
-                      </Badge>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Badge variant='secondary' className='text-[10px]'>
+                            {task.api_name ? (task.api_name.length > 6 ? task.api_name.slice(0, 6) + '...' : task.api_name) : '-'}
+                          </Badge>
+                        </TooltipTrigger>
+                        <TooltipContent>{task.api_name || '-'}</TooltipContent>
+                      </Tooltip>
                     </TableCell>
                     <TableCell className='px-1 py-1.5 text-xs'>{resolveInvestment(task)}</TableCell>
                     <TableCell className='px-1 py-1.5'>
