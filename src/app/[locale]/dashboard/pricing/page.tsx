@@ -22,7 +22,7 @@ const defaultPlans: Plan[] = [
     id: 'vip_month',
     name: 'VIP',
     subtitle: '适合个人交易',
-    priceMonthly: 40,
+    priceMonthly: 50,
     accounts: '5 个交易 API，15 个跟单任务',
     features: ['5 个交易 API', '15 个跟单任务', '授权交易 API 累计资金不超过 5,000 USDT', '可添加任意交易所 API', '支持带单 API', '交易消息通知', '7 * 24 小时专业客服支持'],
     yearlyFeatures: ['5 个交易 API', '15 个跟单任务', '授权交易 API 累计资金不超过 5,000 USDT', '可添加任意交易所 API', '支持带单 API', '交易消息通知', '7 * 24 小时专业客服支持', '享包年 9 折优惠', '额外赠送永久代理商权限'],
@@ -43,7 +43,7 @@ const defaultPlans: Plan[] = [
     name: '永久 VIP',
     subtitle: '适合个人交易',
     priceMonthly: 0,
-    oneTimePrice: 1000,
+    oneTimePrice: 1200,
     accounts: '5 个交易 API，15 个跟单任务',
     features: ['5 个交易 API', '15 个跟单任务', '授权交易 API 累计资金不超过 5,000 USDT', '可添加任意交易所 API', '支持带单 API', '交易消息通知', '7 * 24 小时专业客服支持', '支持功能定制'],
     buttonText: '开通永久 VIP'
