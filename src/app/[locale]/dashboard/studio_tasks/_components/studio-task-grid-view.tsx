@@ -99,9 +99,9 @@ export function StudioTaskGridView({
           <Card key={group.traderKey} className='bg-gradient-to-b from-background to-muted/20 p-3.5 shadow-sm'>
             <div className='mb-3 flex items-center justify-between gap-2'>
               <div className='flex items-center gap-2'>
-                <div className='flex h-7 w-7 shrink-0 items-center justify-center'>
+                <div className='flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full'>
                   {typeof platformInfo.logo === 'string' ? (
-                    <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-contain' />
+                    <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-cover' />
                   ) : (
                     platformInfo.logo
                   )}

@@ -116,9 +116,9 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
 
       return (
         <div className='flex items-center gap-2'>
-          <div className='bg-muted/50 flex h-9 w-9 shrink-0 items-center justify-center rounded-full p-1.5'>
+          <div className='mr-2 flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full'>
             {typeof platformInfo.logo === 'string' ? (
-              <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-contain' />
+              <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-cover' />
             ) : (
               platformInfo.logo
             )}
@@ -216,7 +216,7 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
           if (res.code === 0) {
             toast.success('终止跟单成功')
             onRefresh?.()
-            
+
             // 刷新全局权益信息，同步剩余任务额度
             try {
               const profile = await settingsApi.getEntitlementProfile()
