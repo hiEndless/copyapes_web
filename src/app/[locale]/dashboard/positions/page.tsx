@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { Loader2, RefreshCw } from 'lucide-react';
 
 import { getApiList } from '@/api/apiadd';
+import { orderApi } from '@/api/order';
 import { positionsApi, type Position } from '@/api/positions';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -130,6 +131,7 @@ export default function PositionsPage() {
     symbol: string;
     marginMode: string;
     side: string;
+    quantity?: number;
   } | null>(null);
 
   const fetchPositions = async (isRefresh = false) => {
@@ -228,8 +230,18 @@ export default function PositionsPage() {
 
     setClosingPosition(true);
     try {
-      // 暂时不接入实际的平仓接口，只保留 UI 交互和成功提示
-      await new Promise(resolve => setTimeout(resolve, 500)); // 模拟请求延迟
+      const res = await orderApi.closeSymbol({
+        api_id: closeTarget.apiId,
+        symbol: closeTarget.symbol,
+        pos_side: closeTarget.side,
+        mgn_mode: closeTarget.marginMode,
+        quantity: closeTarget.quantity,
+      });
+
+      if (res.code !== 0) {
+        throw new Error(res.error || '全平请求失败');
+      }
+
       toast.success(`${closeTarget.apiName} 的 ${closeTarget.symbol} 仓位已提交全平请求`);
       setClosePositionOpen(false);
       // Refresh positions after closing
@@ -367,6 +379,7 @@ export default function PositionsPage() {
                                     symbol: item.symbol,
                                     marginMode: item.margin_mode ?? 'cross',
                                     side: item.side,
+                                    quantity: item.position_size ? Math.abs(item.position_size) : undefined,
                                   });
                                   setClosePositionOpen(true);
                                 }}
@@ -437,6 +450,7 @@ export default function PositionsPage() {
                                       symbol: item.symbol,
                                       marginMode: item.margin_mode ?? 'cross',
                                       side: item.side,
+                                      quantity: item.position_size ? Math.abs(item.position_size) : undefined,
                                     });
                                     setClosePositionOpen(true);
                                   }}
