@@ -27,7 +27,7 @@ export default function StudioTasksPage() {
   const fetchTasks = async () => {
     try {
       setLoading(true)
-      const res = await getTaskList({ page: 1, page_size: 200 })
+      const res = await getTaskList({ page: 1, page_size: 200, active_only: true })
 
       if (res.code === 0 && Array.isArray(res.data)) {
         setTasks(res.data as StudioTaskItem[])
@@ -46,7 +46,7 @@ export default function StudioTasksPage() {
     fetchTasks()
   }, [])
 
-  const activeTasks = useMemo(() => tasks.filter(task => task.status === 1), [tasks])
+  const activeTasks = useMemo(() => tasks, [tasks])
 
   const groupedByTrader: GroupedByTraderItem[] = useMemo(() => {
     const map = new Map<string, StudioTaskItem[]>()

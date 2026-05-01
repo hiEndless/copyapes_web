@@ -50,6 +50,7 @@ export function getTaskList(params?: {
   page_size?: number
   limit?: number
   offset?: number
+  active_only?: boolean
 }) {
   return request('/taskadd/', {
     method: 'GET',
