@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
 import { request } from '@/api/request'
 import { settingsApi } from '@/api/settings'
+import { authApi } from '@/api/auth'
 
 const EXCHANGE_ACCOUNTS: Record<'binance' | 'okx', string> = {
   binance: '727380886',
@@ -103,8 +104,30 @@ export function PaymentMethodDialog({
             // 触发自定义事件，通知其他组件更新权益信息
             window.dispatchEvent(new Event('entitlementProfileUpdated'))
           }
+
+          // 再次获取用户信息确认身份，更新本地浏览器缓存
+          const userInfoRes = await authApi.getLoginInfo()
+
+          if (userInfoRes.code === 0 && userInfoRes.data) {
+            const oldUserInfoStr = localStorage.getItem('userInfo')
+            let newUserInfo = userInfoRes.data
+
+            if (oldUserInfoStr) {
+              try {
+                const oldUserInfo = JSON.parse(oldUserInfoStr)
+
+                // 保留旧的 token，因为 GET /login/ 接口返回的数据中没有 token
+                newUserInfo = { ...oldUserInfo, ...userInfoRes.data }
+              } catch (e) {
+                console.error('Failed to parse old userInfo:', e)
+              }
+            }
+            
+            localStorage.setItem('userInfo', JSON.stringify(newUserInfo))
+            window.dispatchEvent(new Event('userInfoUpdated'))
+          }
         } catch (profileErr) {
-          console.error('Failed to fetch updated entitlement profile:', profileErr)
+          console.error('Failed to fetch updated entitlement profile or user info:', profileErr)
         }
       }
     } catch (err: any) {

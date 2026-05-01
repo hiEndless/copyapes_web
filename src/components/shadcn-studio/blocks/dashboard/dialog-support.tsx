@@ -105,7 +105,7 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
               <h2 className='text-2xl font-semibold opacity-90'>
                 Hi <span className='animate-wave inline-block'>👋</span>
               </h2>
-              <h3 className='text-2xl font-bold'>{connectData?.nickname || '联系客服与帮助'}</h3>
+              <h3 className='text-2xl font-bold'>联系客服与帮助</h3>
             </div>
             <div className='flex items-center gap-3 pt-2'>
               {connectData?.wx && (
