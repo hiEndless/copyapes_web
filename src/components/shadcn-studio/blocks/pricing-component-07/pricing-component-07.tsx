@@ -136,7 +136,6 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
   const selectedPlanData = plans.find(plan => plan.id === selectedPlan)!
   const paymentAmountUsdt = getPaymentAmountUsdt(selectedPlanData, billing)
-  const originalPriceUsdt = getOriginalPriceUsdt(selectedPlanData, billing)
 
   const activePlanCode = selectedPlanData.oneTimePrice != null
     ? selectedPlanData.oneTimePlanCode || selectedPlanData.id
@@ -390,7 +389,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
         open={payDialogOpen}
         onOpenChange={setPayDialogOpen}
         amountUsdt={paymentAmountUsdt}
-        price={originalPriceUsdt}
+        price={paymentAmountUsdt}
         planCode={activePlanCode || ''}
         couponCode={''}
         discount={1}
