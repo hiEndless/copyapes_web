@@ -82,7 +82,7 @@ export function VipCodeTab() {
                 {redeemCodeList.map((item: any, idx: number) => (
                   <TableRow key={idx}>
                     <TableCell>{item.redeem_code}</TableCell>
-                    <TableCell>{item.code_type === 1 ? "30天正式VIP" : "7天试用VIP"}</TableCell>
+                    <TableCell>{item.code_type === "30天正式VIP" ? "30天正式VIP" : "7天试用VIP"}</TableCell>
                   </TableRow>
                 ))}
                 {redeemCodeList.length === 0 && (
