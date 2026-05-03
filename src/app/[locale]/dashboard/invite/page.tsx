@@ -280,13 +280,12 @@ export default function InvitePage() {
                   </div>
                 </div>
 
-                <Alert variant='default' className='border-primary/20 bg-primary/5'>
-                  <Info className='h-3.5 w-3.5 text-primary' />
-                  <AlertTitle className='text-sm text-primary'>提现提示</AlertTitle>
-                  <AlertDescription className='text-[11px] leading-5 text-muted-foreground'>
+                <div className="bg-muted/30 rounded-lg border border-dashed px-4 py-3">
+                  <Info className='h-3.5 w-3.5 text-primary inline-block mr-2 text-primary/70 box-content' />
+                  <span className="text-muted-foreground text-xs leading-relaxed">
                     开通 年费VIP 或 年费工作室VIP 即可成为正式代理合作伙伴，进行收益提现。
-                  </AlertDescription>
-                </Alert>
+                  </span>
+                </div>
 
                 <div className='space-y-3 pt-1'>
                   <h4 className='text-sm font-semibold'>代理合作伙伴权益</h4>

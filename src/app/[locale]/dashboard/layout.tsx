@@ -133,12 +133,8 @@ const adminItems: MenuItem[] = [
     label: '代理商后台',
     items: [
       { label: '代理设置', href: '/dashboard/partner/settings' },
-      { label: '返佣设置', href: '/dashboard/partner/rebate' },
-      { label: '兑换码创建', href: '/dashboard/partner/redeem_codes' },
-      { label: '推广用户列表', href: '/dashboard/partner/invite_list' },
-      { label: 'VIP 客户列表', href: '/dashboard/partner/vip_list' },
+      { label: '用户列表', href: '/dashboard/partner/user_list' },
       { label: '收益流水', href: '/dashboard/partner/revenue' },
-      { label: '提现流水', href: '/dashboard/partner/withdrawal' }
     ]
   }
 ]
