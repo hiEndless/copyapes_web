@@ -85,7 +85,7 @@ export default function InvitePage() {
     <div className='flex h-full flex-col gap-4 overflow-y-auto p-3 lg:p-5'>
       <div className='flex flex-col gap-1'>
         <h2 className='text-xl font-semibold tracking-tight'>邀请好友</h2>
-        <p className='text-xs text-muted-foreground'>邀请好友注册，解锁额外额度与代理分成</p>
+        <p className='text-xs text-muted-foreground'>邀请好友注册，解锁额外额度与销售分成</p>
       </div>
 
       {loading ? (
@@ -268,7 +268,7 @@ export default function InvitePage() {
               <CardHeader className='space-y-2 pb-3'>
                 <CardTitle className='flex items-center gap-2 text-base font-semibold'>
                   <Wallet className='h-4 w-4 text-primary' />
-                  代理分成
+                  销售分成
                 </CardTitle>
                 <CardDescription className='text-xs'>邀请用户付费后可累计合作收益</CardDescription>
               </CardHeader>
