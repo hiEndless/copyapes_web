@@ -77,6 +77,15 @@ export function getPaymentAmountUsdt(plan: Plan, billing: BillingCycle): number 
   return plan.priceYearly ?? yearlyTotal(plan.priceMonthly)
 }
 
+/** 当前方案原价 USDT 数额（不打折的数值） */
+export function getOriginalPriceUsdt(plan: Plan, billing: BillingCycle): number {
+  if (plan.oneTimePrice != null) return plan.oneTimePrice
+  if (plan.priceMonthly <= 0) return 0
+  if (billing === 'month') return plan.priceMonthly
+
+  return yearlyOriginalTotal(plan.priceMonthly)
+}
+
 function priceLabel(plan: Plan, cycle: BillingCycle): { main: string; suffix: string } {
   if (plan.oneTimePrice != null) {
     return { main: formatYuan(plan.oneTimePrice), suffix: '/永久' }
@@ -127,6 +136,8 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
   const selectedPlanData = plans.find(plan => plan.id === selectedPlan)!
   const paymentAmountUsdt = getPaymentAmountUsdt(selectedPlanData, billing)
+  const originalPriceUsdt = getOriginalPriceUsdt(selectedPlanData, billing)
+
   const activePlanCode = selectedPlanData.oneTimePrice != null
     ? selectedPlanData.oneTimePlanCode || selectedPlanData.id
     : billing === 'month'
@@ -379,7 +390,10 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
         open={payDialogOpen}
         onOpenChange={setPayDialogOpen}
         amountUsdt={paymentAmountUsdt}
+        price={originalPriceUsdt}
         planCode={activePlanCode || ''}
+        couponCode={''}
+        discount={1}
       />
     </section>
   )

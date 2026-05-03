@@ -1,11 +1,44 @@
 "use client"
 
+import { useEffect, useState, useCallback } from "react"
+
+import { agentApi } from "@/api/agent"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
 export function SupportContactTab() {
+  const [wx, setWx] = useState("")
+  const [telegram, setTelegram] = useState("")
+  const [nickname, setNickname] = useState("")
+  
+  const getPartnerSet = useCallback(async () => {
+    try {
+      const res = await agentApi.getPartnerSet()
+
+      if (res.code === 0 && res.data) {
+        setWx(res.data.wx)
+        setTelegram(res.data.telegram)
+        setNickname(res.data.nickname)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }, [])
+
+  const updatePartnerSet = async () => {
+    try {
+      await agentApi.updatePartnerSet({ wx, telegram, nickname })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+    getPartnerSet()
+  }, [getPartnerSet])
+
   return (
     <Card className="border-border/60 rounded-xl">
       <CardHeader>
@@ -19,7 +52,8 @@ export function SupportContactTab() {
             <Input
               id="support-qq"
               placeholder="输入 QQ 号"
-              defaultValue="123456789"
+              value={nickname}
+              onChange={(e) => setNickname(e.target.value)}
               className="bg-background"
             />
           </div>
@@ -28,7 +62,8 @@ export function SupportContactTab() {
             <Input
               id="support-wechat"
               placeholder="输入微信号"
-              defaultValue="copyapes_support"
+              value={wx}
+              onChange={(e) => setWx(e.target.value)}
               className="bg-background"
             />
           </div>
@@ -37,14 +72,15 @@ export function SupportContactTab() {
             <Input
               id="support-telegram"
               placeholder="输入 Telegram 用户名"
-              defaultValue="@copyapes_support"
+              value={telegram}
+              onChange={(e) => setTelegram(e.target.value)}
               className="bg-background max-w-sm"
             />
           </div>
         </div>
 
         <div className="flex justify-end pt-2">
-          <Button className="w-full sm:w-auto">保存联系方式</Button>
+          <Button className="w-full sm:w-auto" onClick={updatePartnerSet}>保存联系方式</Button>
         </div>
       </CardContent>
     </Card>

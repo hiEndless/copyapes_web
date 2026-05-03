@@ -1,11 +1,40 @@
 "use client"
 
+import { useEffect, useState, useCallback } from "react"
+
+import { agentApi } from "@/api/agent"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 
 export function NoticeTab() {
+  const [notice, setNotice] = useState("")
+
+  const getPartnerSet = useCallback(async () => {
+    try {
+      const res = await agentApi.getPartnerSet()
+
+      if (res.code === 0 && res.data) {
+        setNotice(res.data.notice || "")
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }, [])
+
+  const updatePartnerSet = async () => {
+    try {
+      await agentApi.updatePartnerSet({ notice })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+    getPartnerSet()
+  }, [getPartnerSet])
+
   return (
     <Card className="border-border/60 rounded-xl">
       <CardHeader>
@@ -18,15 +47,14 @@ export function NoticeTab() {
           <Textarea
             id="notice-content"
             placeholder="输入公告正文"
-            defaultValue={
-              "1. 五月新注册用户可参与返佣活动。\n2. 伙伴后台数据每日 10 分钟同步一次。\n3. 若推广链接异常，请联系专属客服处理。"
-            }
+            value={notice}
+            onChange={(e) => setNotice(e.target.value)}
             className="min-h-48"
           />
         </div>
 
         <div className="flex justify-end">
-          <Button>保存公告设置</Button>
+          <Button onClick={updatePartnerSet}>保存公告设置</Button>
         </div>
       </CardContent>
     </Card>

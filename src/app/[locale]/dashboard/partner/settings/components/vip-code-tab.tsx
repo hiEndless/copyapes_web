@@ -1,5 +1,8 @@
 "use client"
 
+import { useEffect, useState, useCallback } from "react"
+
+import { agentApi } from "@/api/agent"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -7,6 +10,40 @@ import { Label } from "@/components/ui/label"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export function VipCodeTab() {
+  const [redeemCodeList, setRedeemCodeList] = useState<any[]>([])
+  const [redeemCodeNum, setRedeemCodeNum] = useState<string>("")
+
+  const getRedeemCode = useCallback(async () => {
+    try {
+      const res = await agentApi.getRedeems()
+
+      if (res.code === 0 && res.data) {
+        setRedeemCodeList(res.data)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }, [])
+
+  const createRedeemCode = async () => {
+    if (!redeemCodeNum) return
+
+    try {
+      const res = await agentApi.createRedeems({ redeem_code_num: Number(redeemCodeNum) })
+
+      if (res.code === 0) {
+        setRedeemCodeNum("")
+        await getRedeemCode()
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+    getRedeemCode()
+  }, [getRedeemCode])
+
   return (
     <div className="flex flex-col gap-6">
       <Card className="border-border/60 rounded-xl">
@@ -16,12 +53,14 @@ export function VipCodeTab() {
         <CardContent>
           <div className="flex items-center gap-4 py-4">
             <Label className="w-20 shrink-0 text-right text-sm font-medium">兑换码个数</Label>
-            <Input 
+            <Input
               type="number"
-              placeholder="eg. 10表示创建10个兑换码" 
-              className="max-w-[280px] bg-background" 
+              placeholder="eg. 10表示创建10个兑换码"
+              value={redeemCodeNum}
+              onChange={(e) => setRedeemCodeNum(e.target.value)}
+              className="max-w-[280px] bg-background"
             />
-            <Button variant="default" className="min-w-24">创建</Button>
+            <Button variant="default" className="min-w-24" onClick={createRedeemCode}>创建</Button>
           </div>
         </CardContent>
       </Card>
@@ -40,30 +79,17 @@ export function VipCodeTab() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell>8WcbAlMabmDc</TableCell>
-                  <TableCell>30天正式VIP</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>ItR6COOgFc2D</TableCell>
-                  <TableCell>30天正式VIP</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>T1euzwoN1QJV</TableCell>
-                  <TableCell>30天正式VIP</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>G4jdO88OsNOk</TableCell>
-                  <TableCell>7天试用VIP</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>MXh05rh8Vrw8</TableCell>
-                  <TableCell>7天试用VIP</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>IsaTxEq8JlJS</TableCell>
-                  <TableCell>7天试用VIP</TableCell>
-                </TableRow>
+                {redeemCodeList.map((item: any, idx: number) => (
+                  <TableRow key={idx}>
+                    <TableCell>{item.redeem_code}</TableCell>
+                    <TableCell>{item.code_type === 1 ? "30天正式VIP" : "7天试用VIP"}</TableCell>
+                  </TableRow>
+                ))}
+                {redeemCodeList.length === 0 && (
+                  <TableRow>
+                    <TableCell colSpan={2} className="text-center text-muted-foreground py-6">暂无数据</TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </div>

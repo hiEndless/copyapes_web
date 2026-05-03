@@ -17,9 +17,9 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { request } from '@/api/request'
 import { settingsApi } from '@/api/settings'
 import { authApi } from '@/api/auth'
+import { paymentApi } from '@/api/payment'
 
 const EXCHANGE_ACCOUNTS: Record<'binance' | 'okx', string> = {
   binance: '727380886',
@@ -39,14 +39,22 @@ export interface PaymentMethodDialogProps {
 
   /** 应付 USDT 数量（与定价区一致） */
   amountUsdt: number
+
+  /** 原价 USDT 数量 */
+  price: number
   planCode: string
+  couponCode?: string
+  discount?: number
 }
 
 export function PaymentMethodDialog({
   open,
   onOpenChange,
   amountUsdt,
-  planCode
+  price,
+  planCode,
+  couponCode = '',
+  discount = 1
 }: PaymentMethodDialogProps) {
   const [exchange, setExchange] = useState<PaymentExchange>('binance')
   const [referenceId, setReferenceId] = useState('')
@@ -79,15 +87,15 @@ export function PaymentMethodDialog({
 
       const payType = exchange === 'binance' ? 5 : 4
 
-      const res = await request('/buyorder/', {
-        method: 'POST',
-        body: {
-          plan_code: planCode,
-          pay_type: payType,
-          order_price: amountUsdt,
-          fromWdId: ref,
-          product_id: 0
-        }
+      const res = await paymentApi.buyOrder({
+        plan_code: planCode,
+        pay_type: payType,
+        order_price: amountUsdt,
+        price: price,
+        fromWdId: ref,
+        product_id: 0,
+        coupon_code: couponCode,
+        discount: discount
       })
 
       if (res.code === 0) {
@@ -101,6 +109,7 @@ export function PaymentMethodDialog({
 
           if (profile) {
             localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+
             // 触发自定义事件，通知其他组件更新权益信息
             window.dispatchEvent(new Event('entitlementProfileUpdated'))
           }
@@ -122,7 +131,7 @@ export function PaymentMethodDialog({
                 console.error('Failed to parse old userInfo:', e)
               }
             }
-            
+
             localStorage.setItem('userInfo', JSON.stringify(newUserInfo))
             window.dispatchEvent(new Event('userInfoUpdated'))
           }

@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 
 import { Pencil, Trash2 } from "lucide-react"
 
+import { agentApi } from "@/api/agent"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -13,30 +14,88 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Textarea } from "@/components/ui/textarea"
 
 type BindUser = {
-  id: string
-  account: string
-  contact: string
+  id?: string
+  username: string
+  wx_qq: string
   phone: string
-  notes: string
-  time: string
+  other: string
+  create_datetime: string
 }
 
-const initialBindUsers: BindUser[] = [
-  { id: "1", account: "xiaoqing2668", contact: "moyong4969", phone: "15655156616", notes: "芝麻40347639", time: "2025-10-06" },
-  { id: "2", account: "guokaite", contact: "Xx3Salvation", phone: "15655156616", notes: "芝麻42184900", time: "2025-10-24" },
-  { id: "3", account: "441246849@qq.com", contact: "", phone: "15655156616", notes: "bg: 9730512028", time: "2025-11-04" },
-  { id: "4", account: "1924244562@qq.com", contact: "微信号：安迪", phone: "", notes: "okx: 788340260148544572，bg: 9730512028", time: "2025-12-20" },
-]
-
 export function BindUserTab() {
-  const [bindUsers, setBindUsers] = useState<BindUser[]>(initialBindUsers)
+  const [bindUsers, setBindUsers] = useState<BindUser[]>([])
   const [editingUser, setEditingUser] = useState<BindUser | null>(null)
+  const [page, setPage] = useState(1)
+  const limit = 10
 
-  const handleEditSave = () => {
-    if (!editingUser) return
-    setBindUsers(prev => prev.map(u => u.id === editingUser.id ? editingUser : u))
-    setEditingUser(null)
+  const [addForm, setAddForm] = useState({
+    username: "",
+    wx_qq: "",
+    phone: "",
+    other: ""
+  })
+
+  const getRebateUsers = useCallback(async (currentPage: number) => {
+    try {
+      const offset = (currentPage - 1) * limit
+      const res = await agentApi.getInviteUsers({ limit, offset })
+
+      if (res.code === 0 && res.data) {
+        const list = Array.isArray(res.data) ? res.data : res.data.results || []
+
+        setBindUsers(list)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }, [])
+
+  const handleAdd = async () => {
+    if (!addForm.username) return
+
+    try {
+      const res = await agentApi.addInviteUser(addForm)
+
+      if (res.code === 0 && res.data) {
+        setPage(1)
+        getRebateUsers(1)
+        setAddForm({ username: "", wx_qq: "", phone: "", other: "" })
+      }
+    } catch (err) {
+      console.error(err)
+    }
   }
+
+  const handleDelete = async (username: string) => {
+    try {
+      const res = await agentApi.deleteInviteUser({ username })
+
+      if (res.code === 0 && res.data) {
+        getRebateUsers(page)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  const handleEditSave = async () => {
+    if (!editingUser) return
+
+    try {
+      const res = await agentApi.updateInviteUser(editingUser)
+
+      if (res.code === 0 && res.data) {
+        getRebateUsers(page)
+        setEditingUser(null)
+      }
+    } catch (err) {
+      console.error(err)
+    }
+  }
+
+  useEffect(() => {
+    getRebateUsers(page)
+  }, [getRebateUsers, page])
 
   return (
     <>
@@ -50,23 +109,43 @@ export function BindUserTab() {
               <Label className="w-20 shrink-0 text-right text-sm font-medium">
                 <span className="text-destructive mr-1">*</span>账号：
               </Label>
-              <Input placeholder="本站账号" className="bg-background" />
+              <Input
+                placeholder="本站账号"
+                value={addForm.username}
+                onChange={(e) => setAddForm(prev => ({ ...prev, username: e.target.value }))}
+                className="bg-background"
+              />
             </div>
             <div className="flex items-center gap-4">
-              <Label className="w-20 shrink-0 text-right text-sm font-medium">微信/QQ：</Label>
-              <Input placeholder="微信/QQ" className="bg-background" />
+              <Label className="w-20 shrink-0 text-right text-sm font-medium">社交账号：</Label>
+              <Input
+                placeholder="社交账号"
+                value={addForm.wx_qq}
+                onChange={(e) => setAddForm(prev => ({ ...prev, wx_qq: e.target.value }))}
+                className="bg-background"
+              />
             </div>
             <div className="flex items-center gap-4">
               <Label className="w-20 shrink-0 text-right text-sm font-medium">手机：</Label>
-              <Input placeholder="手机" className="bg-background" />
+              <Input
+                placeholder="手机"
+                value={addForm.phone}
+                onChange={(e) => setAddForm(prev => ({ ...prev, phone: e.target.value }))}
+                className="bg-background"
+              />
             </div>
             <div className="flex items-start gap-4">
               <Label className="w-20 shrink-0 text-right text-sm font-medium pt-2.5">备注：</Label>
-              <Textarea placeholder="备注" className="bg-background min-h-20" />
+              <Textarea
+                placeholder="备注"
+                value={addForm.other}
+                onChange={(e) => setAddForm(prev => ({ ...prev, other: e.target.value }))}
+                className="bg-background min-h-20 whitespace-pre-wrap"
+              />
             </div>
             <div className="flex gap-4">
               <div className="w-20 shrink-0" />
-              <Button variant="default" className="min-w-24">添加</Button>
+              <Button variant="default" className="min-w-24" onClick={handleAdd}>添加</Button>
             </div>
           </CardContent>
         </Card>
@@ -81,7 +160,7 @@ export function BindUserTab() {
                 <TableHeader className="bg-muted/50">
                   <TableRow>
                     <TableHead className="font-semibold text-primary">账号</TableHead>
-                    <TableHead className="font-semibold text-primary">微信/QQ</TableHead>
+                    <TableHead className="font-semibold text-primary">社交账号</TableHead>
                     <TableHead className="font-semibold text-primary">手机</TableHead>
                     <TableHead className="font-semibold text-primary">备注</TableHead>
                     <TableHead className="font-semibold text-primary">时间</TableHead>
@@ -89,13 +168,21 @@ export function BindUserTab() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {bindUsers.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableCell>{user.account}</TableCell>
-                      <TableCell>{user.contact}</TableCell>
+                  {bindUsers.map((user, idx) => (
+                    <TableRow key={user.id || idx}>
+                      <TableCell>{user.username}</TableCell>
+                      <TableCell>{user.wx_qq}</TableCell>
                       <TableCell>{user.phone}</TableCell>
-                      <TableCell className="whitespace-pre-wrap break-words">{user.notes}</TableCell>
-                      <TableCell>{user.time}</TableCell>
+                      <TableCell className="break-words">
+                        {user.other?.split('\n').map((line, i) => (
+                          <div key={i}>
+                            {line.match(/.{1,20}/g)?.map((chunk, j) => (
+                              <div key={j}>{chunk}</div>
+                            ))}
+                          </div>
+                        ))}
+                      </TableCell>
+                      <TableCell>{user.create_datetime?.replace('T', ' ').split('.')[0]}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
                           <Button
@@ -106,15 +193,49 @@ export function BindUserTab() {
                           >
                             <Pencil className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-destructive">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                            onClick={() => handleDelete(user.username)}
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
                     </TableRow>
                   ))}
+                  {bindUsers.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={6} className="text-center text-muted-foreground py-6">暂无数据</TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
               </Table>
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page === 1}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                >
+                  上一页
+                </Button>
+                <div className="text-sm font-medium px-2">
+                  第 {page} 页
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={bindUsers.length < limit}
+                  onClick={() => setPage(p => p + 1)}
+                >
+                  下一页
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -135,8 +256,8 @@ export function BindUserTab() {
               </Label>
               <Input
                 id="edit-account"
-                value={editingUser?.account || ""}
-                onChange={(e) => setEditingUser(prev => prev ? { ...prev, account: e.target.value } : null)}
+                value={editingUser?.username || ""}
+                onChange={(e) => setEditingUser(prev => prev ? { ...prev, username: e.target.value } : null)}
                 className="col-span-3"
               />
             </div>
@@ -146,8 +267,8 @@ export function BindUserTab() {
               </Label>
               <Input
                 id="edit-contact"
-                value={editingUser?.contact || ""}
-                onChange={(e) => setEditingUser(prev => prev ? { ...prev, contact: e.target.value } : null)}
+                value={editingUser?.wx_qq || ""}
+                onChange={(e) => setEditingUser(prev => prev ? { ...prev, wx_qq: e.target.value } : null)}
                 className="col-span-3"
               />
             </div>
@@ -168,9 +289,9 @@ export function BindUserTab() {
               </Label>
               <Textarea
                 id="edit-notes"
-                value={editingUser?.notes || ""}
-                onChange={(e) => setEditingUser(prev => prev ? { ...prev, notes: e.target.value } : null)}
-                className="col-span-3 min-h-20"
+                value={editingUser?.other || ""}
+                onChange={(e) => setEditingUser(prev => prev ? { ...prev, other: e.target.value } : null)}
+                className="col-span-3 min-h-20 whitespace-pre-wrap"
               />
             </div>
           </div>

@@ -40,7 +40,10 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
   const hasApiPrefix = endpoint.startsWith('/api/') || endpoint === '/api';
   const apiPath = hasApiPrefix ? endpoint : `/api${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
 
-  const url = `${API_BASE_URL}${apiPath}${queryString ? '?' + queryString : ''}`;
+  // 如果原 endpoint 中已经包含了 `?`，则后续参数应使用 `&` 连接，避免出现 `?limit=10&offset=0?token=...` 的错误情况
+  const hasQueryInPath = apiPath.includes('?');
+  const separator = hasQueryInPath ? '&' : '?';
+  const url = `${API_BASE_URL}${apiPath}${queryString ? separator + queryString : ''}`;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -62,14 +65,28 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
 
     // 兼容旧接口：如果返回值没有 code 字段，并且 HTTP 状态码正常，则默认包装一层 code: 0
     if (response.ok && data && typeof data === 'object' && !('code' in data)) {
+      const successMsg = data.message || data.msg;
+
+      if (successMsg && !silent && typeof window !== 'undefined') {
+        toast.success(successMsg);
+      }
+
       return {
         code: 0,
         data: data as T,
       };
     }
 
+    if (data.code === 0 && typeof window !== 'undefined') {
+      const successMsg = data.message || data.msg;
+
+      if (successMsg && !silent) {
+        toast.success(successMsg);
+      }
+    }
+
     if (data.code !== 0 && typeof window !== 'undefined') {
-      let errorMessage = data.error || data.message || '操作失败';
+      let errorMessage = data.error || data.message || data.msg || '操作失败';
 
       if (data.detail && Object.keys(data.detail).length > 0) {
         const firstErrorKey = Object.keys(data.detail)[0];
