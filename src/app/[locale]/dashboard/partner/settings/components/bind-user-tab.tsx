@@ -99,12 +99,22 @@ export function BindUserTab() {
 
   return (
     <>
-      <div className="flex flex-col gap-6">
-        <Card className="border-border/60 rounded-xl">
+      <div className="flex w-full flex-col gap-6">
+        <Card className="border-border/60 w-full rounded-xl">
           <CardHeader>
             <CardTitle>绑定返佣用户</CardTitle>
           </CardHeader>
-          <CardContent className="max-w-2xl space-y-5">
+          <CardContent className="w-full space-y-5">
+            <div className="bg-muted/30 rounded-lg border border-dashed px-4 py-3">
+              <p className="text-sm font-medium">绑定说明：</p>
+              <ul className="text-muted-foreground mt-2 list-disc space-y-1 pl-5 text-xs leading-relaxed">
+                <li>只能绑定自己邀请的用户为返佣用户。</li>
+                <li>绑定前请联系该用户终止所有跟单任务，否则无法绑定。</li>
+                <li>绑定成功后，该用户已添加的 API 将被删除，后续只能添加在你名下的交易所返佣账号 API。</li>
+                <li>绑定成功后，该用户可享专属返佣 VIP 半价优惠。</li>
+                <li>解除绑定后，该用户可添加任意交易所 API，VIP 价格恢复原价。</li>
+              </ul>
+            </div>
             <div className="flex items-center gap-4">
               <Label className="w-20 shrink-0 text-right text-sm font-medium">
                 <span className="text-destructive mr-1">*</span>账号：
@@ -150,7 +160,7 @@ export function BindUserTab() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/60 rounded-xl">
+        <Card className="border-border/60 w-full rounded-xl">
           <CardHeader>
             <CardTitle>返佣用户管理</CardTitle>
           </CardHeader>
