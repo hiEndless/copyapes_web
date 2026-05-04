@@ -120,8 +120,42 @@ export function InviteCodeTab() {
           </div>
         </div>
 
+        <div className="space-y-3">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 dark:border-red-900/60 dark:bg-red-950/25">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-red-700 dark:text-red-200">代理红线说明</h3>
+              <ol className="list-decimal space-y-1 pl-5 text-sm leading-6 text-red-700 dark:text-red-100/90">
+                <li>严禁任何形式的打着跟单猿的名义对用户实施诈骗行为。</li>
+                <li>严禁私下单独收取用户资金，且不及时和跟单猿官方同步客户需求，拖延或不给客户提供对应服务。</li>
+                <li>严禁自称跟单猿官方，只能说是合作方或者其他类似称谓。</li>
+              </ol>
+              <p className="text-sm leading-6 text-red-700 dark:text-red-100/90">
+                如有发生以上情形，根据情况进行罚扣分成、解除用户邀请关系、降低分成低等级、取消合伙人资格等处罚。
+              </p>
+              <p className="text-sm leading-6 text-red-700 dark:text-red-100/90">
+                如有发现诈骗等违法违规行为，且不主动退还钱财的，如有必要，将会配合受害用户整理相关证据移交公安。
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-4">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold">分佣奖励如何计算？</h3>
+              <p className="text-muted-foreground text-sm leading-6">
+                分佣奖励会按照用户实际支付的金额，将
+                <span>{firstRatio * 100}</span>
+                <span>%</span>
+                分配给上一级邀请人，将
+                <span>{secondRatio * 100}</span>
+                <span>%</span>
+                分配给上上一级邀请人。
+              </p>
+            </div>
+          </div>
+        </div>
+
         <div className="flex flex-col gap-3 pt-2">
-          <Label htmlFor="invite-code" className="text-sm">邀请码</Label>
+          <Label htmlFor="invite-code" className="text-sm">邀请码设置</Label>
 
           <div className="bg-muted/30 rounded-lg border border-dashed px-4 py-3">
             <p className="text-muted-foreground text-xs leading-relaxed">
