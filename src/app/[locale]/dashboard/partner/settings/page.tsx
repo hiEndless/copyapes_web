@@ -32,8 +32,8 @@ const settingTabs = [
   },
   {
     value: "vip-code",
-    label: "VIP体验码",
-    title: "VIP体验码管理",
+    label: "VIP 体验码",
+    title: "VIP 体验码管理",
     description: "创建并管理用于分发的VIP体验兑换码。",
   },
   {
