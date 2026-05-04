@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 
 import { getTaskList, stopTask } from '@/api/task'
 import { settingsApi } from '@/api/settings'
-import { useRouter } from '@/i18n/routing'
+import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
 import { Card } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'

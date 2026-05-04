@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react'
 
-import { useRouter } from 'next/navigation'
-
 import { toast } from 'sonner'
 
 import { CircleHelp } from 'lucide-react'
@@ -18,6 +16,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import { getApiOptions, getTraderBalance, addTask } from '@/api/task'
 import { settingsApi } from '@/api/settings'
+import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
 // --- Utility Component for Tags ---
 function TagInput({

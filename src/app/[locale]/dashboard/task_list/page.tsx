@@ -10,7 +10,7 @@ import { Card } from '@/components/ui/card'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
-import { useRouter } from '@/i18n/routing'
+import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 import TaskDatatable, { type TaskItem } from './_components/task-datatable'
 import { getTaskList } from '@/api/task'
 

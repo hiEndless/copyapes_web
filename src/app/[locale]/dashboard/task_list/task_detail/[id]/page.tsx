@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { ArrowLeft, Activity } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { useRouter } from '@/i18n/routing'
+import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 import { getTaskDetail, getTraderDetail, stopTask } from '@/api/task'
 import { settingsApi } from '@/api/settings'
 

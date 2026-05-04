@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, type ComponentType } from 'react'
+import React, { useEffect, useRef, useState, type ComponentType } from 'react'
 
 import { useTheme } from 'next-themes'
 import { usePathname } from 'next/navigation'
@@ -8,36 +8,15 @@ import Link from 'next/link'
 import {
   ActivityIcon,
   BellIcon,
-  BellRingIcon,
-  BookMarkedIcon,
   ChevronRightIcon,
-  CircleOffIcon,
   CopyIcon,
   DollarSignIcon,
-  FacebookIcon,
-  FolderIcon,
-  InstagramIcon,
   LanguagesIcon,
   LayoutGridIcon,
   LayoutListIcon,
-  LinkedinIcon,
-  LockKeyholeIcon,
-  MailIcon,
-  MailOpenIcon,
-  MapPinIcon,
-  MessageSquareTextIcon,
   MoonStarIcon,
-  MousePointerClickIcon,
-  SearchIcon,
   SettingsIcon,
-  ShieldCheckIcon,
-  ShoppingCartIcon,
   SunIcon,
-  TicketCheckIcon,
-  TrendingUpIcon,
-  TriangleAlertIcon,
-  TwitterIcon,
-  UserIcon,
   Share2,
   Cookie,
   LandPlot,
@@ -52,7 +31,7 @@ import {
   Boxes
 } from 'lucide-react'
 
-import NextTopLoader from 'nextjs-toploader'
+import NextTopLoader, { useTopLoader } from 'nextjs-toploader'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -221,8 +200,18 @@ const settingsItems: MenuItem[] = [
 
 const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; groupLabel?: string }) => {
   const pathname = usePathname()
+  const topLoader = useTopLoader()
 
   if (!data || data.length === 0) return null
+
+  const pathnameWithoutLocale = pathname.replace(/^\/[^\/]+/, '') || '/'
+
+  const startNavigationLoader = (href: string) => {
+    if (pathnameWithoutLocale === href) return
+
+    topLoader.start()
+    topLoader.setProgress(0.08)
+  }
 
   return (
     <SidebarGroup>
@@ -230,9 +219,6 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
       <SidebarGroupContent>
         <SidebarMenu>
           {data.map(item => {
-            // Remove locale prefix (e.g. /en, /zh) from pathname for matching
-            const pathnameWithoutLocale = pathname.replace(/^\/[^\/]+/, '') || '/'
-
             const isActiveItem =
               !item.items &&
               (pathnameWithoutLocale === item.href ||
@@ -266,7 +252,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
                             }
                             asChild
                           >
-                            <Link href={subItem.href}>
+                            <Link href={subItem.href} onClick={() => startNavigationLoader(subItem.href)}>
                               {subItem.label}
                               {subItem.badge && (
                                 <span className='bg-primary/10 flex h-5 min-w-5 items-center justify-center rounded-full text-xs'>
@@ -284,7 +270,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
             ) : (
               <SidebarMenuItem key={item.label}>
                 <SidebarMenuButton tooltip={item.label} isActive={isActiveItem} asChild>
-                  <Link href={item.href}>
+                  <Link href={item.href} onClick={() => startNavigationLoader(item.href)}>
                     <item.icon />
                     <span>{item.label}</span>
                   </Link>
@@ -302,8 +288,14 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
 const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const [mounted, setMounted] = useState(false)
   const { resolvedTheme, setTheme } = useTheme()
+  const topLoader = useTopLoader()
+  const topLoaderRef = useRef(topLoader)
+  const pendingInitialLoadsRef = useRef(0)
+  const completedInitialLoadsRef = useRef(0)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isPartner, setIsPartner] = useState(false)
+
+  topLoaderRef.current = topLoader
 
   useEffect(() => {
     setMounted(true)
@@ -319,6 +311,44 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (e) {
       console.error('Failed to parse userInfo', e)
+    }
+
+    const initialLoaders = 3
+
+    const startInitialLoad = () => {
+      if (pendingInitialLoadsRef.current === 0) {
+        completedInitialLoadsRef.current = 0
+        topLoaderRef.current.start()
+        topLoaderRef.current.setProgress(0.08)
+      }
+
+      pendingInitialLoadsRef.current += 1
+    }
+
+    const finishInitialLoad = () => {
+      pendingInitialLoadsRef.current = Math.max(0, pendingInitialLoadsRef.current - 1)
+      completedInitialLoadsRef.current = Math.min(initialLoaders, completedInitialLoadsRef.current + 1)
+
+      if (pendingInitialLoadsRef.current === 0 && completedInitialLoadsRef.current >= initialLoaders) {
+        topLoaderRef.current.setProgress(0.95)
+        topLoaderRef.current.done()
+
+        return
+      }
+
+      topLoaderRef.current.setProgress(
+        Math.min(0.9, 0.08 + (completedInitialLoadsRef.current / initialLoaders) * 0.82)
+      )
+    }
+
+    const runInitialLoaderTask = async (task: () => Promise<void>) => {
+      startInitialLoad()
+
+      try {
+        await task()
+      } finally {
+        finishInitialLoad()
+      }
     }
 
     // Load entitlement profile on app shell mount
@@ -361,12 +391,19 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
       }
     }
 
-    fetchEntitlementProfile()
-    fetchNotice()
-    fetchConnectInfo()
-  }, [])
+    const frameId = window.requestAnimationFrame(() => {
+      void runInitialLoaderTask(fetchEntitlementProfile)
+      void runInitialLoaderTask(fetchNotice)
+      void runInitialLoaderTask(fetchConnectInfo)
+    })
 
-  if (!mounted) return null
+    return () => {
+      window.cancelAnimationFrame(frameId)
+      pendingInitialLoadsRef.current = 0
+      completedInitialLoadsRef.current = 0
+      topLoaderRef.current.done()
+    }
+  }, [])
 
   const filteredAdminItems = adminItems.filter(item => {
     if (item.label === '系统后台' && !isAdmin) return false
@@ -376,37 +413,39 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   })
 
   return (
-    <div className='flex min-h-dvh w-full'>
-      <NextTopLoader color='hsl(var(--primary))' showSpinner={false} />
-      <SidebarProvider>
-        <Sidebar collapsible='icon'>
-          <SidebarHeader>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton size='lg' className='gap-2.5 !bg-transparent [&>svg]:size-8' asChild>
-                  <a href='/'>
-                    <Logo />
-                  </a>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarGroupedMenuItems data={menuItems} />
-            <SidebarGroupedMenuItems data={filteredAdminItems} groupLabel='系统服务' />
-            <SidebarGroupedMenuItems data={studioToolsItems} groupLabel='工作室服务' />
-            <SidebarGroupedMenuItems data={copyItems} groupLabel='跟单服务' />
-            <SidebarGroupedMenuItems data={toolsItems} groupLabel='工具服务' />
-            <SidebarGroupedMenuItems data={settingsItems} groupLabel='系统设置' />
-          </SidebarContent>
-        </Sidebar>
-        <div className='flex flex-1 flex-col'>
-          <header className='before:bg-background/60 sticky top-0 z-50 before:absolute before:inset-0 before:mask-[linear-gradient(var(--card),var(--card)_18%,transparent_100%)] before:backdrop-blur-md'>
-            <div className='bg-card relative z-51 mx-auto mt-3 flex w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] items-center justify-between rounded-xl border px-6 py-2 sm:w-[calc(100%-3rem)]'>
-              <div className='flex items-center gap-1.5 sm:gap-4'>
-                <SidebarTrigger className='[&_svg]:!size-5' />
-                <Separator orientation='vertical' className='hidden !h-4 sm:block' />
-                {/* <SearchDialog
+    <>
+      <NextTopLoader color='var(--primary)' height={4} shadow='0 0 12px var(--primary), 0 0 6px var(--primary)' showSpinner={false} />
+      {!mounted ? null : (
+        <div className='flex min-h-dvh w-full'>
+          <SidebarProvider>
+            <Sidebar collapsible='icon'>
+              <SidebarHeader>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton size='lg' className='gap-2.5 !bg-transparent [&>svg]:size-8' asChild>
+                      <a href='/'>
+                        <Logo />
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarHeader>
+              <SidebarContent>
+                <SidebarGroupedMenuItems data={menuItems} />
+                <SidebarGroupedMenuItems data={filteredAdminItems} groupLabel='系统服务' />
+                <SidebarGroupedMenuItems data={studioToolsItems} groupLabel='工作室服务' />
+                <SidebarGroupedMenuItems data={copyItems} groupLabel='跟单服务' />
+                <SidebarGroupedMenuItems data={toolsItems} groupLabel='工具服务' />
+                <SidebarGroupedMenuItems data={settingsItems} groupLabel='系统设置' />
+              </SidebarContent>
+            </Sidebar>
+            <div className='flex flex-1 flex-col'>
+              <header className='before:bg-background/60 sticky top-0 z-50 before:absolute before:inset-0 before:mask-[linear-gradient(var(--card),var(--card)_18%,transparent_100%)] before:backdrop-blur-md'>
+                <div className='bg-card relative z-51 mx-auto mt-3 flex w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] items-center justify-between rounded-xl border px-6 py-2 sm:w-[calc(100%-3rem)]'>
+                  <div className='flex items-center gap-1.5 sm:gap-4'>
+                    <SidebarTrigger className='[&_svg]:!size-5' />
+                    <Separator orientation='vertical' className='hidden !h-4 sm:block' />
+                    {/* <SearchDialog
                   trigger={
                     <>
                       <Button variant='ghost' className='hidden !bg-transparent px-1 py-0 font-normal sm:block'>
@@ -447,15 +486,15 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                       <ActivityIcon />
                     </Button>
                   }
-                /> */}
-                {/* <ActivityDialog
+                />
+                <ActivityDialog
                   trigger={
                     <Button variant='ghost' size='icon'>
                       <Bug />
                     </Button>
                   }
-                /> */}
-                {/* <NotificationDropdown
+                />
+                <NotificationDropdown
                   trigger={
                     <Button variant='ghost' size='icon' className='relative'>
                       <BellIcon />
@@ -477,20 +516,22 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
             </div>
           </header>
 
-          <main className='mx-auto size-full max-w-7xl flex-1 px-4 py-6 sm:px-6'>{children}</main>
+              <main className='mx-auto size-full max-w-7xl flex-1 px-4 py-6 sm:px-6'>{children}</main>
 
-          <footer>
-            <div className='text-muted-foreground mx-auto flex size-full max-w-7xl items-center justify-between gap-3 px-4 py-3 max-sm:flex-col sm:gap-6 sm:px-6'>
-              <p className='text-sm text-balance max-sm:text-center'>
-                {`©${new Date().getFullYear()}`} Made with ❤️ by CopyApes.
-              </p>
+              <footer>
+                <div className='text-muted-foreground mx-auto flex size-full max-w-7xl items-center justify-between gap-3 px-4 py-3 max-sm:flex-col sm:gap-6 sm:px-6'>
+                  <p className='text-sm text-balance max-sm:text-center'>
+                    {`©${new Date().getFullYear()}`} Made with ❤️ by CopyApes.
+                  </p>
+                </div>
+              </footer>
+
+              <SupportDialog />
             </div>
-          </footer>
-
-          <SupportDialog />
+          </SidebarProvider>
         </div>
-      </SidebarProvider>
-    </div>
+      )}
+    </>
   )
 }
 

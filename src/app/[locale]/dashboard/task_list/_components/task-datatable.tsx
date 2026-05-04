@@ -26,7 +26,7 @@ import {
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
 
-import { useRouter } from '@/i18n/routing'
+import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 import { stopTask } from '@/api/task'
 import { settingsApi } from '@/api/settings'
 

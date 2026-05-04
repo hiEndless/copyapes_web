@@ -2,14 +2,11 @@
 
 import { useEffect, useState } from 'react'
 
-import { CheckCircle2, Copy, Gift, Info, Users, Wallet } from 'lucide-react'
+import { CheckCircle2, Copy, Gift, Info, Loader2, Users, Wallet } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-
 import { agentApi } from '@/api/agent'
 import type { AgentSummaryResponse } from '@/api/agent'
 
@@ -89,9 +86,8 @@ export default function InvitePage() {
       </div>
 
       {loading ? (
-        <div className='space-y-4'>
-          <Skeleton className='h-[260px] w-full' />
-          <Skeleton className='h-[260px] w-full' />
+        <div className='flex h-[40vh] items-center justify-center'>
+          <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
         </div>
       ) : (
         <div className='grid gap-4 md:grid-cols-12'>
