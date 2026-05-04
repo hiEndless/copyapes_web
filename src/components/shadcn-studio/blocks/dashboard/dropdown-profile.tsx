@@ -139,6 +139,14 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           </DropdownMenuGroup>
         )}
 
+        {!profile?.is_vip && !profile?.is_studio_vip && !userInfo?.is_partner && (
+          <DropdownMenuGroup>
+            <DropdownMenuItem className='px-3 py-2 text-sm'>
+              <span className='text-muted-foreground'>免费用户</span>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        )}
+
         <DropdownMenuSeparator />
 
         <DropdownMenuGroup>
