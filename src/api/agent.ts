@@ -12,6 +12,10 @@ export interface PartnerLevelResponse {
   second_ratio: number;
 }
 
+export interface UpdateInviteCodeResponse {
+  invite_code: string;
+}
+
 export const agentApi = {
   getSummary: () => {
     return request<AgentSummaryResponse>('/agent/summary/', {
@@ -23,6 +27,13 @@ export const agentApi = {
     return request<PartnerLevelResponse>('/partnerlevel/', {
       method: 'GET'
     }).then(res => res.data);
+  },
+
+  updateInviteCode: (data: { invite_code: string }) => {
+    return request<UpdateInviteCodeResponse>('/invitecode/', {
+      method: 'PATCH',
+      body: data,
+    });
   },
 
   // redeems

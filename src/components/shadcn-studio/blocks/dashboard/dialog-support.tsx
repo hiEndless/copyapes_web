@@ -3,15 +3,15 @@
 import React, { type ReactNode, useState, useEffect } from 'react'
 
 import { MessageCircle, ExternalLink, Send, Sparkles, Mail } from 'lucide-react'
-import { IconBrandWechat, IconBrandTelegram, IconMail, IconMessageChatbot } from '@tabler/icons-react'
+import { IconBrandWechat, IconBrandTelegram, IconMail, IconMessageChatbot, IconBrandQq } from '@tabler/icons-react'
 
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
-  const [activeContact, setActiveContact] = useState<'wechat' | 'telegram' | 'email'>('email')
-  const [connectData, setConnectData] = useState<{ nickname?: string | null, wx?: string | null, telegram?: string | null } | null>(null)
+  const [activeContact, setActiveContact] = useState<'qq' | 'wechat' | 'telegram' | 'email'>('email')
+  const [connectData, setConnectData] = useState<{ qq?: string | null, wx?: string | null, telegram?: string | null } | null>(null)
 
   useEffect(() => {
     const handleConnectUpdate = () => {
@@ -25,6 +25,8 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
 
           if (data.wx) {
             setActiveContact('wechat')
+          } else if (data.qq) {
+            setActiveContact('qq')
           } else if (data.telegram) {
             setActiveContact('telegram')
           } else {
@@ -45,7 +47,13 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
     }
   }, [])
 
-  const contactInfo: Record<string, { title: string, description: string, action: string, icon: ReactNode }> = {
+  const contactInfo: Record<'qq' | 'wechat' | 'telegram' | 'email', { title: string, description: string, action: string, icon: ReactNode }> = {
+    qq: {
+      title: 'QQ 客服',
+      description: '添加专属 QQ 客服',
+      action: `QQ: ${connectData?.qq || ''}`,
+      icon: <MessageCircle className='size-5 text-zinc-900 dark:text-zinc-100' />
+    },
     wechat: {
       title: '微信客服',
       description: '添加专属微信客服',
@@ -108,6 +116,17 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
               <h3 className='text-2xl font-bold'>联系客服与帮助</h3>
             </div>
             <div className='flex items-center gap-3 pt-2'>
+              {connectData?.qq && (
+                <button
+                  onClick={() => setActiveContact('qq')}
+                  className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                    activeContact === 'qq' ? 'bg-white/30' : 'bg-white/10 hover:bg-white/20'
+                  }`}
+                  title='QQ 客服'
+                >
+                  <IconBrandQq className='size-5' />
+                </button>
+              )}
               {connectData?.wx && (
                 <button
                   onClick={() => setActiveContact('wechat')}

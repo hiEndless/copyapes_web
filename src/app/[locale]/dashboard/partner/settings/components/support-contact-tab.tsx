@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label"
 export function SupportContactTab() {
   const [wx, setWx] = useState("")
   const [telegram, setTelegram] = useState("")
-  const [nickname, setNickname] = useState("")
+  const [qq, setQq] = useState("")
   
   const getPartnerSet = useCallback(async () => {
     try {
@@ -20,7 +20,7 @@ export function SupportContactTab() {
       if (res.code === 0 && res.data) {
         setWx(res.data.wx)
         setTelegram(res.data.telegram)
-        setNickname(res.data.nickname)
+        setQq(res.data.qq)
       }
     } catch (err) {
       console.error(err)
@@ -29,7 +29,7 @@ export function SupportContactTab() {
 
   const updatePartnerSet = async () => {
     try {
-      await agentApi.updatePartnerSet({ wx, telegram, nickname })
+      await agentApi.updatePartnerSet({ wx, telegram, qq })
     } catch (err) {
       console.error(err)
     }
@@ -52,8 +52,8 @@ export function SupportContactTab() {
             <Input
               id="support-qq"
               placeholder="输入 QQ 号"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              value={qq}
+              onChange={(e) => setQq(e.target.value)}
               className="bg-background"
             />
           </div>

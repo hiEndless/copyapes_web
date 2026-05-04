@@ -10,10 +10,12 @@ import { Label } from "@/components/ui/label"
 
 export function InviteCodeTab() {
   const [inviteCode, setInviteCode] = useState("")
+  const [savedInviteCode, setSavedInviteCode] = useState("")
   const [firstRatio, setFirstRatio] = useState(0)
   const [secondRatio, setSecondRatio] = useState(0)
   const [withdrawAmount, setWithdrawAmount] = useState(0)
   const [remainAmount, setRemainAmount] = useState(0)
+  const [isSaving, setIsSaving] = useState(false)
 
   const getLevel = useCallback(async () => {
     try {
@@ -21,6 +23,7 @@ export function InviteCodeTab() {
 
       if (res) {
         setInviteCode(res.invite_code)
+        setSavedInviteCode(res.invite_code)
         setFirstRatio(res.first_ratio)
         setSecondRatio(res.second_ratio)
       }
@@ -47,11 +50,43 @@ export function InviteCodeTab() {
     getCommissions()
   }, [getLevel, getCommissions])
 
+  const trimmedInviteCode = inviteCode.trim()
+  const hasChanged = trimmedInviteCode !== savedInviteCode
+  const inviteCodePattern = /^[A-Za-z0-9_-]{4,32}$/
+
+  const inviteCodeError =
+    trimmedInviteCode.length === 0
+      ? "请输入邀请码"
+      : inviteCodePattern.test(trimmedInviteCode)
+        ? ""
+        : "邀请码需为 4-32 位，仅支持字母、数字、下划线和短横线"
+
+  const handleSaveInviteCode = async () => {
+    if (inviteCodeError || !hasChanged || isSaving) {
+      return
+    }
+
+    setIsSaving(true)
+
+    try {
+      const res = await agentApi.updateInviteCode({ invite_code: trimmedInviteCode })
+
+      if (res.code === 0 && res.data) {
+        setInviteCode(res.data.invite_code)
+        setSavedInviteCode(res.data.invite_code)
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
   return (
     <Card className="border-border/60 rounded-xl">
       <CardHeader>
         <CardTitle>查看代理信息</CardTitle>
-        <CardDescription>展示当前代理分成与提现数据。</CardDescription>
+        <CardDescription>展示当前代理分成、提现数据，并支持自定义邀请码。</CardDescription>
       </CardHeader>
       <CardContent className="space-y-5">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -87,6 +122,13 @@ export function InviteCodeTab() {
 
         <div className="flex flex-col gap-3 pt-2">
           <Label htmlFor="invite-code" className="text-sm">邀请码</Label>
+
+          <div className="bg-muted/30 rounded-lg border border-dashed px-4 py-3">
+            <p className="text-muted-foreground text-xs leading-relaxed">
+              邀请码唯一，允许保持为当前值；修改成功后将立即更新当前展示值，其余代理数据系统会自动刷新。
+            </p>
+          </div>
+
           <div className="flex flex-col gap-3 sm:flex-row">
             <Input
               id="invite-code"
@@ -94,17 +136,20 @@ export function InviteCodeTab() {
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value)}
               className="max-w-sm bg-background"
-              readOnly
             />
-            <Button className="w-full sm:w-auto" disabled>保存修改</Button>
+            <Button
+              className="w-full sm:w-auto"
+              onClick={handleSaveInviteCode}
+              disabled={isSaving || !hasChanged || !!inviteCodeError}
+            >
+              {isSaving ? "保存中..." : "保存修改"}
+            </Button>
           </div>
-        </div>
-
-        <div className="bg-muted/30 rounded-lg border border-dashed px-4 py-3">
-          <p className="text-muted-foreground text-xs leading-relaxed">
-            邀请码用于伙伴推广展示，可按需修改并保存；其余代理数据系统将自动更新，当前为只读展示。
+          <p className="text-muted-foreground text-xs">
+            {inviteCodeError || "邀请码长度为 4-32 位，仅支持字母、数字、下划线和短横线。"}
           </p>
         </div>
+
       </CardContent>
     </Card>
   )

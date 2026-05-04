@@ -48,7 +48,7 @@ export interface NoticeResponse {
 }
 
 export interface ConnectResponse {
-  nickname: string | null;
+  qq: string | null;
   wx: string | null;
   telegram: string | null;
 }
