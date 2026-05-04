@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, LockIcon, RefreshCw } from 'lucide-react';
 
 import { getApiList } from '@/api/apiadd';
 import { orderApi } from '@/api/order';
 import { positionsApi, type Position } from '@/api/positions';
+import type { EntitlementProfileResponse } from '@/api/settings';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -122,6 +123,7 @@ export default function PositionsPage() {
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<{ items: ApiItemData[] } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [isStudioVip, setIsStudioVip] = useState(false);
 
   const [closePositionOpen, setClosePositionOpen] = useState(false);
   const [closingPosition, setClosingPosition] = useState(false);
@@ -133,6 +135,34 @@ export default function PositionsPage() {
     side: string;
     quantity?: number;
   } | null>(null);
+
+  useEffect(() => {
+    const syncEntitlementProfile = () => {
+      try {
+        const stored = localStorage.getItem('entitlementProfile');
+
+        if (!stored) {
+          setIsStudioVip(false);
+
+          return;
+        }
+
+        const profile = JSON.parse(stored) as EntitlementProfileResponse;
+
+        setIsStudioVip(Boolean(profile?.is_studio_vip));
+      } catch (error) {
+        console.error('Failed to parse entitlement profile:', error);
+        setIsStudioVip(false);
+      }
+    };
+
+    syncEntitlementProfile();
+    window.addEventListener('entitlementProfileUpdated', syncEntitlementProfile);
+
+    return () => {
+      window.removeEventListener('entitlementProfileUpdated', syncEntitlementProfile);
+    };
+  }, []);
 
   const fetchPositions = async (isRefresh = false) => {
     if (isRefresh) {
@@ -274,175 +304,105 @@ export default function PositionsPage() {
         </div>
       </div>
 
-      {loading ? (
-        <div className='flex h-[40vh] items-center justify-center'>
-          <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
-        </div>
-      ) : error ? (
-        <Card>
-          <CardContent className='pt-6'>
-            <div className='rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground'>
-              {error}
-            </div>
-          </CardContent>
-        </Card>
-      ) : !data || data.items.length === 0 ? (
-        <Card>
-          <CardContent className='pt-6'>
-            <div className='rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground'>
-              当前没有交易 API 或无法获取持仓信息
-            </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className='space-y-6'>
-          {data.items.map((apiItem) => (
-            <Card key={apiItem.api_id}>
-              <CardHeader>
-                <CardTitle className='flex items-center gap-3'>
-                  <span>{apiItem.api_name}</span>
-                  {apiItem.balance > 0 && (
-                    <Badge variant='secondary' className='font-normal text-muted-foreground'>
-                      资金: {apiItem.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
-                    </Badge>
-                  )}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {!apiItem.ok ? (
-                  <div className='rounded-lg border border-dashed p-6 text-center text-sm text-red-500 bg-red-50/50'>
-                    获取失败: {apiItem.error}
-                  </div>
-                ) : apiItem.positions.length === 0 ? (
-                  <div className='rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground'>
-                    当前空仓
-                  </div>
-                ) : (
-                  <>
-                    <div className='space-y-2 md:hidden'>
-                      {apiItem.positions.map((item, idx) => (
-                        <div
-                          key={`${item.symbol ?? ''}-${item.side ?? ''}-${item.position_size ?? ''}-${idx}`}
-                          className='rounded-lg border p-2'
-                        >
-                          <div className='flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]'>
-                            <span className='font-medium tabular-nums'>
-                              {item.symbol ?? '-'}
-                            </span>
-                            {getLeverBadgeText(item.leverage) ? (
-                              <Badge
-                                variant='secondary'
-                                className='h-4 px-2 text-[11px] leading-4 border-transparent bg-blue-50 text-blue-700 hover:bg-blue-50/90'
-                              >
-                                {getLeverBadgeText(item.leverage)}
-                              </Badge>
-                            ) : null}
-
-                            <span className='text-muted-foreground'>方向</span>
-                            <span className={`font-medium ${getDirectionInfo(item).className}`}>
-                              {getDirectionInfo(item).label}
-                            </span>
-
-                            <span className='text-muted-foreground'>仓位</span>
-                            <span className='tabular-nums'>{formatAbsPos(item.position_size)}</span>
-
-                            <span className='text-muted-foreground'>开仓价</span>
-                            <span className='tabular-nums'>{formatPrice(item.avg_entry_price)}</span>
-
-                            <span className='text-muted-foreground'>标记</span>
-                            <span className='tabular-nums'>{formatPrice(item.mark_price)}</span>
-
-                            <span className='text-muted-foreground'>收益</span>
-                            <span className={`tabular-nums ${getUplClass(item.pnl)}`}>
-                              {formatUpl(item.pnl)}
-                            </span>
-
-                            <span className='text-muted-foreground'>收益率</span>
-                            <span className={`tabular-nums ${getUplClass(item.pnl_ratio)}`}>
-                              {formatUplRatioPercent(item.pnl_ratio)}
-                            </span>
-
-                            <span className='text-muted-foreground'>时间</span>
-                            <span className='tabular-nums text-muted-foreground'>
-                              {formatOpenTimeShort(item.opened_at)}
-                            </span>
-
-                            <div className='w-full mt-2'>
-                              <Button
-                                variant='default'
-                                size='sm'
-                                className='w-full h-8 text-xs shadow-none'
-                                onClick={() => {
-                                  setCloseTarget({
-                                    apiId: apiItem.api_id,
-                                    apiName: apiItem.api_name,
-                                    symbol: item.symbol,
-                                    marginMode: item.margin_mode ?? 'cross',
-                                    side: item.side,
-                                    quantity: item.position_size ? Math.abs(item.position_size) : undefined,
-                                  });
-                                  setClosePositionOpen(true);
-                                }}
-                              >
-                                全平
-                              </Button>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+      <div className='relative'>
+        {loading ? (
+          <div className='flex h-[40vh] items-center justify-center'>
+            <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
+          </div>
+        ) : error ? (
+          <Card>
+            <CardContent className='pt-6'>
+              <div className='rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground'>
+                {error}
+              </div>
+            </CardContent>
+          </Card>
+        ) : !data || data.items.length === 0 ? (
+          <Card>
+            <CardContent className='pt-6'>
+              <div className='rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground'>
+                当前没有交易 API 或无法获取持仓信息
+              </div>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className='space-y-6'>
+            {data.items.map((apiItem) => (
+              <Card key={apiItem.api_id}>
+                <CardHeader>
+                  <CardTitle className='flex items-center gap-3'>
+                    <span>{apiItem.api_name}</span>
+                    {apiItem.balance > 0 && (
+                      <Badge variant='secondary' className='font-normal text-muted-foreground'>
+                        资金: {apiItem.balance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USDT
+                      </Badge>
+                    )}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {!apiItem.ok ? (
+                    <div className='rounded-lg border border-dashed bg-red-50/50 p-6 text-center text-sm text-red-500'>
+                      获取失败: {apiItem.error}
                     </div>
+                  ) : apiItem.positions.length === 0 ? (
+                    <div className='rounded-lg border border-dashed p-6 text-center text-sm text-muted-foreground'>
+                      当前空仓
+                    </div>
+                  ) : (
+                    <>
+                      <div className='space-y-2 md:hidden'>
+                        {apiItem.positions.map((item, idx) => (
+                          <div
+                            key={`${item.symbol ?? ''}-${item.side ?? ''}-${item.position_size ?? ''}-${idx}`}
+                            className='rounded-lg border p-2'
+                          >
+                            <div className='flex flex-wrap items-center gap-x-3 gap-y-1.5 text-[11px]'>
+                              <span className='font-medium tabular-nums'>
+                                {item.symbol ?? '-'}
+                              </span>
+                              {getLeverBadgeText(item.leverage) ? (
+                                <Badge
+                                  variant='secondary'
+                                  className='h-4 border-transparent bg-blue-50 px-2 text-[11px] leading-4 text-blue-700 hover:bg-blue-50/90'
+                                >
+                                  {getLeverBadgeText(item.leverage)}
+                                </Badge>
+                              ) : null}
 
-                    <div className='hidden md:block'>
-                      <Table>
-                        <TableHeader>
-                          <TableRow>
-                            <TableHead>交易对</TableHead>
-                            <TableHead>方向</TableHead>
-                            <TableHead>仓位</TableHead>
-                            <TableHead>开仓价</TableHead>
-                            <TableHead>标记价</TableHead>
-                            <TableHead>收益</TableHead>
-                            <TableHead>收益率</TableHead>
-                            <TableHead>开仓时间</TableHead>
-                            <TableHead className='text-right'>操作</TableHead>
-                          </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                          {apiItem.positions.map((item, idx) => (
-                            <TableRow
-                              key={`${item.symbol ?? ''}-${item.side ?? ''}-${item.position_size ?? ''}-${idx}`}
-                            >
-                              <TableCell>
-                                <div className='flex items-center gap-2'>
-                                  <span>{item.symbol ?? '-'}</span>
-                                  {getLeverBadgeText(item.leverage) ? (
-                                    <Badge
-                                      variant='secondary'
-                                      className='h-5 px-2 text-[11px] leading-4 border-transparent bg-blue-50 text-blue-700 hover:bg-blue-50/90'
-                                    >
-                                      {getLeverBadgeText(item.leverage)}
-                                    </Badge>
-                                  ) : null}
-                                </div>
-                              </TableCell>
-                              <TableCell className={getDirectionInfo(item).className}>
+                              <span className='text-muted-foreground'>方向</span>
+                              <span className={`font-medium ${getDirectionInfo(item).className}`}>
                                 {getDirectionInfo(item).label}
-                              </TableCell>
-                              <TableCell>{formatAbsPos(item.position_size)}</TableCell>
-                              <TableCell>{formatPrice(item.avg_entry_price)}</TableCell>
-                              <TableCell>{formatPrice(item.mark_price)}</TableCell>
-                              <TableCell className={getUplClass(item.pnl)}>
+                              </span>
+
+                              <span className='text-muted-foreground'>仓位</span>
+                              <span className='tabular-nums'>{formatAbsPos(item.position_size)}</span>
+
+                              <span className='text-muted-foreground'>开仓价</span>
+                              <span className='tabular-nums'>{formatPrice(item.avg_entry_price)}</span>
+
+                              <span className='text-muted-foreground'>标记</span>
+                              <span className='tabular-nums'>{formatPrice(item.mark_price)}</span>
+
+                              <span className='text-muted-foreground'>收益</span>
+                              <span className={`tabular-nums ${getUplClass(item.pnl)}`}>
                                 {formatUpl(item.pnl)}
-                              </TableCell>
-                              <TableCell className={getUplClass(item.pnl_ratio)}>
+                              </span>
+
+                              <span className='text-muted-foreground'>收益率</span>
+                              <span className={`tabular-nums ${getUplClass(item.pnl_ratio)}`}>
                                 {formatUplRatioPercent(item.pnl_ratio)}
-                              </TableCell>
-                              <TableCell>{formatOpenTime(item.opened_at)}</TableCell>
-                              <TableCell className='text-right'>
+                              </span>
+
+                              <span className='text-muted-foreground'>时间</span>
+                              <span className='tabular-nums text-muted-foreground'>
+                                {formatOpenTimeShort(item.opened_at)}
+                              </span>
+
+                              <div className='mt-2 w-full'>
                                 <Button
                                   variant='default'
                                   size='sm'
-                                  className='h-7 px-2 text-xs shadow-none'
+                                  className='h-8 w-full text-xs shadow-none'
                                   onClick={() => {
                                     setCloseTarget({
                                       apiId: apiItem.api_id,
@@ -457,19 +417,100 @@ export default function PositionsPage() {
                                 >
                                   全平
                                 </Button>
-                              </TableCell>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div className='hidden md:block'>
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead>交易对</TableHead>
+                              <TableHead>方向</TableHead>
+                              <TableHead>仓位</TableHead>
+                              <TableHead>开仓价</TableHead>
+                              <TableHead>标记价</TableHead>
+                              <TableHead>收益</TableHead>
+                              <TableHead>收益率</TableHead>
+                              <TableHead>开仓时间</TableHead>
+                              <TableHead className='text-right'>操作</TableHead>
                             </TableRow>
-                          ))}
-                        </TableBody>
-                      </Table>
-                    </div>
-                  </>
-                )}
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+                          </TableHeader>
+                          <TableBody>
+                            {apiItem.positions.map((item, idx) => (
+                              <TableRow
+                                key={`${item.symbol ?? ''}-${item.side ?? ''}-${item.position_size ?? ''}-${idx}`}
+                              >
+                                <TableCell>
+                                  <div className='flex items-center gap-2'>
+                                    <span>{item.symbol ?? '-'}</span>
+                                    {getLeverBadgeText(item.leverage) ? (
+                                      <Badge
+                                        variant='secondary'
+                                        className='h-5 border-transparent bg-blue-50 px-2 text-[11px] leading-4 text-blue-700 hover:bg-blue-50/90'
+                                      >
+                                        {getLeverBadgeText(item.leverage)}
+                                      </Badge>
+                                    ) : null}
+                                  </div>
+                                </TableCell>
+                                <TableCell className={getDirectionInfo(item).className}>
+                                  {getDirectionInfo(item).label}
+                                </TableCell>
+                                <TableCell>{formatAbsPos(item.position_size)}</TableCell>
+                                <TableCell>{formatPrice(item.avg_entry_price)}</TableCell>
+                                <TableCell>{formatPrice(item.mark_price)}</TableCell>
+                                <TableCell className={getUplClass(item.pnl)}>
+                                  {formatUpl(item.pnl)}
+                                </TableCell>
+                                <TableCell className={getUplClass(item.pnl_ratio)}>
+                                  {formatUplRatioPercent(item.pnl_ratio)}
+                                </TableCell>
+                                <TableCell>{formatOpenTime(item.opened_at)}</TableCell>
+                                <TableCell className='text-right'>
+                                  <Button
+                                    variant='default'
+                                    size='sm'
+                                    className='h-7 px-2 text-xs shadow-none'
+                                    onClick={() => {
+                                      setCloseTarget({
+                                        apiId: apiItem.api_id,
+                                        apiName: apiItem.api_name,
+                                        symbol: item.symbol,
+                                        marginMode: item.margin_mode ?? 'cross',
+                                        side: item.side,
+                                        quantity: item.position_size ? Math.abs(item.position_size) : undefined,
+                                      });
+                                      setClosePositionOpen(true);
+                                    }}
+                                  >
+                                    全平
+                                  </Button>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+
+        {!loading && !isStudioVip && (
+          <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/45 backdrop-blur-sm'>
+            <div className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1 text-xs font-medium text-foreground shadow-sm'>
+              <LockIcon className='h-3.5 w-3.5' />
+              工作室 VIP 专享
+            </div>
+          </div>
+        )}
+      </div>
 
       <AlertDialog open={closePositionOpen} onOpenChange={setClosePositionOpen}>
         <AlertDialogContent>

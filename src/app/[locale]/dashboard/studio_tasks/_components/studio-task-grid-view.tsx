@@ -1,6 +1,6 @@
 'use client'
 
-import { BanIcon, EyeIcon, Flame, Unplug } from 'lucide-react'
+import { BanIcon, EyeIcon, Flame, LockIcon, Unplug } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -59,6 +59,7 @@ const getRoleTypeLabel = (platform: number, roleType?: number | string) => {
 
 type StudioTaskGridViewProps = {
   groupedByTrader: GroupedByTraderItem[]
+  isStudioVip: boolean
   creatingTraderKey: string | null
   onStartCreate: (traderKey: string) => void
   onCloseCreate: () => void
@@ -69,6 +70,7 @@ type StudioTaskGridViewProps = {
 
 export function StudioTaskGridView({
   groupedByTrader,
+  isStudioVip,
   creatingTraderKey,
   onStartCreate,
   onCloseCreate,
@@ -90,13 +92,14 @@ export function StudioTaskGridView({
       {groupedByTrader.map(group => {
         const roleTypeLabel = getRoleTypeLabel(group.leadTask.trader_platform, group.leadTask.role_type)
         const traderId = group.leadTask.uniqueName || group.traderKey
+
         const platformInfo = PLATFORM_MAP[group.leadTask.trader_platform] || {
           name: '未知',
           logo: '/exchanges/default.png'
         }
 
         return (
-          <Card key={group.traderKey} className='bg-gradient-to-b from-background to-muted/20 p-3.5 shadow-sm'>
+          <Card key={group.traderKey} className='relative overflow-hidden bg-gradient-to-b from-background to-muted/20 p-3.5 shadow-sm'>
             <div className='mb-3 flex items-center justify-between gap-2'>
               <div className='flex items-center gap-2'>
                 <div className='flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full'>
@@ -211,6 +214,14 @@ export function StudioTaskGridView({
               roleType={String(group.leadTask.role_type || 1)}
               onSuccess={onCreateSuccess}
             />
+          )}
+          {!isStudioVip && (
+            <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/45 backdrop-blur-sm'>
+              <div className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1 text-xs font-medium text-foreground shadow-sm'>
+                <LockIcon className='h-3.5 w-3.5' />
+                工作室 VIP 专享
+              </div>
+            </div>
           )}
         </Card>
         )

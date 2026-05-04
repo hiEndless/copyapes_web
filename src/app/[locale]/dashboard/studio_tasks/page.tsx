@@ -6,7 +6,7 @@ import { LayoutGrid, List, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { getTaskList, stopTask } from '@/api/task'
-import { settingsApi } from '@/api/settings'
+import { settingsApi, type EntitlementProfileResponse } from '@/api/settings'
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
 import { Card } from '@/components/ui/card'
@@ -23,6 +23,35 @@ export default function StudioTasksPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
   const [tasks, setTasks] = useState<StudioTaskItem[]>([])
   const [creatingTraderKey, setCreatingTraderKey] = useState<string | null>(null)
+  const [isStudioVip, setIsStudioVip] = useState(false)
+
+  useEffect(() => {
+    const syncEntitlementProfile = () => {
+      try {
+        const stored = localStorage.getItem('entitlementProfile')
+
+        if (!stored) {
+          setIsStudioVip(false)
+
+          return
+        }
+
+        const profile = JSON.parse(stored) as EntitlementProfileResponse
+
+        setIsStudioVip(Boolean(profile?.is_studio_vip))
+      } catch (error) {
+        console.error('Failed to parse entitlement profile:', error)
+        setIsStudioVip(false)
+      }
+    }
+
+    syncEntitlementProfile()
+    window.addEventListener('entitlementProfileUpdated', syncEntitlementProfile)
+
+    return () => {
+      window.removeEventListener('entitlementProfileUpdated', syncEntitlementProfile)
+    }
+  }, [])
 
   const fetchTasks = async () => {
     try {
@@ -152,6 +181,7 @@ export default function StudioTasksPage() {
       ) : viewMode === 'grid' ? (
         <StudioTaskGridView
           groupedByTrader={groupedByTrader}
+          isStudioVip={isStudioVip}
           creatingTraderKey={creatingTraderKey}
           onStartCreate={setCreatingTraderKey}
           onCloseCreate={() => setCreatingTraderKey(null)}
@@ -162,6 +192,7 @@ export default function StudioTasksPage() {
       ) : (
         <StudioTaskTableView
           groupedByApi={groupedByApi}
+          isStudioVip={isStudioVip}
           onOpenTaskDetail={openTaskDetail}
           onTerminateTask={handleTerminateTask}
         />
