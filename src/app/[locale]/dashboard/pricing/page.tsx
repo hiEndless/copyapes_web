@@ -8,6 +8,9 @@ import { Loader2 } from 'lucide-react';
 import Pricing, { type Plan } from '@/components/shadcn-studio/blocks/pricing-component-07/pricing-component-07';
 import { settingsApi } from '@/api/settings';
 
+const REBATE_VIP_DISCOUNT_PRICE_SOURCE = 'rebate_vip_discount_price';
+const REBATE_VIP_BADGE_TEXT = '返佣专属优惠';
+
 const defaultPlans: Plan[] = [
   {
     id: 'free_vip',
@@ -68,6 +71,7 @@ const defaultPlans: Plan[] = [
     features: ['工作室VIP 有效期内，永久提升资金限额 100,000 USDT', '工作室VIP 到期后，资金额度提升失效', '仅限工作室 VIP 用户购买'],
     buttonText: '购买工作室 VIP 资金提额'
   },
+
   // {
   //   id: 'vip_api',
   //   name: 'VIP 提升 API 授权数量',
@@ -112,6 +116,8 @@ export default function PricingPage() {
               priceYearly: yearPlan ? Number(yearPlan.effective_price) : undefined,
               monthPlanCode: 'vip_month',
               yearPlanCode: 'vip_year',
+              monthBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
+              yearBadge: yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
             };
           }
 
@@ -125,6 +131,8 @@ export default function PricingPage() {
               priceYearly: yearPlan ? Number(yearPlan.effective_price) : undefined,
               monthPlanCode: 'studio_vip_month',
               yearPlanCode: 'studio_vip_year',
+              monthBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
+              yearBadge: yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
             };
           }
 
@@ -135,6 +143,7 @@ export default function PricingPage() {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'vip_permanent',
+              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
             };
           }
 
@@ -145,6 +154,7 @@ export default function PricingPage() {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'vip_limit_pack_20000',
+              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
             };
           }
 
@@ -155,6 +165,7 @@ export default function PricingPage() {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'studio_limit_pack_100000',
+              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
             };
           }
 
@@ -165,6 +176,7 @@ export default function PricingPage() {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'vip_api_slot_pack_5',
+              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
             };
           }
 
@@ -175,6 +187,7 @@ export default function PricingPage() {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'studio_api_slot_pack_5',
+              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
             };
           }
 

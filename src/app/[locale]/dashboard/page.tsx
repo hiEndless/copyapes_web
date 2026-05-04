@@ -93,7 +93,7 @@ const DashboardPage = () => {
           <CardHeader className='px-4 pb-0'>
             <CardTitle className='flex items-center justify-between text-sm'>合作交易所</CardTitle>
             <CardDescription className='text-xs'>
-              点击注册享受 <span className='text-primary font-medium'>20%</span> 交易手续费返佣
+              点击注册享受 <span className='text-primary font-medium'>20%</span> 交易手续费返佣。联系客服，还可享受半价 VIP 优惠。
             </CardDescription>
           </CardHeader>
           <CardContent className='px-4 pt-4'>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 
 import { CheckIcon } from 'lucide-react'
 
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -31,6 +32,9 @@ export type Plan = {
   monthPlanCode?: string
   yearPlanCode?: string
   oneTimePlanCode?: string
+  monthBadge?: string
+  yearBadge?: string
+  oneTimeBadge?: string
 
   accounts: string
   features: string[]
@@ -102,6 +106,16 @@ function priceLabel(plan: Plan, cycle: BillingCycle): { main: string; suffix: st
   return { main: formatYuan(plan.priceYearly ?? yearlyTotal(plan.priceMonthly)), suffix: '/年' }
 }
 
+function planBadge(plan: Plan, cycle: BillingCycle): string | undefined {
+  if (plan.oneTimePrice != null) return plan.oneTimeBadge
+  if (cycle === 'year') return plan.yearBadge
+
+  return plan.monthBadge
+}
+
+const specialPriceBadgeClassName =
+  'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-200'
+
 const Pricing = ({ plans }: { plans: Plan[] }) => {
   const [selectedPlan, setSelectedPlan] = useState<string>(() => plans[0]?.id ?? '')
   const [billing, setBilling] = useState<BillingCycle>('month')
@@ -136,6 +150,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
   const selectedPlanData = plans.find(plan => plan.id === selectedPlan)!
   const paymentAmountUsdt = getPaymentAmountUsdt(selectedPlanData, billing)
+  const selectedPlanBadge = planBadge(selectedPlanData, billing)
 
   const activePlanCode = selectedPlanData.oneTimePrice != null
     ? selectedPlanData.oneTimePlanCode || selectedPlanData.id
@@ -209,6 +224,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
             <div className='mb-2 text-sm font-medium text-muted-foreground'>订阅付费</div>
             {plans.filter(plan => plan.id.toLowerCase().includes('month') || plan.id.toLowerCase().includes('year') || plan.id.toLowerCase() === 'free_vip').map((plan, index) => {
               const { main, suffix } = priceLabel(plan, billing)
+              const badgeText = planBadge(plan, billing)
 
               return (
                 <MotionPreset
@@ -232,7 +248,14 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                         {selectedPlan === plan.id && <div className='bg-primary size-3 rounded-full' />}
                       </div>
                       <div className='flex min-w-0 flex-1 flex-col gap-0'>
-                        <p className='text-sm font-semibold leading-tight'>{plan.name}</p>
+                        <div className='flex items-center gap-2'>
+                          <p className='text-sm font-semibold leading-tight'>{plan.name}</p>
+                          {badgeText && (
+                            <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', specialPriceBadgeClassName)}>
+                              {badgeText}
+                            </Badge>
+                          )}
+                        </div>
                         <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
                       </div>
                       <div className='flex shrink-0 flex-col items-end gap-0'>
@@ -258,6 +281,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
             <div className='mb-2 text-sm font-medium text-muted-foreground'>功能付费</div>
             {plans.filter(plan => !plan.id.toLowerCase().includes('month') && !plan.id.toLowerCase().includes('year') && plan.id.toLowerCase() !== 'free_vip').map((plan, index) => {
               const { main, suffix } = priceLabel(plan, billing)
+              const badgeText = planBadge(plan, billing)
 
               return (
                 <MotionPreset
@@ -281,7 +305,14 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                         {selectedPlan === plan.id && <div className='bg-primary size-3 rounded-full' />}
                       </div>
                       <div className='flex min-w-0 flex-1 flex-col gap-0'>
-                        <p className='text-sm font-semibold leading-tight'>{plan.name}</p>
+                        <div className='flex items-center gap-2'>
+                          <p className='text-sm font-semibold leading-tight'>{plan.name}</p>
+                          {badgeText && (
+                            <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', specialPriceBadgeClassName)}>
+                              {badgeText}
+                            </Badge>
+                          )}
+                        </div>
                         <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
                       </div>
                       <div className='flex shrink-0 flex-col items-end gap-0'>
@@ -314,9 +345,16 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
             transition={{ duration: 0.6 }}
           >
             <div className='mb-4 flex flex-col gap-0.5'>
-              <h3 className='text-primary-foreground text-lg font-semibold leading-tight'>
-                {selectedPlanData.name}
-              </h3>
+              <div className='flex items-center gap-2'>
+                <h3 className='text-primary-foreground text-lg font-semibold leading-tight'>
+                  {selectedPlanData.name}
+                </h3>
+                {selectedPlanBadge && (
+                  <Badge variant='outline' className={cn('border-white/30 bg-white/15 text-white', 'h-5 px-1.5 text-[10px]')}>
+                    {selectedPlanBadge}
+                  </Badge>
+                )}
+              </div>
               <p className='text-primary-foreground/90 text-xs'>{selectedPlanData.subtitle}</p>
             </div>
 
