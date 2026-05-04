@@ -70,32 +70,17 @@ const RegisterForm = () => {
 
   return (
     <form className='space-y-4' onSubmit={handleSubmit}>
-      {/* Username */}
+      {/* Email */}
       <div className='space-y-1'>
-        <Label className='leading-5' htmlFor='username'>
-          用户名*
+        <Label className='leading-5' htmlFor='email'>
+          邮箱*
         </Label>
         <Input
-          type='text'
-          id='username'
-          placeholder='请输入您的用户名'
+          type='email'
+          id='email'
+          placeholder='请输入您的邮箱地址'
           value={username}
           onChange={(e) => setUsername(e.target.value)}
-          disabled={isLoading}
-        />
-      </div>
-
-      {/* Invite Code */}
-      <div className='space-y-1'>
-        <Label className='leading-5' htmlFor='inviteCode'>
-          邀请码*
-        </Label>
-        <Input
-          type='text'
-          id='inviteCode'
-          placeholder='请输入邀请码'
-          value={inviteCode}
-          onChange={(e) => setInviteCode(e.target.value)}
           disabled={isLoading}
         />
       </div>
@@ -156,6 +141,22 @@ const RegisterForm = () => {
             <span className='sr-only'>{isConfirmPasswordVisible ? '隐藏密码' : '显示密码'}</span>
           </Button>
         </div>
+      </div>
+
+
+      {/* Invite Code */}
+      <div className='space-y-1'>
+        <Label className='leading-5' htmlFor='inviteCode'>
+          邀请码*
+        </Label>
+        <Input
+          type='text'
+          id='inviteCode'
+          placeholder='请输入邀请码'
+          value={inviteCode}
+          onChange={(e) => setInviteCode(e.target.value)}
+          disabled={isLoading}
+        />
       </div>
 
       {/* Privacy policy */}

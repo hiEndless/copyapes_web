@@ -11,12 +11,12 @@ const AuthLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
         <div className='bg-muted relative z-1 flex h-full items-center justify-center px-6'>
           <div className='outline-border relative shrink rounded-[20px] p-2.5 outline-2 -outline-offset-2'>
             <img
-              src='/images/dashboard.webp'
+              src='/images/dashboard.png'
               className='max-h-111 w-full rounded-lg object-contain dark:hidden'
               alt='Dashboards'
             />
             <img
-              src='/images/dashboard-dark.webp'
+              src='/images/dashboard-dark.png'
               className='hidden max-h-111 w-full rounded-lg object-contain dark:inline-block'
               alt='Dashboards'
             />
