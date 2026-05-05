@@ -34,7 +34,7 @@ const ContactUs = () => {
                     {/* wx */}
                     <div className='flex items-start gap-4 text-lg font-semibold'>
                       <IconBrandWechat className='size-7 shrink-0' />
-                      copyaped_admin
+                      copyapes_admin
                     </div>
 
                     {/* Email */}
