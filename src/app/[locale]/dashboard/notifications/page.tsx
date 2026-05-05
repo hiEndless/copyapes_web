@@ -39,6 +39,22 @@ function getErrorMessage(error: unknown) {
   }
 }
 
+interface NotificationTestResult {
+  success: boolean;
+  channel: string;
+  error_code?: string | null;
+  error_message?: string | null;
+  retryable: boolean;
+}
+
+const TEST_MESSAGE = '这是一条测试消息';
+
+const TEST_ENDPOINTS: Partial<Record<NotificationChannel['id'], string>> = {
+  wechat_official: '/notify/test/wx/',
+  qq_email: '/notify/test/qqmail/',
+  dingtalk_bot: '/notify/test/ding/',
+};
+
 export default function NotificationPage() {
   const locale = useLocale();
   const [channels, setChannels] = useState<NotificationChannel[]>([]);
@@ -169,13 +185,30 @@ export default function NotificationPage() {
   };
 
   const handleTest = async () => {
-    if (!selectedChannelId) return;
+    if (!selectedChannel) return;
     setIsTesting(true);
 
     try {
-      // 模拟测试发送
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      toast.success('测试消息发送成功');
+      const endpoint = TEST_ENDPOINTS[selectedChannel.id];
+
+      if (!endpoint) {
+        throw new Error('当前渠道暂不支持测试发送');
+      }
+
+      const response = await request<NotificationTestResult>(endpoint, {
+        method: 'POST',
+        body: { message: TEST_MESSAGE },
+        silent: true
+      });
+
+      const result = response.data;
+
+      if (response.code !== 0 || !result?.success) {
+        const retryHint = result?.retryable ? '，可稍后重试' : '';
+        throw new Error(result?.error_message || response.error || response.msg || `测试发送失败${retryHint}`);
+      }
+
+      toast.success(`${selectedChannel.name} 测试消息发送成功`);
     } catch (error) {
       toast.error(`测试发送失败：${getErrorMessage(error)}`);
     } finally {
