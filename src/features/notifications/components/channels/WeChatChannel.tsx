@@ -59,7 +59,7 @@ export function WeChatChannel({ form }: ChannelProps) {
       <h3 className='text-muted-foreground text-sm font-medium tracking-wider uppercase'>微信服务号配置</h3>
 
       <Alert variant='default' className='bg-muted/50 flex flex-col justify-between gap-4 sm:flex-row sm:items-center'>
-        <div>
+        <div className='grid grid-cols-[calc(var(--spacing)*4)_1fr] items-center gap-x-3 gap-y-0.5'>
           <Info className='h-4 w-4' />
           <AlertTitle className='text-sm font-medium'>如何绑定服务号以接收通知</AlertTitle>
           <AlertDescription>

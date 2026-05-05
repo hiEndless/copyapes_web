@@ -9,7 +9,6 @@ import { toast } from 'sonner'
 
 import { request } from '@/api/request'
 import type { NotificationChannelUpdate } from '../../types'
-import { NotificationChannel } from '../../types'
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -48,10 +47,12 @@ export function QQEmailChannel({ form }: ChannelProps) {
 
     if (!qq || !authCode) {
       toast.error('请填写 QQ 账号和授权码')
+
       return
     }
 
     setIsValidating(true)
+
     try {
       const response = await request('/qqmail/', {
         method: 'POST',
@@ -60,6 +61,7 @@ export function QQEmailChannel({ form }: ChannelProps) {
           password: authCode
         }
       })
+
       if (response.code === 0) {
         toast.success('邮箱校验成功')
       }
@@ -94,7 +96,17 @@ export function QQEmailChannel({ form }: ChannelProps) {
             <FormItem>
               <FormLabel>QQ 账号</FormLabel>
               <FormControl>
-                <Input placeholder='12345678' {...field} value={field.value || ''} />
+                <div className='flex items-center'>
+                  <Input
+                    placeholder='12345678'
+                    {...field}
+                    value={field.value || ''}
+                    className='rounded-r-none border-r-0'
+                  />
+                  <span className='text-muted-foreground inline-flex h-10 items-center px-3 text-md'>
+                    @qq.com
+                  </span>
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,7 +119,7 @@ export function QQEmailChannel({ form }: ChannelProps) {
             <FormItem>
               <FormLabel>授权码</FormLabel>
               <FormControl>
-                <Input type='password' placeholder='abcdefghijklmnop' {...field} value={field.value || ''} />
+                <Input placeholder='abcdefghijklmnop' {...field} value={field.value || ''} />
               </FormControl>
               <FormDescription className='text-xs'>在 QQ 邮箱 设置 &gt; 账户 &gt; 生成授权码 获取。</FormDescription>
               <FormMessage />
