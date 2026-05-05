@@ -1,11 +1,12 @@
 'use client';
 
-import { UseFormReturn } from 'react-hook-form';
-import { NotificationChannel, NotificationChannelUpdate } from '../../types';
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Info } from 'lucide-react';
+import type { UseFormReturn } from 'react-hook-form';
+
+import type { NotificationChannelUpdate } from '../../types';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 
 interface ChannelProps {
   form: UseFormReturn<NotificationChannelUpdate>;
@@ -43,7 +44,12 @@ export function DingTalkChannel({ form }: ChannelProps) {
           <FormItem>
             <FormLabel>Webhook 地址</FormLabel>
             <FormControl>
-              <Input placeholder="https://oapi.dingtalk.com/robot/send?access_token=..." {...field} value={field.value || ''} />
+              <Input
+                placeholder="https://oapi.dingtalk.com/robot/send?access_token=..."
+                {...field}
+                value={field.value || ''}
+                onBlur={(event) => field.onChange(event.target.value.trim())}
+              />
             </FormControl>
             <FormDescription>
               从钉钉群的机器人设置中复制 Webhook 地址。
@@ -60,10 +66,16 @@ export function DingTalkChannel({ form }: ChannelProps) {
           <FormItem>
             <FormLabel>签名密钥</FormLabel>
             <FormControl>
-              <Input type="password" placeholder="SEC..." {...field} value={field.value || ''} />
+              <Input
+                type="password"
+                placeholder="SEC..."
+                {...field}
+                value={field.value || ''}
+                onBlur={(event) => field.onChange(event.target.value.trim())}
+              />
             </FormControl>
             <FormDescription>
-              如果安全设置选择了"加签"，请在此粘贴密钥。若使用"关键词"或"IP 白名单"则留空。
+              安全设置选择 `加签`，请在此粘贴密钥。
             </FormDescription>
             <FormMessage />
           </FormItem>

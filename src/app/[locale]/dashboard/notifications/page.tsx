@@ -58,6 +58,9 @@ export default function NotificationPage() {
           qq_mail: boolean;
           qq: string;
           password: string;
+          ding_bot: boolean;
+          ding_webhook: string;
+          ding_secret: string;
         }>('/notify/', { method: 'GET' });
 
         const mergedChannels = [...STATIC_CHANNELS];
@@ -74,6 +77,12 @@ export default function NotificationPage() {
               channel.config = {
                 qq_email_address: data.qq || '',
                 qq_auth_code: data.password || ''
+              };
+            } else if (channel.id === 'dingtalk_bot') {
+              channel.is_active = data.ding_bot;
+              channel.config = {
+                dingtalk_webhook: data.ding_webhook || '',
+                dingtalk_secret: data.ding_secret || ''
               };
             }
           });
@@ -111,6 +120,33 @@ export default function NotificationPage() {
         });
 
         if (response.code !== 0) throw new Error(response.error || response.msg || '保存QQ邮箱配置失败');
+      } else if (selectedChannel.id === 'dingtalk_bot') {
+        const webhook = data.config?.dingtalk_webhook?.trim() || '';
+        const secret = data.config?.dingtalk_secret?.trim() || '';
+
+        if (!webhook) {
+          throw new Error('请填写 Webhook 地址');
+        }
+
+        const response = await request('/ding/', {
+          method: 'POST',
+          body: {
+            webhook,
+            secret
+          }
+        });
+
+        if (response.code !== 0) throw new Error(response.error || response.msg || '保存钉钉机器人配置失败');
+
+        data = {
+          ...data,
+          is_active: true,
+          config: {
+            ...data.config,
+            dingtalk_webhook: webhook,
+            dingtalk_secret: secret
+          }
+        };
       }
 
       const channelToUpdate: NotificationChannel = {
@@ -170,6 +206,13 @@ export default function NotificationPage() {
         });
 
         if (response.code !== 0) throw new Error(response.error || response.msg || '切换QQ邮箱通知失败');
+      } else if (id === 'dingtalk_bot') {
+        const response = await request('/ding/', {
+          method: 'PATCH',
+          body: { ding_bot: enabled }
+        });
+
+        if (response.code !== 0) throw new Error(response.error || response.msg || '切换钉钉通知失败');
       } else {
         // 模拟其他渠道 API 状态更新
         await new Promise(resolve => setTimeout(resolve, 300));
