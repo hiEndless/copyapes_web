@@ -1,6 +1,7 @@
 import { toast } from 'sonner';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+let isHandlingAuthExpired = false;
 
 export interface BaseResponse<T = any> {
   code: number;
@@ -15,6 +16,29 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   params?: Record<string, string | number | boolean | null | undefined>;
   body?: any;
   silent?: boolean; // 如果为 true，遇到错误时不弹出 toast
+}
+
+function handleAuthExpired(message?: string) {
+  if (typeof window === 'undefined' || isHandlingAuthExpired) {
+    return;
+  }
+
+  isHandlingAuthExpired = true;
+
+  localStorage.removeItem('token');
+  localStorage.removeItem('userInfo');
+  localStorage.removeItem('entitlementProfile');
+  document.cookie = 'token=; path=/; max-age=0;';
+  window.dispatchEvent(new Event('userInfoUpdated'));
+  window.dispatchEvent(new Event('entitlementProfileUpdated'));
+  toast.error(message || '认证过期，请重新登录');
+
+  if (window.location.pathname !== '/login') {
+    window.location.href = '/login';
+    return;
+  }
+
+  isHandlingAuthExpired = false;
 }
 
 export async function request<T>(endpoint: string, options: RequestOptions = {}): Promise<BaseResponse<T>> {
@@ -83,6 +107,11 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
       if (successMsg && !silent) {
         toast.success(successMsg);
       }
+    }
+
+    if (data.code === 2001) {
+      handleAuthExpired(data.message || data.msg || data.error);
+      return data as BaseResponse<T>;
     }
 
     if (data.code !== 0 && typeof window !== 'undefined') {
