@@ -35,6 +35,9 @@ export type Plan = {
   monthBadge?: string
   yearBadge?: string
   oneTimeBadge?: string
+  monthInfoBadge?: string
+  yearInfoBadge?: string
+  oneTimeInfoBadge?: string
 
   accounts: string
   features: string[]
@@ -113,8 +116,18 @@ function planBadge(plan: Plan, cycle: BillingCycle): string | undefined {
   return plan.monthBadge
 }
 
+function planInfoBadge(plan: Plan, cycle: BillingCycle): string | undefined {
+  if (plan.oneTimePrice != null) return plan.oneTimeInfoBadge
+  if (cycle === 'year') return plan.yearInfoBadge
+
+  return plan.monthInfoBadge
+}
+
 const specialPriceBadgeClassName =
   'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/60 dark:bg-amber-950/40 dark:text-amber-200'
+
+const infoBadgeClassName =
+  'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-800/60 dark:bg-sky-950/40 dark:text-sky-200'
 
 const Pricing = ({ plans }: { plans: Plan[] }) => {
   const [selectedPlan, setSelectedPlan] = useState<string>(() => plans[0]?.id ?? '')
@@ -151,6 +164,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
   const selectedPlanData = plans.find(plan => plan.id === selectedPlan)!
   const paymentAmountUsdt = getPaymentAmountUsdt(selectedPlanData, billing)
   const selectedPlanBadge = planBadge(selectedPlanData, billing)
+  const selectedPlanInfoBadge = planInfoBadge(selectedPlanData, billing)
 
   const activePlanCode = selectedPlanData.oneTimePrice != null
     ? selectedPlanData.oneTimePlanCode || selectedPlanData.id
@@ -225,6 +239,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
             {plans.filter(plan => plan.id.toLowerCase().includes('month') || plan.id.toLowerCase().includes('year') || plan.id.toLowerCase() === 'free_vip').map((plan, index) => {
               const { main, suffix } = priceLabel(plan, billing)
               const badgeText = planBadge(plan, billing)
+              const infoBadgeText = planInfoBadge(plan, billing)
 
               return (
                 <MotionPreset
@@ -255,6 +270,11 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                               {badgeText}
                             </Badge>
                           )}
+                          {infoBadgeText && (
+                            <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', infoBadgeClassName)}>
+                              {infoBadgeText}
+                            </Badge>
+                          )}
                         </div>
                         <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
                       </div>
@@ -282,6 +302,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
             {plans.filter(plan => !plan.id.toLowerCase().includes('month') && !plan.id.toLowerCase().includes('year') && plan.id.toLowerCase() !== 'free_vip').map((plan, index) => {
               const { main, suffix } = priceLabel(plan, billing)
               const badgeText = planBadge(plan, billing)
+              const infoBadgeText = planInfoBadge(plan, billing)
 
               return (
                 <MotionPreset
@@ -310,6 +331,11 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                           {badgeText && (
                             <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', specialPriceBadgeClassName)}>
                               {badgeText}
+                            </Badge>
+                          )}
+                          {infoBadgeText && (
+                            <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', infoBadgeClassName)}>
+                              {infoBadgeText}
                             </Badge>
                           )}
                         </div>
@@ -352,6 +378,11 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                 {selectedPlanBadge && (
                   <Badge variant='outline' className={cn('border-white/30 bg-white/15 text-white', 'h-5 px-1.5 text-[10px]')}>
                     {selectedPlanBadge}
+                  </Badge>
+                )}
+                {selectedPlanInfoBadge && (
+                  <Badge variant='outline' className={cn('border-white/30 bg-white/15 text-white', 'h-5 px-1.5 text-[10px]')}>
+                    {selectedPlanInfoBadge}
                   </Badge>
                 )}
               </div>

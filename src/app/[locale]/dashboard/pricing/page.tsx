@@ -6,10 +6,26 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 
 import Pricing, { type Plan } from '@/components/shadcn-studio/blocks/pricing-component-07/pricing-component-07';
-import { settingsApi } from '@/api/settings';
+import { settingsApi, type RebateVipDiscountInfo } from '@/api/settings';
 
 const REBATE_VIP_DISCOUNT_PRICE_SOURCE = 'rebate_vip_discount_price';
 const REBATE_VIP_BADGE_TEXT = '返佣专属优惠';
+
+function getRebateRenewalInfoBadge(rebateDiscount?: RebateVipDiscountInfo) {
+  if (!rebateDiscount || rebateDiscount.eligible) {
+    return null;
+  }
+
+  if (!rebateDiscount.renew_window_open) {
+    return '未到优惠续费窗口';
+  }
+
+  if (rebateDiscount.cooldown_remaining_days > 0) {
+    return `${rebateDiscount.cooldown_remaining_days}天后可优惠续费`;
+  }
+
+  return null;
+}
 
 const defaultPlans: Plan[] = [
   {
@@ -103,6 +119,7 @@ export default function PricingPage() {
       try {
         const res = await settingsApi.getPriceInfo();
         const items = res?.plans || [];
+        const rebateRenewalInfoBadge = getRebateRenewalInfoBadge(res?.rebate_vip_discount);
 
         // Merge fetched prices into defaultPlans
         const updatedPlans = defaultPlans.map(plan => {
@@ -118,6 +135,8 @@ export default function PricingPage() {
               yearPlanCode: 'vip_year',
               monthBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
               yearBadge: yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
+              monthInfoBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? undefined : rebateRenewalInfoBadge ?? undefined,
+              yearInfoBadge: yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? undefined : rebateRenewalInfoBadge ?? undefined,
             };
           }
 

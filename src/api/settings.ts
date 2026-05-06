@@ -34,6 +34,16 @@ export interface PlanPriceItem {
   effective_price: number;
   price_source: string;
   currency: string;
+  rebate_vip_discount_eligible?: boolean;
+}
+
+export interface RebateVipDiscountInfo {
+  eligible: boolean;
+  vip_days: number;
+  studio_vip_days: number;
+  renew_window_days: number;
+  renew_window_open: boolean;
+  cooldown_remaining_days: number;
 }
 
 export interface PriceInfoResponse {
@@ -41,6 +51,7 @@ export interface PriceInfoResponse {
   vip_price: number;
   plans: PlanPriceItem[];
   price_priority: string[];
+  rebate_vip_discount?: RebateVipDiscountInfo;
 }
 
 export interface NoticeResponse {
