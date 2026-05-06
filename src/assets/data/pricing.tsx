@@ -29,8 +29,8 @@ export const usePricingPlans = (): Plans => {
       title: t('vip.title'),
       description: t('vip.description'),
       price: {
-        yearly: 36,
-        monthly: 40
+        yearly: 45,
+        monthly: 50
       },
       period: '/month',
       buttonText: t('vip.button'),
