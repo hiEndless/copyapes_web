@@ -2,6 +2,7 @@ import * as motion from 'motion/react-client'
 
 import { ArrowRightIcon } from 'lucide-react'
 
+import Link from 'next/link'
 import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
@@ -73,12 +74,12 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
             className='flex flex-wrap items-center gap-4'
           >
             <BounceButton className='z-10 h-10 gap-3 rounded-lg text-base has-[>svg]:px-6'>
-              <a href='#' className='flex items-center gap-2'>
+              <Link href='/login' className='flex items-center gap-2'>
                 {t('startCopying')} <ArrowRightIcon />
-              </a>
+              </Link>
             </BounceButton>
             <Button size='lg' asChild className='bg-primary/10 hover:bg-primary/20 text-primary rounded-lg text-base'>
-              <a href='#'>{t('freeRegister')}</a>
+              <Link href='/register'>{t('freeRegister')}</Link>
             </Button>
           </MotionPreset>
 
