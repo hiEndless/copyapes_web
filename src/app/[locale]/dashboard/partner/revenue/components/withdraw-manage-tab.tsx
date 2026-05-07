@@ -33,12 +33,14 @@ export function WithdrawManageTab() {
   const [binanceUid, setBinanceUid] = useState("")
   const [okxUid, setOkxUid] = useState("")
   const [withdrawMethod, setWithdrawMethod] = useState<(typeof withdrawMethodOptions)[number]["value"]>("trc20")
+  const [configuredMethods, setConfiguredMethods] = useState<(typeof withdrawMethodOptions)[number]["value"][]>([])
   const [withdrawDialogOpen, setWithdrawDialogOpen] = useState(false)
   const [submittingWithdraw, setSubmittingWithdraw] = useState(false)
   const [savingMethod, setSavingMethod] = useState(false)
   const [withdrawableAmount, setWithdrawableAmount] = useState(0)
   const [withdrawnAmount, setWithdrawnAmount] = useState(0)
-  const canWithdraw = withdrawableAmount >= 50
+  const hasConfiguredMethod = configuredMethods.length > 0
+  const canWithdraw = withdrawableAmount >= 50 && hasConfiguredMethod
 
   const loadData = useCallback(async () => {
     setLoading(true)
@@ -53,6 +55,17 @@ export function WithdrawManageTab() {
         setTrc20Address(payload?.trc20?.address || "")
         setBinanceUid(payload?.binance?.uid || "")
         setOkxUid(payload?.okx?.uid || "")
+        const nextConfiguredMethods: (typeof withdrawMethodOptions)[number]["value"][] = []
+
+        if (payload?.trc20?.address) nextConfiguredMethods.push("trc20")
+        if (payload?.binance?.uid) nextConfiguredMethods.push("binance")
+        if (payload?.okx?.uid) nextConfiguredMethods.push("okx")
+
+        setConfiguredMethods(nextConfiguredMethods)
+        setWithdrawMethod((prev) => {
+          if (nextConfiguredMethods.includes(prev)) return prev
+          return nextConfiguredMethods[0] || "trc20"
+        })
       }
       if (summaryRes.code === 0 && summaryRes.data) {
         setWithdrawableAmount(Number(summaryRes.data.available_amount || 0))
@@ -181,6 +194,11 @@ export function WithdrawManageTab() {
           <div className="rounded-lg border border-border/60 bg-muted/20 px-3 py-2 text-sm text-muted-foreground">
             提现说明：每次提现需大于 50 USDT。
           </div>
+          {!hasConfiguredMethod && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700 dark:border-amber-900 dark:bg-amber-950/30 dark:text-amber-300">
+              请先在左侧保存至少一个提现渠道，再提交提现申请。
+            </div>
+          )}
           {loading && (
             <div className="text-xs text-muted-foreground">数据加载中...</div>
           )}
@@ -192,11 +210,13 @@ export function WithdrawManageTab() {
                 <SelectValue placeholder="请选择提现方式" />
               </SelectTrigger>
               <SelectContent>
-                {withdrawMethodOptions.map((method) => (
+                {withdrawMethodOptions
+                  .filter((method) => configuredMethods.includes(method.value))
+                  .map((method) => (
                   <SelectItem key={method.value} value={method.value}>
                     {method.label}
                   </SelectItem>
-                ))}
+                  ))}
               </SelectContent>
             </Select>
           </div>
@@ -207,7 +227,9 @@ export function WithdrawManageTab() {
               disabled={!canWithdraw}
               onClick={() => setWithdrawDialogOpen(true)}
             >
-              {canWithdraw ? "申请全额提现" : "可提现资金不足 50 USDT"}
+              {hasConfiguredMethod
+                ? (withdrawableAmount >= 50 ? "申请全额提现" : "可提现资金不足 50 USDT")
+                : "请先配置提现渠道"}
             </Button>
           </div>
         </CardContent>
