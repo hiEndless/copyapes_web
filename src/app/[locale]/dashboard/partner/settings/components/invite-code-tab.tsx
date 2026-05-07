@@ -161,7 +161,7 @@ export function InviteCodeTab() {
         <CardHeader>
           <CardTitle>邀请码设置</CardTitle>
           <CardDescription>
-            邀请码唯一，允许保持为当前值；修改成功后将立即更新当前展示值，其余代理数据系统会自动刷新。
+            修改成功后将立即更新当前展示值，其余代理数据系统会自动刷新。
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
