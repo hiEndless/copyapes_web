@@ -214,6 +214,7 @@ function BlockyAvatar({ type }: { type: number }) {
 
 export function HotAddressDiscover() {
   const [items, setItems] = useState<HotAddressItem[]>([])
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
   const [isConfigOpen, setIsConfigOpen] = useState(false)
   const [selectedTrader, setSelectedTrader] = useState<HotAddressItem | null>(null)
 
@@ -252,22 +253,26 @@ export function HotAddressDiscover() {
 
   useEffect(() => {
     const fetchHotKol = async () => {
-      const res = await request<unknown>('/api/hyper-discover/hot-kol', { silent: true })
+      try {
+        const res = await request<unknown>('/api/hyper-discover/hot-kol', { silent: true })
 
-      if (res.code !== 0 || !res.data) {
-        return
-      }
+        if (res.code !== 0 || !res.data) {
+          return
+        }
 
-      const list = extractArrayPayload(res.data)
+        const list = extractArrayPayload(res.data)
 
-      if (!list.length) {
-        return
-      }
+        if (!list.length) {
+          return
+        }
 
-      const mapped = list.map(mapHotKolItem).filter((item): item is HotAddressItem => item !== null)
+        const mapped = list.map(mapHotKolItem).filter((item): item is HotAddressItem => item !== null)
 
-      if (mapped.length) {
-        setItems(mapped)
+        if (mapped.length) {
+          setItems(mapped)
+        }
+      } finally {
+        setIsInitialLoading(false)
       }
     }
 
@@ -358,6 +363,10 @@ export function HotAddressDiscover() {
           )
         })}
       </div>
+
+      {isInitialLoading ? (
+        <div className='mt-4 text-center text-sm text-zinc-500 dark:text-[#888]'>加载中...</div>
+      ) : null}
 
       <CopyTaskConfigSheet
         isOpen={isConfigOpen}

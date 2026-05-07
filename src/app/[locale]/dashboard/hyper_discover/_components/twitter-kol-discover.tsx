@@ -436,7 +436,7 @@ export function TwitterKolDiscover() {
               className='flex h-[197px] flex-col justify-between overflow-hidden rounded-xl border border-zinc-200 bg-white p-4 text-zinc-900 shadow-sm transition-colors hover:border-zinc-300 dark:border-[#222] dark:bg-[#121212] dark:text-white dark:shadow-none dark:hover:border-white/20'
             >
               <div>
-                <div className='flex items-center justify-between'>
+                <div className='flex items-start justify-between'>
                   <div className='flex min-w-0 flex-1 items-start gap-2 pr-2'>
                     <TraderAvatar avatarUrl={item.avatarUrl} avatarType={item.avatarType} alt={item.twitterName || item.username} />
                     <div className='min-w-0 flex-1'>
@@ -473,7 +473,7 @@ export function TwitterKolDiscover() {
                     </div>
                   </div>
 
-                  <div className='flex shrink-0 items-center gap-2'>
+                  <div className='flex shrink-0 items-center gap-2 self-start'>
                     <button
                       type='button'
                       onClick={() => handleAnalyze(item.address)}
