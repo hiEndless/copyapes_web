@@ -113,7 +113,7 @@ const adminItems: MenuItem[] = [
     items: [
       { label: '代理设置', href: '/dashboard/partner/settings' },
       { label: '用户列表', href: '/dashboard/partner/user_list' },
-      { label: '收益流水', href: '/dashboard/partner/revenue' },
+      { label: '收益与提现', href: '/dashboard/partner/revenue' },
     ]
   }
 ]

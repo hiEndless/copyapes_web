@@ -23,8 +23,8 @@ import {
 
 const withdrawMethodOptions = [
   { value: "trc20", label: "TRC20（钱包地址）" },
-  { value: "binance", label: "币安内部转账（UID）" },
-  { value: "okx", label: "欧意内部转账（UID）" },
+  { value: "binance", label: "币安内部转账" },
+  { value: "okx", label: "欧意内部转账" },
 ] as const
 
 export function WithdrawManageTab() {
