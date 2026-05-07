@@ -1,11 +1,15 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import { Copy } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { request } from '@/api/request'
+import { CopyTaskConfigSheet } from '@/app/[locale]/dashboard/add_task/_components/copy-task-config-sheet'
 import { Card } from '@/components/ui/card'
 
-type HotAddressItem = {
+type TwitterKolItem = {
   id: string
   username: string
   twitterName: string
@@ -15,76 +19,14 @@ type HotAddressItem = {
   positions: number
   winRate: string
   avatarType: number
+  avatarUrl: string
 }
 
-const HOT_ADDRESS_ITEMS: HotAddressItem[] = [
-  {
-    id: 'bit-entity-1',
-    username: 'CL',
-    twitterName: '@CL207',
-    address: '0xFd42EFe8C7cbA6A4bB18D6C8d3c6E9130bA63d97',
-    accountValue: 4799144.71,
-    monthlyProfit: 2525959.28,
-    positions: 1,
-    winRate: '100%',
-    avatarType: 0
-  },
-  {
-    id: 'bit-entity-2',
-    username: 'Ape Whale',
-    twitterName: '@apewhale',
-    address: '0xA875EFe8C7cbA6A4bB18D6C8d3c6E9130bA6325a8',
-    accountValue: 12318616.23,
-    monthlyProfit: 1928957.08,
-    positions: 1,
-    winRate: '100%',
-    avatarType: 1
-  },
-  {
-    id: 'matrixport-entity',
-    username: 'Matrix Alpha',
-    twitterName: '@matrixalpha',
-    address: '0x6C85EFe8C7cbA6A4bB18D6C8d3c6E9130bA684F6',
-    accountValue: 51912239.06,
-    monthlyProfit: 18047536.13,
-    positions: 1,
-    winRate: '100%',
-    avatarType: 2
-  },
-  {
-    id: 'bit-entity-3',
-    username: 'Trader Neo',
-    twitterName: '@traderneo',
-    address: '0xa5B0EFe8C7cbA6A4bB18D6C8d3c6E9130bA61D41',
-    accountValue: 40181495.49,
-    monthlyProfit: 36811485.73,
-    positions: 1,
-    winRate: '100%',
-    avatarType: 3
-  },
-  {
-    id: 'ultimate-bear',
-    username: 'Ultimate Bear',
-    twitterName: '@ultimatebear',
-    address: '0x5D2FEFe8C7cbA6A4bB18D6C8d3c6E9130bA69Bb7',
-    accountValue: 9093582.88,
-    monthlyProfit: -143823.83,
-    positions: 2,
-    winRate: '0%',
-    avatarType: 4
-  },
-  {
-    id: 'continue-capital',
-    username: 'Continue Capital',
-    twitterName: '@continuecap',
-    address: '0x3E38EFe8C7cbA6A4bB18D6C8d3c6E9130bA6140C',
-    accountValue: 4.48,
-    monthlyProfit: 0,
-    positions: 0,
-    winRate: '-%',
-    avatarType: 5
-  }
-]
+const AVATAR_TYPE_COUNT = 6
+const DEFAULT_PAGE_NUM = 1
+const DEFAULT_PAGE_SIZE = 12
+const DEFAULT_PERIOD = 7
+const DEFAULT_LANG = 'zh'
 
 function formatCurrency(value: number) {
   const formatted = new Intl.NumberFormat('en-US', {
@@ -114,11 +56,169 @@ function formatProfit(value: number) {
 }
 
 function formatAddress(value: string) {
+  if (!value) {
+    return '--'
+  }
+
   if (value.length <= 12) {
     return value
   }
 
   return `${value.slice(0, 6)}...${value.slice(-4)}`
+}
+
+function toNumber(value: unknown) {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) ? value : 0
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+
+    return Number.isFinite(parsed) ? parsed : 0
+  }
+
+  return 0
+}
+
+function toWinRate(value: unknown) {
+  if (typeof value === 'string') {
+    return value.trim() ? value : '-%'
+  }
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    if (value > 0 && value <= 1) {
+      return `${(value * 100).toFixed(2).replace(/\.00$/, '')}%`
+    }
+
+    return `${value.toFixed(2).replace(/\.00$/, '')}%`
+  }
+
+  return '-%'
+}
+
+function normalizeTwitterName(value: unknown) {
+  if (typeof value !== 'string') {
+    return '--'
+  }
+
+  const normalized = value.trim()
+
+  if (!normalized) {
+    return '--'
+  }
+
+  if (normalized.startsWith('@')) {
+    return normalized
+  }
+
+  if (normalized.startsWith('http://') || normalized.startsWith('https://')) {
+    return normalized
+  }
+
+  return `@${normalized}`
+}
+
+function extractArrayPayload(payload: unknown): unknown[] {
+  if (Array.isArray(payload)) {
+    return payload
+  }
+
+  if (!payload || typeof payload !== 'object') {
+    return []
+  }
+
+  const container = payload as Record<string, unknown>
+  const directCandidates = ['data', 'list', 'items', 'rows', 'result']
+
+  for (const key of directCandidates) {
+    const value = container[key]
+
+    if (Array.isArray(value)) {
+      return value
+    }
+  }
+
+  for (const key of directCandidates) {
+    const value = container[key]
+
+    if (!value || typeof value !== 'object') {
+      continue
+    }
+
+    const nested = value as Record<string, unknown>
+
+    for (const nestedKey of directCandidates) {
+      const nestedValue = nested[nestedKey]
+
+      if (Array.isArray(nestedValue)) {
+        return nestedValue
+      }
+    }
+  }
+
+  return []
+}
+
+function mapXKolItem(raw: unknown, index: number): TwitterKolItem | null {
+  if (!raw || typeof raw !== 'object') {
+    return null
+  }
+
+  const item = raw as Record<string, unknown>
+
+  const address = String(
+    item.address ??
+    item.wallet_address ??
+    item.walletAddress ??
+    item.wallet ??
+    item.user_address ??
+    item.userAddress ??
+    ''
+  )
+
+  const username = String(item.name ?? item.nickname ?? item.nick_name ?? item.username ?? formatAddress(address))
+
+  const twitterName = normalizeTwitterName(
+    item.twitterName ??
+    item.twitter_name ??
+    item.xName ??
+    item.x_name ??
+    item.twitter ??
+    item.x ??
+    item.handle
+  )
+
+  const rawId = item.id ?? item.uid ?? item.user_id ?? item.userId ?? address ?? `${username}-${index}`
+
+  return {
+    id: String(rawId || `x-kol-${index}`),
+    username,
+    twitterName,
+    address,
+    accountValue: toNumber(
+      item.accountTotalValue ?? item.accountValue ?? item.account_value ?? item.total_asset ?? item.totalAsset ?? item.balance
+    ),
+    monthlyProfit: toNumber(
+      item.accountTotalValue ??
+      item.accountValue ??
+      item.account_value ??
+      item.realizedPnl ??
+      item.monthlyProfit ??
+      item.monthly_profit ??
+      item.pnl_1m ??
+      item.pnl1m ??
+      item.pnl ??
+      item.profit
+    ),
+    positions: Math.max(
+      0,
+      Math.trunc(toNumber(item.currentPosition ?? item.positions ?? item.position_count ?? item.positionCount ?? item.holding_count))
+    ),
+    winRate: toWinRate(item.winRate ?? item.win_rate ?? item.winrate),
+    avatarType: index % AVATAR_TYPE_COUNT,
+    avatarUrl: String(item.profilePicture ?? item.profile_picture ?? item.avatar ?? item.avatarUrl ?? '')
+  }
 }
 
 function BlockyAvatar({ type }: { type: number }) {
@@ -155,7 +255,37 @@ function BlockyAvatar({ type }: { type: number }) {
   )
 }
 
+function TraderAvatar({ avatarUrl, avatarType, alt }: { avatarUrl: string; avatarType: number; alt: string }) {
+  const [hasError, setHasError] = useState(false)
+
+  useEffect(() => {
+    setHasError(false)
+  }, [avatarUrl])
+
+  if (!avatarUrl || hasError) {
+    return <BlockyAvatar type={avatarType} />
+  }
+
+  return (
+    <img
+      src={avatarUrl}
+      alt={alt}
+      className='h-[24px] w-[24px] shrink-0 rounded-full object-cover'
+      referrerPolicy='no-referrer'
+      onError={() => setHasError(true)}
+    />
+  )
+}
+
 export function TwitterKolDiscover() {
+  const [items, setItems] = useState<TwitterKolItem[]>([])
+  const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE_NUM)
+  const [hasMore, setHasMore] = useState(true)
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+  const [isLoadingMore, setIsLoadingMore] = useState(false)
+  const [isConfigOpen, setIsConfigOpen] = useState(false)
+  const [selectedTrader, setSelectedTrader] = useState<TwitterKolItem | null>(null)
+
   const handleCopy = async (address: string) => {
     try {
       await navigator.clipboard.writeText(address)
@@ -166,11 +296,139 @@ export function TwitterKolDiscover() {
     }
   }
 
+  const handleLoadMore = async () => {
+    if (!hasMore || isLoadingMore) {
+      return
+    }
+
+    const nextPage = currentPage + 1
+
+    setIsLoadingMore(true)
+
+    try {
+      const res = await request<unknown>('/api/hyper-discover/x-kol', {
+        params: {
+          pageNum: nextPage,
+          pageSize: DEFAULT_PAGE_SIZE,
+          period: DEFAULT_PERIOD,
+          lang: DEFAULT_LANG
+        },
+        silent: true
+      })
+
+      if (res.code !== 0 || !res.data) {
+        toast.error('加载更多失败，请稍后重试')
+
+        return
+      }
+
+      const list = extractArrayPayload(res.data)
+
+      if (!list.length) {
+        setHasMore(false)
+
+        return
+      }
+
+      const mapped = list
+        .map((item, index) => mapXKolItem(item, (nextPage - 1) * DEFAULT_PAGE_SIZE + index))
+        .filter((item): item is TwitterKolItem => item !== null)
+
+      if (!mapped.length) {
+        setHasMore(false)
+
+        return
+      }
+
+      setItems(prev => {
+        const existed = new Set(prev.map(item => item.id))
+        const appended = mapped.filter(item => !existed.has(item.id))
+
+        return [...prev, ...appended]
+      })
+      setCurrentPage(nextPage)
+      setHasMore(list.length >= DEFAULT_PAGE_SIZE)
+    } finally {
+      setIsLoadingMore(false)
+    }
+  }
+
+  const handleAnalyze = (address: string) => {
+    if (!address) {
+      toast.error('地址无效')
+
+      return
+    }
+
+    const targetUrl = `https://www.coinglass.com/zh/hyperliquid/${encodeURIComponent(address)}`
+
+    window.open(targetUrl, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleFollow = (item: TwitterKolItem) => {
+    if (!item.address) {
+      toast.error('地址无效')
+
+      return
+    }
+
+    setSelectedTrader(item)
+    setIsConfigOpen(true)
+  }
+
+  useEffect(() => {
+    const fetchXKol = async () => {
+      try {
+        const res = await request<unknown>('/api/hyper-discover/x-kol', {
+          params: {
+            pageNum: DEFAULT_PAGE_NUM,
+            pageSize: DEFAULT_PAGE_SIZE,
+            period: DEFAULT_PERIOD,
+            lang: DEFAULT_LANG
+          },
+          silent: true
+        })
+
+        if (res.code !== 0 || !res.data) {
+          return
+        }
+
+        const list = extractArrayPayload(res.data)
+
+        if (!list.length) {
+          setHasMore(false)
+
+          return
+        }
+
+        const mapped = list.map(mapXKolItem).filter((item): item is TwitterKolItem => item !== null)
+
+        if (!mapped.length) {
+          setHasMore(false)
+
+          return
+        }
+
+        setItems(mapped)
+        setCurrentPage(DEFAULT_PAGE_NUM)
+        setHasMore(list.length >= DEFAULT_PAGE_SIZE)
+      } finally {
+        setIsInitialLoading(false)
+      }
+    }
+
+    fetchXKol()
+  }, [])
+
   return (
     <section>
       <div className='grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3'>
-        {HOT_ADDRESS_ITEMS.map(item => {
+        {items.map(item => {
           const profit = formatProfit(item.monthlyProfit)
+          const twitterNameText = item.twitterName.startsWith('@') ? item.twitterName.slice(1) : item.twitterName
+          const normalizedUsername = item.username.trim().replace(/^@+/, '')
+          const usernameText = normalizedUsername ? `@${normalizedUsername}` : '--'
+          const profileUrl = normalizedUsername ? `https://x.com/${encodeURIComponent(normalizedUsername)}` : ''
 
           return (
             <Card
@@ -180,14 +438,25 @@ export function TwitterKolDiscover() {
               <div>
                 <div className='flex items-center justify-between'>
                   <div className='flex min-w-0 flex-1 items-start gap-2 pr-2'>
-                    <BlockyAvatar type={item.avatarType} />
+                    <TraderAvatar avatarUrl={item.avatarUrl} avatarType={item.avatarType} alt={item.twitterName || item.username} />
                     <div className='min-w-0 flex-1'>
                       <div className='flex flex-wrap items-baseline gap-x-1.5 gap-y-0'>
                         <h3 className='text-[15px] font-semibold leading-[1.1] tracking-wide text-zinc-900 break-words whitespace-normal dark:text-white'>
-                          {item.username}
+                          {twitterNameText}
                         </h3>
                         <p className='text-[15px] leading-[1.1] text-zinc-500 break-words whitespace-normal dark:text-[#999]'>
-                          {item.twitterName}
+                          {profileUrl ? (
+                            <a
+                              href={profileUrl}
+                              target='_blank'
+                              rel='noopener noreferrer'
+                              className='decoration-zinc-400/70 underline-offset-2 transition-colors hover:text-blue-600 dark:hover:text-blue-400'
+                            >
+                              {usernameText}
+                            </a>
+                          ) : (
+                            usernameText
+                          )}
                         </p>
                       </div>
                       <div className='mt-0.5 flex items-center gap-1'>
@@ -207,12 +476,14 @@ export function TwitterKolDiscover() {
                   <div className='flex shrink-0 items-center gap-2'>
                     <button
                       type='button'
+                      onClick={() => handleAnalyze(item.address)}
                       className='rounded-md border border-zinc-200 px-2.5 py-1 text-[11px] text-zinc-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:border-white/10 dark:text-[#888] dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-white'
                     >
                       分析
                     </button>
                     <button
                       type='button'
+                      onClick={() => handleFollow(item)}
                       className='rounded-md border border-zinc-200 px-2.5 py-1 text-[11px] text-zinc-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:border-white/10 dark:text-[#888] dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-white'
                     >
                       跟单
@@ -254,6 +525,33 @@ export function TwitterKolDiscover() {
           )
         })}
       </div>
+
+      {isInitialLoading ? (
+        <div className='mt-4 text-center text-sm text-zinc-500 dark:text-[#888]'>加载中...</div>
+      ) : null}
+
+      {!isInitialLoading && hasMore ? (
+        <div className='mt-5 flex justify-center'>
+          <button
+            type='button'
+            className='rounded-md border border-zinc-200 px-4 py-1.5 text-[12px] text-zinc-600 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 disabled:cursor-not-allowed disabled:opacity-60 dark:border-white/10 dark:text-[#999] dark:hover:border-white/15 dark:hover:bg-white/5 dark:hover:text-white'
+            onClick={handleLoadMore}
+            disabled={isLoadingMore}
+          >
+            {isLoadingMore ? '加载中...' : '加载更多'}
+          </button>
+        </div>
+      ) : null}
+
+      <CopyTaskConfigSheet
+        isOpen={isConfigOpen}
+        onClose={() => setIsConfigOpen(false)}
+        traderId={selectedTrader?.address || ''}
+        traderName={selectedTrader?.twitterName || selectedTrader?.username || selectedTrader?.address || ''}
+        platform='hyperliquid'
+        roleType='1'
+        traderPlatform={10}
+      />
     </section>
   )
 }
