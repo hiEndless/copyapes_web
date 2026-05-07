@@ -15,7 +15,7 @@ const settingTabs = [
   {
     value: "invite-code",
     label: "代理信息",
-    title: "查看代理信息",
+    title: "代理信息",
     description: "展示当前代理分成与提现数据。",
   },
   {
