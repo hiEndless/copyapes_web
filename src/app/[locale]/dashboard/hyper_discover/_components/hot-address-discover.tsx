@@ -21,75 +21,6 @@ type HotAddressItem = {
   avatarType: number
 }
 
-const FALLBACK_HOT_ADDRESS_ITEMS: HotAddressItem[] = [
-  {
-    id: 'bit-entity-1',
-    name: '0xFd42...3d97',
-    subtitle: 'BIT Entity Address【BIT关联地址】',
-    address: '0xFd42EFe8C7cbA6A4bB18D6C8d3c6E9130bA63d97',
-    accountValue: 4799144.71,
-    monthlyProfit: 2525959.28,
-    positions: 1,
-    winRate: '100%',
-    avatarType: 0
-  },
-  {
-    id: 'bit-entity-2',
-    name: '0xA875...25a8',
-    subtitle: 'BIT Entity Address【BIT关联地址】',
-    address: '0xA875EFe8C7cbA6A4bB18D6C8d3c6E9130bA6325a8',
-    accountValue: 12318616.23,
-    monthlyProfit: 1928957.08,
-    positions: 1,
-    winRate: '100%',
-    avatarType: 1
-  },
-  {
-    id: 'matrixport-entity',
-    name: '0x6C85...84F6',
-    subtitle: 'Matrixport Entity Address【Matrixport关联地址】',
-    address: '0x6C85EFe8C7cbA6A4bB18D6C8d3c6E9130bA684F6',
-    accountValue: 51912239.06,
-    monthlyProfit: 18047536.13,
-    positions: 1,
-    winRate: '100%',
-    avatarType: 2
-  },
-  {
-    id: 'bit-entity-3',
-    name: '0xa5B0...1D41',
-    subtitle: 'BIT Entity Address【BIT关联地址】',
-    address: '0xa5B0EFe8C7cbA6A4bB18D6C8d3c6E9130bA61D41',
-    accountValue: 40181495.49,
-    monthlyProfit: 36811485.73,
-    positions: 1,
-    winRate: '100%',
-    avatarType: 3
-  },
-  {
-    id: 'ultimate-bear',
-    name: '0x5D2F...9Bb7',
-    subtitle: 'Ultimate Bear【终极空头】',
-    address: '0x5D2FEFe8C7cbA6A4bB18D6C8d3c6E9130bA69Bb7',
-    accountValue: 9093582.88,
-    monthlyProfit: -143823.83,
-    positions: 2,
-    winRate: '0%',
-    avatarType: 4
-  },
-  {
-    id: 'continue-capital',
-    name: '0x3E38...140C',
-    subtitle: 'Continue Capital',
-    address: '0x3E38EFe8C7cbA6A4bB18D6C8d3c6E9130bA6140C',
-    accountValue: 4.48,
-    monthlyProfit: 0,
-    positions: 0,
-    winRate: '-%',
-    avatarType: 5
-  }
-]
-
 const AVATAR_TYPE_COUNT = 6
 
 function formatCurrency(value: number) {
@@ -282,7 +213,7 @@ function BlockyAvatar({ type }: { type: number }) {
 }
 
 export function HotAddressDiscover() {
-  const [items, setItems] = useState<HotAddressItem[]>(FALLBACK_HOT_ADDRESS_ITEMS)
+  const [items, setItems] = useState<HotAddressItem[]>([])
   const [isConfigOpen, setIsConfigOpen] = useState(false)
   const [selectedTrader, setSelectedTrader] = useState<HotAddressItem | null>(null)
 
