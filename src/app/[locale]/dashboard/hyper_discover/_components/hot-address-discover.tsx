@@ -203,7 +203,7 @@ function BlockyAvatar({ type }: { type: number }) {
 
   return (
     <div
-      className={`grid h-[24px] w-[24px] shrink-0 grid-cols-3 grid-rows-3 gap-[1px] overflow-hidden rounded-full ${bgColor} p-[4px]`}
+      className={`grid h-[30px] w-[30px] shrink-0 grid-cols-3 grid-rows-3 gap-[1px] overflow-hidden rounded-full ${bgColor} p-[4px]`}
     >
       {pattern.map((isFilled, i) => (
         <div key={i} className={`rounded-[1px] ${isFilled ? 'bg-white/90 dark:bg-white/80' : 'bg-transparent'}`} />
