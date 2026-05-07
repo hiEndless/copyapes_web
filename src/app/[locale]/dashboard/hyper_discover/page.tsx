@@ -1,7 +1,9 @@
+import { HyperDiscoverTabs } from './_components/hyper-discover-tabs'
+
 export default function HyperDiscoverPage() {
   return (
-    <div className="flex h-full items-center justify-center">
-      <h1 className="text-2xl font-semibold">hyper_discover</h1>
+    <div className='flex h-full flex-col overflow-y-auto p-4 lg:p-8'>
+      <HyperDiscoverTabs />
     </div>
   )
 }

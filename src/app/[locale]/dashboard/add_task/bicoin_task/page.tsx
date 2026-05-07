@@ -405,7 +405,7 @@ export default function BicoinTaskPage() {
         onClose={() => setIsConfigOpen(false)}
         traderId={selectedTrader?.leaderId || null}
         traderName={selectedTrader?.leaderName || ''}
-        platform={selectedTrader?.exchange?.toLowerCase() === 'binance' ? 'binance' : 'okx'}
+        platform={'bicoin'}
         traderPlatform={3}
         roleType={traderType}
         initialBenchMark={selectedTrader?.balance || ''}

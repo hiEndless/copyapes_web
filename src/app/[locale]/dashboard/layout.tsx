@@ -140,12 +140,11 @@ const copyItems: MenuItem[] = [
     label: '热门带单 KOL ',
     href: '/dashboard/add_task/hot'
   },
-
-  // {
-  //   icon: Flame,
-  //   label: 'HyperLiquid KOL ',
-  //   href: '/dashboard/hyper_discover'
-  // }
+  {
+    icon: Flame,
+    label: 'HyperLiquid KOL ',
+    href: '/dashboard/hyper_discover'
+  }
 ]
 
 const toolsItems: MenuItem[] = [

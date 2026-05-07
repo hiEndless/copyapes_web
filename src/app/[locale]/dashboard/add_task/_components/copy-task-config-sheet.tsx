@@ -341,7 +341,7 @@ export function CopyTaskConfigSheet({
 
       if (res.code === 0) {
         toast.success('创建成功')
-        
+
         // 刷新全局权益信息，同步剩余跟单任务额度
         try {
           const profile = await settingsApi.getEntitlementProfile()
@@ -355,6 +355,7 @@ export function CopyTaskConfigSheet({
         }
 
         onClose()
+
         if (onSuccess) {
           onSuccess()
         } else {
@@ -371,7 +372,52 @@ export function CopyTaskConfigSheet({
     }
   }
 
-  const allCopyApi = ['binance', 'okx', 'cookie', 'hyper'].includes(platform)
+  const normalizedPlatform = String(platform || '').toLowerCase()
+  const normalizedRoleType = String(roleType || '').toLowerCase()
+  const normalizedTraderPlatform = String(traderPlatform || '').toLowerCase()
+
+  const isApiFollow =
+    normalizedRoleType === 'api' ||
+    normalizedPlatform === 'api' ||
+    normalizedTraderPlatform === '5' ||
+    normalizedTraderPlatform === '6'
+
+  const isHotFollow =
+    normalizedPlatform === 'hot' ||
+    normalizedPlatform === '4' ||
+    normalizedTraderPlatform === '4'
+
+  const isHyperliquidFollow =
+    normalizedPlatform === 'hyperliquid' ||
+    normalizedPlatform === 'hyper' ||
+    normalizedTraderPlatform === '10'
+
+  const isBicoinFollow =
+    normalizedPlatform === 'bicoin' ||
+    normalizedTraderPlatform === '3'
+
+  const isBinanceFollow =
+    normalizedPlatform === 'binance' ||
+    normalizedTraderPlatform === '2' ||
+    normalizedTraderPlatform === '5' ||
+    normalizedTraderPlatform === '7'
+
+  const isOkxFollow =
+    normalizedPlatform === 'okx' ||
+    normalizedTraderPlatform === '1' ||
+    normalizedTraderPlatform === '6' ||
+    normalizedTraderPlatform === '8'
+
+  const isCookieFollow = normalizedPlatform === 'cookie' || normalizedTraderPlatform === '7' || normalizedTraderPlatform === '8'
+  const isRoleTypeTwo = normalizedRoleType === '2'
+
+  const allCopyApi = !isApiFollow && !isHotFollow && (
+    isHyperliquidFollow ||
+    isOkxFollow ||
+    isCookieFollow ||
+    (isBinanceFollow && !isRoleTypeTwo) ||
+    (isBicoinFollow && normalizedRoleType !== '1')
+  )
 
   return (
     <Sheet open={isOpen} onOpenChange={open => !open && onClose()}>
