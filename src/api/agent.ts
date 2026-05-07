@@ -75,4 +75,14 @@ export const agentApi = {
 
   // commissions
   getCommissions: () => request<any>('/commissions/', { method: 'GET' }),
+
+  // withdraw
+  getWithdrawMethod: () => request<any>('/withdraw/method/', { method: 'GET' }),
+  saveWithdrawMethod: (data: { payload_json: Record<string, any> }) =>
+    request<any>('/withdraw/method/', { method: 'POST', body: data }),
+  getWithdrawSummary: () => request<any>('/withdraw/summary/', { method: 'GET' }),
+  createWithdrawRequest: (data: { channel: string }) =>
+    request<any>('/withdraw/request/', { method: 'POST', body: data }),
+  getWithdrawRequests: (params: { limit: number; offset: number }) =>
+    request<any>('/withdraw/request/', { method: 'GET', params }),
 };
