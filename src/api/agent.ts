@@ -85,4 +85,12 @@ export const agentApi = {
     request<any>('/withdraw/request/', { method: 'POST', body: data }),
   getWithdrawRequests: (params: { limit: number; offset: number }) =>
     request<any>('/withdraw/request/', { method: 'GET', params }),
+
+  // admin withdraw review
+  adminGetWithdrawRequests: (params: { limit: number; offset: number }) =>
+    request<any>('/admin/withdraw/request/', { method: 'GET', params }),
+  adminApproveWithdrawRequest: (requestId: number, data: { admin_note?: string }) =>
+    request<any>(`/admin/withdraw/request/${requestId}/approve/`, { method: 'PATCH', body: data }),
+  adminRejectWithdrawRequest: (requestId: number, data: { admin_note?: string }) =>
+    request<any>(`/admin/withdraw/request/${requestId}/reject/`, { method: 'PATCH', body: data }),
 };
