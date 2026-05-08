@@ -7,6 +7,49 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
+function parseMethodSnapshot(raw: unknown): Record<string, unknown> {
+  if (raw == null) return {}
+
+  if (typeof raw === "object" && !Array.isArray(raw)) return raw as Record<string, unknown>
+
+  if (typeof raw !== "string") return {}
+
+  try {
+    const parsed = JSON.parse(raw) as unknown
+
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>
+    }
+  } catch {
+    /* ignore */
+  }
+
+  return {}
+}
+
+function formatWithdrawChannel(raw: unknown): string {
+  const snap = parseMethodSnapshot(raw)
+  const keys = Object.keys(snap)
+
+  if (keys.length === 0) return "-"
+
+  const key = keys[0]
+  const detail = snap[key]
+
+  if (detail && typeof detail === "object" && detail !== null) {
+    const obj = detail as Record<string, unknown>
+    const uid = String(obj.uid ?? "").trim()
+
+    if (uid) return `${key}(${uid})`
+
+    const address = String(obj.address ?? "").trim()
+
+    if (address) return `${key}(${address})`
+  }
+
+  return key
+}
+
 export function WithdrawDetailTab() {
   const [withdrawList, setWithdrawList] = useState<any[]>([])
   const [page, setPage] = useState(1)
@@ -38,12 +81,14 @@ export function WithdrawDetailTab() {
         cls: "bg-green-50 text-green-700 ring-green-600/20 dark:bg-green-500/10 dark:text-green-400 dark:ring-green-500/20",
       }
     }
+
     if (status === 3) {
       return {
         text: "已驳回",
         cls: "bg-red-50 text-red-700 ring-red-600/10 dark:bg-red-500/10 dark:text-red-400 dark:ring-red-500/20",
       }
     }
+
     return {
       text: "审核中",
       cls: "bg-amber-50 text-amber-700 ring-amber-600/20 dark:bg-amber-500/10 dark:text-amber-400 dark:ring-amber-500/20",
@@ -72,7 +117,7 @@ export function WithdrawDetailTab() {
                 <TableRow key={idx}>
                   <TableCell className="font-medium text-muted-foreground">{record.request_no || "-"}</TableCell>
                   <TableCell className="text-muted-foreground">
-                    {Object.keys(record.method_snapshot_json || {})[0] || "-"}
+                    {formatWithdrawChannel(record.method_snapshot_json)}
                   </TableCell>
                   <TableCell className="font-medium">{record.amount}</TableCell>
                   <TableCell className="text-muted-foreground">{record.create_datetime?.replace("T", " ").split(".")[0]}</TableCell>
