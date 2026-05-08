@@ -125,9 +125,40 @@ export function SystemNoticeTab() {
     return null
   }
 
-  const handleOpenSendConfirm = async () => {
+  const validateBeforeSubmit = () => {
     if (!wxText.trim() && !qqText.trim() && !dingText.trim()) {
       toast.error("至少填写一个渠道文案")
+      return false
+    }
+    if (wxText.trim() && wxText.trim().length > 20) {
+      toast.error("微信公众号文案不能超过20字")
+      return false
+    }
+    if (qqText.trim() && qqText.trim().length > 2000) {
+      toast.error("QQ邮箱文案不能超过2000字")
+      return false
+    }
+    if (dingText.trim() && dingText.trim().length > 2000) {
+      toast.error("钉钉文案不能超过2000字")
+      return false
+    }
+    if (needsPlatformRole) {
+      const platform = Number(traderPlatform || "0")
+      const role = Number(roleType || "0")
+      if (!Number.isFinite(platform) || platform <= 0) {
+        toast.error("平台ID必须为正整数")
+        return false
+      }
+      if (!Number.isFinite(role) || role <= 0) {
+        toast.error("交易员类型必须为正整数")
+        return false
+      }
+    }
+    return true
+  }
+
+  const handleOpenSendConfirm = async () => {
+    if (!validateBeforeSubmit()) {
       return
     }
     try {
@@ -208,20 +239,30 @@ export function SystemNoticeTab() {
           <div className="space-y-2">
             <Label>微信公众号文案（最多20字）</Label>
             <Textarea value={wxText} onChange={(e) => setWxText(e.target.value)} placeholder="请输入微信通知文案" />
+            <div className="text-muted-foreground text-xs text-right">{wxText.trim().length}/20</div>
           </div>
 
           <div className="space-y-2">
             <Label>QQ邮箱文案（最多2000字）</Label>
             <Textarea value={qqText} onChange={(e) => setQqText(e.target.value)} placeholder="请输入QQ邮箱通知文案" />
+            <div className="text-muted-foreground text-xs text-right">{qqText.trim().length}/2000</div>
           </div>
 
           <div className="space-y-2">
             <Label>钉钉文案（最多2000字）</Label>
             <Textarea value={dingText} onChange={(e) => setDingText(e.target.value)} placeholder="请输入钉钉通知文案" />
+            <div className="text-muted-foreground text-xs text-right">{dingText.trim().length}/2000</div>
           </div>
 
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handlePreview} disabled={previewLoading || sendLoading}>
+            <Button
+              variant="outline"
+              onClick={async () => {
+                if (!validateBeforeSubmit()) return
+                await handlePreview()
+              }}
+              disabled={previewLoading || sendLoading}
+            >
               {previewLoading ? "预览中..." : "预览受众"}
             </Button>
             <Button onClick={handleOpenSendConfirm} disabled={sendLoading || previewLoading}>
