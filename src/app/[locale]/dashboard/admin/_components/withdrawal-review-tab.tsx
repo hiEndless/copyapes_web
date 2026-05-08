@@ -58,6 +58,34 @@ function parseMethodChannel(raw: WithdrawItem["method_snapshot_json"]) {
   return Object.keys(payload)[0] || "-"
 }
 
+function parseMethodDetail(raw: WithdrawItem["method_snapshot_json"]) {
+  if (!raw) return "-"
+  let payload: Record<string, any> | null = null
+
+  if (typeof raw === "string") {
+    try {
+      payload = JSON.parse(raw)
+    } catch {
+      return "-"
+    }
+  } else if (typeof raw === "object") {
+    payload = raw
+  }
+
+  if (!payload) return "-"
+  const channel = Object.keys(payload)[0]
+  if (!channel) return "-"
+  const conf = payload[channel] || {}
+
+  if (channel === "trc20") {
+    return conf.address ? `地址：${conf.address}` : "-"
+  }
+  if (channel === "okx" || channel === "binance") {
+    return conf.uid ? `UID：${conf.uid}` : "-"
+  }
+  return JSON.stringify(conf)
+}
+
 export function WithdrawalReviewTab() {
   const [list, setList] = useState<WithdrawItem[]>([])
   const [page, setPage] = useState(1)
@@ -127,6 +155,7 @@ export function WithdrawalReviewTab() {
                 <TableHead className="font-semibold text-primary">申请单号</TableHead>
                 <TableHead className="font-semibold text-primary">用户</TableHead>
                 <TableHead className="font-semibold text-primary">渠道</TableHead>
+                <TableHead className="font-semibold text-primary">渠道信息</TableHead>
                 <TableHead className="font-semibold text-primary">金额</TableHead>
                 <TableHead className="font-semibold text-primary">申请时间</TableHead>
                 <TableHead className="font-semibold text-primary">状态</TableHead>
@@ -146,6 +175,9 @@ export function WithdrawalReviewTab() {
                     <TableCell className="font-medium text-muted-foreground">{row.request_no || "-"}</TableCell>
                     <TableCell>{row.username ? `${row.username} (#${row.user_id})` : `#${row.user_id}`}</TableCell>
                     <TableCell>{parseMethodChannel(row.method_snapshot_json)}</TableCell>
+                    <TableCell className="max-w-[280px] break-all text-muted-foreground">
+                      {parseMethodDetail(row.method_snapshot_json)}
+                    </TableCell>
                     <TableCell>{Number(row.amount || 0).toFixed(2)} USDT</TableCell>
                     <TableCell className="text-muted-foreground">
                       {row.create_datetime?.replace("T", " ").split(".")[0] || "-"}
@@ -183,14 +215,14 @@ export function WithdrawalReviewTab() {
               })}
               {list.length === 0 && !loading && (
                 <TableRow>
-                  <TableCell colSpan={8} className="py-6 text-center text-muted-foreground">
+                  <TableCell colSpan={9} className="py-6 text-center text-muted-foreground">
                     暂无数据
                   </TableCell>
                 </TableRow>
               )}
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={8} className="py-6 text-center text-muted-foreground">
+                  <TableCell colSpan={9} className="py-6 text-center text-muted-foreground">
                     加载中...
                   </TableCell>
                 </TableRow>
