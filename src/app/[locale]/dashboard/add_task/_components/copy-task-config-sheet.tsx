@@ -130,6 +130,10 @@ export function CopyTaskConfigSheet({
   const [isLoading, setIsLoading] = useState(false)
   const [apiOptions, setApiOptions] = useState<any[]>([])
   const [user, setUser] = useState('')
+  const [notificationStatus, setNotificationStatus] = useState<{
+    loading: boolean
+    configured: boolean
+  }>({ loading: false, configured: false })
 
   const hasAnyNotificationConfigured = async () => {
     try {
@@ -157,6 +161,12 @@ export function CopyTaskConfigSheet({
       console.error('Failed to precheck notification channels:', error)
       return false
     }
+  }
+
+  const refreshNotificationStatus = async () => {
+    setNotificationStatus(prev => ({ ...prev, loading: true }))
+    const configured = await hasAnyNotificationConfigured()
+    setNotificationStatus({ loading: false, configured })
   }
 
   const mappedRoleType = roleType || '1'
@@ -204,6 +214,7 @@ export function CopyTaskConfigSheet({
   // Load APIs
   useEffect(() => {
     if (isOpen) {
+      refreshNotificationStatus()
       getApiOptions().then(res => {
         if (res.code === 0 && Array.isArray(res.data)) {
           if (res.data.length > 0) {
@@ -465,6 +476,31 @@ export function CopyTaskConfigSheet({
           </SheetTitle>
           <SheetDescription>配置详细的跟单参数</SheetDescription>
         </SheetHeader>
+
+        <div className='px-6 pb-1'>
+          <div className='bg-muted/40 flex items-center justify-between rounded-md border px-3 py-2 text-xs'>
+            <div className='flex items-center gap-2'>
+              <span className='text-muted-foreground'>消息通知配置状态：</span>
+              {notificationStatus.loading ? (
+                <span className='text-muted-foreground'>检测中...</span>
+              ) : notificationStatus.configured ? (
+                <span className='font-medium text-green-600'>已配置</span>
+              ) : (
+                <span className='font-medium text-red-600'>未配置（不可创建任务）</span>
+              )}
+            </div>
+            <button
+              type='button'
+              className='text-primary hover:underline'
+              onClick={() => {
+                onClose()
+                router.push('/dashboard/notifications')
+              }}
+            >
+              去配置
+            </button>
+          </div>
+        </div>
 
         {/* tab选择：基础设置（默认）和高级设置 */}
 
