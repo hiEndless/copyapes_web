@@ -16,6 +16,28 @@ export interface UpdateInviteCodeResponse {
   invite_code: string;
 }
 
+export type AdminNoticeAudienceType = "all_users" | "vip_users" | "task_users" | "platform_role_users";
+
+export interface AdminNoticeAudienceFilter {
+  audience_type: AdminNoticeAudienceType;
+  trader_platform?: number;
+  role_type?: number;
+}
+
+export interface AdminNoticeBroadcastPayload {
+  scene_code: string;
+  audience: AdminNoticeAudienceFilter;
+  wx?: { text: string };
+  qq_mail?: { text: string };
+  ding_bot?: { text: string };
+}
+
+export interface AdminNoticePreviewResponse {
+  audience_type: AdminNoticeAudienceType;
+  estimated_user_count: number;
+  sample_user_ids: number[];
+}
+
 export const agentApi = {
   getSummary: () => {
     return request<AgentSummaryResponse>('/agent/summary/', {
@@ -93,4 +115,10 @@ export const agentApi = {
     request<any>(`/admin/withdraw/request/${requestId}/approve/`, { method: 'PATCH', body: data }),
   adminRejectWithdrawRequest: (requestId: number, data: { admin_note?: string }) =>
     request<any>(`/admin/withdraw/request/${requestId}/reject/`, { method: 'PATCH', body: data }),
+
+  // admin system notice
+  adminNoticePreview: (data: AdminNoticeBroadcastPayload) =>
+    request<AdminNoticePreviewResponse>('/admin/notice/broadcast/preview/', { method: 'POST', body: data }),
+  adminNoticeSend: (data: AdminNoticeBroadcastPayload) =>
+    request<any>('/admin/notice/broadcast/send/', { method: 'POST', body: data }),
 };
