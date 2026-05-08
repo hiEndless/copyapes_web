@@ -195,6 +195,18 @@ export function SystemNoticeTab() {
     return rows
   }, [dingText, qqText, wxText])
 
+  const channelSummaryText = useMemo(() => {
+    if (channelDrafts.length === 0) return "-"
+    return channelDrafts.map((item) => item.channel).join("、")
+  }, [channelDrafts])
+
+  const estimatedSendAttempts = useMemo(() => {
+    const users = preview?.count ?? 0
+    const channels = channelDrafts.length
+    if (users <= 0 || channels <= 0) return 0
+    return users * channels
+  }, [channelDrafts.length, preview?.count])
+
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
       <Card className="border-border/60 rounded-xl lg:col-span-2">
@@ -356,6 +368,8 @@ export function SystemNoticeTab() {
             <div className="text-muted-foreground">
               样例用户：{preview?.ids?.length ? preview.ids.join(", ") : "-"}
             </div>
+            <div className="text-muted-foreground">触达渠道：{channelSummaryText}</div>
+            <div className="text-muted-foreground">预计发送尝试：{estimatedSendAttempts}</div>
             <div className="rounded-md border p-2">
               {channelDrafts.map((item) => (
                 <div key={item.channel} className="mb-2 last:mb-0">
