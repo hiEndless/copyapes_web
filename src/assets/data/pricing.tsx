@@ -64,7 +64,7 @@ export const usePricingPlans = (): Plans => {
         t('pro.ef1'),
         t('pro.ef2'),
         t('pro.ef3'),
-        t('pro.ef4')
+        // t('pro.ef4')
       ]
     }
   ]
