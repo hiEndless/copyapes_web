@@ -15,6 +15,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 
 import { getApiOptions, getTraderBalance, addTask } from '@/api/task'
+import { request } from '@/api/request'
 import { settingsApi } from '@/api/settings'
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
@@ -129,6 +130,34 @@ export function CopyTaskConfigSheet({
   const [isLoading, setIsLoading] = useState(false)
   const [apiOptions, setApiOptions] = useState<any[]>([])
   const [user, setUser] = useState('')
+
+  const hasAnyNotificationConfigured = async () => {
+    try {
+      const res = await request<{
+        wx?: boolean
+        wx_code?: string
+        qq_mail?: boolean
+        qq?: string
+        password?: string
+        ding_bot?: boolean
+        ding_webhook?: string
+        ding_secret?: string
+      }>('/notify/', { method: 'GET', silent: true })
+      if (res.code !== 0 || !res.data) {
+        return false
+      }
+      const data = res.data
+      const wxCode = String(data.wx_code || '').trim()
+      const qq = String(data.qq || '').trim()
+      const qqPwd = String(data.password || '').trim()
+      const dingWebhook = String(data.ding_webhook || '').trim()
+
+      return Boolean(wxCode || (qq && qqPwd) || dingWebhook)
+    } catch (error) {
+      console.error('Failed to precheck notification channels:', error)
+      return false
+    }
+  }
 
   const mappedRoleType = roleType || '1'
 
@@ -300,6 +329,14 @@ export function CopyTaskConfigSheet({
     setIsLoading(true)
 
     try {
+      const hasNotification = await hasAnyNotificationConfigured()
+      if (!hasNotification) {
+        toast.error('请先至少配置一种消息通知方式（微信/QQ邮箱/钉钉）')
+        onClose()
+        router.push('/dashboard/notifications')
+        return
+      }
+
       const payload = {
         trader_platform: traderPlatform,
         uniqueName: traderPlatform === 7 || traderPlatform === 8 ? `${traderId}-${cookieId || ''}` : traderId,
