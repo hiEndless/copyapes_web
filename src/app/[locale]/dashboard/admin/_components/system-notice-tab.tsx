@@ -3,6 +3,16 @@
 import { useMemo, useState } from "react"
 
 import { agentApi, type AdminNoticeAudienceType, type AdminNoticeBroadcastPayload } from "@/api/agent"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -62,6 +72,7 @@ export function SystemNoticeTab() {
   const [dingText, setDingText] = useState("")
   const [previewLoading, setPreviewLoading] = useState(false)
   const [sendLoading, setSendLoading] = useState(false)
+  const [confirmOpen, setConfirmOpen] = useState(false)
   const [preview, setPreview] = useState<{ count: number; ids: number[]; audience: string } | null>(null)
   const [sendData, setSendData] = useState<NoticeSendData | null>(null)
 
@@ -100,23 +111,58 @@ export function SystemNoticeTab() {
     }
   }
 
-  const handleSend = async () => {
+  const loadPreview = async () => {
+    const res = await agentApi.adminNoticePreview(payload)
+    if (res.code === 0 && res.data) {
+      const next = {
+        count: Number(res.data.estimated_user_count || 0),
+        ids: Array.isArray(res.data.sample_user_ids) ? res.data.sample_user_ids : [],
+        audience: res.data.audience_type,
+      }
+      setPreview(next)
+      return next
+    }
+    return null
+  }
+
+  const handleOpenSendConfirm = async () => {
     if (!wxText.trim() && !qqText.trim() && !dingText.trim()) {
       toast.error("至少填写一个渠道文案")
       return
     }
+    try {
+      setPreviewLoading(true)
+      const latestPreview = await loadPreview()
+      if (latestPreview) {
+        setConfirmOpen(true)
+      }
+    } finally {
+      setPreviewLoading(false)
+    }
+  }
+
+  const handleConfirmSend = async () => {
     try {
       setSendLoading(true)
       const res = await agentApi.adminNoticeSend(payload)
       if (res.code === 0 && res.data) {
         const data = res.data as NoticeSendData
         setSendData(data)
+        setConfirmOpen(false)
         toast.success(`发送完成：成功 ${data.sent_count} / 失败 ${data.failed_count}`)
       }
     } finally {
       setSendLoading(false)
     }
   }
+
+  const channelDrafts = useMemo(() => {
+    const rows: { channel: string; text: string }[] = []
+    if (wxText.trim()) rows.push({ channel: "微信公众号", text: wxText.trim() })
+    if (qqText.trim()) rows.push({ channel: "QQ邮箱", text: qqText.trim() })
+    if (dingText.trim()) rows.push({ channel: "钉钉机器人", text: dingText.trim() })
+    return rows
+  }, [dingText, qqText, wxText])
 
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-5">
@@ -178,7 +224,7 @@ export function SystemNoticeTab() {
             <Button variant="outline" onClick={handlePreview} disabled={previewLoading || sendLoading}>
               {previewLoading ? "预览中..." : "预览受众"}
             </Button>
-            <Button onClick={handleSend} disabled={sendLoading || previewLoading}>
+            <Button onClick={handleOpenSendConfirm} disabled={sendLoading || previewLoading}>
               {sendLoading ? "发送中..." : "发送通知"}
             </Button>
           </div>
@@ -252,6 +298,43 @@ export function SystemNoticeTab() {
           )}
         </CardContent>
       </Card>
+
+      <AlertDialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>确认发送系统通知</AlertDialogTitle>
+            <AlertDialogDescription>
+              请确认受众范围与各渠道文案，确认后将立即发送，不可撤回。
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+
+          <div className="space-y-2 text-sm">
+            <div className="text-muted-foreground">
+              受众类型：{getAudienceLabel(preview?.audience || audienceType)}，预计触达：{preview?.count ?? 0} 人
+            </div>
+            <div className="text-muted-foreground">
+              样例用户：{preview?.ids?.length ? preview.ids.join(", ") : "-"}
+            </div>
+            <div className="rounded-md border p-2">
+              {channelDrafts.map((item) => (
+                <div key={item.channel} className="mb-2 last:mb-0">
+                  <div className="font-medium">{item.channel}</div>
+                  <div className="text-muted-foreground break-all">
+                    {item.text.length > 120 ? `${item.text.slice(0, 120)}...` : item.text}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={sendLoading}>取消</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSend} disabled={sendLoading}>
+              {sendLoading ? "发送中..." : "确认发送"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }
