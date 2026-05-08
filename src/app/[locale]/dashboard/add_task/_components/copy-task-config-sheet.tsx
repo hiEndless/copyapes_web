@@ -331,7 +331,7 @@ export function CopyTaskConfigSheet({
     try {
       const hasNotification = await hasAnyNotificationConfigured()
       if (!hasNotification) {
-        toast.error('请先至少配置一种消息通知方式（微信/QQ邮箱/钉钉）')
+        toast.error('请先至少配置一种消息通知方式')
         onClose()
         router.push('/dashboard/notifications')
         return
