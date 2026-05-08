@@ -159,7 +159,7 @@ export function WithdrawalReviewTab() {
                 <TableHead className="font-semibold text-primary">金额</TableHead>
                 <TableHead className="font-semibold text-primary">申请时间</TableHead>
                 <TableHead className="font-semibold text-primary">状态</TableHead>
-                <TableHead className="font-semibold text-primary">审核备注</TableHead>
+                {/* <TableHead className="font-semibold text-primary">审核备注</TableHead> */}
                 <TableHead className="font-semibold text-primary">操作</TableHead>
               </TableRow>
             </TableHeader>
@@ -187,7 +187,7 @@ export function WithdrawalReviewTab() {
                         {statusMeta.text}
                       </span>
                     </TableCell>
-                    <TableCell className="min-w-[180px]">
+                    {/* <TableCell className="min-w-[180px]">
                       <Input
                         placeholder="可选：审核备注"
                         value={noteDraft[row.id] ?? row.admin_note ?? ""}
@@ -199,7 +199,7 @@ export function WithdrawalReviewTab() {
                         }
                         disabled={!isPending || isProcessing}
                       />
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell>
                       <div className="flex gap-2">
                         <Button size="sm" disabled={!canOperate} onClick={() => handleApprove(row.id)}>
@@ -215,14 +215,14 @@ export function WithdrawalReviewTab() {
               })}
               {list.length === 0 && !loading && (
                 <TableRow>
-                  <TableCell colSpan={9} className="py-6 text-center text-muted-foreground">
+                  <TableCell colSpan={8} className="py-6 text-center text-muted-foreground">
                     暂无数据
                   </TableCell>
                 </TableRow>
               )}
               {loading && (
                 <TableRow>
-                  <TableCell colSpan={9} className="py-6 text-center text-muted-foreground">
+                  <TableCell colSpan={8} className="py-6 text-center text-muted-foreground">
                     加载中...
                   </TableCell>
                 </TableRow>
