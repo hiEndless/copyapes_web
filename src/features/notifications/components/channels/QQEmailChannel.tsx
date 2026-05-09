@@ -101,7 +101,7 @@ export function QQEmailChannel({ form }: ChannelProps) {
                     placeholder='12345678'
                     {...field}
                     value={field.value || ''}
-                    className='rounded-r-none border-r-0'
+                    className=''
                   />
                   <span className='text-muted-foreground inline-flex h-10 items-center px-3 text-md'>
                     @qq.com
