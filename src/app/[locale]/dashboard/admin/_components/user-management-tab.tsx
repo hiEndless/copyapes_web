@@ -222,6 +222,49 @@ export function UserManagementTab() {
         </CardContent>
       </Card>
 
+      <Card className="border-border/60 rounded-xl">
+        <CardHeader>
+          <CardTitle>批量变更（预览/执行）</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="space-y-2">
+            <Label>变更原因（必填）</Label>
+            <Input value={batchReason} onChange={(e) => setBatchReason(e.target.value)} placeholder="例如：运营批量调额" />
+          </div>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            <div className="space-y-2">
+              <Label>身份批量 JSON 数组</Label>
+              <Input
+                value={batchIdentityText}
+                onChange={(e) => setBatchIdentityText(e.target.value)}
+                placeholder='[{"username":"alice","vip_days_delta":7}]'
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>权限批量 JSON 数组</Label>
+              <Input
+                value={batchPermText}
+                onChange={(e) => setBatchPermText(e.target.value)}
+                placeholder='[{"username":"alice","target_tier":"vip","asset_limit_usdt":10000,"api_slot_limit":10,"task_slot_limit":20}]'
+              />
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={handleBatchPreview} disabled={batchPreviewLoading || !batchReason.trim()}>
+              {batchPreviewLoading ? "预览中..." : "批量预览"}
+            </Button>
+            <Button onClick={handleBatchApply} disabled={batchApplyLoading || !batchReason.trim()}>
+              {batchApplyLoading ? "执行中..." : "批量执行"}
+            </Button>
+          </div>
+          {batchPreviewData && (
+            <div className="rounded-md border bg-muted/30 p-3 text-xs">
+              <pre className="whitespace-pre-wrap break-all">{JSON.stringify(batchPreviewData, null, 2)}</pre>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {profile && (
         <>
           <Card className="border-border/60 rounded-xl">
@@ -402,48 +445,6 @@ export function UserManagementTab() {
             </CardContent>
           </Card>
 
-          <Card className="border-border/60 rounded-xl">
-            <CardHeader>
-              <CardTitle>批量变更（预览/执行）</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-2">
-                <Label>变更原因（必填）</Label>
-                <Input value={batchReason} onChange={(e) => setBatchReason(e.target.value)} placeholder="例如：运营批量调额" />
-              </div>
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                <div className="space-y-2">
-                  <Label>身份批量 JSON 数组</Label>
-                  <Input
-                    value={batchIdentityText}
-                    onChange={(e) => setBatchIdentityText(e.target.value)}
-                    placeholder='[{"username":"alice","vip_days_delta":7}]'
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>权限批量 JSON 数组</Label>
-                  <Input
-                    value={batchPermText}
-                    onChange={(e) => setBatchPermText(e.target.value)}
-                    placeholder='[{"username":"alice","target_tier":"vip","asset_limit_usdt":10000,"api_slot_limit":10,"task_slot_limit":20}]'
-                  />
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <Button variant="outline" onClick={handleBatchPreview} disabled={batchPreviewLoading || !batchReason.trim()}>
-                  {batchPreviewLoading ? "预览中..." : "批量预览"}
-                </Button>
-                <Button onClick={handleBatchApply} disabled={batchApplyLoading || !batchReason.trim()}>
-                  {batchApplyLoading ? "执行中..." : "批量执行"}
-                </Button>
-              </div>
-              {batchPreviewData && (
-                <div className="rounded-md border bg-muted/30 p-3 text-xs">
-                  <pre className="whitespace-pre-wrap break-all">{JSON.stringify(batchPreviewData, null, 2)}</pre>
-                </div>
-              )}
-            </CardContent>
-          </Card>
         </>
       )}
     </div>
