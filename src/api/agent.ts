@@ -173,6 +173,8 @@ export const agentApi = {
     studio_vip_days_delta?: number;
     is_partner?: boolean;
     partner_level?: number;
+    otp_token?: string;
+    otp_code?: string;
   }) => request<any>('/admin/user-management/identity/', { method: 'PATCH', body: data }),
   adminUserManagementUpdatePermissions: (data: {
     username: string;
@@ -181,7 +183,22 @@ export const agentApi = {
     asset_limit_usdt: number;
     api_slot_limit: number;
     task_slot_limit: number;
+    otp_token?: string;
+    otp_code?: string;
   }) => request<any>('/admin/user-management/permissions/', { method: 'PATCH', body: data }),
+  adminUserManagementRequestOtp: (data: {
+    action_type: "identity" | "permissions";
+    username: string;
+    reason: string;
+    vip_days_delta?: number;
+    studio_vip_days_delta?: number;
+    is_partner?: boolean;
+    partner_level?: number;
+    target_tier?: "free" | "vip" | "studio_vip";
+    asset_limit_usdt?: number;
+    api_slot_limit?: number;
+    task_slot_limit?: number;
+  }) => request<any>('/admin/user-management/request-otp/', { method: 'POST', body: data }),
   adminUserManagementAudit: (params: { username: string; limit: number; offset: number }) =>
     request<{ username: string; total: number; limit: number; offset: number; items: AdminUserManagementAuditItem[] }>(
       '/admin/user-management/audit/',

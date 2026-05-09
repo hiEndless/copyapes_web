@@ -48,12 +48,18 @@ export function UserManagementTab() {
   const [studioVipDaysDelta, setStudioVipDaysDelta] = useState("0")
   const [isPartner, setIsPartner] = useState<"unchanged" | "true" | "false">("unchanged")
   const [partnerLevel, setPartnerLevel] = useState("")
+  const [identityOtpToken, setIdentityOtpToken] = useState("")
+  const [identityOtpCode, setIdentityOtpCode] = useState("")
+  const [identityOtpLoading, setIdentityOtpLoading] = useState(false)
 
   const [permReason, setPermReason] = useState("")
   const [targetTier, setTargetTier] = useState<"auto" | "free" | "vip" | "studio_vip">("auto")
   const [assetLimit, setAssetLimit] = useState("")
   const [apiLimit, setApiLimit] = useState("")
   const [taskLimit, setTaskLimit] = useState("")
+  const [permOtpToken, setPermOtpToken] = useState("")
+  const [permOtpCode, setPermOtpCode] = useState("")
+  const [permOtpLoading, setPermOtpLoading] = useState(false)
   const [batchReason, setBatchReason] = useState("")
   const [batchUserIdsText, setBatchUserIdsText] = useState("")
   const [batchEntitlementType, setBatchEntitlementType] = useState<"vip" | "studio_vip">("vip")
@@ -118,6 +124,8 @@ export function UserManagementTab() {
         reason: identityReason.trim(),
         vip_days_delta: Number(vipDaysDelta || "0"),
         studio_vip_days_delta: Number(studioVipDaysDelta || "0"),
+        otp_token: identityOtpToken.trim(),
+        otp_code: identityOtpCode.trim(),
       }
       if (isPartner !== "unchanged") {
         payload.is_partner = isPartner === "true"
@@ -135,6 +143,28 @@ export function UserManagementTab() {
     }
   }
 
+  const handleIdentityRequestOtp = async () => {
+    if (!profile || !identityReason.trim()) return
+    setIdentityOtpLoading(true)
+    try {
+      const payload: any = {
+        action_type: "identity",
+        username: profile.username,
+        reason: identityReason.trim(),
+        vip_days_delta: Number(vipDaysDelta || "0"),
+        studio_vip_days_delta: Number(studioVipDaysDelta || "0"),
+      }
+      if (isPartner !== "unchanged") payload.is_partner = isPartner === "true"
+      if (partnerLevel.trim() !== "") payload.partner_level = Number(partnerLevel)
+      const res = await agentApi.adminUserManagementRequestOtp(payload)
+      if (res.code === 0 && res.data?.otp_token) {
+        setIdentityOtpToken(String(res.data.otp_token))
+      }
+    } finally {
+      setIdentityOtpLoading(false)
+    }
+  }
+
   const handlePermissionsUpdate = async () => {
     if (!profile || !permReason.trim()) return
     setUpdatingPermissions(true)
@@ -145,6 +175,8 @@ export function UserManagementTab() {
         asset_limit_usdt: Number(assetLimit || "0"),
         api_slot_limit: Number(apiLimit || "0"),
         task_slot_limit: Number(taskLimit || "0"),
+        otp_token: permOtpToken.trim(),
+        otp_code: permOtpCode.trim(),
       }
       if (targetTier !== "auto") {
         payload.target_tier = targetTier
@@ -156,6 +188,28 @@ export function UserManagementTab() {
       }
     } finally {
       setUpdatingPermissions(false)
+    }
+  }
+
+  const handlePermissionsRequestOtp = async () => {
+    if (!profile || !permReason.trim()) return
+    setPermOtpLoading(true)
+    try {
+      const payload: any = {
+        action_type: "permissions",
+        username: profile.username,
+        reason: permReason.trim(),
+        asset_limit_usdt: Number(assetLimit || "0"),
+        api_slot_limit: Number(apiLimit || "0"),
+        task_slot_limit: Number(taskLimit || "0"),
+      }
+      if (targetTier !== "auto") payload.target_tier = targetTier
+      const res = await agentApi.adminUserManagementRequestOtp(payload)
+      if (res.code === 0 && res.data?.otp_token) {
+        setPermOtpToken(String(res.data.otp_token))
+      }
+    } finally {
+      setPermOtpLoading(false)
     }
   }
 
@@ -368,7 +422,22 @@ export function UserManagementTab() {
                   <Label>修改原因</Label>
                   <Input value={identityReason} onChange={(e) => setIdentityReason(e.target.value)} placeholder="必填" />
                 </div>
-                <Button onClick={handleIdentityUpdate} disabled={updatingIdentity || !identityReason.trim()}>
+                <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>otp_token</Label>
+                    <Input value={identityOtpToken} onChange={(e) => setIdentityOtpToken(e.target.value)} placeholder="先获取验证码" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>验证码</Label>
+                    <Input value={identityOtpCode} onChange={(e) => setIdentityOtpCode(e.target.value)} placeholder="输入验证码" />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handleIdentityRequestOtp} disabled={identityOtpLoading || !identityReason.trim()}>
+                    {identityOtpLoading ? "发送中..." : "获取验证码"}
+                  </Button>
+                </div>
+                <Button onClick={handleIdentityUpdate} disabled={updatingIdentity || !identityReason.trim() || !identityOtpToken.trim() || !identityOtpCode.trim()}>
                   {updatingIdentity ? "提交中..." : "提交身份修改"}
                 </Button>
               </CardContent>
@@ -409,7 +478,22 @@ export function UserManagementTab() {
                   <Label>修改原因</Label>
                   <Input value={permReason} onChange={(e) => setPermReason(e.target.value)} placeholder="必填" />
                 </div>
-                <Button onClick={handlePermissionsUpdate} disabled={updatingPermissions || !permReason.trim()}>
+                <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>otp_token</Label>
+                    <Input value={permOtpToken} onChange={(e) => setPermOtpToken(e.target.value)} placeholder="先获取验证码" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>验证码</Label>
+                    <Input value={permOtpCode} onChange={(e) => setPermOtpCode(e.target.value)} placeholder="输入验证码" />
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button variant="outline" onClick={handlePermissionsRequestOtp} disabled={permOtpLoading || !permReason.trim()}>
+                    {permOtpLoading ? "发送中..." : "获取验证码"}
+                  </Button>
+                </div>
+                <Button onClick={handlePermissionsUpdate} disabled={updatingPermissions || !permReason.trim() || !permOtpToken.trim() || !permOtpCode.trim()}>
                   {updatingPermissions ? "提交中..." : "提交权限修改"}
                 </Button>
               </CardContent>
