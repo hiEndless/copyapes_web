@@ -38,6 +38,47 @@ export interface AdminNoticePreviewResponse {
   sample_user_ids: number[];
 }
 
+export interface AdminUserManagementProfileResponse {
+  user_id: number;
+  username: string;
+  identity: {
+    membership_tier: "free" | "vip" | "studio_vip";
+    is_partner: boolean;
+    identity_tags: string[];
+  };
+  membership: {
+    vip_days: number;
+    studio_vip_days: number;
+  };
+  permissions: {
+    asset_limit_usdt: number;
+    api_slot_limit: number;
+    api_slot_used: number;
+    task_slot_limit: number;
+    task_slot_used: number;
+    partner_level: number;
+  };
+  invitation: {
+    invited_user_count: number;
+  };
+  commission: {
+    withdrawable_amount: number;
+    total_withdraw_amount: number;
+  };
+}
+
+export interface AdminUserManagementAuditItem {
+  id: number;
+  admin_user_id: number;
+  target_user_id: number;
+  target_username: string;
+  action_type: string;
+  reason: string;
+  before: Record<string, any>;
+  after: Record<string, any>;
+  create_datetime: string;
+}
+
 export const agentApi = {
   getSummary: () => {
     return request<AgentSummaryResponse>('/agent/summary/', {
@@ -121,4 +162,29 @@ export const agentApi = {
     request<AdminNoticePreviewResponse>('/admin/notice/broadcast/preview/', { method: 'POST', body: data }),
   adminNoticeSend: (data: AdminNoticeBroadcastPayload) =>
     request<any>('/admin/notice/broadcast/send/', { method: 'POST', body: data }),
+
+  // admin user management
+  adminUserManagementProfile: (params: { username: string }) =>
+    request<AdminUserManagementProfileResponse>('/admin/user-management/profile/', { method: 'GET', params }),
+  adminUserManagementUpdateIdentity: (data: {
+    username: string;
+    reason: string;
+    vip_days_delta?: number;
+    studio_vip_days_delta?: number;
+    is_partner?: boolean;
+    partner_level?: number;
+  }) => request<any>('/admin/user-management/identity/', { method: 'PATCH', body: data }),
+  adminUserManagementUpdatePermissions: (data: {
+    username: string;
+    reason: string;
+    target_tier?: "free" | "vip" | "studio_vip";
+    asset_limit_usdt: number;
+    api_slot_limit: number;
+    task_slot_limit: number;
+  }) => request<any>('/admin/user-management/permissions/', { method: 'PATCH', body: data }),
+  adminUserManagementAudit: (params: { username: string; limit: number; offset: number }) =>
+    request<{ username: string; total: number; limit: number; offset: number; items: AdminUserManagementAuditItem[] }>(
+      '/admin/user-management/audit/',
+      { method: 'GET', params }
+    ),
 };
