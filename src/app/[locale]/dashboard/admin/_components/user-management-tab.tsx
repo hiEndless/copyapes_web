@@ -5,6 +5,7 @@ import { useMemo, useState } from "react"
 import { agentApi, type AdminUserManagementAuditItem, type AdminUserManagementProfileResponse } from "@/api/agent"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -48,28 +49,25 @@ export function UserManagementTab() {
   const [studioVipDaysDelta, setStudioVipDaysDelta] = useState("0")
   const [isPartner, setIsPartner] = useState<"unchanged" | "true" | "false">("unchanged")
   const [partnerLevel, setPartnerLevel] = useState("")
-  const [identityOtpToken, setIdentityOtpToken] = useState("")
-  const [identityOtpCode, setIdentityOtpCode] = useState("")
-  const [identityOtpLoading, setIdentityOtpLoading] = useState(false)
 
   const [permReason, setPermReason] = useState("")
   const [targetTier, setTargetTier] = useState<"auto" | "free" | "vip" | "studio_vip">("auto")
   const [assetLimit, setAssetLimit] = useState("")
   const [apiLimit, setApiLimit] = useState("")
   const [taskLimit, setTaskLimit] = useState("")
-  const [permOtpToken, setPermOtpToken] = useState("")
-  const [permOtpCode, setPermOtpCode] = useState("")
-  const [permOtpLoading, setPermOtpLoading] = useState(false)
   const [batchReason, setBatchReason] = useState("")
   const [batchUserIdsText, setBatchUserIdsText] = useState("")
   const [batchEntitlementType, setBatchEntitlementType] = useState<"vip" | "studio_vip">("vip")
   const [batchDaysDelta, setBatchDaysDelta] = useState("0")
   const [batchPreviewLoading, setBatchPreviewLoading] = useState(false)
   const [batchApplyLoading, setBatchApplyLoading] = useState(false)
-  const [batchOtpLoading, setBatchOtpLoading] = useState(false)
-  const [batchOtpToken, setBatchOtpToken] = useState("")
-  const [batchOtpCode, setBatchOtpCode] = useState("")
   const [batchPreviewData, setBatchPreviewData] = useState<any | null>(null)
+  const [otpModalOpen, setOtpModalOpen] = useState(false)
+  const [otpLoading, setOtpLoading] = useState(false)
+  const [otpSubmitting, setOtpSubmitting] = useState(false)
+  const [otpToken, setOtpToken] = useState("")
+  const [otpCode, setOtpCode] = useState("")
+  const [otpActionType, setOtpActionType] = useState<"identity" | "permissions" | "batch" | null>(null)
 
   const canNextAuditPage = useMemo(() => auditPage * auditLimit < auditTotal, [auditPage, auditTotal])
 
@@ -124,8 +122,8 @@ export function UserManagementTab() {
         reason: identityReason.trim(),
         vip_days_delta: Number(vipDaysDelta || "0"),
         studio_vip_days_delta: Number(studioVipDaysDelta || "0"),
-        otp_token: identityOtpToken.trim(),
-        otp_code: identityOtpCode.trim(),
+        otp_token: otpToken.trim(),
+        otp_code: otpCode.trim(),
       }
       if (isPartner !== "unchanged") {
         payload.is_partner = isPartner === "true"
@@ -145,7 +143,7 @@ export function UserManagementTab() {
 
   const handleIdentityRequestOtp = async () => {
     if (!profile || !identityReason.trim()) return
-    setIdentityOtpLoading(true)
+    setOtpLoading(true)
     try {
       const payload: any = {
         action_type: "identity",
@@ -158,10 +156,13 @@ export function UserManagementTab() {
       if (partnerLevel.trim() !== "") payload.partner_level = Number(partnerLevel)
       const res = await agentApi.adminUserManagementRequestOtp(payload)
       if (res.code === 0 && res.data?.otp_token) {
-        setIdentityOtpToken(String(res.data.otp_token))
+        setOtpActionType("identity")
+        setOtpToken(String(res.data.otp_token))
+        setOtpCode("")
+        setOtpModalOpen(true)
       }
     } finally {
-      setIdentityOtpLoading(false)
+      setOtpLoading(false)
     }
   }
 
@@ -175,8 +176,8 @@ export function UserManagementTab() {
         asset_limit_usdt: Number(assetLimit || "0"),
         api_slot_limit: Number(apiLimit || "0"),
         task_slot_limit: Number(taskLimit || "0"),
-        otp_token: permOtpToken.trim(),
-        otp_code: permOtpCode.trim(),
+        otp_token: otpToken.trim(),
+        otp_code: otpCode.trim(),
       }
       if (targetTier !== "auto") {
         payload.target_tier = targetTier
@@ -193,7 +194,7 @@ export function UserManagementTab() {
 
   const handlePermissionsRequestOtp = async () => {
     if (!profile || !permReason.trim()) return
-    setPermOtpLoading(true)
+    setOtpLoading(true)
     try {
       const payload: any = {
         action_type: "permissions",
@@ -206,10 +207,13 @@ export function UserManagementTab() {
       if (targetTier !== "auto") payload.target_tier = targetTier
       const res = await agentApi.adminUserManagementRequestOtp(payload)
       if (res.code === 0 && res.data?.otp_token) {
-        setPermOtpToken(String(res.data.otp_token))
+        setOtpActionType("permissions")
+        setOtpToken(String(res.data.otp_token))
+        setOtpCode("")
+        setOtpModalOpen(true)
       }
     } finally {
-      setPermOtpLoading(false)
+      setOtpLoading(false)
     }
   }
 
@@ -237,14 +241,17 @@ export function UserManagementTab() {
   const handleBatchRequestOtp = async () => {
     const payload = buildBatchPayload()
     if (!payload.reason || payload.user_ids.length === 0) return
-    setBatchOtpLoading(true)
+    setOtpLoading(true)
     try {
       const res = await agentApi.adminUserManagementBatchRequestOtp(payload)
       if (res.code === 0 && res.data?.otp_token) {
-        setBatchOtpToken(String(res.data.otp_token))
+        setOtpActionType("batch")
+        setOtpToken(String(res.data.otp_token))
+        setOtpCode("")
+        setOtpModalOpen(true)
       }
     } finally {
-      setBatchOtpLoading(false)
+      setOtpLoading(false)
     }
   }
 
@@ -269,8 +276,8 @@ export function UserManagementTab() {
     try {
       const res = await agentApi.adminUserManagementBatchApply({
         ...base,
-        otp_token: batchOtpToken.trim(),
-        otp_code: batchOtpCode.trim(),
+        otp_token: otpToken.trim(),
+        otp_code: otpCode.trim(),
       })
       if (res.code === 0 && res.data) {
         setBatchPreviewData(res.data)
@@ -281,6 +288,23 @@ export function UserManagementTab() {
       }
     } finally {
       setBatchApplyLoading(false)
+    }
+  }
+
+  const handleOtpConfirm = async () => {
+    if (!otpActionType || !otpToken.trim() || !otpCode.trim()) return
+    setOtpSubmitting(true)
+    try {
+      if (otpActionType === "identity") {
+        await handleIdentityUpdate()
+      } else if (otpActionType === "permissions") {
+        await handlePermissionsUpdate()
+      } else if (otpActionType === "batch") {
+        await handleBatchApply()
+      }
+      setOtpModalOpen(false)
+    } finally {
+      setOtpSubmitting(false)
     }
   }
 
@@ -340,22 +364,12 @@ export function UserManagementTab() {
             <Button variant="outline" onClick={handleBatchPreview} disabled={batchPreviewLoading || !batchReason.trim()}>
               {batchPreviewLoading ? "预览中..." : "批量预览"}
             </Button>
-            <Button variant="outline" onClick={handleBatchRequestOtp} disabled={batchOtpLoading || !batchReason.trim()}>
-              {batchOtpLoading ? "发送中..." : "获取验证码"}
+            <Button variant="outline" onClick={handleBatchRequestOtp} disabled={otpLoading || !batchReason.trim()}>
+              {otpLoading ? "发送中..." : "获取验证码"}
             </Button>
-            <Button onClick={handleBatchApply} disabled={batchApplyLoading || !batchReason.trim() || !batchOtpToken.trim() || !batchOtpCode.trim()}>
+            <Button onClick={handleBatchRequestOtp} disabled={batchApplyLoading || !batchReason.trim()}>
               {batchApplyLoading ? "执行中..." : "批量执行"}
             </Button>
-          </div>
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-            <div className="space-y-2">
-              <Label>otp_token</Label>
-              <Input value={batchOtpToken} onChange={(e) => setBatchOtpToken(e.target.value)} placeholder="先获取验证码后自动回填" />
-            </div>
-            <div className="space-y-2">
-              <Label>验证码</Label>
-              <Input value={batchOtpCode} onChange={(e) => setBatchOtpCode(e.target.value)} placeholder="输入收到的6位验证码" />
-            </div>
           </div>
           {batchPreviewData && (
             <div className="rounded-md border bg-muted/30 p-3 text-xs">
@@ -422,22 +436,12 @@ export function UserManagementTab() {
                   <Label>修改原因</Label>
                   <Input value={identityReason} onChange={(e) => setIdentityReason(e.target.value)} placeholder="必填" />
                 </div>
-                <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>otp_token</Label>
-                    <Input value={identityOtpToken} onChange={(e) => setIdentityOtpToken(e.target.value)} placeholder="先获取验证码" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>验证码</Label>
-                    <Input value={identityOtpCode} onChange={(e) => setIdentityOtpCode(e.target.value)} placeholder="输入验证码" />
-                  </div>
-                </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleIdentityRequestOtp} disabled={identityOtpLoading || !identityReason.trim()}>
-                    {identityOtpLoading ? "发送中..." : "获取验证码"}
+                  <Button variant="outline" onClick={handleIdentityRequestOtp} disabled={otpLoading || !identityReason.trim()}>
+                    {otpLoading ? "发送中..." : "获取验证码"}
                   </Button>
                 </div>
-                <Button onClick={handleIdentityUpdate} disabled={updatingIdentity || !identityReason.trim() || !identityOtpToken.trim() || !identityOtpCode.trim()}>
+                <Button onClick={handleIdentityRequestOtp} disabled={updatingIdentity || !identityReason.trim()}>
                   {updatingIdentity ? "提交中..." : "提交身份修改"}
                 </Button>
               </CardContent>
@@ -478,22 +482,12 @@ export function UserManagementTab() {
                   <Label>修改原因</Label>
                   <Input value={permReason} onChange={(e) => setPermReason(e.target.value)} placeholder="必填" />
                 </div>
-                <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                  <div className="space-y-2">
-                    <Label>otp_token</Label>
-                    <Input value={permOtpToken} onChange={(e) => setPermOtpToken(e.target.value)} placeholder="先获取验证码" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>验证码</Label>
-                    <Input value={permOtpCode} onChange={(e) => setPermOtpCode(e.target.value)} placeholder="输入验证码" />
-                  </div>
-                </div>
                 <div className="flex gap-2">
-                  <Button variant="outline" onClick={handlePermissionsRequestOtp} disabled={permOtpLoading || !permReason.trim()}>
-                    {permOtpLoading ? "发送中..." : "获取验证码"}
+                  <Button variant="outline" onClick={handlePermissionsRequestOtp} disabled={otpLoading || !permReason.trim()}>
+                    {otpLoading ? "发送中..." : "获取验证码"}
                   </Button>
                 </div>
-                <Button onClick={handlePermissionsUpdate} disabled={updatingPermissions || !permReason.trim() || !permOtpToken.trim() || !permOtpCode.trim()}>
+                <Button onClick={handlePermissionsRequestOtp} disabled={updatingPermissions || !permReason.trim()}>
                   {updatingPermissions ? "提交中..." : "提交权限修改"}
                 </Button>
               </CardContent>
@@ -577,6 +571,26 @@ export function UserManagementTab() {
 
         </>
       )}
+      <Dialog open={otpModalOpen} onOpenChange={setOtpModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>验证码二次确认</DialogTitle>
+            <DialogDescription>
+              已向管理员发送验证码，请输入6位验证码后确认执行操作。
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label>验证码</Label>
+            <Input value={otpCode} onChange={(e) => setOtpCode(e.target.value)} placeholder="输入6位验证码" />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOtpModalOpen(false)}>取消</Button>
+            <Button onClick={handleOtpConfirm} disabled={otpSubmitting || !otpCode.trim()}>
+              {otpSubmitting ? "提交中..." : "确认执行"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
