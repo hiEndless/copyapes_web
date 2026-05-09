@@ -16,6 +16,21 @@ function tierText(tier: string) {
   return "免费用户"
 }
 
+function formatAuditJson(value: unknown): string {
+  let parsed = value
+  if (typeof parsed === "string") {
+    try {
+      parsed = JSON.parse(parsed)
+    } catch {
+      return String(parsed)
+    }
+  }
+  if (parsed && typeof parsed === "object") {
+    return JSON.stringify(parsed, null, 2)
+  }
+  return String(parsed ?? "")
+}
+
 export function UserManagementTab() {
   const [username, setUsername] = useState("")
   const [loadingProfile, setLoadingProfile] = useState(false)
@@ -336,8 +351,12 @@ export function UserManagementTab() {
                         <TableCell>{item.action_type}</TableCell>
                         <TableCell>#{item.admin_user_id}</TableCell>
                         <TableCell>{item.reason}</TableCell>
-                        <TableCell className="max-w-[260px] break-all text-xs">{JSON.stringify(item.before || {})}</TableCell>
-                        <TableCell className="max-w-[260px] break-all text-xs">{JSON.stringify(item.after || {})}</TableCell>
+                        <TableCell className="max-w-[320px]">
+                          <pre className="max-h-32 overflow-auto whitespace-pre-wrap break-all text-xs">{formatAuditJson(item.before || {})}</pre>
+                        </TableCell>
+                        <TableCell className="max-w-[320px]">
+                          <pre className="max-h-32 overflow-auto whitespace-pre-wrap break-all text-xs">{formatAuditJson(item.after || {})}</pre>
+                        </TableCell>
                       </TableRow>
                     ))}
                     {auditItems.length === 0 && !loadingAudit && (
@@ -353,7 +372,7 @@ export function UserManagementTab() {
                   </TableBody>
                 </Table>
               </div>
-              <div className="mt-4 flex justify-end gap-2">
+              <div className="mt-4 flex items-center justify-end gap-2">
                 <Button
                   variant="outline"
                   size="sm"
@@ -366,7 +385,7 @@ export function UserManagementTab() {
                 >
                   上一页
                 </Button>
-                <div className="px-2 text-sm">第 {auditPage} 页</div>
+                <div className="flex h-9 items-center px-2 text-sm">第 {auditPage} 页</div>
                 <Button
                   variant="outline"
                   size="sm"
