@@ -123,11 +123,11 @@ const ContactForm = () => {
         {/* Name Input */}
         <div className='w-auto grow space-y-2'>
           <Label htmlFor='name'>{t('name')}</Label>
-          <Input 
-            type='text' 
-            id='name' 
-            className='h-10' 
-            placeholder={t('namePlaceholder')} 
+          <Input
+            type='text'
+            id='name'
+            className='h-10'
+            placeholder={t('namePlaceholder')}
             value={formData.name}
             onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
             required
@@ -137,11 +137,11 @@ const ContactForm = () => {
         {/* Email Input */}
         <div className='w-auto grow space-y-2'>
           <Label htmlFor='contact'>{t('contact')}</Label>
-          <Input 
-            type='text' 
-            id='contact' 
-            className='h-10' 
-            placeholder={t('contactPlaceholder')} 
+          <Input
+            type='text'
+            id='contact'
+            className='h-10'
+            placeholder={t('contactPlaceholder')}
             value={formData.contact}
             onChange={e => setFormData(prev => ({ ...prev, contact: e.target.value }))}
             required
@@ -163,7 +163,7 @@ const ContactForm = () => {
       </div>
 
       {siteKey ? (
-        <div className='flex min-h-[65px] justify-center'>
+        <div className='flex min-h-[65px] justify-start'>
           <div ref={turnstileContainerRef} />
         </div>
       ) : null}

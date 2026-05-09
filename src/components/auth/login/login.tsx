@@ -14,7 +14,7 @@ const Login = () => {
       </Link>
 
       <div>
-        <h1 className='mb-3 text-2xl font-semibold md:text-3xl lg:text-4xl'>欢迎回来 👋</h1>
+        <h1 className='mb-3 text-2xl font-semibold md:text-3xl lg:text-4xl'>欢迎回来</h1>
         <p className='text-muted-foreground'>开始您的免费体验</p>
       </div>
 
