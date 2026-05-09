@@ -5,11 +5,15 @@ export interface RegisterParams {
   password?: string;
   confirm_password?: string;
   invite_code?: string;
+  /** Cloudflare Turnstile，后端配置 TURNSTILE_SECRET_KEY 时必填 */
+  cf_turnstile_token?: string;
 }
 
 export interface LoginParams {
   username?: string;
   password?: string;
+  /** Cloudflare Turnstile，后端配置 TURNSTILE_SECRET_KEY 时必填 */
+  cf_turnstile_token?: string;
 }
 
 export interface UserInfo {
