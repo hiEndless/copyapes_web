@@ -79,22 +79,6 @@ export interface AdminUserManagementAuditItem {
   create_datetime: string;
 }
 
-export interface AdminUserBatchIdentityItem {
-  username: string;
-  vip_days_delta?: number;
-  studio_vip_days_delta?: number;
-  is_partner?: boolean;
-  partner_level?: number;
-}
-
-export interface AdminUserBatchPermissionsItem {
-  username: string;
-  target_tier?: "free" | "vip" | "studio_vip";
-  asset_limit_usdt: number;
-  api_slot_limit: number;
-  task_slot_limit: number;
-}
-
 export const agentApi = {
   getSummary: () => {
     return request<AgentSummaryResponse>('/agent/summary/', {
@@ -205,12 +189,14 @@ export const agentApi = {
     ),
   adminUserManagementBatchPreview: (data: {
     reason: string;
-    identity_updates: AdminUserBatchIdentityItem[];
-    permission_updates: AdminUserBatchPermissionsItem[];
+    user_ids: number[];
+    entitlement_type: "vip" | "studio_vip";
+    days_delta: number;
   }) => request<any>('/admin/user-management/batch/preview/', { method: 'POST', body: data }),
   adminUserManagementBatchApply: (data: {
     reason: string;
-    identity_updates: AdminUserBatchIdentityItem[];
-    permission_updates: AdminUserBatchPermissionsItem[];
+    user_ids: number[];
+    entitlement_type: "vip" | "studio_vip";
+    days_delta: number;
   }) => request<any>('/admin/user-management/batch/apply/', { method: 'POST', body: data }),
 };

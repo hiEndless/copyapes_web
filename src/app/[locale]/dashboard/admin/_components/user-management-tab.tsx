@@ -55,8 +55,9 @@ export function UserManagementTab() {
   const [apiLimit, setApiLimit] = useState("")
   const [taskLimit, setTaskLimit] = useState("")
   const [batchReason, setBatchReason] = useState("")
-  const [batchIdentityText, setBatchIdentityText] = useState("")
-  const [batchPermText, setBatchPermText] = useState("")
+  const [batchUserIdsText, setBatchUserIdsText] = useState("")
+  const [batchEntitlementType, setBatchEntitlementType] = useState<"vip" | "studio_vip">("vip")
+  const [batchDaysDelta, setBatchDaysDelta] = useState("0")
   const [batchPreviewLoading, setBatchPreviewLoading] = useState(false)
   const [batchApplyLoading, setBatchApplyLoading] = useState(false)
   const [batchPreviewData, setBatchPreviewData] = useState<any | null>(null)
@@ -155,12 +156,13 @@ export function UserManagementTab() {
     }
   }
 
-  const parseJsonArray = (raw: string) => {
+  const parseUserIds = (raw: string): number[] => {
     const txt = raw.trim()
     if (!txt) return []
     try {
       const data = JSON.parse(txt)
-      return Array.isArray(data) ? data : []
+      if (!Array.isArray(data)) return []
+      return data.map((item) => Number(item)).filter((n) => Number.isInteger(n) && n > 0)
     } catch {
       return []
     }
@@ -169,8 +171,9 @@ export function UserManagementTab() {
   const buildBatchPayload = () => {
     return {
       reason: batchReason.trim(),
-      identity_updates: parseJsonArray(batchIdentityText),
-      permission_updates: parseJsonArray(batchPermText),
+      user_ids: parseUserIds(batchUserIdsText),
+      entitlement_type: batchEntitlementType,
+      days_delta: Number(batchDaysDelta || "0"),
     }
   }
 
@@ -233,22 +236,31 @@ export function UserManagementTab() {
           </div>
           <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
             <div className="space-y-2">
-              <Label>身份批量 JSON 数组</Label>
+              <Label>用户ID数组（JSON）</Label>
               <Input
-                value={batchIdentityText}
-                onChange={(e) => setBatchIdentityText(e.target.value)}
-                placeholder='[{"username":"alice","vip_days_delta":7}]'
+                value={batchUserIdsText}
+                onChange={(e) => setBatchUserIdsText(e.target.value)}
+                placeholder="[2,3,4]"
               />
             </div>
             <div className="space-y-2">
-              <Label>权限批量 JSON 数组</Label>
-              <Input
-                value={batchPermText}
-                onChange={(e) => setBatchPermText(e.target.value)}
-                placeholder='[{"username":"alice","target_tier":"vip","asset_limit_usdt":10000,"api_slot_limit":10,"task_slot_limit":20}]'
-              />
+              <Label>权益类型</Label>
+              <Select value={batchEntitlementType} onValueChange={(v) => setBatchEntitlementType(v as "vip" | "studio_vip")}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="vip">vip</SelectItem>
+                  <SelectItem value="studio_vip">studio_vip</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
+          <div className="space-y-2">
+            <Label>天数增量（可正可负）</Label>
+            <Input value={batchDaysDelta} onChange={(e) => setBatchDaysDelta(e.target.value)} placeholder="例如 30 或 -7" />
+          </div>
+          <div className="text-muted-foreground text-xs">
+            批量接口按 user_id 列表处理；权益类型只支持 vip 或 studio_vip。
+            </div>
           <div className="flex gap-2">
             <Button variant="outline" onClick={handleBatchPreview} disabled={batchPreviewLoading || !batchReason.trim()}>
               {batchPreviewLoading ? "预览中..." : "批量预览"}
