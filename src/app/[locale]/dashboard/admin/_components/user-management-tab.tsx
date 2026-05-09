@@ -364,11 +364,8 @@ export function UserManagementTab() {
             <Button variant="outline" onClick={handleBatchPreview} disabled={batchPreviewLoading || !batchReason.trim()}>
               {batchPreviewLoading ? "预览中..." : "批量预览"}
             </Button>
-            <Button variant="outline" onClick={handleBatchRequestOtp} disabled={otpLoading || !batchReason.trim()}>
-              {otpLoading ? "发送中..." : "获取验证码"}
-            </Button>
-            <Button onClick={handleBatchRequestOtp} disabled={batchApplyLoading || !batchReason.trim()}>
-              {batchApplyLoading ? "执行中..." : "批量执行"}
+            <Button onClick={handleBatchRequestOtp} disabled={otpLoading || batchApplyLoading || !batchReason.trim()}>
+              {otpLoading || batchApplyLoading ? "执行中..." : "批量执行"}
             </Button>
           </div>
           {batchPreviewData && (
@@ -436,13 +433,8 @@ export function UserManagementTab() {
                   <Label>修改原因</Label>
                   <Input value={identityReason} onChange={(e) => setIdentityReason(e.target.value)} placeholder="必填" />
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={handleIdentityRequestOtp} disabled={otpLoading || !identityReason.trim()}>
-                    {otpLoading ? "发送中..." : "获取验证码"}
-                  </Button>
-                </div>
-                <Button onClick={handleIdentityRequestOtp} disabled={updatingIdentity || !identityReason.trim()}>
-                  {updatingIdentity ? "提交中..." : "提交身份修改"}
+                <Button onClick={handleIdentityRequestOtp} disabled={otpLoading || updatingIdentity || !identityReason.trim()}>
+                  {otpLoading || updatingIdentity ? "提交中..." : "提交身份修改"}
                 </Button>
               </CardContent>
             </Card>
@@ -482,13 +474,8 @@ export function UserManagementTab() {
                   <Label>修改原因</Label>
                   <Input value={permReason} onChange={(e) => setPermReason(e.target.value)} placeholder="必填" />
                 </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" onClick={handlePermissionsRequestOtp} disabled={otpLoading || !permReason.trim()}>
-                    {otpLoading ? "发送中..." : "获取验证码"}
-                  </Button>
-                </div>
-                <Button onClick={handlePermissionsRequestOtp} disabled={updatingPermissions || !permReason.trim()}>
-                  {updatingPermissions ? "提交中..." : "提交权限修改"}
+                <Button onClick={handlePermissionsRequestOtp} disabled={otpLoading || updatingPermissions || !permReason.trim()}>
+                  {otpLoading || updatingPermissions ? "提交中..." : "提交权限修改"}
                 </Button>
               </CardContent>
             </Card>
