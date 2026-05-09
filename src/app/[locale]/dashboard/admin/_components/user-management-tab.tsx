@@ -60,6 +60,9 @@ export function UserManagementTab() {
   const [batchDaysDelta, setBatchDaysDelta] = useState("0")
   const [batchPreviewLoading, setBatchPreviewLoading] = useState(false)
   const [batchApplyLoading, setBatchApplyLoading] = useState(false)
+  const [batchOtpLoading, setBatchOtpLoading] = useState(false)
+  const [batchOtpToken, setBatchOtpToken] = useState("")
+  const [batchOtpCode, setBatchOtpCode] = useState("")
   const [batchPreviewData, setBatchPreviewData] = useState<any | null>(null)
 
   const canNextAuditPage = useMemo(() => auditPage * auditLimit < auditTotal, [auditPage, auditTotal])
@@ -177,6 +180,20 @@ export function UserManagementTab() {
     }
   }
 
+  const handleBatchRequestOtp = async () => {
+    const payload = buildBatchPayload()
+    if (!payload.reason || payload.user_ids.length === 0) return
+    setBatchOtpLoading(true)
+    try {
+      const res = await agentApi.adminUserManagementBatchRequestOtp(payload)
+      if (res.code === 0 && res.data?.otp_token) {
+        setBatchOtpToken(String(res.data.otp_token))
+      }
+    } finally {
+      setBatchOtpLoading(false)
+    }
+  }
+
   const handleBatchPreview = async () => {
     const payload = buildBatchPayload()
     if (!payload.reason) return
@@ -192,11 +209,15 @@ export function UserManagementTab() {
   }
 
   const handleBatchApply = async () => {
-    const payload = buildBatchPayload()
-    if (!payload.reason) return
+    const base = buildBatchPayload()
+    if (!base.reason) return
     setBatchApplyLoading(true)
     try {
-      const res = await agentApi.adminUserManagementBatchApply(payload)
+      const res = await agentApi.adminUserManagementBatchApply({
+        ...base,
+        otp_token: batchOtpToken.trim(),
+        otp_code: batchOtpCode.trim(),
+      })
       if (res.code === 0 && res.data) {
         setBatchPreviewData(res.data)
         if (profile) {
@@ -265,9 +286,22 @@ export function UserManagementTab() {
             <Button variant="outline" onClick={handleBatchPreview} disabled={batchPreviewLoading || !batchReason.trim()}>
               {batchPreviewLoading ? "预览中..." : "批量预览"}
             </Button>
-            <Button onClick={handleBatchApply} disabled={batchApplyLoading || !batchReason.trim()}>
+            <Button variant="outline" onClick={handleBatchRequestOtp} disabled={batchOtpLoading || !batchReason.trim()}>
+              {batchOtpLoading ? "发送中..." : "获取验证码"}
+            </Button>
+            <Button onClick={handleBatchApply} disabled={batchApplyLoading || !batchReason.trim() || !batchOtpToken.trim() || !batchOtpCode.trim()}>
               {batchApplyLoading ? "执行中..." : "批量执行"}
             </Button>
+          </div>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            <div className="space-y-2">
+              <Label>otp_token</Label>
+              <Input value={batchOtpToken} onChange={(e) => setBatchOtpToken(e.target.value)} placeholder="先获取验证码后自动回填" />
+            </div>
+            <div className="space-y-2">
+              <Label>验证码</Label>
+              <Input value={batchOtpCode} onChange={(e) => setBatchOtpCode(e.target.value)} placeholder="输入收到的6位验证码" />
+            </div>
           </div>
           {batchPreviewData && (
             <div className="rounded-md border bg-muted/30 p-3 text-xs">

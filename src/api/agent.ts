@@ -193,10 +193,18 @@ export const agentApi = {
     entitlement_type: "vip" | "studio_vip";
     days_delta: number;
   }) => request<any>('/admin/user-management/batch/preview/', { method: 'POST', body: data }),
+  adminUserManagementBatchRequestOtp: (data: {
+    reason: string;
+    user_ids: number[];
+    entitlement_type: "vip" | "studio_vip";
+    days_delta: number;
+  }) => request<any>('/admin/user-management/batch/request-otp/', { method: 'POST', body: data }),
   adminUserManagementBatchApply: (data: {
     reason: string;
     user_ids: number[];
     entitlement_type: "vip" | "studio_vip";
     days_delta: number;
+    otp_token: string;
+    otp_code: string;
   }) => request<any>('/admin/user-management/batch/apply/', { method: 'POST', body: data }),
 };
