@@ -191,7 +191,7 @@ const LoginForm = () => {
       </div>
 
       {siteKey ? (
-        <div className='flex min-h-[65px] justify-center'>
+        <div className='flex min-h-[65px] justify-start'>
           <div ref={turnstileContainerRef} />
         </div>
       ) : null}

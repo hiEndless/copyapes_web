@@ -338,11 +338,22 @@ const RegisterForm = () => {
           onCheckedChange={(checked) => setAgreed(checked as boolean)}
           disabled={isLoading}
         />
-        <Label htmlFor='rememberMe'>同意隐私政策 & 服务条款</Label>
+        <Label htmlFor='rememberMe' className='cursor-pointer font-normal'>
+          同意{' '}
+          <a
+            href='https://docs.lichaoyuan.com/copyapes/protocol'
+            target='_blank'
+            rel='noopener noreferrer'
+            className='text-primary underline underline-offset-2'
+            onClick={(e) => e.stopPropagation()}
+          >
+            隐私政策 & 服务条款
+          </a>
+        </Label>
       </div>
 
       {siteKey ? (
-        <div className='flex min-h-[65px] justify-center'>
+        <div className='flex min-h-[65px] justify-start'>
           <div ref={turnstileContainerRef} />
         </div>
       ) : null}
