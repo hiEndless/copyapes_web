@@ -35,11 +35,15 @@ const RegisterForm = () => {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
   const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
+  const [emailCode, setEmailCode] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [inviteCode, setInviteCode] = useState('')
   const [agreed, setAgreed] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isSendingCode, setIsSendingCode] = useState(false)
+  const [codeCooldown, setCodeCooldown] = useState(0)
   const [turnstileScriptLoaded, setTurnstileScriptLoaded] = useState(false)
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null)
   const turnstileWidgetIdRef = useRef<TurnstileWidgetId | null>(null)
@@ -72,10 +76,63 @@ const RegisterForm = () => {
     }
   }
 
+  useEffect(() => {
+    if (codeCooldown <= 0) return
+    const timer = window.setInterval(() => {
+      setCodeCooldown((s) => (s > 0 ? s - 1 : 0))
+    }, 1000)
+    return () => window.clearInterval(timer)
+  }, [codeCooldown])
+
+  const handleSendEmailCode = async () => {
+    const trimmedEmail = (email || '').trim().toLowerCase()
+    if (!trimmedEmail) {
+      toast.error('请先输入邮箱')
+      return
+    }
+    const emailReg = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+    if (!emailReg.test(trimmedEmail)) {
+      toast.error('邮箱格式错误')
+      return
+    }
+    if (codeCooldown > 0) return
+
+    let cfToken: string | undefined
+    if (siteKey) {
+      const wid = turnstileWidgetIdRef.current
+      const api = (window as Window & { turnstile?: TurnstileAPI }).turnstile
+      const raw = wid && api?.getResponse ? api.getResponse(wid) : ''
+      const trimmed = (raw || '').trim()
+      if (!trimmed) {
+        toast.error('请先完成人机验证')
+        return
+      }
+      cfToken = trimmed
+    }
+
+    try {
+      setIsSendingCode(true)
+      const res = await authApi.registerSendCode({
+        email: trimmedEmail,
+        ...(cfToken ? { cf_turnstile_token: cfToken } : {}),
+      })
+      if (res.code === 0) {
+        toast.success('验证码已发送，请查收邮箱')
+        setCodeCooldown(60)
+      } else if (siteKey) {
+        resetTurnstile()
+      }
+    } catch {
+      if (siteKey) resetTurnstile()
+    } finally {
+      setIsSendingCode(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!username || !password || !confirmPassword || !inviteCode) {
+    if (!username || !email || !emailCode || !password || !confirmPassword || !inviteCode) {
       toast.error('请填写完整信息')
 
       return
@@ -111,6 +168,8 @@ const RegisterForm = () => {
 
       const res = await authApi.register({
         username,
+        email: email.trim().toLowerCase(),
+        email_code: emailCode.trim(),
         password,
         confirm_password: confirmPassword,
         invite_code: inviteCode,
@@ -142,6 +201,21 @@ const RegisterForm = () => {
       ) : null}
       {/* Email */}
       <div className='space-y-1'>
+        <Label className='leading-5' htmlFor='username'>
+          用户名*
+        </Label>
+        <Input
+          type='text'
+          id='username'
+          placeholder='请输入用户名'
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          disabled={isLoading}
+        />
+      </div>
+
+      {/* Register Email */}
+      <div className='space-y-1'>
         <Label className='leading-5' htmlFor='email'>
           邮箱*
         </Label>
@@ -149,10 +223,36 @@ const RegisterForm = () => {
           type='email'
           id='email'
           placeholder='请输入您的邮箱地址'
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          disabled={isLoading}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          disabled={isLoading || isSendingCode}
         />
+      </div>
+
+      {/* Email Code */}
+      <div className='space-y-1'>
+        <Label className='leading-5' htmlFor='emailCode'>
+          邮箱验证码*
+        </Label>
+        <div className='flex gap-2'>
+          <Input
+            type='text'
+            id='emailCode'
+            placeholder='请输入6位验证码'
+            value={emailCode}
+            onChange={(e) => setEmailCode(e.target.value)}
+            disabled={isLoading}
+          />
+          <Button
+            type='button'
+            variant='outline'
+            className='whitespace-nowrap'
+            onClick={handleSendEmailCode}
+            disabled={isLoading || isSendingCode || codeCooldown > 0 || turnstileBlocking}
+          >
+            {codeCooldown > 0 ? `${codeCooldown}s后重发` : (isSendingCode ? '发送中...' : '发送验证码')}
+          </Button>
+        </div>
       </div>
 
       {/* Password */}
@@ -247,7 +347,7 @@ const RegisterForm = () => {
         </div>
       ) : null}
 
-      <PrimaryFlowButton className='w-full *:w-full [&>button]:after:-inset-55' type='submit' disabled={isLoading || turnstileBlocking}>
+      <PrimaryFlowButton className='w-full *:w-full [&>button]:after:-inset-55' type='submit' disabled={isLoading || isSendingCode || turnstileBlocking}>
         {isLoading ? '注册中...' : '注册'}
       </PrimaryFlowButton>
     </form>

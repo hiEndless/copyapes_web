@@ -5,6 +5,8 @@ export interface RegisterParams {
   password?: string;
   confirm_password?: string;
   invite_code?: string;
+  email?: string;
+  email_code?: string;
   /** Cloudflare Turnstile，后端配置 TURNSTILE_SECRET_KEY 时必填 */
   cf_turnstile_token?: string;
 }
@@ -39,6 +41,16 @@ export const authApi = {
    */
   register(data: RegisterParams) {
     return request<{ username: string }>('/register/', {
+      method: 'POST',
+      body: data,
+    });
+  },
+
+  /**
+   * 发送注册邮箱验证码
+   */
+  registerSendCode(data: { email: string; cf_turnstile_token?: string }) {
+    return request<null>('/register/email/send-code/', {
       method: 'POST',
       body: data,
     });
