@@ -117,7 +117,7 @@ const RegisterForm = () => {
         ...(cfToken ? { cf_turnstile_token: cfToken } : {}),
       })
       if (res.code === 0) {
-        toast.success('验证码已发送，请查收邮箱')
+        // toast.success('验证码已发送，请查收邮箱')
         setCodeCooldown(60)
       } else if (siteKey) {
         resetTurnstile()
