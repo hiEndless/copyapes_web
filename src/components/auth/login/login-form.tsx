@@ -16,6 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PrimaryFlowButton } from '@/components/ui/flow-button'
 import { authApi } from '@/api/auth'
+import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
 
 type TurnstileWidgetId = string
 
@@ -48,7 +49,7 @@ const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [turnstileScriptLoaded, setTurnstileScriptLoaded] = useState(false)
+  const { turnstileScriptLoaded, onTurnstileScriptLoad } = useTurnstileScriptLoaded(siteKey)
 
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null)
   const turnstileWidgetIdRef = useRef<TurnstileWidgetId | null>(null)
@@ -144,7 +145,7 @@ const LoginForm = () => {
   return (
     <form className='space-y-4' onSubmit={handleSubmit}>
       {siteKey ? (
-        <Script src={TURNSTILE_SCRIPT} strategy='afterInteractive' onLoad={() => setTurnstileScriptLoaded(true)} />
+        <Script src={TURNSTILE_SCRIPT} strategy='afterInteractive' onLoad={onTurnstileScriptLoad} />
       ) : null}
       {/* Email */}
       <div className='space-y-1'>
