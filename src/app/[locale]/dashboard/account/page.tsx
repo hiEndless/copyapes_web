@@ -17,8 +17,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 const settingTabs = [
   {
     value: 'account',
-    label: '账号信息',
-    title: '账号信息',
+    label: '账户信息',
+    title: '账户信息',
     description: '修改用户名与绑定邮箱。',
   },
   {
@@ -155,7 +155,7 @@ export default function AccountPage() {
   return (
     <div className='mx-auto flex h-full w-full max-w-6xl flex-col gap-5 overflow-y-auto p-4 sm:gap-6 sm:p-6'>
       <div className='space-y-2'>
-        <h1 className='text-2xl font-semibold tracking-tight'>账号设置</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>账户设置</h1>
         <p className='text-muted-foreground text-sm'>管理您的个人账户信息与安全设置</p>
       </div>
 
