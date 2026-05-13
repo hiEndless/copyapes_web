@@ -33,6 +33,8 @@ export interface UserInfo {
   limit_usdt?: number
   api_limit?: number
   task_limit?: number
+  email?: string | null
+  email_verified?: boolean
 }
 
 export const authApi = {
@@ -56,6 +58,20 @@ export const authApi = {
     });
   },
 
+  passwordResetEmailSendCode(data: { email: string; cf_turnstile_token?: string }) {
+    return request<null>('/password/reset/email/send-code/', {
+      method: 'POST',
+      body: data,
+    });
+  },
+
+  passwordResetEmailConfirm(data: { email: string; code: string; new_password: string; confirm_password: string }) {
+    return request<null>('/password/reset/email/confirm/', {
+      method: 'POST',
+      body: data,
+    });
+  },
+
   /**
    * 登录
    */
@@ -72,6 +88,41 @@ export const authApi = {
   getLoginInfo() {
     return request<UserInfo>('/login/', {
       method: 'GET',
+    });
+  },
+
+  patchUsername(body: { new_username: string; password: string }) {
+    return request<{ name: string }>('/username/', {
+      method: 'PATCH',
+      body,
+    });
+  },
+
+  emailChangeOldSendCode(body: { cf_turnstile_token?: string }) {
+    return request<{ skip_old?: boolean } | null>('/email/change/old/send-code/', {
+      method: 'POST',
+      body,
+    });
+  },
+
+  emailChangeOldVerify(body: { code: string }) {
+    return request<null>('/email/change/old/verify/', {
+      method: 'POST',
+      body,
+    });
+  },
+
+  emailChangeNewSendCode(body: { email: string; cf_turnstile_token?: string }) {
+    return request<null>('/email/change/new/send-code/', {
+      method: 'POST',
+      body,
+    });
+  },
+
+  emailChangeNewVerify(body: { email: string; code: string }) {
+    return request<{ email: string; email_verified: boolean }>('/email/change/new/verify/', {
+      method: 'POST',
+      body,
     });
   },
 };

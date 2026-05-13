@@ -15,18 +15,17 @@ const ResetPassword = () => {
       </Link>
 
       <div>
-        <h1 className='mb-2 text-2xl font-semibold'>Reset Password</h1>
-        <p className='text-muted-foreground'>Time for a fresh start! Go ahead and set a new password.</p>
+        <h1 className='mb-2 text-2xl font-semibold'>重置密码</h1>
+        <p className='text-muted-foreground'>该入口已合并至忘记密码流程。</p>
       </div>
 
       <div className='space-y-3'>
-        {/* Form */}
         <ResetPasswordForm />
 
         <Button asChild variant='ghost' className='group w-full'>
           <Link href='/login'>
             <ChevronLeftIcon className='transition-transform duration-200 group-hover:-translate-x-0.5' />
-            <p>Back to login</p>
+            <p>返回登录</p>
           </Link>
         </Button>
       </div>
