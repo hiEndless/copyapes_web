@@ -47,8 +47,20 @@ const ForgotPasswordForm = () => {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
   const [sending, setSending] = useState(false)
   const [submitting, setSubmitting] = useState(false)
+  const [codeCooldown, setCodeCooldown] = useState(0)
 
   const otpId = useId()
+
+  useEffect(() => {
+    if (codeCooldown <= 0) {
+      return
+    }
+    const t = window.setInterval(() => {
+      setCodeCooldown(s => (s > 0 ? s - 1 : 0))
+    }, 1000)
+
+    return () => clearInterval(t)
+  }, [codeCooldown])
 
   useEffect(() => {
     if (!siteKey) {
@@ -104,6 +116,9 @@ const ForgotPasswordForm = () => {
 
   const handleSendCode = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (codeCooldown > 0) {
+      return
+    }
     const trimmed = (email || '').trim().toLowerCase()
     if (!trimmed) {
       toast.error('请输入邮箱')
@@ -132,6 +147,7 @@ const ForgotPasswordForm = () => {
         setEmail(trimmed)
         setStep(2)
         setCode('')
+        setCodeCooldown(60)
       } else if (siteKey) {
         resetTurnstile()
       }
@@ -141,6 +157,9 @@ const ForgotPasswordForm = () => {
   }
 
   const handleResendCode = async () => {
+    if (codeCooldown > 0) {
+      return
+    }
     const cf = getCfToken()
     if (siteKey && !cf) {
       return
@@ -153,6 +172,7 @@ const ForgotPasswordForm = () => {
       })
       if (res.code === 0) {
         setCode('')
+        setCodeCooldown(60)
       } else if (siteKey) {
         resetTurnstile()
       }
@@ -225,8 +245,12 @@ const ForgotPasswordForm = () => {
             />
           </div>
 
-          <PrimaryFlowButton className='w-full *:w-full [&>button]:after:-inset-55' type='submit' disabled={sending || turnstileBlocking}>
-            {sending ? '发送中...' : '发送验证码'}
+          <PrimaryFlowButton
+            className='w-full *:w-full [&>button]:after:-inset-55'
+            type='submit'
+            disabled={sending || turnstileBlocking || codeCooldown > 0}
+          >
+            {codeCooldown > 0 ? `${codeCooldown}s后重发` : sending ? '发送中...' : '发送验证码'}
           </PrimaryFlowButton>
         </form>
       ) : (
@@ -312,9 +336,15 @@ const ForgotPasswordForm = () => {
           </div>
 
           <div className='flex flex-col gap-2 sm:flex-row'>
-            <Button type='button' variant='outline' className='sm:flex-1' onClick={() => void handleResendCode()} disabled={sending || turnstileBlocking}>
+            <Button
+              type='button'
+              variant='outline'
+              className='sm:flex-1'
+              onClick={() => void handleResendCode()}
+              disabled={sending || turnstileBlocking || codeCooldown > 0}
+            >
               {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              重发验证码
+              {codeCooldown > 0 ? `${codeCooldown}s后重发` : '重发验证码'}
             </Button>
             <PrimaryFlowButton
               className='sm:flex-1 *:w-full [&>button]:after:-inset-55'

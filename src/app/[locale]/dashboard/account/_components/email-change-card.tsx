@@ -59,6 +59,8 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
 
   const [sending, setSending] = useState(false)
   const [verifying, setVerifying] = useState(false)
+  const [cooldownOld, setCooldownOld] = useState(0)
+  const [cooldownNew, setCooldownNew] = useState(0)
 
   const [oldOtp, setOldOtp] = useState('')
   const [newEmail, setNewEmail] = useState('')
@@ -66,6 +68,28 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
 
   const oldOtpId = useId()
   const newOtpId = useId()
+
+  useEffect(() => {
+    if (cooldownOld <= 0) {
+      return
+    }
+    const t = window.setInterval(() => {
+      setCooldownOld(s => (s > 0 ? s - 1 : 0))
+    }, 1000)
+
+    return () => clearInterval(t)
+  }, [cooldownOld])
+
+  useEffect(() => {
+    if (cooldownNew <= 0) {
+      return
+    }
+    const t = window.setInterval(() => {
+      setCooldownNew(s => (s > 0 ? s - 1 : 0))
+    }, 1000)
+
+    return () => clearInterval(t)
+  }, [cooldownNew])
 
   useEffect(() => {
     if (!siteKey) {
@@ -120,6 +144,9 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
   }
 
   const sendOldCode = async () => {
+    if (cooldownOld > 0) {
+      return
+    }
     const cf = getCfToken()
     if (siteKey && !cf) {
       return
@@ -135,6 +162,7 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
       if (res.code === 0) {
         setPhase('old_verify')
         setOldOtp('')
+        setCooldownOld(60)
       } else if (siteKey) {
         resetTurnstile()
       }
@@ -168,6 +196,9 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
   }
 
   const sendNewCode = async () => {
+    if (cooldownNew > 0) {
+      return
+    }
     const email = newEmail.trim().toLowerCase()
     if (!email) {
       toast.error('请输入新邮箱')
@@ -193,6 +224,7 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
       if (res.code === 0) {
         setPhase('new_verify')
         setNewOtp('')
+        setCooldownNew(60)
       } else if (siteKey) {
         resetTurnstile()
       }
@@ -217,6 +249,8 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
         setNewEmail('')
         setOldOtp('')
         setNewOtp('')
+        setCooldownOld(0)
+        setCooldownNew(0)
         setPhase('old_send')
       }
     } finally {
@@ -249,9 +283,14 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
             <p className='text-muted-foreground text-sm'>
               为保障账号安全，将向当前绑定邮箱发送验证码，验证通过后再绑定新邮箱。
             </p>
-            <Button type='button' onClick={() => void sendOldCode()} disabled={sending || turnstileBlocking} className='w-full'>
+            <Button
+              type='button'
+              onClick={() => void sendOldCode()}
+              disabled={sending || turnstileBlocking || cooldownOld > 0}
+              className='w-full'
+            >
               {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              {sending ? '发送中...' : '发送验证码至当前邮箱'}
+              {cooldownOld > 0 && !sending ? `${cooldownOld}s后重发` : sending ? '发送中...' : '发送验证码至当前邮箱'}
             </Button>
           </div>
         ) : null}
@@ -278,9 +317,10 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
                 variant='outline'
                 className='sm:flex-1'
                 onClick={() => void sendOldCode()}
-                disabled={sending || turnstileBlocking}
+                disabled={sending || turnstileBlocking || cooldownOld > 0}
               >
-                重发验证码
+                {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+                {cooldownOld > 0 && !sending ? `${cooldownOld}s后重发` : '重发验证码'}
               </Button>
               <Button type='button' className='sm:flex-1' onClick={() => void verifyOld()} disabled={verifying || oldOtp.trim().length !== 6}>
                 {verifying && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
@@ -303,9 +343,14 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
                 onChange={e => setNewEmail(e.target.value)}
               />
             </div>
-            <Button type='button' onClick={() => void sendNewCode()} disabled={sending || turnstileBlocking} className='w-full'>
+            <Button
+              type='button'
+              onClick={() => void sendNewCode()}
+              disabled={sending || turnstileBlocking || cooldownNew > 0}
+              className='w-full'
+            >
               {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              {sending ? '发送中...' : '发送验证码至新邮箱'}
+              {cooldownNew > 0 && !sending ? `${cooldownNew}s后重发` : sending ? '发送中...' : '发送验证码至新邮箱'}
             </Button>
           </div>
         ) : null}
@@ -332,9 +377,10 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
                 variant='outline'
                 className='sm:flex-1'
                 onClick={() => void sendNewCode()}
-                disabled={sending || turnstileBlocking}
+                disabled={sending || turnstileBlocking || cooldownNew > 0}
               >
-                重发验证码
+                {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+                {cooldownNew > 0 && !sending ? `${cooldownNew}s后重发` : '重发验证码'}
               </Button>
               <Button type='button' className='sm:flex-1' onClick={() => void verifyNew()} disabled={verifying || newOtp.trim().length !== 6}>
                 {verifying && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
