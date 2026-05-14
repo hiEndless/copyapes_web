@@ -78,6 +78,7 @@ export function AddPositionsPage() {
   const [marginMode, setMarginMode] = React.useState<PositionMarginMode>('cross')
   const [side, setSide] = React.useState<OpenSide>('long')
   const [quantity, setQuantity] = React.useState('')
+  const [leverageInput, setLeverageInput] = React.useState('10')
   const [formError, setFormError] = React.useState<string | null>(null)
   const [confirmOpen, setConfirmOpen] = React.useState(false)
   const [pendingSummary, setPendingSummary] = React.useState<OpenConfirmSummary | null>(null)
@@ -191,6 +192,7 @@ export function AddPositionsPage() {
 
   React.useEffect(() => {
     setSymbol('')
+    setLeverageInput('10')
     setFormError(null)
   }, [selectedId])
 
@@ -217,6 +219,14 @@ export function AddPositionsPage() {
       return
     }
 
+    const lev = Number.parseInt(leverageInput.trim(), 10)
+
+    if (!Number.isFinite(lev) || lev < 1 || lev > 125) {
+      setFormError('请输入 1–125 的整数杠杆')
+
+      return
+    }
+
     setPendingSummary({
       api: selectedApi,
       symbol,
@@ -224,16 +234,14 @@ export function AddPositionsPage() {
       side,
       quantity: q,
       quantityUnit: selectedApi.quantityUnit,
+      leverage: lev,
     })
     setConfirmOpen(true)
   }
 
-  const handleConfirmed = async () => {
-    if (!pendingSummary) {
-      return
-    }
-    const apiId = Number(pendingSummary.api.id)
-    const qty = Number(pendingSummary.quantity)
+  const handleConfirmed = async (final: OpenConfirmSummary) => {
+    const apiId = Number(final.api.id)
+    const qty = Number(final.quantity)
     if (!Number.isFinite(apiId) || apiId <= 0) {
       toast.error('API 参数无效')
       return
@@ -245,10 +253,11 @@ export function AddPositionsPage() {
 
     const res = await orderApi.openSymbol({
       api_id: apiId,
-      symbol: pendingSummary.symbol,
-      side: pendingSummary.side,
+      symbol: final.symbol,
+      side: final.side,
       quantity: qty,
-      marginMode: pendingSummary.marginMode,
+      marginMode: final.marginMode,
+      leverage: final.leverage,
     })
     if (res.code !== 0) {
       throw new Error(res.error || '开仓失败')
@@ -256,6 +265,7 @@ export function AddPositionsPage() {
     toast.success('开仓请求已提交')
     setPendingSummary(null)
     setQuantity('')
+    setLeverageInput('10')
   }
 
   const listColumn = (() => {
@@ -361,20 +371,42 @@ export function AddPositionsPage() {
           </CardHeader>
           <CardContent className='space-y-0 p-0'>
             <div className='space-y-1 px-4 pt-4 sm:px-5'>
-              <Label className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>交易对</Label>
-              <SymbolCombobox
-                symbols={symbols}
-                value={symbol}
-                onChange={setSymbol}
-                disabled={!selectedApi || symbolsLoading || loading}
-                placeholder={
-                  !selectedApi
-                    ? '请先选择 API'
-                    : symbolsLoading
-                      ? '加载交易对…'
-                      : '选择或搜索交易对'
-                }
-              />
+              <div className='flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-3'>
+                <div className='min-w-0 flex-1 space-y-1'>
+                  <Label className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>交易对</Label>
+                  <SymbolCombobox
+                    symbols={symbols}
+                    value={symbol}
+                    onChange={setSymbol}
+                    disabled={!selectedApi || symbolsLoading || loading}
+                    placeholder={
+                      !selectedApi
+                        ? '请先选择 API'
+                        : symbolsLoading
+                          ? '加载交易对…'
+                          : '选择或搜索交易对'
+                    }
+                  />
+                </div>
+                <div className='flex w-full shrink-0 flex-col gap-1 sm:w-[5.25rem]'>
+                  <Label
+                    htmlFor='add-positions-leverage'
+                    className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'
+                  >
+                    杠杆
+                  </Label>
+                  <Input
+                    id='add-positions-leverage'
+                    inputMode='numeric'
+                    min={1}
+                    max={125}
+                    value={leverageInput}
+                    onChange={e => setLeverageInput(e.target.value)}
+                    disabled={!selectedApi || loading}
+                    className='h-9 rounded-lg border-border/80 text-center font-mono text-[13px] tabular-nums shadow-sm'
+                  />
+                </div>
+              </div>
               {symbolsError ? <p className='text-destructive text-[11px] leading-tight'>{symbolsError}</p> : null}
               {selectedApi && !symbolsLoading && !symbolsError && symbols.length === 0 ? (
                 <p className='text-muted-foreground text-[11px] leading-tight'>该交易所未返回可用交易对。</p>

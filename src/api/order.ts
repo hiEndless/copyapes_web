@@ -14,6 +14,8 @@ export type OpenSymbolRequest = {
   side: 'long' | 'short';
   quantity: number;
   marginMode?: 'cross' | 'isolated';
+  /** 开仓前目标杠杆，默认 10，范围 1–125 */
+  leverage?: number;
 };
 
 export type OrderSymbolsData = {

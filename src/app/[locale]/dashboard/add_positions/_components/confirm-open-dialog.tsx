@@ -24,6 +24,7 @@ export type OpenConfirmSummary = {
   side: OpenSide
   quantity: string
   quantityUnit: QuantityUnitLabel
+  leverage: number
 }
 
 const marginLabel: Record<PositionMarginMode, string> = {
@@ -40,7 +41,7 @@ type ConfirmOpenDialogProps = {
   open: boolean
   onOpenChange: (open: boolean) => void
   summary: OpenConfirmSummary | null
-  onConfirm: () => Promise<void> | void
+  onConfirm: (final: OpenConfirmSummary) => Promise<void> | void
 }
 
 export function ConfirmOpenDialog({ open, onOpenChange, summary, onConfirm }: ConfirmOpenDialogProps) {
@@ -53,7 +54,7 @@ export function ConfirmOpenDialog({ open, onOpenChange, summary, onConfirm }: Co
           <AlertDialogHeader className='space-y-1 text-left sm:text-left'>
             <AlertDialogTitle className='text-base font-semibold tracking-tight'>确认开仓</AlertDialogTitle>
             <AlertDialogDescription className='sr-only'>
-              核对开仓参数：交易对、仓位模式、方向与数量
+              核对开仓参数：交易对、杠杆、仓位模式、方向与数量
             </AlertDialogDescription>
             <p className='text-muted-foreground text-xs leading-normal'>
               请核对以下参数，确认后将提交开仓请求
@@ -79,6 +80,8 @@ export function ConfirmOpenDialog({ open, onOpenChange, summary, onConfirm }: Co
                   </dd>
                   <dt className='text-muted-foreground'>交易对</dt>
                   <dd className='text-foreground font-mono text-[11px] font-medium tracking-tight'>{summary.symbol}</dd>
+                  <dt className='text-muted-foreground'>杠杆</dt>
+                  <dd className='tabular-nums'>{summary.leverage}x</dd>
                   <dt className='text-muted-foreground'>仓位模式</dt>
                   <dd>{marginLabel[summary.marginMode]}</dd>
                   <dt className='text-muted-foreground'>方向</dt>
@@ -107,13 +110,15 @@ export function ConfirmOpenDialog({ open, onOpenChange, summary, onConfirm }: Co
           <AlertDialogCancel className='h-8 rounded-md px-3 text-xs'>取消</AlertDialogCancel>
           <AlertDialogAction
             className='h-8 rounded-md px-3 text-xs'
-            disabled={submitting}
+            disabled={submitting || !summary}
             onClick={async e => {
               e.preventDefault()
-              if (submitting) return
+              if (submitting || !summary) return
+
               setSubmitting(true)
+
               try {
-                await onConfirm()
+                await onConfirm(summary)
                 onOpenChange(false)
               } catch {
                 // 失败时保持弹窗打开，由调用侧展示错误信息。
