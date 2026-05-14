@@ -77,7 +77,7 @@ export default function ApiPage() {
         <CardHeader className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
           <div className='space-y-1.5'>
             <CardTitle>交易所 API 列表</CardTitle>
-            <CardDescription>配置你的交易所 API 密钥，用于同步带单信号或执行自动跟单。</CardDescription>
+            <CardDescription>配置你的交易所 API 密钥，用于同步带单信号或执行自动跟单。（自动更新周期：10分钟）</CardDescription>
           </div>
           <ApiAddButton onSuccess={handleAddSuccess} />
         </CardHeader>
