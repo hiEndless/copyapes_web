@@ -61,6 +61,7 @@ import ActivityDialog from '@/components/shadcn-studio/blocks/dashboard/dialog-a
 import NotificationDropdown from '@/components/shadcn-studio/blocks/dashboard/dropdown-notification'
 import ProfileDropdown from '@/components/shadcn-studio/blocks/dashboard/dropdown-profile'
 import SupportDialog from '@/components/shadcn-studio/blocks/dashboard/dialog-support'
+import Alert10 from '@/components/shadcn-studio/alert/alert-10'
 
 import Logo from '@/components/logo'
 import { settingsApi } from '@/api/settings'
@@ -439,7 +440,8 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
               </SidebarContent>
             </Sidebar>
             <div className='flex flex-1 flex-col'>
-              <header className='before:bg-background/60 sticky top-0 z-50 before:absolute before:inset-0 before:mask-[linear-gradient(var(--card),var(--card)_18%,transparent_100%)] before:backdrop-blur-md'>
+              <div className='bg-background sticky top-0 z-50 pb-1'>
+                <header className='before:bg-background/60 relative before:absolute before:inset-0 before:mask-[linear-gradient(var(--card),var(--card)_18%,transparent_100%)] before:backdrop-blur-md'>
                 <div className='bg-card relative z-51 mx-auto mt-3 flex w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] items-center justify-between rounded-xl border px-6 py-2 sm:w-[calc(100%-3rem)]'>
                   <div className='flex items-center gap-1.5 sm:gap-4'>
                     <SidebarTrigger className='[&_svg]:!size-5' />
@@ -513,7 +515,12 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                 />
               </div>
             </div>
-          </header>
+                </header>
+
+              <div className='mx-auto mt-2 w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] sm:w-[calc(100%-3rem)]'>
+                <Alert10 />
+              </div>
+              </div>
 
               <main className='mx-auto size-full max-w-7xl flex-1 px-4 py-6 sm:px-6'>{children}</main>
 
