@@ -2,7 +2,15 @@
 
 import { useState, useMemo } from 'react'
 
-import { Trash2Icon, SquarePen, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon } from 'lucide-react'
+import {
+  Trash2Icon,
+  SquarePen,
+  ChevronDownIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  ChevronUpIcon,
+  RefreshCw
+} from 'lucide-react'
 import type { ColumnDef, ColumnFiltersState, PaginationState } from '@tanstack/react-table'
 import {
   flexRender,
@@ -17,7 +25,7 @@ import {
 } from '@tanstack/react-table'
 import { toast } from 'sonner'
 
-import { deleteApi } from '@/api/apiadd'
+import { deleteApi, refreshApiBalance } from '@/api/apiadd'
 import { settingsApi } from '@/api/settings'
 
 import { Button } from '@/components/ui/button'
@@ -148,6 +156,27 @@ const getColumns = (
     id: 'actions',
     header: () => '操作',
     cell: function Cell({ row }) {
+      const [balanceBusy, setBalanceBusy] = useState(false)
+
+      const handleRefreshBalance = async () => {
+        setBalanceBusy(true)
+        try {
+          const res = await refreshApiBalance(row.original.id)
+
+          if (res.code === 0) {
+            toast.success('余额已更新')
+            onRefresh?.()
+          } else {
+            toast.error(res.error || '更新余额失败')
+          }
+        } catch (error) {
+          console.error('更新余额失败:', error)
+          toast.error('更新余额失败，请重试')
+        } finally {
+          setBalanceBusy(false)
+        }
+      }
+
       const handleDelete = async () => {
         try {
           const res = await deleteApi(row.original.id)
@@ -178,6 +207,24 @@ const getColumns = (
 
       return (
         <div className='flex items-center gap-1'>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  aria-label='更新余额'
+                  disabled={balanceBusy}
+                  onClick={handleRefreshBalance}
+                >
+                  <RefreshCw className={`size-4 ${balanceBusy ? 'animate-spin' : ''}`} />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>更新余额</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
           <AlertDialog>
             <TooltipProvider>
               <Tooltip>

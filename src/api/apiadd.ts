@@ -14,6 +14,13 @@ export function deleteApi(id: string | number) {
   });
 }
 
+// 刷新单条 API 资金余额（USDT 等）
+export function refreshApiBalance(id: string | number) {
+  return request<{ usdt?: number; btc?: number; eth?: number }>(`/apiadd/${id}/refresh-balance/`, {
+    method: 'POST',
+  });
+}
+
 // 获取 IP 白名单
 export function getIpList() {
   return request<{ ip: string; [key: string]: any }[]>('/api/ip/', {
