@@ -59,9 +59,9 @@ export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) 
             <KeyRoundIcon className='size-3.5' />
           </div>
           <div className='min-w-0 space-y-0.5'>
-            <CardTitle className='text-sm font-semibold tracking-tight'>交易 API</CardTitle>
+            <CardTitle className='text-sm font-semibold tracking-tight'>选择交易 API</CardTitle>
             <CardDescription className='text-muted-foreground text-[11px] leading-snug'>
-              选择账户后在右侧开仓
+              选择 API 后在右侧开仓
             </CardDescription>
           </div>
         </div>
