@@ -78,10 +78,26 @@ function toNumber(value: unknown) {
 
 function toWinRate(value: unknown) {
   if (typeof value === 'string') {
-    return value.trim() ? value : '-%'
+    const trimmed = value.trim()
+
+    if (!trimmed) {
+      return '-%'
+    }
+
+    const parsed = Number(trimmed.replace(/%$/, '').trim())
+
+    if (Number.isFinite(parsed) && parsed === 0) {
+      return '-%'
+    }
+
+    return trimmed
   }
 
   if (typeof value === 'number' && Number.isFinite(value)) {
+    if (value === 0) {
+      return '-%'
+    }
+
     if (value > 0 && value <= 1) {
       return `${(value * 100).toFixed(2).replace(/\.00$/, '')}%`
     }
