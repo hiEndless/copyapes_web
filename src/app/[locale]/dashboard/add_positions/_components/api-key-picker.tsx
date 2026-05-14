@@ -1,7 +1,10 @@
 'use client'
 
-import { KeyRoundIcon } from 'lucide-react'
+import * as React from 'react'
 
+import { KeyRoundIcon, LockIcon } from 'lucide-react'
+
+import type { EntitlementProfileResponse } from '@/api/settings'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
@@ -18,8 +21,38 @@ type ApiKeyPickerProps = {
 }
 
 export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) {
+  const [isStudioVip, setIsStudioVip] = React.useState(false)
+
+  React.useEffect(() => {
+    const syncEntitlementProfile = () => {
+      try {
+        const stored = localStorage.getItem('entitlementProfile')
+
+        if (!stored) {
+          setIsStudioVip(false)
+
+          return
+        }
+
+        const profile = JSON.parse(stored) as EntitlementProfileResponse
+
+        setIsStudioVip(Boolean(profile?.is_studio_vip))
+      } catch (error) {
+        console.error('Failed to parse entitlement profile:', error)
+        setIsStudioVip(false)
+      }
+    }
+
+    syncEntitlementProfile()
+    window.addEventListener('entitlementProfileUpdated', syncEntitlementProfile)
+
+    return () => {
+      window.removeEventListener('entitlementProfileUpdated', syncEntitlementProfile)
+    }
+  }, [])
+
   return (
-    <Card className='grid max-h-[min(28rem,52vh)] grid-rows-[auto_1fr] overflow-hidden border-border/80 text-[13px] leading-tight shadow-sm sm:max-h-[min(31rem,60vh)]'>
+    <Card className='relative grid max-h-[min(28rem,52vh)] grid-rows-[auto_1fr] overflow-hidden border-border/80 text-[13px] leading-tight shadow-sm sm:max-h-[min(31rem,60vh)]'>
       <CardHeader className='border-border/60 from-muted/30 border-b bg-gradient-to-br to-transparent px-3 py-3 sm:px-4'>
         <div className='flex items-center gap-2'>
           <div className='bg-primary/10 text-primary flex size-7 shrink-0 items-center justify-center rounded-md'>
@@ -33,7 +66,7 @@ export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) 
           </div>
         </div>
       </CardHeader>
-      <CardContent className='min-h-0 overflow-hidden p-0'>
+      <CardContent className='relative min-h-0 overflow-hidden p-0'>
         <ScrollArea className='h-full min-h-0'>
           <div className='space-y-1.5 p-2.5 pr-3 sm:p-3 sm:pr-3.5'>
             {apis.map(api => {
@@ -81,6 +114,15 @@ export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) 
             })}
           </div>
         </ScrollArea>
+
+        {!isStudioVip ? (
+          <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/45 backdrop-blur-sm'>
+            <div className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1 text-xs font-medium text-foreground shadow-sm'>
+              <LockIcon className='h-3.5 w-3.5' />
+              工作室 VIP 专享
+            </div>
+          </div>
+        ) : null}
       </CardContent>
     </Card>
   )
