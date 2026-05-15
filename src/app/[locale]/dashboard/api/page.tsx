@@ -58,6 +58,7 @@ export default function ApiPage() {
     if (p === '2') return 'binance'
     if (p === '3') return 'gate'
     if (p === '4') return 'bitget'
+    if (p === '5') return 'weex'
 
     return 'okx' // default fallback
   }

@@ -14,6 +14,7 @@ const EXCHANGE_META: Record<string, { name: string; logo: string }> = {
   binance: { name: 'Binance', logo: '/exchanges/binance.png' },
   gate: { name: 'Gate', logo: '/exchanges/gate.png' },
   bitget: { name: 'Bitget', logo: '/exchanges/bitget.png' },
+  weex: { name: 'WEEX', logo: '/exchanges/weex.png' },
 }
 
 /** 与 `dashboard/api` 页 `getPlatformString` 保持一致 */
@@ -23,6 +24,7 @@ export function mapPlatformToExchangeKey(platform: number | string): string {
   if (p === '2') return 'binance'
   if (p === '3') return 'gate'
   if (p === '4') return 'bitget'
+  if (p === '5') return 'weex'
   const lower = p.toLowerCase()
   if (lower in EXCHANGE_META) return lower
 
@@ -32,7 +34,7 @@ export function mapPlatformToExchangeKey(platform: number | string): string {
 /** 开仓量单位：币安 / Bitget 为个数，OKX / Gate 为张数 */
 export function getOpenQuantityUnit(exchangeKey: string): QuantityUnitLabel {
   const k = exchangeKey.toLowerCase()
-  if (k === 'binance' || k === 'bitget') return '个'
+  if (k === 'binance' || k === 'bitget' || k === 'weex') return '个'
   if (k === 'okx' || k === 'gate') return '张'
 
   return '个'

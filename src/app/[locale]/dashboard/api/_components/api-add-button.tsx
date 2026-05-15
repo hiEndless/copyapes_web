@@ -28,7 +28,8 @@ const EXCHANGES = [
   { label: 'OKX', value: 'okx', logo: '/exchanges/okx.png' },
   { label: 'Binance', value: 'binance', logo: '/exchanges/binance.png' },
   { label: 'Gate', value: 'gate', logo: '/exchanges/gate.png' },
-  { label: 'Bitget', value: 'bitget', logo: '/exchanges/bitget.png' }
+  { label: 'Bitget', value: 'bitget', logo: '/exchanges/bitget.png' },
+  { label: 'WEEX', value: 'weex', logo: '/exchanges/weex.png' }
 ]
 
 export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
@@ -76,6 +77,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
       if (formData.exchange === 'binance') platform = 2
       else if (formData.exchange === 'gate') platform = 3
       else if (formData.exchange === 'bitget') platform = 4
+      else if (formData.exchange === 'weex') platform = 5
 
       const payload = {
         platform,
