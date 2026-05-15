@@ -418,7 +418,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
       {!mounted ? null : (
         <div className='flex min-h-dvh w-full'>
           <SidebarProvider>
-            <Sidebar collapsible='icon'>
+            <Sidebar collapsible='icon' className='z-[60]'>
               <SidebarHeader>
                 <SidebarMenu>
                   <SidebarMenuItem>
