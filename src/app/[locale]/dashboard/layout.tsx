@@ -418,7 +418,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
       {!mounted ? null : (
         <div className='flex min-h-dvh w-full'>
           <SidebarProvider>
-            <Sidebar collapsible='icon' className='z-[60]'>
+            <Sidebar collapsible='icon' className='z-[11]'>
               <SidebarHeader>
                 <SidebarMenu>
                   <SidebarMenuItem>
@@ -440,7 +440,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
               </SidebarContent>
             </Sidebar>
             <div className='flex flex-1 flex-col'>
-              <div className='bg-background sticky top-0 z-50 pb-1'>
+              <div className='bg-background sticky top-0 z-10 pb-1'>
                 <header className='before:bg-background/60 relative before:absolute before:inset-0 before:mask-[linear-gradient(var(--card),var(--card)_18%,transparent_100%)] before:backdrop-blur-md'>
                 <div className='bg-card relative z-51 mx-auto mt-3 flex w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] items-center justify-between rounded-xl border px-6 py-2 sm:w-[calc(100%-3rem)]'>
                   <div className='flex items-center gap-1.5 sm:gap-4'>
