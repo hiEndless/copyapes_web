@@ -1,7 +1,7 @@
 import dynamic from 'next/dynamic'
 
 import HeroSection from '@/components/blocks/hero-section-27/hero-section-27'
-
+// import CTA from '@/components/blocks/cta/cta'
 // import TrustedBrands from '@/components/blocks/trusted-brands/trusted-brands'
 // import Features from '@/components/blocks/features/features'
 
