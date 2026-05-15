@@ -77,6 +77,20 @@ const data = [
         src='/exchanges/bitget/logo.png'
       />
     )
+  },
+  {
+    name: 'WEEX',
+    href: 'https://wedakxx.site/register?vipCode=hyb3',
+    img: (
+      <img
+        alt='WEEX'
+        loading='lazy'
+        width='120'
+        height='32'
+        className='h-7 w-auto object-contain transition-all duration-300'
+        src='/exchanges/weex/logoweex_black.svg'
+      />
+    )
   }
 
   // {
@@ -166,10 +180,10 @@ const Partners = () => {
         <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
         <p className='text-muted-foreground text-xl'>{t('subtitle')}</p>
       </div>
-      <div className='border-border z-20 grid w-full max-w-7xl grid-cols-2 items-center justify-center overflow-hidden border-y md:grid-cols-4'>
-        {data.map((item, i) => (
+      <div className='border-border z-20 grid w-full max-w-7xl grid-cols-5 items-center justify-center overflow-hidden border-y'>
+        {data.map((item) => (
           <div
-            key={i}
+            key={item.name}
             className='group before:bg-border after:bg-border relative flex h-28 w-full items-center justify-center p-4 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'
           >
             <a target='_blank' rel='noopener noreferrer' className='absolute inset-0 z-20' href={item.href}>
