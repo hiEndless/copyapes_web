@@ -217,7 +217,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
             />
           </div>
 
-          {['okx', 'bitget'].includes(formData.exchange) && (
+          {['okx', 'bitget', 'weex'].includes(formData.exchange) && (
             <div className='space-y-2'>
               <Label htmlFor='api_passphrase'>Passphrase</Label>
               <Input
