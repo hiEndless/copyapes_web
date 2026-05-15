@@ -286,46 +286,46 @@ const DashboardPage = () => {
       {/* 右侧区域 (50%) */}
       <div className='flex flex-col gap-4 lg:col-span-1'>
         {/* 赞助商广告 */}
-        <Card className='gap-3 py-4 shadow-none'>
-          <CardHeader className='px-4 pb-0'>
-            <CardTitle className='text-sm'>赞助商广告</CardTitle>
-          </CardHeader>
-          <CardContent className='grid grid-cols-3 gap-2 px-4'>
-            {[1, 2, 3].map(i => (
-              <div
-                key={i}
-                className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed'
-              >
-                <span className='text-muted-foreground text-center text-xs leading-tight'>
-                  Logo
-                  <br />
-                  {i}
-                </span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        {/*<Card className='gap-3 py-4 shadow-none'>*/}
+        {/*  <CardHeader className='px-4 pb-0'>*/}
+        {/*    <CardTitle className='text-sm'>赞助商广告</CardTitle>*/}
+        {/*  </CardHeader>*/}
+        {/*  <CardContent className='grid grid-cols-3 gap-2 px-4'>*/}
+        {/*    {[1, 2, 3].map(i => (*/}
+        {/*      <div*/}
+        {/*        key={i}*/}
+        {/*        className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed'*/}
+        {/*      >*/}
+        {/*        <span className='text-muted-foreground text-center text-xs leading-tight'>*/}
+        {/*          Logo*/}
+        {/*          <br />*/}
+        {/*          {i}*/}
+        {/*        </span>*/}
+        {/*      </div>*/}
+        {/*    ))}*/}
+        {/*  </CardContent>*/}
+        {/*</Card>*/}
 
         {/* 其他产品 */}
-        <Card className='gap-3 py-4 shadow-none'>
-          <CardHeader className='px-4 pb-0'>
-            <CardTitle className='text-sm'>其他产品</CardTitle>
-          </CardHeader>
-          <CardContent className='grid grid-cols-3 gap-2 px-4'>
-            {[1, 2, 3].map(i => (
-              <div
-                key={i}
-                className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed'
-              >
-                <span className='text-muted-foreground text-center text-xs leading-tight'>
-                  产品
-                  <br />
-                  {i}
-                </span>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+        {/*<Card className='gap-3 py-4 shadow-none'>*/}
+        {/*  <CardHeader className='px-4 pb-0'>*/}
+        {/*    <CardTitle className='text-sm'>其他产品</CardTitle>*/}
+        {/*  </CardHeader>*/}
+        {/*  <CardContent className='grid grid-cols-3 gap-2 px-4'>*/}
+        {/*    {[1, 2, 3].map(i => (*/}
+        {/*      <div*/}
+        {/*        key={i}*/}
+        {/*        className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed'*/}
+        {/*      >*/}
+        {/*        <span className='text-muted-foreground text-center text-xs leading-tight'>*/}
+        {/*          产品*/}
+        {/*          <br />*/}
+        {/*          {i}*/}
+        {/*        </span>*/}
+        {/*      </div>*/}
+        {/*    ))}*/}
+        {/*  </CardContent>*/}
+        {/*</Card>*/}
       </div>
     </div>
   )
