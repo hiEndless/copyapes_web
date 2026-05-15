@@ -41,7 +41,7 @@ const Benefits = ({ featuresList }: { featuresList: Features }) => {
 
         <div className='flex flex-wrap items-center justify-center gap-4 text-center'>
           <PrimaryFlowButton size='lg' asChild>
-            <Link href='#'>
+            <Link href='/login'>
               {t('button')}
               <ArrowUpRightIcon />
             </Link>
