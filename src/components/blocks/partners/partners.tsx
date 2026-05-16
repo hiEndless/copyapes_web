@@ -80,7 +80,7 @@ const data = [
   },
   {
     name: 'WEEX',
-    href: 'https://wedakxx.site/register?vipCode=hyb3',
+    href: 'https://weasexx.online/zh-CN/register?vipCode=copyapes',
     img: (
       <img
         alt='WEEX'

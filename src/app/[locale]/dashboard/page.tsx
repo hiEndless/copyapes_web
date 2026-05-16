@@ -227,7 +227,7 @@ const DashboardPage = () => {
                     target='_blank'
                     rel='noopener noreferrer'
                     className='absolute inset-0 z-20'
-                    href='https://wedakxx.site/register?vipCode=hyb3'
+                    href='https://weasexx.online/zh-CN/register?vipCode=copyapes'
                   >
                     <span className='sr-only'>Weex</span>
                   </a>
