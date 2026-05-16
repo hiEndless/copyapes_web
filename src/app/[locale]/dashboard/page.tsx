@@ -241,8 +241,8 @@ const DashboardPage = () => {
                       loading='lazy'
                       width='100'
                       height='20'
-                      className='h-6 w-auto object-contain transition-all duration-300'
-                      src='/exchanges/weex/logoweex_black.svg'
+                      className='h-5 w-auto object-contain transition-all duration-300'
+                      src='/exchanges/weex/weex_logo.png'
                     />
                   </div>
                 </div>

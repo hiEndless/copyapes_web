@@ -88,7 +88,7 @@ const data = [
         width='120'
         height='32'
         className='h-7 w-auto object-contain transition-all duration-300'
-        src='/exchanges/weex/logoweex_black.svg'
+        src='/exchanges/weex/weex_logo.png'
       />
     )
   }
