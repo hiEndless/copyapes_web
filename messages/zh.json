@@ -1,4 +1,9 @@
 {
+  "NotFound": {
+    "title": "页面未找到",
+    "description": "您访问的页面不存在。",
+    "backHome": "返回首页"
+  },
   "AuthMetadata": {
     "login": "登录",
     "register": "注册",

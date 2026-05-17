@@ -74,17 +74,62 @@ export const NO_INDEX_ROBOTS: Metadata['robots'] = {
   follow: false
 }
 
-export function buildWebsiteJsonLd(options: { locale: string; name: string; description: string }) {
+export const SITE_ICONS: Metadata['icons'] = {
+  icon: [{ url: '/favicon/favicon.ico', type: 'image/x-icon' }],
+  apple: [{ url: '/site_logo/logo-small.png', sizes: '180x180', type: 'image/png' }],
+  other: [{ url: '/site_logo/logo-small.png', rel: 'apple-touch-icon', sizes: '512x512', type: 'image/png' }]
+}
+
+export function buildSocialMetadata(options: {
+  locale: string
+  path: string
+  title: string
+  description: string
+  siteName: string
+}): Pick<Metadata, 'alternates' | 'openGraph' | 'twitter'> {
+  const ogImage = buildOgImage(options.locale, options.title)
+
+  return {
+    alternates: buildAlternates(options.path, options.locale),
+    openGraph: {
+      title: options.title,
+      description: options.description,
+      type: 'website',
+      siteName: options.siteName,
+      url: getCanonicalUrl(options.path, options.locale),
+      locale: options.locale === 'zh' ? 'zh_CN' : 'en_US',
+      images: [ogImage]
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: options.title,
+      description: options.description,
+      images: [ogImage]
+    }
+  }
+}
+
+export function buildHomePageJsonLd(options: { locale: string; name: string; description: string }) {
+  const siteUrl = getSiteUrl()
+
   return {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'WebSite',
-        '@id': `${getSiteUrl()}#website`,
+        '@id': `${siteUrl}#website`,
         name: options.name,
         description: options.description,
-        url: getSiteUrl(),
+        url: siteUrl,
         inLanguage: localeToLanguageTag(options.locale)
+      },
+      {
+        '@type': 'Organization',
+        '@id': `${siteUrl}#organization`,
+        name: options.name,
+        url: siteUrl,
+        logo: `${siteUrl}/site_logo/logo-small.png`,
+        description: options.description
       }
     ]
   }

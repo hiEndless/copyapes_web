@@ -1,4 +1,9 @@
 {
+  "NotFound": {
+    "title": "Page Not Found",
+    "description": "We couldn't find the page you are looking for.",
+    "backHome": "Go back to home"
+  },
   "AuthMetadata": {
     "login": "Login",
     "register": "Sign Up",

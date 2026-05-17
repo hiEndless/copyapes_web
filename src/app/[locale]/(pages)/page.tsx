@@ -1,5 +1,6 @@
 import dynamic from 'next/dynamic'
 
+import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
 import HeroSection from '@/components/blocks/hero-section-27/hero-section-27'
@@ -39,7 +40,24 @@ import { useBenefits } from '@/assets/data/benefits'
 import { avatarMotionData } from '@/assets/data/hero-section'
 
 import SectionSeparator from '@/components/section-separator'
-import { buildWebsiteJsonLd, jsonLdScriptProps } from '@/lib/seo'
+import { buildHomePageJsonLd, buildSocialMetadata, jsonLdScriptProps } from '@/lib/seo'
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'Metadata' })
+
+  return buildSocialMetadata({
+    locale,
+    path: '/',
+    title: t('titleDefault'),
+    description: t('description'),
+    siteName: t('siteName')
+  })
+}
 
 const HomeJsonLd = async ({ locale }: { locale: string }) => {
   const t = await getTranslations({ locale, namespace: 'Metadata' })
@@ -47,7 +65,7 @@ const HomeJsonLd = async ({ locale }: { locale: string }) => {
   return (
     <script
       {...jsonLdScriptProps(
-        buildWebsiteJsonLd({
+        buildHomePageJsonLd({
           locale,
           name: t('siteName'),
           description: t('description')
