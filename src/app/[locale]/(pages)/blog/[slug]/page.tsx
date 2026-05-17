@@ -54,6 +54,12 @@ export async function generateMetadata({
 
 export const dynamicParams = false
 
+export async function generateStaticParams() {
+  const posts = await getPosts()
+
+  return posts.map(post => ({ slug: post.slug }))
+}
+
 const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; slug: string }> }) => {
   const { locale, slug } = await params
   const t = await getTranslations({ locale, namespace: 'BlogMetadata' })
