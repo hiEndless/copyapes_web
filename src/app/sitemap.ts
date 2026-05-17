@@ -1,13 +1,16 @@
 import type { MetadataRoute } from 'next'
 
+import { routing } from '@/i18n/routing'
 import { getPosts } from '@/lib/posts'
+import { getCanonicalUrl } from '@/lib/seo'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getPosts()
+  const paths = ['', '/blog', ...posts.map(post => `/blog/${post.slug}`)]
 
-  const routes = ['' /* This is equivalent to / */, '/pricing', '/blog', ...posts.map(post => `/blog/${post.slug}`)]
-
-  return routes.map(route => ({
-    url: `${process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000'}${route}`
-  }))
+  return paths.flatMap(path =>
+    routing.locales.map(locale => ({
+      url: getCanonicalUrl(path, locale)
+    }))
+  )
 }

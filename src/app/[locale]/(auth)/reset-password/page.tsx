@@ -1,12 +1,22 @@
 import type { Metadata } from 'next'
 
-import ResetPassword from '@/components/auth/reset-password/reset-password'
+import { getTranslations } from 'next-intl/server'
 
-export const metadata: Metadata = {
-  title: '重置密码',
-  robots: 'noindex,nofollow',
-  alternates: {
-    canonical: `${process.env.NEXT_PUBLIC_APP_URL}/reset-password`
+import ResetPassword from '@/components/auth/reset-password/reset-password'
+import { buildAlternates, NO_INDEX_ROBOTS } from '@/lib/seo'
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: 'AuthMetadata' })
+
+  return {
+    title: t('resetPassword'),
+    robots: NO_INDEX_ROBOTS,
+    alternates: buildAlternates('/reset-password', locale)
   }
 }
 

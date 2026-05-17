@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 
 import type { Metadata } from 'next'
 
+import { getTranslations } from 'next-intl/server'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
 import { Link } from '@/i18n/routing'
@@ -26,10 +27,15 @@ import RelatedBlogSection from '@/components/blog/related-blog-section/related-b
 import SectionSeparator from '@/components/section-separator'
 import CTASection from '@/components/blocks/cta/cta'
 import { SecondaryFlowButton } from '@/components/ui/flow-button'
+import { buildAlternates, buildBlogPostingJsonLd, jsonLdScriptProps } from '@/lib/seo'
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params
-
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ locale: string; slug: string }>
+}): Promise<Metadata> {
+  const { locale, slug } = await params
+  const t = await getTranslations({ locale, namespace: 'BlogMetadata' })
   const post = await getPostBySlug(slug)
 
   if (!post) {
@@ -39,19 +45,19 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { metadata } = post
 
   return {
-    title: `Blog: ${metadata.title}`,
-    description: metadata.description,
+    title: t('postTitle', { title: metadata.title ?? slug }),
+    description: metadata.description ?? t('description'),
     keywords: metadata.keywords,
-    alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_APP_URL}/blog/${metadata.slug}`
-    }
+    alternates: buildAlternates(`/blog/${metadata.slug}`, locale)
   }
 }
 
 export const dynamicParams = false
 
-const BlogDetailsPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
-  const { slug } = await params
+const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; slug: string }> }) => {
+  const { locale, slug } = await params
+  const t = await getTranslations({ locale, namespace: 'BlogMetadata' })
+  const siteT = await getTranslations({ locale, namespace: 'Metadata' })
   const posts = await getPosts()
 
   const post = await getPostBySlug(slug)
@@ -79,60 +85,19 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ slug: string }> }
   // Extract headings for TOC
   const headings = extractHeadings(content)
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@context': 'https://schema.org',
-        '@type': 'WebSite',
-        '@id': `${process.env.NEXT_PUBLIC_APP_URL}#website`,
-        name: 'Flow',
-        description:
-          'Grow your product faster with an all-in-one sales and analytics platform. Track performance, automate follow-ups, and make smarter decisions easily.',
-        url: `${process.env.NEXT_PUBLIC_APP_URL}`,
-        inLanguage: 'en-US'
-      },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'WebPage',
-        '@id': `${process.env.NEXT_PUBLIC_APP_URL}#webpage`,
-        name: `Blog: ${metadata.title}`,
-        description: metadata.description,
-        url: `${process.env.NEXT_PUBLIC_APP_URL}/blog/${metadata.slug}`,
-        isPartOf: {
-          '@id': `${process.env.NEXT_PUBLIC_APP_URL}#website`
-        },
-        potentialAction: {
-          '@type': 'ReadAction',
-          target: [`${process.env.NEXT_PUBLIC_APP_URL}/blog/${metadata.slug}`]
-        }
-      },
-      {
-        '@context': 'https://schema.org',
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          {
-            '@type': 'ListItem',
-            position: 1,
-            name: 'Home',
-            item: `${process.env.NEXT_PUBLIC_APP_URL}`
-          },
-          {
-            '@type': 'ListItem',
-            position: 2,
-            name: 'Blog',
-            item: `${process.env.NEXT_PUBLIC_APP_URL}/blog`
-          },
-          {
-            '@type': 'ListItem',
-            position: 3,
-            name: metadata.title,
-            item: `${process.env.NEXT_PUBLIC_APP_URL}/blog/${metadata.slug}`
-          }
-        ]
-      }
-    ]
-  }
+  const jsonLd = buildBlogPostingJsonLd({
+    locale,
+    siteName: siteT('siteName'),
+    siteDescription: siteT('description'),
+    homeLabel: t('home'),
+    blogLabel: t('title'),
+    title: metadata.title ?? slug,
+    description: metadata.description ?? siteT('description'),
+    slug: metadata.slug,
+    image: metadata.image,
+    publishedAt: metadata.publishedAt,
+    authorName: metadata.author?.name
+  })
 
   return (
     <>
@@ -240,13 +205,7 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ slug: string }> }
 
       <CTASection />
 
-      {/* Add JSON-LD to your page */}
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c')
-        }}
-      />
+      <script {...jsonLdScriptProps(jsonLd)} />
     </>
   )
 }

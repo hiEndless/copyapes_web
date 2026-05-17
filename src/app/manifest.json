@@ -1,21 +1,14 @@
 {
-  "name": "Flow - SaaS Landing page",
-  "short_name": "Flow",
-  "description": "Grow your product faster with an all-in-one sales and analytics platform. Track performance, automate follow-ups, and make smarter decisions easily.",
+  "name": "CopyApes - Cross-Exchange Crypto Copy Trading",
+  "short_name": "CopyApes",
+  "description": "CopyApes is a fully automated crypto futures copy trading assistant. Supports cross-platform copy trading for Binance and OKX.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
-  "categories": [
-    "sales",
-    "analytics",
-    "productivity",
-    "business intelligence",
-    "growth",
-    "saas"
-  ],
+  "categories": ["finance", "productivity", "business"],
   "icons": [
     {
       "src": "/favicon/favicon.ico",
@@ -48,7 +41,15 @@
       "src": "/images/og-image.png",
       "sizes": "1200x630",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "CopyApes - Cross-Exchange Crypto Copy Trading"
+    },
+    {
+      "src": "/images/og-image-zh.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "跟单猿 CopyApes - 跨交易所自动合约跟单助手"
     }
   ],
   "shortcuts": [
@@ -63,12 +64,6 @@
       "short_name": "Blog",
       "description": "Explore blog posts",
       "url": "/blog"
-    },
-    {
-      "name": "Pricing",
-      "short_name": "Pricing",
-      "description": "Explore pricing options",
-      "url": "/pricing"
     }
   ]
 }

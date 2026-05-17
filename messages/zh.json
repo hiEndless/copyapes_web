@@ -1,4 +1,17 @@
 {
+  "AuthMetadata": {
+    "login": "登录",
+    "register": "注册",
+    "forgotPassword": "忘记密码",
+    "resetPassword": "重置密码"
+  },
+  "BlogMetadata": {
+    "title": "博客",
+    "description": "跟单猿 CopyApes 新闻、跟单教程与产品更新。",
+    "home": "首页",
+    "postTitle": "{title}",
+    "keywords": ["博客", "跟单", "加密货币", "CopyApes", "跟单猿"]
+  },
   "Metadata": {
     "titleTemplate": "%s - 跟单猿 CopyApes",
     "titleDefault": "跟单猿 - 跨交易所自动跟单助手",

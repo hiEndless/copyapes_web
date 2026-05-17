@@ -1,4 +1,17 @@
 {
+  "AuthMetadata": {
+    "login": "Login",
+    "register": "Sign Up",
+    "forgotPassword": "Forgot Password",
+    "resetPassword": "Reset Password"
+  },
+  "BlogMetadata": {
+    "title": "Blog",
+    "description": "CopyApes news, copy trading guides, and product updates.",
+    "home": "Home",
+    "postTitle": "{title}",
+    "keywords": ["blog", "copy trading", "crypto", "CopyApes"]
+  },
   "Metadata": {
     "titleTemplate": "%s - CopyApes",
     "titleDefault": "CopyApes - Cross-Exchange Crypto Copy Trading",

@@ -1,5 +1,7 @@
 import dynamic from 'next/dynamic'
 
+import { getTranslations } from 'next-intl/server'
+
 import HeroSection from '@/components/blocks/hero-section-27/hero-section-27'
 // import CTA from '@/components/blocks/cta/cta'
 // import TrustedBrands from '@/components/blocks/trusted-brands/trusted-brands'
@@ -37,24 +39,25 @@ import { useBenefits } from '@/assets/data/benefits'
 import { avatarMotionData } from '@/assets/data/hero-section'
 
 import SectionSeparator from '@/components/section-separator'
+import { buildWebsiteJsonLd, jsonLdScriptProps } from '@/lib/seo'
 
-const jsonLd = {
-  '@context': 'https://schema.org',
-  '@graph': [
-    {
-      '@context': 'https://schema.org',
-      '@type': 'WebSite',
-      '@id': `${process.env.NEXT_PUBLIC_APP_URL}#website`,
-      name: 'Flow',
-      description:
-        'Grow your product faster with an all-in-one sales and analytics platform. Track performance, automate follow-ups, and make smarter decisions easily.',
-      url: `${process.env.NEXT_PUBLIC_APP_URL}`,
-      inLanguage: 'en-US'
-    }
-  ]
+const HomeJsonLd = async ({ locale }: { locale: string }) => {
+  const t = await getTranslations({ locale, namespace: 'Metadata' })
+
+  return (
+    <script
+      {...jsonLdScriptProps(
+        buildWebsiteJsonLd({
+          locale,
+          name: t('siteName'),
+          description: t('description')
+        })
+      )}
+    />
+  )
 }
 
-const Home = () => {
+const HomeContent = () => {
   const benefits = useBenefits()
   const testimonials = useTestimonials()
   const plans = usePricingPlans()
@@ -93,14 +96,17 @@ const Home = () => {
       <ContactUs />
 
       {/*<CTA />*/}
+    </>
+  )
+}
 
-      {/* Add JSON-LD to your page */}
-      <script
-        type='application/ld+json'
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c')
-        }}
-      />
+const Home = async ({ params }: { params: Promise<{ locale: string }> }) => {
+  const { locale } = await params
+
+  return (
+    <>
+      <HomeContent />
+      <HomeJsonLd locale={locale} />
     </>
   )
 }
