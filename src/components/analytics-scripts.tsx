@@ -5,31 +5,57 @@ import { useEffect } from 'react'
 const LA_ID = '3ID9Aw1hNsoyCcId'
 const GTM_ID = 'GTM-T656N8D8'
 
-const loadScript = (src: string, id: string) => {
-  if (document.getElementById(id)) {
-    return
+declare global {
+  interface Window {
+    LA?: {
+      init: (config: { id: string; ck: string }) => void
+    }
   }
-
-  const script = document.createElement('script')
-  script.id = id
-  script.src = src
-  script.async = true
-  document.head.appendChild(script)
 }
+
+const loadScript = (src: string, id: string): Promise<void> =>
+  new Promise((resolve, reject) => {
+    const existing = document.getElementById(id) as HTMLScriptElement | null
+
+    if (existing?.dataset.loaded === 'true') {
+      resolve()
+
+      return
+    }
+
+    if (existing) {
+      existing.addEventListener('load', () => resolve(), { once: true })
+      existing.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), { once: true })
+
+      return
+    }
+
+    const script = document.createElement('script')
+
+    script.id = id
+    script.src = src
+    script.async = true
+
+    script.onload = () => {
+      script.dataset.loaded = 'true'
+      resolve()
+    }
+
+    script.onerror = () => reject(new Error(`Failed to load ${src}`))
+    document.head.appendChild(script)
+  })
 
 const AnalyticsScripts = () => {
   useEffect(() => {
-    loadScript('https://sdk.51.la/js-sdk-pro.min.js', 'LA_COLLECT')
-
-    if (!document.getElementById('LA_INIT')) {
-      const initScript = document.createElement('script')
-      initScript.id = 'LA_INIT'
-      initScript.text = `LA.init({id:"${LA_ID}",ck:"${LA_ID}"})`
-      document.head.appendChild(initScript)
-    }
+    void loadScript('https://sdk.51.la/js-sdk-pro.min.js', 'LA_COLLECT')
+      .then(() => {
+        window.LA?.init({ id: LA_ID, ck: LA_ID })
+      })
+      .catch(() => {})
 
     if (!document.getElementById('gtm-script')) {
       const gtmScript = document.createElement('script')
+
       gtmScript.id = 'gtm-script'
       gtmScript.text = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
