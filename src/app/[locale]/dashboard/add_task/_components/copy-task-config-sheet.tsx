@@ -19,6 +19,42 @@ import { request } from '@/api/request'
 import { settingsApi } from '@/api/settings'
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
+function splitCookieModeUniqueName(uniqueName: string): { leaderId: string; cookieId: string | null } {
+  const raw = String(uniqueName || '').trim()
+  if (!raw || !raw.includes('-')) {
+    return { leaderId: raw, cookieId: null }
+  }
+  const lastDash = raw.lastIndexOf('-')
+  const leaderId = raw.slice(0, lastDash).trim()
+  const cookieIdText = raw.slice(lastDash + 1).trim()
+  if (!leaderId || !/^\d+$/.test(cookieIdText)) {
+    return { leaderId: raw, cookieId: null }
+  }
+
+  return { leaderId, cookieId: cookieIdText }
+}
+
+function buildUniqueName(
+  traderId: string,
+  cookieId: string | undefined,
+  traderPlatform: number | string | undefined
+): string {
+  const tp = Number(traderPlatform)
+  if (tp !== 7 && tp !== 8) {
+    return traderId
+  }
+
+  const id = String(traderId || '').trim()
+  if (!cookieId) {
+    return id
+  }
+
+  const cid = String(cookieId).trim()
+  const { leaderId } = splitCookieModeUniqueName(id)
+
+  return `${leaderId || id}-${cid}`
+}
+
 // --- Utility Component for Tags ---
 function TagInput({
   tags,
@@ -350,7 +386,7 @@ export function CopyTaskConfigSheet({
 
       const payload = {
         trader_platform: traderPlatform,
-        uniqueName: traderPlatform === 7 || traderPlatform === 8 ? `${traderId}-${cookieId || ''}` : traderId,
+        uniqueName: buildUniqueName(traderId || '', cookieId, traderPlatform),
         label: formData.label || '',
         api: formData.api_id,
         follow_type: formData.follow_type,

@@ -190,6 +190,9 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
     if (effectiveTier !== 'vip') {
       buttonDisabled = true
       buttonLabel = effectiveTier === 'studio_vip' ? '工作室 VIP 无需购买此包' : '需先开通 VIP'
+    } else if ((profile?.asset_limit_usdt ?? 0) >= 20000) {
+      buttonDisabled = true
+      buttonLabel = '已达资金上限'
     }
   }
 
