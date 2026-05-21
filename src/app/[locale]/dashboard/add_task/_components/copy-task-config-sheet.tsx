@@ -19,6 +19,8 @@ import { request } from '@/api/request'
 import { settingsApi } from '@/api/settings'
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
+import { CopyTradeProtocolDialog } from './copy-trade-protocol-dialog'
+
 function splitCookieModeUniqueName(uniqueName: string): { leaderId: string; cookieId: string | null } {
   const raw = String(uniqueName || '').trim()
   if (!raw || !raw.includes('-')) {
@@ -164,6 +166,8 @@ export function CopyTaskConfigSheet({
 }: CopyTaskConfigSheetProps) {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [agreedToProtocol, setAgreedToProtocol] = useState(false)
+  const [protocolDialogOpen, setProtocolDialogOpen] = useState(false)
   const [apiOptions, setApiOptions] = useState<any[]>([])
   const [user, setUser] = useState('')
   const [notificationStatus, setNotificationStatus] = useState<{
@@ -247,6 +251,13 @@ export function CopyTaskConfigSheet({
     black_list: [] as string[]
   })
 
+  useEffect(() => {
+    if (!isOpen) {
+      setAgreedToProtocol(false)
+      setProtocolDialogOpen(false)
+    }
+  }, [isOpen])
+
   // Load APIs
   useEffect(() => {
     if (isOpen) {
@@ -315,7 +326,7 @@ export function CopyTaskConfigSheet({
         }))
 
         setToggles({
-          multiple_visible: Number(initialTaskData.multiple) > 1,
+          multiple_visible: Number(initialTaskData.multiple) !== 1,
           multiple: initialTaskData.multiple ? String(initialTaskData.multiple) : '1',
           posSide_set_visible: initialTaskData.posSide_set === 2,
           fast_mode_visible: initialTaskData.fast_mode === 1,
@@ -373,6 +384,11 @@ export function CopyTaskConfigSheet({
   }, [isOpen, traderId, platform, hideFollowLeverage, initialBenchMark, initialTaskData])
 
   const handleSubmit = async () => {
+    if (!agreedToProtocol) {
+      toast.error('请先阅读并同意跟单交易协议')
+      return
+    }
+
     setIsLoading(true)
 
     try {
@@ -651,10 +667,11 @@ export function CopyTaskConfigSheet({
                       <label className='mb-2 block text-sm font-medium'>加倍倍数 (默认为1)</label>
                       <Input
                         type='number'
-                        min='1'
+                        min='0.01'
+                        step='0.1'
                         value={toggles.multiple}
                         onChange={e => updateToggle('multiple', e.target.value)}
-                        placeholder='eg. 2'
+                        placeholder='eg. 0.5、1.5'
                       />
                       <p className='mt-1 text-xs font-medium text-red-500'>
                         如果跟单的交易员经常满仓交易，请不要使用此功能！
@@ -1001,22 +1018,47 @@ export function CopyTaskConfigSheet({
           </div>
         </Tabs>
 
-        <SheetFooter className='bg-background/95 supports-[backdrop-filter]:bg-background/60 shrink-0 border-t p-4 backdrop-blur'>
-          <Button variant='outline' onClick={onClose} disabled={isLoading}>
-            取消
-          </Button>
-          <Button
-            onClick={handleSubmit}
-            disabled={
-              isLoading ||
-              !formData.api_id ||
-              !formData.investment ||
-              (formData.lever_set === 2 && !formData.leverage)
-            }
-          >
-            {isLoading ? '提交中...' : '立即跟单'}
-          </Button>
+        <SheetFooter className='bg-background/95 supports-[backdrop-filter]:bg-background/60 shrink-0 flex-col gap-3 border-t p-4 backdrop-blur sm:flex-col'>
+          <label className='flex w-full cursor-pointer items-start gap-2'>
+            <Checkbox
+              checked={agreedToProtocol}
+              onCheckedChange={checked => setAgreedToProtocol(checked === true)}
+              className='mt-0.5'
+            />
+            <span className='text-muted-foreground text-sm leading-snug'>
+              我已阅读并同意
+              <button
+                type='button'
+                className='text-primary hover:underline'
+                onClick={e => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                  setProtocolDialogOpen(true)
+                }}
+              >
+                《跟单交易协议》
+              </button>
+            </span>
+          </label>
+          <div className='flex w-full justify-end gap-2'>
+            <Button variant='outline' onClick={onClose} disabled={isLoading}>
+              取消
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={
+                isLoading ||
+                !agreedToProtocol ||
+                !formData.api_id ||
+                !formData.investment ||
+                (formData.lever_set === 2 && !formData.leverage)
+              }
+            >
+              {isLoading ? '提交中...' : '立即跟单'}
+            </Button>
+          </div>
         </SheetFooter>
+        <CopyTradeProtocolDialog open={protocolDialogOpen} onOpenChange={setProtocolDialogOpen} />
       </SheetContent>
     </Sheet>
   )
