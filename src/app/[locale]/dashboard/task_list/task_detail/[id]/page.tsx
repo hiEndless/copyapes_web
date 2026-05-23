@@ -41,6 +41,17 @@ type TaskLogItem = {
   log_payload?: Record<string, unknown>
 }
 
+type LogFormatContext = {
+  payload: Record<string, unknown>
+  payloadUniqueName: string
+  payloadInstId: string
+  payloadPosSide: string
+  payloadSignalType: string
+  payloadReason: string
+  asText: (v: unknown, fallback?: string) => string
+  asNumberText: (v: unknown, fallback?: string) => string
+}
+
 export default function TaskDetailPage({ params }: { params: any }) {
   const router = useRouter()
 
@@ -48,6 +59,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
   // unwrapping safely depending on runtime
   const unwrappedParams = React.use(params instanceof Promise ? params : Promise.resolve(params))
   const taskId = unwrappedParams?.id || params?.id
+  const locale = String(unwrappedParams?.locale || params?.locale || 'zh')
 
   console.log('当前任务 ID:', taskId)
 
@@ -143,37 +155,200 @@ export default function TaskDetailPage({ params }: { params: any }) {
   }
 
   const formatLogDescription = (item: TaskLogItem) => {
-    const hasStructured = Boolean(item?.has_structured_log && item?.log_payload && Object.keys(item.log_payload).length > 0)
+    const payload = (item.log_payload || {}) as Record<string, unknown>
+    const payloadEventCode = asText(payload['event_code'], '')
+    const hasPayloadObject = Boolean(item?.log_payload && typeof item.log_payload === 'object')
+    const payloadSize = hasPayloadObject ? Object.keys(item.log_payload as Record<string, unknown>).length : 0
+    const hasStructured = Boolean(
+      (item?.has_structured_log || asText(item?.event_code, '') !== '' || payloadEventCode !== '') && hasPayloadObject && payloadSize > 0
+    )
     if (!hasStructured) {
       return asText(item?.description, asText(item?.title, '暂无详情'))
     }
 
-    const payload = item.log_payload || {}
-    const eventCode = asText(item?.event_code, '')
+    const eventCode = asText(item?.event_code, payloadEventCode)
+    const payloadUniqueName = asText(payload['unique_name'], asText(item?.unique_name, '-'))
+    const payloadInstId = asText(payload['inst_id'], asText(item?.inst_id))
+    const payloadPosSide = asText(payload['pos_side'], asText(item?.pos_side))
+    const payloadSignalType = asText(payload['signal_type'], asText(item?.signal_type))
+    const payloadReason = asText(payload['reason'], asText(item?.reason, '-'))
 
-    if (eventCode === 'leader_close_requested') {
-      return `交易员已关闭带单，任务进入关闭流程，已跟随仓位数：${asNumberText(payload['tracked_positions'])}。原因：${asText(
-        item?.reason,
-        '-'
-      )}。`
+    const formatters: Record<string, (ctx: LogFormatContext) => string> = {
+      leader_close_requested: (ctx) =>
+        `交易员已关闭带单，任务进入关闭流程，已跟随仓位数：${ctx.asNumberText(ctx.payload['tracked_positions'])}。原因：${ctx.asText(ctx.payloadReason, '-')}。`,
+      task_manual_stopped: (ctx) => `任务已手动终止，跟随交易员：${ctx.payloadUniqueName}。原因：${ctx.payloadReason}。`,
+      task_stopped: (ctx) => `跟随交易员 ${ctx.payloadUniqueName} 的任务已停止，原因：${ctx.payloadReason}。`,
+      trader_position_changed: (ctx) => {
+        const signal = String(ctx.payloadSignalType || '').toLowerCase()
+        const tradeVolume = ctx.asNumberText(ctx.payload['delta_pos'])
+        const positionVolume = ctx.asNumberText(ctx.payload['trader_position_size'])
+        if (signal === 'open') {
+          const rawUplRatio = ctx.payload['trader_upl_ratio']
+          const hasUplRatio = !(rawUplRatio === null || rawUplRatio === undefined || String(rawUplRatio).trim() === '')
+          const uplRatio = hasUplRatio ? ctx.asNumberText(rawUplRatio) : '-'
+          const rawOpenConditionMet = ctx.payload['open_condition_met']
+          const openConditionMet = hasUplRatio
+            ? Boolean(rawOpenConditionMet)
+            : true
+          return `交易量：${tradeVolume}
+持仓量：${positionVolume}
+当前收益率：${uplRatio}
+是否满足开仓条件：${openConditionMet ? '是' : '否'}`
+        }
+        if (signal === 'add' || signal === 'reduce' || signal === 'close') {
+          return `交易量：${tradeVolume}
+持仓量：${positionVolume}`
+        }
+        return `交易员仓位变更：${ctx.payloadInstId} ${ctx.payloadPosSide}，信号：${ctx.payloadSignalType}。`
+      },
+      signal_rejected_precision_too_small: (ctx) =>
+        `信号被拦截：${ctx.payloadInstId} ${ctx.payloadPosSide}，信号：${ctx.payloadSignalType}。原因：交易精度限制导致数量过低。`,
+      target_volume_rounded_to_zero: (ctx) =>
+        `交易失败：${ctx.payloadInstId} ${ctx.payloadPosSide}，信号：${ctx.payloadSignalType}。原因：交易精度限制导致数量过低（交易员仓位量：${ctx.asNumberText(
+          ctx.payload['trader_position_size']
+        )}）。`,
+      task_command_publish_failed: (ctx) =>
+        `交易指令投递失败：${ctx.payloadInstId} ${ctx.payloadPosSide}，信号：${ctx.payloadSignalType}，交易员仓位量：${ctx.asNumberText(
+          ctx.payload['trader_position_size']
+        )}，stream_error=${ctx.asText(ctx.payload['publish_error'], '-')}，legacy_error=${ctx.asText(ctx.payload['legacy_error'], '-')}。`
     }
-    if (eventCode === 'task_stopped') {
-      return `跟随交易员 ${asText(item?.unique_name, '-')} 的任务已停止，原因：${asText(item?.reason, '-')}。`
-    }
-    if (eventCode === 'trader_position_changed') {
-      return `交易员仓位变更：${asText(item?.inst_id)} ${asText(item?.pos_side)}，信号：${asText(item?.signal_type)}。`
-    }
-    if (eventCode === 'task_trade_action_add') {
-      return `进行加仓操作：${asText(item?.inst_id)} ${asText(item?.pos_side)}，交易量：${asNumberText(payload['final_volume'])}。`
-    }
-    if (eventCode === 'task_command_publish_failed') {
-      return `交易指令投递失败：${asText(item?.inst_id)}，stream_error=${asText(payload['publish_error'], '-')}，legacy_error=${asText(
-        payload['legacy_error'],
-        '-'
-      )}。`
+    const formatter = formatters[eventCode]
+    if (formatter) {
+      return formatter({
+        payload,
+        payloadUniqueName,
+        payloadInstId,
+        payloadPosSide,
+        payloadSignalType,
+        payloadReason,
+        asText,
+        asNumberText
+      })
     }
 
     return asText(item?.description, asText(item?.title, '暂无详情'))
+  }
+
+  const formatLogTitleMeta = (item: TaskLogItem) => {
+    const payload = (item.log_payload || {}) as Record<string, unknown>
+    const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
+    if (eventCode !== 'trader_position_changed') {
+      return {
+        main: formatLogTitle(item),
+        sideTag: '',
+        actionTag: ''
+      }
+    }
+
+    const instId = asText(payload['inst_id'], asText(item?.inst_id, '-'))
+    const side = asText(payload['pos_side'], asText(item?.pos_side, '')).toUpperCase()
+    const signal = asText(payload['signal_type'], asText(item?.signal_type, '')).toLowerCase()
+    const actionMap: Record<string, string> = {
+      open: '开仓',
+      add: '加仓',
+      reduce: '减仓',
+      close: '平仓'
+    }
+    return {
+      main: instId,
+      sideTag: side,
+      actionTag: actionMap[signal] || '变更'
+    }
+  }
+
+  const getSideTagClass = (sideTag: string) => {
+    const side = String(sideTag || '').toUpperCase()
+    if (side === 'LONG') {
+      return 'rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+    }
+    if (side === 'SHORT') {
+      return 'rounded bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
+    }
+    return 'rounded bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+  }
+
+  const getActionTagClass = (actionTag: string) => {
+    const action = String(actionTag || '').trim()
+    if (action === '开仓' || action === '加仓') {
+      return 'rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+    }
+    if (action === '减仓' || action === '平仓') {
+      return 'rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
+    }
+    return 'rounded bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+  }
+
+  const isTradeFailedLog = (item: TaskLogItem) => {
+    const payload = (item.log_payload || {}) as Record<string, unknown>
+    const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
+    const failedCodes = new Set(['target_volume_rounded_to_zero', 'task_command_publish_failed'])
+    const color = String(item?.color || '').toUpperCase()
+    return failedCodes.has(eventCode) || color === 'WARNING' || color === 'DANGER'
+  }
+
+  const formatTradeLogTitleMeta = (item: TaskLogItem) => {
+    const payload = (item.log_payload || {}) as Record<string, unknown>
+    return {
+      instId: asText(payload['inst_id'], asText(item?.inst_id, '-')),
+      side: asText(payload['pos_side'], asText(item?.pos_side, '')).toUpperCase(),
+      resultTag: isTradeFailedLog(item) ? '失败' : '成功'
+    }
+  }
+
+  const getResultTagClass = (resultTag: string) => {
+    if (resultTag === '成功') {
+      return 'rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+    }
+    return 'rounded bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
+  }
+
+  const formatTradeLogDescription = (item: TaskLogItem) => {
+    const payload = (item.log_payload || {}) as Record<string, unknown>
+    const exchange = asText(payload['exchange'], '-')
+    const volume = asNumberText(payload['delta_pos'], asNumberText(payload['trader_position_size'], '-'))
+    const reasonI18nMap: Record<string, Record<string, string>> = {
+      target_volume_rounded_to_zero: {
+        zh: '由于币种交易精度限制，交易量过低，无法下单',
+        en: 'Order quantity is too small after precision rounding'
+      }
+    }
+    const localizeReason = (reasonRaw: string) => {
+      const key = String(reasonRaw || '').trim()
+      if (!key) return '-'
+      const lang = locale.toLowerCase().startsWith('en') ? 'en' : 'zh'
+      const translated = reasonI18nMap[key]?.[lang]
+      return translated || key
+    }
+    if (isTradeFailedLog(item)) {
+      const rawReason = asText(payload['reason'], asText(item?.reason, asText(item?.description, '-')))
+      const reason = localizeReason(rawReason)
+      return `交易所：${exchange}\n交易量：${volume}\n失败原因：${reason}`
+    }
+    return `交易所：${exchange}\n交易量：${volume}`
+  }
+
+  const formatLogTitle = (item: TaskLogItem) => {
+    const payload = (item.log_payload || {}) as Record<string, unknown>
+    const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
+    const payloadUniqueName = asText(payload['unique_name'], asText(item?.unique_name, ''))
+
+    const titleMap: Record<string, string> = {
+      leader_close_requested: '交易员关闭带单',
+      task_manual_stopped: '任务手动终止',
+      task_stopped: '任务已停止',
+      trader_position_changed: (() => {
+        const signal = asText(payload['signal_type'], '').toLowerCase()
+        if (signal === 'open') return payloadUniqueName ? `交易员${payloadUniqueName}开仓` : '交易员开仓'
+        if (signal === 'add') return payloadUniqueName ? `交易员${payloadUniqueName}加仓` : '交易员加仓'
+        if (signal === 'reduce') return payloadUniqueName ? `交易员${payloadUniqueName}减仓` : '交易员减仓'
+        if (signal === 'close') return payloadUniqueName ? `交易员${payloadUniqueName}平仓` : '交易员平仓'
+        return payloadUniqueName ? `交易员${payloadUniqueName}仓位变更` : '交易员仓位变更'
+      })(),
+      signal_rejected_precision_too_small: '信号被拦截',
+      target_volume_rounded_to_zero: '交易失败',
+      task_command_publish_failed: '交易指令投递失败'
+    }
+    return titleMap[eventCode] || asText(item?.title, '日志')
   }
 
   const getPlatformName = (val: number) => {
@@ -412,9 +587,23 @@ export default function TaskDetailPage({ params }: { params: any }) {
                           )}`}
                         ></div>
                         <div className='space-y-1'>
-                          <p className='text-sm font-bold dark:text-white'>{item.title}</p>
+                          <p className='flex items-center gap-2 text-sm font-bold dark:text-white'>
+                            <span>{formatLogTitleMeta(item).main}</span>
+                            {formatLogTitleMeta(item).sideTag ? (
+                              <span className={getSideTagClass(formatLogTitleMeta(item).sideTag)}>
+                                {formatLogTitleMeta(item).sideTag}
+                              </span>
+                            ) : null}
+                            {formatLogTitleMeta(item).actionTag ? (
+                              <span className={getActionTagClass(formatLogTitleMeta(item).actionTag)}>
+                                {formatLogTitleMeta(item).actionTag}
+                              </span>
+                            ) : null}
+                          </p>
                           <p className='text-muted-foreground text-xs dark:text-zinc-400'>{item.date}</p>
-                          <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>{formatLogDescription(item)}</p>
+                          <p className='text-muted-foreground mt-2 whitespace-pre-line text-sm dark:text-zinc-300'>
+                            {formatLogDescription(item)}
+                          </p>
                         </div>
                       </div>
                     ))
@@ -456,9 +645,19 @@ export default function TaskDetailPage({ params }: { params: any }) {
                           )}`}
                         ></div>
                         <div className='space-y-1'>
-                          <p className='text-sm font-bold text-white'>{item.title}</p>
+                          <p className='flex items-center gap-2 text-sm font-bold text-white'>
+                            <span>{formatTradeLogTitleMeta(item).instId}</span>
+                            {formatTradeLogTitleMeta(item).side ? (
+                              <span className={getSideTagClass(formatTradeLogTitleMeta(item).side)}>
+                                {formatTradeLogTitleMeta(item).side}
+                              </span>
+                            ) : null}
+                            <span className={getResultTagClass(formatTradeLogTitleMeta(item).resultTag)}>
+                              {formatTradeLogTitleMeta(item).resultTag}
+                            </span>
+                          </p>
                           <p className='text-xs text-zinc-400'>{item.date}</p>
-                          <p className='mt-2 text-sm text-zinc-300'>{formatLogDescription(item)}</p>
+                          <p className='mt-2 whitespace-pre-line text-sm text-zinc-300'>{formatTradeLogDescription(item)}</p>
                         </div>
                       </div>
                     ))
@@ -494,9 +693,23 @@ export default function TaskDetailPage({ params }: { params: any }) {
                       )}`}
                     ></div>
                     <div className='space-y-1'>
-                      <p className='text-sm font-bold dark:text-white'>{item.title}</p>
+                      <p className='flex items-center gap-2 text-sm font-bold dark:text-white'>
+                        <span>{formatLogTitleMeta(item).main}</span>
+                        {formatLogTitleMeta(item).sideTag ? (
+                          <span className={getSideTagClass(formatLogTitleMeta(item).sideTag)}>
+                            {formatLogTitleMeta(item).sideTag}
+                          </span>
+                        ) : null}
+                        {formatLogTitleMeta(item).actionTag ? (
+                          <span className={getActionTagClass(formatLogTitleMeta(item).actionTag)}>
+                            {formatLogTitleMeta(item).actionTag}
+                          </span>
+                        ) : null}
+                      </p>
                       <p className='text-muted-foreground text-xs dark:text-zinc-400'>{item.date}</p>
-                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>{formatLogDescription(item)}</p>
+                      <p className='text-muted-foreground mt-2 whitespace-pre-line text-sm dark:text-zinc-300'>
+                        {formatLogDescription(item)}
+                      </p>
                     </div>
                   </div>
                 ))
@@ -535,9 +748,19 @@ export default function TaskDetailPage({ params }: { params: any }) {
                       )}`}
                     ></div>
                     <div className='space-y-1'>
-                      <p className='text-sm font-bold text-white'>{item.title}</p>
+                      <p className='flex items-center gap-2 text-sm font-bold text-white'>
+                        <span>{formatTradeLogTitleMeta(item).instId}</span>
+                        {formatTradeLogTitleMeta(item).side ? (
+                          <span className={getSideTagClass(formatTradeLogTitleMeta(item).side)}>
+                            {formatTradeLogTitleMeta(item).side}
+                          </span>
+                        ) : null}
+                        <span className={getResultTagClass(formatTradeLogTitleMeta(item).resultTag)}>
+                          {formatTradeLogTitleMeta(item).resultTag}
+                        </span>
+                      </p>
                       <p className='text-xs text-zinc-400'>{item.date}</p>
-                      <p className='mt-2 text-sm text-zinc-300'>{formatLogDescription(item)}</p>
+                      <p className='mt-2 whitespace-pre-line text-sm text-zinc-300'>{formatTradeLogDescription(item)}</p>
                     </div>
                   </div>
                 ))
