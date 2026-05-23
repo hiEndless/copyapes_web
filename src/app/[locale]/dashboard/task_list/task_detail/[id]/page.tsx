@@ -26,6 +26,21 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 
+type TaskLogItem = {
+  title?: string
+  date?: string
+  description?: string
+  color?: string
+  event_code?: string
+  unique_name?: string
+  inst_id?: string
+  pos_side?: string
+  signal_type?: string
+  reason?: string
+  has_structured_log?: boolean
+  log_payload?: Record<string, unknown>
+}
+
 export default function TaskDetailPage({ params }: { params: any }) {
   const router = useRouter()
 
@@ -114,6 +129,51 @@ export default function TaskDetailPage({ params }: { params: any }) {
     if (color === 'INFO' || color === 'primary') return 'bg-blue-500'
 
     return 'bg-gray-500'
+  }
+
+  const asText = (v: unknown, fallback = '-') => {
+    const s = String(v ?? '').trim()
+    return s || fallback
+  }
+
+  const asNumberText = (v: unknown, fallback = '-') => {
+    if (v === null || v === undefined || v === '') return fallback
+    const n = Number(v)
+    return Number.isFinite(n) ? String(n) : fallback
+  }
+
+  const formatLogDescription = (item: TaskLogItem) => {
+    const hasStructured = Boolean(item?.has_structured_log && item?.log_payload && Object.keys(item.log_payload).length > 0)
+    if (!hasStructured) {
+      return asText(item?.description, asText(item?.title, '暂无详情'))
+    }
+
+    const payload = item.log_payload || {}
+    const eventCode = asText(item?.event_code, '')
+
+    if (eventCode === 'leader_close_requested') {
+      return `交易员已关闭带单，任务进入关闭流程，已跟随仓位数：${asNumberText(payload['tracked_positions'])}。原因：${asText(
+        item?.reason,
+        '-'
+      )}。`
+    }
+    if (eventCode === 'task_stopped') {
+      return `跟随交易员 ${asText(item?.unique_name, '-')} 的任务已停止，原因：${asText(item?.reason, '-')}。`
+    }
+    if (eventCode === 'trader_position_changed') {
+      return `交易员仓位变更：${asText(item?.inst_id)} ${asText(item?.pos_side)}，信号：${asText(item?.signal_type)}。`
+    }
+    if (eventCode === 'task_trade_action_add') {
+      return `进行加仓操作：${asText(item?.inst_id)} ${asText(item?.pos_side)}，交易量：${asNumberText(payload['final_volume'])}。`
+    }
+    if (eventCode === 'task_command_publish_failed') {
+      return `交易指令投递失败：${asText(item?.inst_id)}，stream_error=${asText(payload['publish_error'], '-')}，legacy_error=${asText(
+        payload['legacy_error'],
+        '-'
+      )}。`
+    }
+
+    return asText(item?.description, asText(item?.title, '暂无详情'))
   }
 
   const getPlatformName = (val: number) => {
@@ -344,7 +404,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
                 {/* 时间轴容器 */}
                 <div className='border-muted relative ml-3 space-y-8 border-l-2 pb-4 dark:border-zinc-700'>
                   {spiderData.length > 0 ? (
-                    spiderData.map((item, index) => (
+                    spiderData.map((item: TaskLogItem, index) => (
                       <div key={index} className='relative pl-6'>
                         <div
                           className={`absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white dark:border-[#1e1e1e] ${getColorClass(
@@ -354,7 +414,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
                         <div className='space-y-1'>
                           <p className='text-sm font-bold dark:text-white'>{item.title}</p>
                           <p className='text-muted-foreground text-xs dark:text-zinc-400'>{item.date}</p>
-                          <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>{item.description}</p>
+                          <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>{formatLogDescription(item)}</p>
                         </div>
                       </div>
                     ))
@@ -388,7 +448,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
                 {/* 时间轴容器 */}
                 <div className='relative ml-3 space-y-8 border-l-2 border-zinc-700 pb-4'>
                   {tradeData.length > 0 ? (
-                    tradeData.map((item, index) => (
+                    tradeData.map((item: TaskLogItem, index) => (
                       <div key={index} className='relative pl-6'>
                         <div
                           className={`absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] ${getColorClass(
@@ -398,7 +458,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
                         <div className='space-y-1'>
                           <p className='text-sm font-bold text-white'>{item.title}</p>
                           <p className='text-xs text-zinc-400'>{item.date}</p>
-                          <p className='mt-2 text-sm text-zinc-300'>{item.description}</p>
+                          <p className='mt-2 text-sm text-zinc-300'>{formatLogDescription(item)}</p>
                         </div>
                       </div>
                     ))
@@ -426,7 +486,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
             {/* 时间轴容器 */}
             <div className='border-muted relative ml-3 space-y-8 border-l-2 pb-4 dark:border-zinc-700'>
               {spiderData.length > 0 ? (
-                spiderData.map((item, index) => (
+                spiderData.map((item: TaskLogItem, index) => (
                   <div key={index} className='relative pl-6'>
                     <div
                       className={`absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-white dark:border-[#1e1e1e] ${getColorClass(
@@ -436,7 +496,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
                     <div className='space-y-1'>
                       <p className='text-sm font-bold dark:text-white'>{item.title}</p>
                       <p className='text-muted-foreground text-xs dark:text-zinc-400'>{item.date}</p>
-                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>{item.description}</p>
+                      <p className='text-muted-foreground mt-2 text-sm dark:text-zinc-300'>{formatLogDescription(item)}</p>
                     </div>
                   </div>
                 ))
@@ -467,7 +527,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
             {/* 时间轴容器 */}
             <div className='relative ml-3 space-y-8 border-l-2 border-zinc-700 pb-4'>
               {tradeData.length > 0 ? (
-                tradeData.map((item, index) => (
+                tradeData.map((item: TaskLogItem, index) => (
                   <div key={index} className='relative pl-6'>
                     <div
                       className={`absolute top-1 -left-[9px] h-4 w-4 rounded-full border-4 border-[#1e1e1e] ${getColorClass(
@@ -477,7 +537,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
                     <div className='space-y-1'>
                       <p className='text-sm font-bold text-white'>{item.title}</p>
                       <p className='text-xs text-zinc-400'>{item.date}</p>
-                      <p className='mt-2 text-sm text-zinc-300'>{item.description}</p>
+                      <p className='mt-2 text-sm text-zinc-300'>{formatLogDescription(item)}</p>
                     </div>
                   </div>
                 ))
