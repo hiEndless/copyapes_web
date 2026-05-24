@@ -194,11 +194,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
   const formatLogDescription = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
     const payloadEventCode = asText(payload['event_code'], '')
-    const hasPayloadObject = Boolean(item?.log_payload && typeof item.log_payload === 'object')
-    const payloadSize = hasPayloadObject ? Object.keys(item.log_payload as Record<string, unknown>).length : 0
-    const hasStructured = Boolean(
-      (item?.has_structured_log || asText(item?.event_code, '') !== '' || payloadEventCode !== '') && hasPayloadObject && payloadSize > 0
-    )
+    const hasStructured = Boolean(item?.has_structured_log || asText(item?.event_code, '') !== '' || payloadEventCode !== '')
     if (!hasStructured) {
       return asText(item?.description, asText(item?.title, '暂无详情'))
     }
