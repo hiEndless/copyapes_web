@@ -165,15 +165,15 @@ export default function TaskDetailPage({ params }: { params: any }) {
         en: 'Order quantity is too small after precision rounding'
       },
       leader_positions_hidden_or_closed: {
-        zh: '交易员已关闭项目或隐藏仓位',
-        en: 'Trader project closed or positions hidden'
+        zh: '交易员已关闭带单项目或隐藏了仓位',
+        en: 'Trader copy project closed or positions hidden'
       },
       cookie_auth_expired: {
         zh: 'Cookie已过期，请重新获取后再跟单',
         en: 'Cookie authentication expired'
       },
       token_expired_auto_close: {
-        zh: 'IP 和 TOKEN 已过期，任务自动终止',
+        zh: 'IP和TOKEN过期，任务自动终止',
         en: 'IP and token expired, task auto-terminated'
       },
       crawler_auto_stop_fetch_failure: {
@@ -190,6 +190,82 @@ export default function TaskDetailPage({ params }: { params: any }) {
       }
     }
     return reasonI18nMap[key]?.[lang] || key
+  }
+
+  const TERMINATION_EVENT_CODES = new Set([
+    'leader_close_requested',
+    'leader_positions_hidden_or_closed',
+    'task_manual_stopped',
+    'manual_stop',
+    'task_stopped',
+    'cookie_auth_expired',
+    'token_expired_auto_close',
+    'crawler_auto_stop_fetch_failure',
+    'task_terminated_manual_close_required',
+    'task_follow_terminated_manual_close_required'
+  ])
+
+  const EVENT_CODE_TERMINATION_REASON: Record<string, string> = {
+    leader_close_requested: '交易员已关闭带单项目或隐藏了仓位',
+    leader_positions_hidden_or_closed: '交易员已关闭带单项目或隐藏了仓位',
+    task_manual_stopped: '用户手动终止',
+    manual_stop: '用户手动终止',
+    cookie_auth_expired: 'Cookie已过期，请重新获取后再跟单',
+    token_expired_auto_close: 'IP和TOKEN过期，任务自动终止',
+    crawler_auto_stop_fetch_failure: '爬虫自动停机（连续抓取失败）',
+    task_terminated_manual_close_required: '任务已结束，需手动平仓',
+    task_follow_terminated_manual_close_required: '任务已结束，需手动平仓'
+  }
+
+  const isTerminationEvent = (eventCode: string) => TERMINATION_EVENT_CODES.has(eventCode)
+
+  const isFollowTradeTerminationLog = (item: TaskLogItem) => {
+    const title = asText(item?.title, '')
+    if (title === '结束跟单') return true
+    const desc = asText(item?.description, '')
+    return desc.includes('当前已有持仓不会平仓') || desc.includes('后续请手动平仓')
+  }
+
+  const resolveLogTaskId = (payload: Record<string, unknown>, item: TaskLogItem) => {
+    const fromPayload = asText(payload['task_id'], '')
+    if (fromPayload !== '-') return fromPayload
+    const fromItem = asText(item?.task_id, '')
+    if (fromItem !== '-') return fromItem
+    const desc = asText(item?.description, '')
+    const matched = desc.match(/任务[：:]\s*([^，,\s]+)/)
+    if (matched?.[1]) return matched[1]
+    return String(taskId || '-')
+  }
+
+  const resolveTerminationReason = (
+    eventCode: string,
+    payload: Record<string, unknown>,
+    item: TaskLogItem
+  ) => {
+    if (EVENT_CODE_TERMINATION_REASON[eventCode]) {
+      return EVENT_CODE_TERMINATION_REASON[eventCode]
+    }
+    const reasonKey = asText(payload['reason'], asText(item?.reason, ''))
+    if (reasonKey) {
+      const localized = localizeReason(reasonKey)
+      if (localized !== '-') return localized
+    }
+    const localizedEvent = localizeReason(eventCode)
+    return localizedEvent !== eventCode ? localizedEvent : asText(item?.description, '-')
+  }
+
+  const formatTerminationDescription = (
+    eventCode: string,
+    payload: Record<string, unknown>,
+    item: TaskLogItem
+  ) => `结束原因：${resolveTerminationReason(eventCode, payload, item)}`
+
+  const formatTradeTerminationDescription = (
+    payload: Record<string, unknown>,
+    item: TaskLogItem
+  ) => {
+    const logTaskId = resolveLogTaskId(payload, item)
+    return `任务：${logTaskId}\n当前已有持仓不会平仓，后续请手动平仓`
   }
 
   const formatLogDescription = (item: TaskLogItem) => {
@@ -211,19 +287,11 @@ export default function TaskDetailPage({ params }: { params: any }) {
     const payloadSignalType = asText(payload['signal_type'], asText(item?.signal_type))
     const payloadReason = localizeReason(asText(payload['reason'], asText(item?.reason, '-')))
 
+    if (isTerminationEvent(eventCode)) {
+      return formatTerminationDescription(eventCode, payload, item)
+    }
+
     const formatters: Record<string, (ctx: LogFormatContext) => string> = {
-      leader_close_requested: (ctx) => {
-        const taskId = ctx.asText(ctx.payload['task_id'], asText(item?.task_id, '-'))
-        return `任务：${taskId}\n当前已有持仓不会平仓，后续请手动平仓。`
-      },
-      task_manual_stopped: (ctx) => {
-        const taskId = ctx.asText(ctx.payload['task_id'], asText(item?.task_id, '-'))
-        return `任务：${taskId}\n当前已有持仓不会平仓，后续请手动平仓。`
-      },
-      task_stopped: (ctx) => {
-        const taskId = ctx.asText(ctx.payload['task_id'], asText(item?.task_id, '-'))
-        return `任务：${taskId}\n当前已有持仓不会平仓，后续请手动平仓。`
-      },
       trader_position_changed: (ctx) => {
         const signal = String(ctx.payloadSignalType || '').toLowerCase()
         const tradeVolume = ctx.asNumberText(ctx.payload['delta_pos'])
@@ -335,11 +403,11 @@ export default function TaskDetailPage({ params }: { params: any }) {
   const formatTradeLogTitleMeta = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
     const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
-    if (eventCode === 'task_follow_terminated_manual_close_required') {
+    if (isTerminationEvent(eventCode) || isFollowTradeTerminationLog(item)) {
       return {
-        instId: '-',
+        instId: '结束跟单',
         side: '',
-        resultTag: '提示'
+        resultTag: ''
       }
     }
     return {
@@ -362,9 +430,8 @@ export default function TaskDetailPage({ params }: { params: any }) {
   const formatTradeLogDescription = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
     const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
-    if (eventCode === 'task_follow_terminated_manual_close_required') {
-      const taskId = asText(payload['task_id'], asText(item?.task_id, '-'))
-      return `任务：${taskId}\n当前已有持仓不会平仓，后续请手动平仓。`
+    if (isTerminationEvent(eventCode) || isFollowTradeTerminationLog(item)) {
+      return formatTradeTerminationDescription(payload, item)
     }
     const exchange = asText(payload['exchange'], '-')
     const volume = asNumberText(payload['delta_pos'], asNumberText(payload['trader_position_size'], '-'))
@@ -381,10 +448,11 @@ export default function TaskDetailPage({ params }: { params: any }) {
     const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
     const payloadUniqueName = asText(payload['unique_name'], asText(item?.unique_name, ''))
 
+    if (isTerminationEvent(eventCode)) {
+      return '结束跟单'
+    }
+
     const titleMap: Record<string, string> = {
-      leader_close_requested: '结束跟单',
-      task_manual_stopped: '结束跟单',
-      task_stopped: '结束跟单',
       trader_position_changed: (() => {
         const signal = asText(payload['signal_type'], '').toLowerCase()
         if (signal === 'open') return payloadUniqueName ? `交易员${payloadUniqueName}开仓` : '交易员开仓'
@@ -395,8 +463,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
       })(),
       signal_rejected_precision_too_small: '信号被拦截',
       target_volume_rounded_to_zero: '交易失败',
-      task_command_publish_failed: '交易指令投递失败',
-      task_follow_terminated_manual_close_required: '结束跟单'
+      task_command_publish_failed: '交易指令投递失败'
     }
     return titleMap[eventCode] || asText(item?.title, '日志')
   }
@@ -702,9 +769,11 @@ export default function TaskDetailPage({ params }: { params: any }) {
                                 {formatTradeLogTitleMeta(item).side}
                               </span>
                             ) : null}
-                            <span className={getResultTagClass(formatTradeLogTitleMeta(item).resultTag)}>
-                              {formatTradeLogTitleMeta(item).resultTag}
-                            </span>
+                            {formatTradeLogTitleMeta(item).resultTag ? (
+                              <span className={getResultTagClass(formatTradeLogTitleMeta(item).resultTag)}>
+                                {formatTradeLogTitleMeta(item).resultTag}
+                              </span>
+                            ) : null}
                           </p>
                           <p className='text-xs text-zinc-400'>{item.date}</p>
                           <p className='mt-2 whitespace-pre-line text-sm text-zinc-300'>{formatTradeLogDescription(item)}</p>
@@ -805,9 +874,11 @@ export default function TaskDetailPage({ params }: { params: any }) {
                             {formatTradeLogTitleMeta(item).side}
                           </span>
                         ) : null}
-                        <span className={getResultTagClass(formatTradeLogTitleMeta(item).resultTag)}>
-                          {formatTradeLogTitleMeta(item).resultTag}
-                        </span>
+                        {formatTradeLogTitleMeta(item).resultTag ? (
+                          <span className={getResultTagClass(formatTradeLogTitleMeta(item).resultTag)}>
+                            {formatTradeLogTitleMeta(item).resultTag}
+                          </span>
+                        ) : null}
                       </p>
                       <p className='text-xs text-zinc-400'>{item.date}</p>
                       <p className='mt-2 whitespace-pre-line text-sm text-zinc-300'>{formatTradeLogDescription(item)}</p>
