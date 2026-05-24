@@ -37,6 +37,7 @@ type TaskLogItem = {
   pos_side?: string
   signal_type?: string
   reason?: string
+  task_id?: string
   has_structured_log?: boolean
   log_payload?: Record<string, unknown>
 }
@@ -135,7 +136,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
   }
 
   // 格式化展示值的工具函数
-  const getColorClass = (color: string) => {
+  const getColorClass = (color: string | undefined) => {
     if (color === 'SUCCESS' || color === 'green') return 'bg-green-500'
     if (color === 'WARNING' || color === 'danger') return 'bg-red-500'
     if (color === 'INFO' || color === 'primary') return 'bg-blue-500'
