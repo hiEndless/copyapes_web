@@ -168,7 +168,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
         en: 'Trader project closed or positions hidden'
       },
       cookie_auth_expired: {
-        zh: 'Cookie 登录已过期',
+        zh: 'Cookie已过期，请重新获取后再跟单',
         en: 'Cookie authentication expired'
       },
       token_expired_auto_close: {
