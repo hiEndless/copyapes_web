@@ -226,17 +226,6 @@ export default function TaskDetailPage({ params }: { params: any }) {
     return desc.includes('当前已有持仓不会平仓') || desc.includes('后续请手动平仓')
   }
 
-  const resolveLogTaskId = (payload: Record<string, unknown>, item: TaskLogItem) => {
-    const fromPayload = asText(payload['task_id'], '')
-    if (fromPayload !== '-') return fromPayload
-    const fromItem = asText(item?.task_id, '')
-    if (fromItem !== '-') return fromItem
-    const desc = asText(item?.description, '')
-    const matched = desc.match(/任务[：:]\s*([^，,\s]+)/)
-    if (matched?.[1]) return matched[1]
-    return String(taskId || '-')
-  }
-
   const resolveTerminationReason = (
     eventCode: string,
     payload: Record<string, unknown>,
@@ -260,13 +249,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
     item: TaskLogItem
   ) => `结束原因：${resolveTerminationReason(eventCode, payload, item)}`
 
-  const formatTradeTerminationDescription = (
-    payload: Record<string, unknown>,
-    item: TaskLogItem
-  ) => {
-    const logTaskId = resolveLogTaskId(payload, item)
-    return `任务：${logTaskId}\n当前已有持仓不会平仓，后续请手动平仓`
-  }
+  const formatTradeTerminationDescription = () => '当前已有持仓不会平仓，后续请手动平仓'
 
   const formatLogDescription = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
@@ -431,7 +414,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
     const payload = (item.log_payload || {}) as Record<string, unknown>
     const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
     if (isTerminationEvent(eventCode) || isFollowTradeTerminationLog(item)) {
-      return formatTradeTerminationDescription(payload, item)
+      return formatTradeTerminationDescription()
     }
     const exchange = asText(payload['exchange'], '-')
     const volume = asNumberText(payload['delta_pos'], asNumberText(payload['trader_position_size'], '-'))
