@@ -12,6 +12,8 @@ import type { TaskLogItem } from '../_lib/types'
 
 export function useTaskDetail(taskId: string) {
   const router = useRouter()
+  const routerRef = React.useRef(router)
+  routerRef.current = router
 
   const [task, setTask] = React.useState<Record<string, unknown> | null>(() => {
     if (typeof window !== 'undefined') {
@@ -55,7 +57,7 @@ export function useTaskDetail(taskId: string) {
         }
       } else {
         toast.error(String(taskRes.detail || taskRes.message || '获取任务失败'))
-        router.push('/dashboard/task_list' as never)
+        routerRef.current.push('/dashboard/task_list' as never)
       }
 
       if (traderRes.code === 0 && traderRes.data) {
@@ -68,13 +70,15 @@ export function useTaskDetail(taskId: string) {
     } finally {
       setLoading(false)
     }
-  }, [taskId, router])
+  }, [taskId])
 
   React.useEffect(() => {
     if (taskId) {
       loadTaskData()
     }
-  }, [taskId, loadTaskData])
+    // 仅 taskId 变化时拉取，避免 router 对象引用变化导致重复请求
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [taskId])
 
   const handleTerminateTask = React.useCallback(async () => {
     try {
