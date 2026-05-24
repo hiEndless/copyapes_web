@@ -171,6 +171,10 @@ export default function TaskDetailPage({ params }: { params: any }) {
         zh: 'Cookie 登录已过期',
         en: 'Cookie authentication expired'
       },
+      token_expired_auto_close: {
+        zh: 'IP 和 TOKEN 已过期，任务自动终止',
+        en: 'IP and token expired, task auto-terminated'
+      },
       crawler_auto_stop_fetch_failure: {
         zh: '爬虫自动停机（连续抓取失败）',
         en: 'Crawler auto-stopped due to consecutive fetch failures'
@@ -207,10 +211,9 @@ export default function TaskDetailPage({ params }: { params: any }) {
     const payloadReason = localizeReason(asText(payload['reason'], asText(item?.reason, '-')))
 
     const formatters: Record<string, (ctx: LogFormatContext) => string> = {
-      leader_close_requested: (ctx) =>
-        `交易员已关闭带单，任务进入关闭流程，已跟随仓位数：${ctx.asNumberText(ctx.payload['tracked_positions'])}。原因：${ctx.asText(ctx.payloadReason, '-')}。`,
-      task_manual_stopped: (ctx) => `任务已手动终止，跟随交易员：${ctx.payloadUniqueName}。原因：${ctx.payloadReason}。`,
-      task_stopped: (ctx) => `跟随交易员 ${ctx.payloadUniqueName} 的任务已停止，原因：${ctx.payloadReason}。`,
+      leader_close_requested: (_ctx) => `结束原因：交易员已关闭带单项目或隐藏了仓位`,
+      task_manual_stopped: (_ctx) => `结束原因：用户手动终止`,
+      task_stopped: (ctx) => `结束原因：${ctx.payloadReason}`,
       trader_position_changed: (ctx) => {
         const signal = String(ctx.payloadSignalType || '').toLowerCase()
         const tradeVolume = ctx.asNumberText(ctx.payload['delta_pos'])
@@ -369,9 +372,9 @@ export default function TaskDetailPage({ params }: { params: any }) {
     const payloadUniqueName = asText(payload['unique_name'], asText(item?.unique_name, ''))
 
     const titleMap: Record<string, string> = {
-      leader_close_requested: '交易员关闭带单',
-      task_manual_stopped: '任务手动终止',
-      task_stopped: '任务已停止',
+      leader_close_requested: '结束跟单',
+      task_manual_stopped: '结束跟单',
+      task_stopped: '结束跟单',
       trader_position_changed: (() => {
         const signal = asText(payload['signal_type'], '').toLowerCase()
         if (signal === 'open') return payloadUniqueName ? `交易员${payloadUniqueName}开仓` : '交易员开仓'
