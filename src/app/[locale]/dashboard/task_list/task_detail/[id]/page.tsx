@@ -154,6 +154,39 @@ export default function TaskDetailPage({ params }: { params: any }) {
     return Number.isFinite(n) ? String(n) : fallback
   }
 
+  const localizeReason = (reasonRaw: string) => {
+    const key = String(reasonRaw || '').trim()
+    if (!key) return '-'
+    const lang = locale.toLowerCase().startsWith('en') ? 'en' : 'zh'
+    const reasonI18nMap: Record<string, Record<string, string>> = {
+      target_volume_rounded_to_zero: {
+        zh: '由于币种交易精度限制，交易量过低，无法下单',
+        en: 'Order quantity is too small after precision rounding'
+      },
+      leader_positions_hidden_or_closed: {
+        zh: '交易员已关闭项目或隐藏仓位',
+        en: 'Trader project closed or positions hidden'
+      },
+      cookie_auth_expired: {
+        zh: 'Cookie 登录已过期',
+        en: 'Cookie authentication expired'
+      },
+      crawler_auto_stop_fetch_failure: {
+        zh: '爬虫自动停机（连续抓取失败）',
+        en: 'Crawler auto-stopped due to consecutive fetch failures'
+      },
+      manual_stop: {
+        zh: '用户手动终止',
+        en: 'Manually stopped by user'
+      },
+      task_terminated_manual_close_required: {
+        zh: '任务已结束，需手动平仓',
+        en: 'Task terminated, manual close required'
+      }
+    }
+    return reasonI18nMap[key]?.[lang] || key
+  }
+
   const formatLogDescription = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
     const payloadEventCode = asText(payload['event_code'], '')
@@ -171,7 +204,7 @@ export default function TaskDetailPage({ params }: { params: any }) {
     const payloadInstId = asText(payload['inst_id'], asText(item?.inst_id))
     const payloadPosSide = asText(payload['pos_side'], asText(item?.pos_side))
     const payloadSignalType = asText(payload['signal_type'], asText(item?.signal_type))
-    const payloadReason = asText(payload['reason'], asText(item?.reason, '-'))
+    const payloadReason = localizeReason(asText(payload['reason'], asText(item?.reason, '-')))
 
     const formatters: Record<string, (ctx: LogFormatContext) => string> = {
       leader_close_requested: (ctx) =>
@@ -288,6 +321,14 @@ export default function TaskDetailPage({ params }: { params: any }) {
 
   const formatTradeLogTitleMeta = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
+    const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
+    if (eventCode === 'task_follow_terminated_manual_close_required') {
+      return {
+        instId: '-',
+        side: '',
+        resultTag: '提示'
+      }
+    }
     return {
       instId: asText(payload['inst_id'], asText(item?.inst_id, '-')),
       side: asText(payload['pos_side'], asText(item?.pos_side, '')).toUpperCase(),
@@ -299,26 +340,21 @@ export default function TaskDetailPage({ params }: { params: any }) {
     if (resultTag === '成功') {
       return 'rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
     }
+    if (resultTag === '提示') {
+      return 'rounded bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+    }
     return 'rounded bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
   }
 
   const formatTradeLogDescription = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
+    const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
+    if (eventCode === 'task_follow_terminated_manual_close_required') {
+      const taskId = asText(payload['task_id'], asText(item?.task_id, '-'))
+      return `任务：${taskId}\n当前已有持仓不会平仓，后续请手动平仓。`
+    }
     const exchange = asText(payload['exchange'], '-')
     const volume = asNumberText(payload['delta_pos'], asNumberText(payload['trader_position_size'], '-'))
-    const reasonI18nMap: Record<string, Record<string, string>> = {
-      target_volume_rounded_to_zero: {
-        zh: '由于币种交易精度限制，交易量过低，无法下单',
-        en: 'Order quantity is too small after precision rounding'
-      }
-    }
-    const localizeReason = (reasonRaw: string) => {
-      const key = String(reasonRaw || '').trim()
-      if (!key) return '-'
-      const lang = locale.toLowerCase().startsWith('en') ? 'en' : 'zh'
-      const translated = reasonI18nMap[key]?.[lang]
-      return translated || key
-    }
     if (isTradeFailedLog(item)) {
       const rawReason = asText(payload['reason'], asText(item?.reason, asText(item?.description, '-')))
       const reason = localizeReason(rawReason)
@@ -346,7 +382,8 @@ export default function TaskDetailPage({ params }: { params: any }) {
       })(),
       signal_rejected_precision_too_small: '信号被拦截',
       target_volume_rounded_to_zero: '交易失败',
-      task_command_publish_failed: '交易指令投递失败'
+      task_command_publish_failed: '交易指令投递失败',
+      task_follow_terminated_manual_close_required: '结束跟单'
     }
     return titleMap[eventCode] || asText(item?.title, '日志')
   }
