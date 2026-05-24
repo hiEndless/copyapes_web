@@ -27,6 +27,7 @@ import {
 } from '@/components/ui/alert-dialog'
 
 type TaskLogItem = {
+  task_id?: string | number
   title?: string
   date?: string
   description?: string
@@ -37,7 +38,6 @@ type TaskLogItem = {
   pos_side?: string
   signal_type?: string
   reason?: string
-  task_id?: string
   has_structured_log?: boolean
   log_payload?: Record<string, unknown>
 }
@@ -212,9 +212,18 @@ export default function TaskDetailPage({ params }: { params: any }) {
     const payloadReason = localizeReason(asText(payload['reason'], asText(item?.reason, '-')))
 
     const formatters: Record<string, (ctx: LogFormatContext) => string> = {
-      leader_close_requested: (_ctx) => `结束原因：交易员已关闭带单项目或隐藏了仓位`,
-      task_manual_stopped: (_ctx) => `结束原因：用户手动终止`,
-      task_stopped: (ctx) => `结束原因：${ctx.payloadReason}`,
+      leader_close_requested: (ctx) => {
+        const taskId = ctx.asText(ctx.payload['task_id'], asText(item?.task_id, '-'))
+        return `任务：${taskId}\n当前已有持仓不会平仓，后续请手动平仓。`
+      },
+      task_manual_stopped: (ctx) => {
+        const taskId = ctx.asText(ctx.payload['task_id'], asText(item?.task_id, '-'))
+        return `任务：${taskId}\n当前已有持仓不会平仓，后续请手动平仓。`
+      },
+      task_stopped: (ctx) => {
+        const taskId = ctx.asText(ctx.payload['task_id'], asText(item?.task_id, '-'))
+        return `任务：${taskId}\n当前已有持仓不会平仓，后续请手动平仓。`
+      },
       trader_position_changed: (ctx) => {
         const signal = String(ctx.payloadSignalType || '').toLowerCase()
         const tradeVolume = ctx.asNumberText(ctx.payload['delta_pos'])
