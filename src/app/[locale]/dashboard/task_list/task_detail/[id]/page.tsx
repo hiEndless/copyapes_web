@@ -38,7 +38,6 @@ type TaskLogItem = {
   pos_side?: string
   signal_type?: string
   reason?: string
-  task_id?: string
   has_structured_log?: boolean
   log_payload?: Record<string, unknown>
 }
