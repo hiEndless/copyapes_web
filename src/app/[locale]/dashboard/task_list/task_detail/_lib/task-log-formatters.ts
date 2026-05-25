@@ -311,6 +311,13 @@ export function createTaskLogFormatters(locale: string) {
     }
   }
 
+  const formatLeverageWarningLine = (payload: Record<string, unknown>) => {
+    const warning = payload['leverage_warning']
+    if (!warning || typeof warning !== 'object') return ''
+    const reason = asText((warning as Record<string, unknown>)['reason'], '')
+    return reason ? `\n杠杆调整错误：${reason}` : ''
+  }
+
   const formatTradeLogDescription = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
     const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
@@ -319,12 +326,13 @@ export function createTaskLogFormatters(locale: string) {
     }
     const exchange = asText(payload['exchange'], '-')
     const volume = asNumberText(payload['delta_pos'], asNumberText(payload['trader_position_size'], '-'))
+    const leverageWarningLine = formatLeverageWarningLine(payload)
     if (isTradeFailedLog(item)) {
       const rawReason = asText(payload['reason'], asText(item?.reason, asText(item?.description, '-')))
       const reason = localizeReason(rawReason)
-      return `交易所：${exchange}\n交易量：${volume}\n失败原因：${reason}`
+      return `交易所：${exchange}\n交易量：${volume}\n失败原因：${reason}${leverageWarningLine}`
     }
-    return `交易所：${exchange}\n交易量：${volume}`
+    return `交易所：${exchange}\n交易量：${volume}${leverageWarningLine}`
   }
 
   return {
