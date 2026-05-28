@@ -16,10 +16,12 @@ export function RebateTab() {
   const [okxApi, setOkxApi] = useState<any[]>([])
   const [gateApi, setGateApi] = useState<any[]>([])
   const [bitgetApi, setBitgetApi] = useState<any[]>([])
+  const [weexApi, setWeexApi] = useState<any[]>([])
 
   const [okxName, setOkxName] = useState<any>(null)
   const [gateName, setGateName] = useState<any>(null)
   const [bitgetName, setBitgetName] = useState<any>(null)
+  const [weexName, setWeexName] = useState<any>(null)
 
   const [bnList, setBnList] = useState<any[]>([])
   const [bnListTime, setBnListTime] = useState("")
@@ -37,6 +39,7 @@ export function RebateTab() {
         setBinance(res.data.binance)
         setGateName(res.data.gate)
         setBitgetName(res.data.bitget)
+        setWeexName(res.data.weex)
       }
     } catch (err) {
       console.error(err)
@@ -48,11 +51,13 @@ export function RebateTab() {
       const okx_id = okxApi.find((o: any) => o.api_name === okxName)?.id || null
       const gate_id = gateApi.find((o: any) => o.api_name === gateName)?.id || null
       const bitget_id = bitgetApi.find((o: any) => o.api_name === bitgetName)?.id || null
+      const weex_id = weexApi.find((o: any) => o.api_name === weexName)?.id || null
 
       await agentApi.updateRebateExchange({
         okx_id,
         gate_id,
         bitget_id,
+        weex_id,
       })
     } catch (err) {
       console.error(err)
@@ -84,6 +89,16 @@ export function RebateTab() {
       const res = await agentApi.getRebateBitget()
 
       if (res.code === 0 && res.data) setBitgetApi(res.data)
+    } catch (err) {
+      console.error(err)
+    }
+  }, [])
+
+  const getWeex = useCallback(async () => {
+    try {
+      const res = await agentApi.getRebateWeex()
+
+      if (res.code === 0 && res.data) setWeexApi(res.data)
     } catch (err) {
       console.error(err)
     }
@@ -136,7 +151,8 @@ export function RebateTab() {
     getOKX()
     getGate()
     getBitget()
-  }, [getExchange, getOKX, getGate, getBitget])
+    getWeex()
+  }, [getExchange, getOKX, getGate, getBitget, getWeex])
 
   useEffect(() => {
     getBnList(page)
@@ -187,6 +203,21 @@ export function RebateTab() {
               </SelectTrigger>
               <SelectContent>
                 {bitgetApi.map((option: any) => (
+                  <SelectItem key={option.id} value={option.api_name}>{option.api_name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button variant="default" onClick={submitExchange}>确认</Button>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Label className="w-12 shrink-0 text-sm font-medium">Weex</Label>
+            <Select value={weexName ? String(weexName) : undefined} onValueChange={(val) => setWeexName(val)}>
+              <SelectTrigger className="flex-1 bg-background">
+                <SelectValue placeholder={weexApi.length === 0 ? "请先添加返佣账号" : "选择返佣账号"} />
+              </SelectTrigger>
+              <SelectContent>
+                {weexApi.map((option: any) => (
                   <SelectItem key={option.id} value={option.api_name}>{option.api_name}</SelectItem>
                 ))}
               </SelectContent>

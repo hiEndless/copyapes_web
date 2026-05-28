@@ -117,6 +117,7 @@ export const agentApi = {
   getRebateOkx: () => request<any>('/rebate/okx/', { method: 'GET' }),
   getRebateGate: () => request<any>('/rebate/gate/', { method: 'GET' }),
   getRebateBitget: () => request<any>('/rebate/bitget/', { method: 'GET' }),
+  getRebateWeex: () => request<any>('/rebate/weex/', { method: 'GET' }),
 
   // bn invite
   getBnInvite: (params: { limit: number; offset: number }) => request<any>('/rebate/bn_invite/', { method: 'GET', params }),
