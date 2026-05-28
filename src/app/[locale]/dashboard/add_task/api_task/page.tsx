@@ -355,7 +355,7 @@ export default function ApiTaskPage() {
         traderName={selectedTrader?.name || ''}
         platform={selectedTrader?.platform || ''}
         traderPlatform={selectedTrader?.platform === 'binance' ? 5 : 6}
-        roleType='api'
+        roleType='1'
       />
     </div>
   )
