@@ -18,6 +18,15 @@ export function getFollowType() {
   return '固定比例'
 }
 
+export function getFirstOrderSetLabel(value: number | string | undefined) {
+  const v = String(value ?? '1')
+
+  if (v === '2') return '复制当前持仓'
+  if (v === '3') return '仅复制当前亏损仓位'
+
+  return '仅复制新开仓'
+}
+
 export function getRoleType(roleType: number | string, traderPlatform: number | string) {
   const rt = String(roleType)
   const tp = String(traderPlatform)
@@ -60,6 +69,10 @@ export function buildTaskParameterList(task: Record<string, unknown>): TaskParam
   list.push({
     label: '杠杆设置',
     value: String(task.lever_set) === '1' ? '跟随交易员' : (task.leverage as string | number)
+  })
+  list.push({
+    label: '首单交易设置',
+    value: getFirstOrderSetLabel(task.first_order_set as number | string | undefined)
   })
 
   if (String(task.trade_trigger_mode) === '1') {

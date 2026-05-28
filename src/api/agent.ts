@@ -111,7 +111,7 @@ export const agentApi = {
 
   // rebate exchange
   getRebateExchange: () => request<any>('/rebate/exchange/', { method: 'GET' }),
-  updateRebateExchange: (data: any) => request<any>('/rebate/exchange/', { method: 'PUT', body: data }),
+  updateRebateExchange: (data: any) => request<any>('/rebate/exchange/', { method: 'POST', body: data }),
 
   // other rebate
   getRebateOkx: () => request<any>('/rebate/okx/', { method: 'GET' }),
