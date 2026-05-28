@@ -61,11 +61,20 @@ const API_EXCHANGE_LOGO: Record<string, string> = {
   '1': '/exchanges/okx.png',
   '2': '/exchanges/binance.png',
   '3': '/exchanges/gate.png',
-  '4': '/exchanges/bitget.png'
+  '4': '/exchanges/bitget.png',
+  '5': '/exchanges/weex.png',
+  okx: '/exchanges/okx.png',
+  binance: '/exchanges/binance.png',
+  gate: '/exchanges/gate.png',
+  bitget: '/exchanges/bitget.png',
+  weex: '/exchanges/weex.png'
 }
 
-function getApiExchangeLogo(exchange: string | number | undefined): string | null {
-  return API_EXCHANGE_LOGO[String(exchange ?? '')] ?? null
+function getApiExchangeLogo(platformOrExchange: string | number | undefined): string | null {
+  const key = String(platformOrExchange ?? '').trim()
+  if (!key) return null
+
+  return API_EXCHANGE_LOGO[key] ?? API_EXCHANGE_LOGO[key.toLowerCase()] ?? null
 }
 
 function getCurrentUserId(): string | null {
@@ -622,7 +631,7 @@ export function CopyTaskConfigSheet({
                     {apiOptions.map(api => {
                       const apiId = String(api.id)
                       const active = formData.api_id === apiId
-                      const exchangeLogo = getApiExchangeLogo(api.exchange)
+                      const exchangeLogo = getApiExchangeLogo(api.platform ?? api.exchange)
 
                       return (
                         <button
