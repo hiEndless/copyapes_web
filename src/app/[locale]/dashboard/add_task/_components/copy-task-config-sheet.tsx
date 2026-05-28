@@ -57,6 +57,30 @@ function buildUniqueName(
   return `${leaderId || id}-${cid}`
 }
 
+const API_EXCHANGE_LOGO: Record<string, string> = {
+  '1': '/exchanges/okx.png',
+  '2': '/exchanges/binance.png',
+  '3': '/exchanges/gate.png',
+  '4': '/exchanges/bitget.png'
+}
+
+function getApiExchangeLogo(exchange: string | number | undefined): string | null {
+  return API_EXCHANGE_LOGO[String(exchange ?? '')] ?? null
+}
+
+function getCurrentUserId(): string | null {
+  try {
+    const raw = localStorage.getItem('userInfo')
+    if (!raw) return null
+    const info = JSON.parse(raw) as { id?: number | string }
+    if (info?.id === undefined || info?.id === null || info.id === '') return null
+
+    return String(info.id)
+  } catch {
+    return null
+  }
+}
+
 // --- Utility Component for Tags ---
 function TagInput({
   tags,
@@ -264,17 +288,27 @@ export function CopyTaskConfigSheet({
       refreshNotificationStatus()
       getApiOptions().then(res => {
         if (res.code === 0 && Array.isArray(res.data)) {
-          if (res.data.length > 0) {
-            setUser(res.data[0].user)
+          const currentUserId = getCurrentUserId()
+
+          if (currentUserId) {
+            setUser(currentUserId)
           }
 
-          const validApis = res.data.filter((item: any) => item.is_readonly === false)
+          const validApis = res.data.filter((item: any) => {
+            if (item.is_readonly !== false) return false
+            if (!currentUserId) return false
+
+            return String(item.user) === currentUserId
+          })
 
           setApiOptions(validApis)
 
-          // 默认选中第一个可用的 API
-          if (validApis.length > 0 && !formData.api_id) {
+          const selectedStillValid = validApis.some((item: any) => String(item.id) === formData.api_id)
+
+          if (validApis.length > 0 && (!formData.api_id || !selectedStillValid)) {
             setFormData(prev => ({ ...prev, api_id: String(validApis[0].id) }))
+          } else if (validApis.length === 0 && formData.api_id) {
+            setFormData(prev => ({ ...prev, api_id: '' }))
           }
         }
       })
@@ -569,30 +603,51 @@ export function CopyTaskConfigSheet({
               {/* 选择跟单 API */}
               <div>
                 <div className='mb-2 text-sm font-medium'>选择你的跟单 API</div>
-                <div className='flex flex-wrap gap-2'>
-                  {apiOptions.map(api => {
-                    const active = formData.api_id === api.id
+                {apiOptions.length === 0 ? (
+                  <div className='bg-muted/40 flex items-center justify-between rounded-md border px-3 py-2 text-xs'>
+                    <span className='text-muted-foreground'>暂无可用跟单 API，请先添加交易 API</span>
+                    <button
+                      type='button'
+                      className='text-primary hover:underline'
+                      onClick={() => {
+                        onClose()
+                        router.push('/dashboard/api')
+                      }}
+                    >
+                      去添加
+                    </button>
+                  </div>
+                ) : (
+                  <div className='flex flex-wrap gap-2'>
+                    {apiOptions.map(api => {
+                      const apiId = String(api.id)
+                      const active = formData.api_id === apiId
+                      const exchangeLogo = getApiExchangeLogo(api.exchange)
 
-                    return (
-                      <button
-                        key={api.id}
-                        type='button'
-                        className={`rounded-md border px-3 py-2 text-left transition-colors ${
-                          active ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-muted'
-                        }`}
-                        onClick={() => updateForm('api_id', api.id)}
-                      >
-                        <div className='flex items-center gap-2'>
-                          <span
-                            className={`text-xs font-medium ${active ? 'text-primary-foreground' : 'text-foreground'}`}
-                          >
-                            {api.api_name || `API ${api.id}`}
-                          </span>
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
+                      return (
+                        <button
+                          key={api.id}
+                          type='button'
+                          className={`rounded-md border px-3 py-2 text-left transition-colors ${
+                            active ? 'border-primary bg-primary text-primary-foreground' : 'hover:bg-muted'
+                          }`}
+                          onClick={() => updateForm('api_id', apiId)}
+                        >
+                          <div className='flex items-center gap-2'>
+                            {exchangeLogo ? (
+                              <img src={exchangeLogo} alt='' className='h-4 w-4 shrink-0 rounded-sm object-contain' />
+                            ) : null}
+                            <span
+                              className={`text-xs font-medium ${active ? 'text-primary-foreground' : 'text-foreground'}`}
+                            >
+                              {api.api_name || `API ${api.id}`}
+                            </span>
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                )}
               </div>
 
               <div className='space-y-2'>
