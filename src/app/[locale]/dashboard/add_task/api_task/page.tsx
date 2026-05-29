@@ -10,6 +10,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { searchApi } from '@/api/apiadd'
 import { getApiOptions } from '@/api/task'
@@ -20,7 +21,8 @@ type ApiTrader = {
   name: string
   owner?: string
   balance: number
-  platform: 'okx' | 'binance' | 'bitget' | 'gate'
+  platform: 'okx' | 'binance' | 'bitget' | 'gate' | 'weex'
+  isDemo?: boolean
 }
 
 // 移除模拟的“我的 API”数据
@@ -58,20 +60,22 @@ export default function ApiTaskPage() {
         const readonlyApis = res.data.filter((api: any) => api.is_readonly === true)
 
         const formattedApis: ApiTrader[] = readonlyApis.map((c: any) => {
-          const p = String(c.exchange)
-          let platform: 'okx' | 'binance' | 'gate' | 'bitget' = 'okx'
+          const p = String(c.exchange ?? c.platform)
+          let platform: ApiTrader['platform'] = 'okx'
 
           if (p === '1') platform = 'okx'
           if (p === '2') platform = 'binance'
           if (p === '3') platform = 'gate'
           if (p === '4') platform = 'bitget'
+          if (p === '5') platform = 'weex'
 
           return {
             id: String(c.id), // 注意：如果是自己的API，通常使用 id 或者 api_id
             name: c.name || c.api_name,
             owner: c.username || '我',
             balance: c.usdt || 0,
-            platform
+            platform,
+            isDemo: String(c.flag) === '1'
           }
         })
 
@@ -97,19 +101,21 @@ export default function ApiTaskPage() {
       if (res.code === 0 && Array.isArray(res.data)) {
         const results: ApiTrader[] = res.data.map((c: any) => {
           const p = String(c.exchange)
-          let platform: 'okx' | 'binance' | 'gate' | 'bitget' = 'okx'
+          let platform: ApiTrader['platform'] = 'okx'
 
           if (p === '1') platform = 'okx'
           if (p === '2') platform = 'binance'
           if (p === '3') platform = 'gate'
           if (p === '4') platform = 'bitget'
+          if (p === '5') platform = 'weex'
 
           return {
             id: String(c.api_id),
             name: c.api_name,
             owner: c.username || '匿名用户',
             balance: c.usdt || 0,
-            platform
+            platform,
+            isDemo: String(c.flag) === '1'
           }
         })
 
@@ -252,7 +258,17 @@ export default function ApiTaskPage() {
                               />
                             </div>
                             <div className='flex-1 overflow-hidden'>
-                              <h3 className='truncate text-sm font-semibold'>{api.name}</h3>
+                              <div className='flex items-center gap-2 overflow-hidden'>
+                                <h3 className='truncate text-sm font-semibold'>{api.name}</h3>
+                                {api.isDemo && (
+                                  <Badge
+                                    variant='secondary'
+                                    className='shrink-0 rounded-sm border-none bg-amber-500/10 text-[10px] text-amber-600 dark:text-amber-400'
+                                  >
+                                    模拟盘
+                                  </Badge>
+                                )}
+                              </div>
                               {api.owner && (
                                 <p className='text-muted-foreground mt-1 text-xs'>
                                   创建者: <span className='text-foreground'>{api.owner}</span>
@@ -316,7 +332,17 @@ export default function ApiTaskPage() {
                               />
                             </div>
                             <div className='flex-1 overflow-hidden'>
-                              <h3 className='truncate text-sm font-semibold'>{api.name}</h3>
+                              <div className='flex items-center gap-2 overflow-hidden'>
+                                <h3 className='truncate text-sm font-semibold'>{api.name}</h3>
+                                {api.isDemo && (
+                                  <Badge
+                                    variant='secondary'
+                                    className='shrink-0 rounded-sm border-none bg-amber-500/10 text-[10px] text-amber-600 dark:text-amber-400'
+                                  >
+                                    模拟盘
+                                  </Badge>
+                                )}
+                              </div>
                               {api.owner && (
                                 <p className='text-muted-foreground mt-1 text-xs'>
                                   拥有者: <span className='text-foreground'>{api.owner}</span>
