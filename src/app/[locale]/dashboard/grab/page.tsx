@@ -590,6 +590,7 @@ export default function GrabPage() {
         onClose={() => {
           setIsConfigOpen(false)
         }}
+        onSuccess={fetchTasks}
         traderId={uniqueName}
         traderName={uniqueName}
         platform={exchange}

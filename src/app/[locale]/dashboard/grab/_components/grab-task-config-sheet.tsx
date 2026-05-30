@@ -1,23 +1,30 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { createGrabTask, getLeaderInfo } from '@/api/task'
 
 export interface GrabTaskConfigSheetProps {
   isOpen: boolean
   onClose: () => void
+  onSuccess?: () => void
   traderId: string | null
   traderName?: string
   platform: 'binance' | 'okx' | ''
 }
 
+const toStr = (value: string | number | undefined | null) =>
+  value === undefined || value === null ? '' : String(value)
+
 export function GrabTaskConfigSheet({
   isOpen,
   onClose,
+  onSuccess,
   traderId,
   traderName,
   platform
@@ -59,8 +66,12 @@ export function GrabTaskConfigSheet({
     if (isOpen && traderId && platform) {
       fetchTraderData()
     } else if (!isOpen) {
-      // 关闭时重置状态
       setMsg('')
+      setNickname('')
+      setAvatarUrl('')
+      setDesc('')
+      setRoi('')
+      setPnl('')
       setFollowType('1')
       setCostPerOrder('')
       setInvestAmount('')
@@ -69,76 +80,54 @@ export function GrabTaskConfigSheet({
   }, [isOpen, traderId, platform])
 
   const fetchTraderData = async () => {
+    if (!traderId || !platform) return
+
     setIsFetchingData(true)
     setMsg('')
     try {
-      // 模拟 API 请求延迟
-      await new Promise(resolve => setTimeout(resolve, 500))
+      const exchange = platform === 'okx' ? 1 : 2
+      const res = await getLeaderInfo({ uniqueName: traderId, exchange })
 
-      // 模拟返回数据，严格参考 Vue 项目结构
-      // const exchangeId = platform === 'okx' ? 1 : 2;
-      // const response = await http.post('/api/leader-info/', { uniqueName: traderId, exchange: exchangeId })
-      
-      const mockResponseData = {
-        code: 0,
-        data: {
-          detail: {
-            nicknameTranslate: traderName || traderId || '未知交易员',
-            avatarUrl: `/exchanges/${platform}.png`, // 模拟，如果是 binance 默认头像，Vue里会替换
-            descTranslate: '专业的加密货币量化交易团队，主打稳健收益。'
-          },
-          performance: {
-            roi: '125.4',
-            pnl: '5200.50'
-          },
-          limit_info: platform === 'okx' ? {
-            // OKX 的 limit_info
-            fixRatioMinCopyAmount: '100',
-            fixRatioMaxCopyAmount: '100000'
-          } : {
-            // Binance 的 limit_info
-            minCostPerOrderAmount: '10',
-            maxCostPerOrderAmount: '1000',
-            fixAmtMinCopyAmount: '100',
-            fixAmtMaxCopyAmount: '50000',
-            fixRatioMinCopyAmount: '200',
-            fixRatioMaxCopyAmount: '100000'
-          }
-        },
-        msg: ''
-      }
+      if (res.code === 0 && res.data) {
+        const data = res.data
+        setNickname(data.detail?.nicknameTranslate || traderName || traderId || '未知交易员')
 
-      if (mockResponseData.code === 0) {
-        const data = mockResponseData.data
-        setNickname(data.detail.nicknameTranslate)
-        
-        let avatar = data.detail.avatarUrl
+        let avatar = data.detail?.avatarUrl || `/exchanges/${platform}.png`
         if (avatar === 'https://bin.bnbstatic.com/static/images/copytrading/default-avatar.png') {
           avatar = '/images/head/default-avatar.png'
         }
         setAvatarUrl(avatar)
-        
-        setDesc(data.detail.descTranslate)
-        setRoi(data.performance.roi)
-        setPnl(data.performance.pnl)
 
+        setDesc(data.detail?.descTranslate || '')
+        setRoi(toStr(data.performance?.roi))
+        setPnl(toStr(data.performance?.pnl))
+
+        const limit = data.limit_info || {}
         if (platform === 'okx') {
-          setFixRatioMinCopyAmount(data.limit_info.fixRatioMinCopyAmount)
-          setRatioDec(`最低${data.limit_info.fixRatioMinCopyAmount}`)
+          const minRatio = toStr(limit.fixRatioMinCopyAmount)
+          setFixRatioMinCopyAmount(minRatio)
+          setRatioDec(`最低${minRatio}`)
         } else {
-          setMinCostPerOrderAmount((data.limit_info as any).minCostPerOrderAmount)
-          setMaxCostPerOrderAmount((data.limit_info as any).maxCostPerOrderAmount)
-          setFixAmtMinCopyAmount((data.limit_info as any).fixAmtMinCopyAmount)
-          setFixAmtMaxCopyAmount((data.limit_info as any).fixAmtMaxCopyAmount)
-          setFixRatioMinCopyAmount(data.limit_info.fixRatioMinCopyAmount)
-          setFixRatioMaxCopyAmount(data.limit_info.fixRatioMaxCopyAmount)
+          const minCost = toStr(limit.minCostPerOrderAmount)
+          const maxCost = toStr(limit.maxCostPerOrderAmount)
+          const minAmt = toStr(limit.fixAmtMinCopyAmount)
+          const maxAmt = toStr(limit.fixAmtMaxCopyAmount)
+          const minRatio = toStr(limit.fixRatioMinCopyAmount)
+          const maxRatio = toStr(limit.fixRatioMaxCopyAmount)
 
-          setRatioDec(`${data.limit_info.fixRatioMinCopyAmount}~${data.limit_info.fixRatioMaxCopyAmount}`)
-          setAmtDec(`${(data.limit_info as any).fixAmtMinCopyAmount}~${(data.limit_info as any).fixAmtMaxCopyAmount}`)
-          setPerOrderDec(`${(data.limit_info as any).minCostPerOrderAmount}~${(data.limit_info as any).maxCostPerOrderAmount}`)
+          setMinCostPerOrderAmount(minCost)
+          setMaxCostPerOrderAmount(maxCost)
+          setFixAmtMinCopyAmount(minAmt)
+          setFixAmtMaxCopyAmount(maxAmt)
+          setFixRatioMinCopyAmount(minRatio)
+          setFixRatioMaxCopyAmount(maxRatio)
+
+          setRatioDec(`${minRatio}~${maxRatio}`)
+          setAmtDec(`${minAmt}~${maxAmt}`)
+          setPerOrderDec(`${minCost}~${maxCost}`)
         }
       } else {
-        setMsg(mockResponseData.msg || '获取数据失败')
+        setMsg(res.msg || res.error || '获取数据失败')
       }
     } catch (e) {
       setMsg('网络请求失败，请稍后重试')
@@ -207,25 +196,29 @@ export function GrabTaskConfigSheet({
   }
 
   const handleSubmit = async () => {
-    if (!validateForm()) return
+    if (!validateForm() || !traderId || !platform) return
 
     setIsLoading(true)
     try {
-      const data = {
+      const res = await createGrabTask({
         exchange: platform === 'okx' ? 1 : 2,
         uniqueName: traderId,
-        nickname: nickname,
+        nickname: nickname || traderName || traderId,
+        follow_type: platform === 'binance' ? parseInt(followType, 10) : 1,
         costPerOrder: platform === 'binance' && followType === '2' ? parseFloat(costPerOrder) : 0,
-        investAmount: parseFloat(investAmount),
-        ...(platform === 'binance' && { follow_type: followType })
-      }
+        investAmount: parseFloat(investAmount)
+      })
 
-      console.log('Submitting Grab Task:', data)
-      // await http.post('/api/grabtask/?token=' + localStorage.getItem("token"), data)
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      onClose()
+      if (res.code === 0) {
+        toast.success('抢位任务已创建')
+        onSuccess?.()
+        onClose()
+      } else {
+        toast.error(res.error || res.msg || '创建失败')
+      }
     } catch (e) {
       console.error(e)
+      toast.error('请求失败')
     } finally {
       setIsLoading(false)
     }

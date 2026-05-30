@@ -129,3 +129,48 @@ export function stopGrabTask(id: number | string) {
     body: { id }
   })
 }
+
+export type LeaderInfoData = {
+  detail: {
+    nicknameTranslate?: string
+    avatarUrl?: string
+    descTranslate?: string
+  }
+  performance: {
+    roi?: string | number
+    pnl?: string | number
+  }
+  limit_info: {
+    minCostPerOrderAmount?: string | number
+    maxCostPerOrderAmount?: string | number
+    fixAmtMinCopyAmount?: string | number
+    fixAmtMaxCopyAmount?: string | number
+    fixRatioMinCopyAmount?: string | number
+    fixRatioMaxCopyAmount?: string | number
+  }
+}
+
+// 获取抢位目标交易员详情与限额
+export function getLeaderInfo(data: { uniqueName: string; exchange: number }) {
+  return request<LeaderInfoData>('/api/leader-info/', {
+    method: 'POST',
+    body: data,
+    silent: true
+  })
+}
+
+// 创建抢位任务
+export function createGrabTask(data: {
+  uniqueName: string
+  exchange: number
+  nickname: string
+  follow_type?: number
+  investAmount: number
+  costPerOrder: number
+}) {
+  return request('/api/grabtask/', {
+    method: 'POST',
+    body: data,
+    silent: true
+  })
+}
