@@ -46,8 +46,24 @@ type GrabTask = {
   uniqueName: string
   follow_type: string
   status: number // 1: 进行中, 0: 结束
-  info: string // 成功/失败信息
+  info: string
   created_at: string
+}
+
+/** status=1 进行中；status=0 按 info 区分成功/失败/手动终止 */
+type GrabTaskOutcome = 'running' | 'success' | 'failed' | 'stopped'
+
+function getGrabTaskOutcome(task: Pick<GrabTask, 'status' | 'info'>): GrabTaskOutcome {
+  if (task.status === 1) return 'running'
+
+  const info = (task.info ?? '').trim()
+
+  if (info === '用户终止') return 'stopped'
+
+  // 抢位成功：无错误文案（兼容历史 "成功"）
+  if (!info || info === '成功') return 'success'
+
+  return 'failed'
 }
 
 const featureActions = [
@@ -525,7 +541,10 @@ export default function GrabPage() {
                 </h3>
               </div>
               <div className='grid gap-3 sm:grid-cols-2'>
-                {historyTasks.map(task => (
+                {historyTasks.map(task => {
+                  const outcome = getGrabTaskOutcome(task)
+
+                  return (
                   <div
                     key={task.id}
                     className='group bg-card relative flex flex-col justify-between overflow-hidden rounded-xl border p-4 shadow-sm transition-all hover:shadow-md'
@@ -545,13 +564,21 @@ export default function GrabPage() {
                         </div>
                       </div>
 
-                      {task.info === '成功' ? (
+                      {outcome === 'success' ? (
                         <Badge
                           variant='outline'
                           className='shrink-0 border-green-500/20 bg-green-500/10 text-green-600 dark:bg-green-500/5'
                         >
                           <CheckCircle2 className='mr-1 h-3 w-3' />
                           成功
+                        </Badge>
+                      ) : outcome === 'stopped' ? (
+                        <Badge
+                          variant='outline'
+                          className='text-muted-foreground shrink-0 border-muted-foreground/30 bg-muted/50'
+                        >
+                          <StopCircle className='mr-1 h-3 w-3' />
+                          已终止
                         </Badge>
                       ) : (
                         <Badge
@@ -570,15 +597,23 @@ export default function GrabPage() {
                         <span>{new Date(task.created_at).toLocaleString()}</span>
                       </div>
 
-                      {task.info !== '成功' && task.info && (
+                      {outcome === 'failed' && task.info && (
                         <div className='bg-destructive/5 text-destructive/90 flex items-start gap-1.5 rounded-md p-2 text-xs'>
                           <Info className='mt-0.5 h-3.5 w-3.5 shrink-0' />
                           <span>{task.info}</span>
                         </div>
                       )}
+
+                      {outcome === 'stopped' && (
+                        <div className='bg-muted/50 text-muted-foreground flex items-start gap-1.5 rounded-md p-2 text-xs'>
+                          <Info className='mt-0.5 h-3.5 w-3.5 shrink-0' />
+                          <span>您已手动终止该抢位任务</span>
+                        </div>
+                      )}
                     </div>
                   </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </MotionPreset>
