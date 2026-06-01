@@ -116,7 +116,11 @@ type ApiItemData = {
   ok: boolean;
   error?: string;
   positions: Position[];
+  is_readonly: boolean;
 };
+
+const isTradingApi = (api: { is_readonly?: boolean | number | string | null }) =>
+  api.is_readonly === false;
 
 export default function PositionsPage() {
   const [loading, setLoading] = useState(true);
@@ -185,10 +189,12 @@ export default function PositionsPage() {
       }
 
       const apis = Array.isArray(apiRes.data) ? apiRes.data : [];
-      const positions = posRes.data?.positions || [];
-      const errors = posRes.data?.errors || [];
+      const tradingApis = apis.filter(isTradingApi);
+      const tradingApiIds = new Set(tradingApis.map((api: { id: number }) => api.id));
+      const positions = (posRes.data?.positions || []).filter((p) => tradingApiIds.has(p.api_id));
+      const errors = (posRes.data?.errors || []).filter((e) => tradingApiIds.has(e.api_id));
 
-      const merged: ApiItemData[] = apis.map((api: any) => {
+      const merged: ApiItemData[] = tradingApis.map((api: any) => {
         const apiId = api.id;
         const apiPositions = positions.filter((p) => p.api_id === apiId);
         const apiError = errors.find((e) => e.api_id === apiId);
@@ -200,39 +206,8 @@ export default function PositionsPage() {
           ok: !apiError,
           error: apiError?.reason,
           positions: apiPositions,
+          is_readonly: false,
         };
-      });
-
-      // Optionally, add any APIs that are in positions/errors but not in apis list
-      const existingApiIds = new Set(merged.map(a => a.api_id));
-      
-      positions.forEach(p => {
-        if (!existingApiIds.has(p.api_id)) {
-          merged.push({
-            api_id: p.api_id,
-            api_name: p.api_name || `API ${p.api_id}`,
-            platform: p.platform,
-            balance: 0,
-            ok: true,
-            positions: positions.filter(pos => pos.api_id === p.api_id)
-          });
-          existingApiIds.add(p.api_id);
-        }
-      });
-
-      errors.forEach(e => {
-        if (!existingApiIds.has(e.api_id)) {
-          merged.push({
-            api_id: e.api_id,
-            api_name: `API ${e.api_id}`,
-            platform: e.platform,
-            balance: 0,
-            ok: false,
-            error: e.reason,
-            positions: []
-          });
-          existingApiIds.add(e.api_id);
-        }
       });
 
       setData({ items: merged });
@@ -398,26 +373,28 @@ export default function PositionsPage() {
                                 {formatOpenTimeShort(item.opened_at)}
                               </span>
 
-                              <div className='mt-2 w-full'>
-                                <Button
-                                  variant='default'
-                                  size='sm'
-                                  className='h-8 w-full text-xs shadow-none'
-                                  onClick={() => {
-                                    setCloseTarget({
-                                      apiId: apiItem.api_id,
-                                      apiName: apiItem.api_name,
-                                      symbol: item.symbol,
-                                      marginMode: item.margin_mode ?? 'cross',
-                                      side: item.side,
-                                      quantity: item.position_size ? Math.abs(item.position_size) : undefined,
-                                    });
-                                    setClosePositionOpen(true);
-                                  }}
-                                >
-                                  全平
-                                </Button>
-                              </div>
+                              {apiItem.is_readonly === false ? (
+                                <div className='mt-2 w-full'>
+                                  <Button
+                                    variant='default'
+                                    size='sm'
+                                    className='h-8 w-full text-xs shadow-none'
+                                    onClick={() => {
+                                      setCloseTarget({
+                                        apiId: apiItem.api_id,
+                                        apiName: apiItem.api_name,
+                                        symbol: item.symbol,
+                                        marginMode: item.margin_mode ?? 'cross',
+                                        side: item.side,
+                                        quantity: item.position_size ? Math.abs(item.position_size) : undefined,
+                                      });
+                                      setClosePositionOpen(true);
+                                    }}
+                                  >
+                                    全平
+                                  </Button>
+                                </div>
+                              ) : null}
                             </div>
                           </div>
                         ))}
@@ -470,24 +447,28 @@ export default function PositionsPage() {
                                 </TableCell>
                                 <TableCell>{formatOpenTime(item.opened_at)}</TableCell>
                                 <TableCell className='text-right'>
-                                  <Button
-                                    variant='default'
-                                    size='sm'
-                                    className='h-7 px-2 text-xs shadow-none'
-                                    onClick={() => {
-                                      setCloseTarget({
-                                        apiId: apiItem.api_id,
-                                        apiName: apiItem.api_name,
-                                        symbol: item.symbol,
-                                        marginMode: item.margin_mode ?? 'cross',
-                                        side: item.side,
-                                        quantity: item.position_size ? Math.abs(item.position_size) : undefined,
-                                      });
-                                      setClosePositionOpen(true);
-                                    }}
-                                  >
-                                    全平
-                                  </Button>
+                                  {apiItem.is_readonly === false ? (
+                                    <Button
+                                      variant='default'
+                                      size='sm'
+                                      className='h-7 px-2 text-xs shadow-none'
+                                      onClick={() => {
+                                        setCloseTarget({
+                                          apiId: apiItem.api_id,
+                                          apiName: apiItem.api_name,
+                                          symbol: item.symbol,
+                                          marginMode: item.margin_mode ?? 'cross',
+                                          side: item.side,
+                                          quantity: item.position_size
+                                            ? Math.abs(item.position_size)
+                                            : undefined,
+                                        });
+                                        setClosePositionOpen(true);
+                                      }}
+                                    >
+                                      全平
+                                    </Button>
+                                  ) : null}
                                 </TableCell>
                               </TableRow>
                             ))}
