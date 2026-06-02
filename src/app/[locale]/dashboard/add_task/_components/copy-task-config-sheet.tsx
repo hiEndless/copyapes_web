@@ -90,6 +90,36 @@ function getCurrentUserId(): string | null {
   }
 }
 
+function normalizeCoinSymbol(raw: string): string {
+  const tag = String(raw || '').trim().toUpperCase()
+  if (!tag) return ''
+
+  if (tag.includes('-')) {
+    return tag.split('-')[0]
+  }
+
+  if (tag.endsWith('USDT') && tag.length > 4) {
+    return tag.slice(0, -4)
+  }
+
+  return tag
+}
+
+function normalizeCoinSymbolList(values: unknown): string[] {
+  if (!Array.isArray(values)) return []
+
+  const normalized: string[] = []
+
+  values.forEach(item => {
+    const symbol = normalizeCoinSymbol(String(item ?? ''))
+    if (symbol && !normalized.includes(symbol)) {
+      normalized.push(symbol)
+    }
+  })
+
+  return normalized
+}
+
 // --- Utility Component for Tags ---
 function TagInput({
   tags,
@@ -105,7 +135,7 @@ function TagInput({
   const commitInput = () => {
     const parsedTags = inputValue
       .split(/[,，\n]+/)
-      .map(tag => tag.trim().toUpperCase())
+      .map(tag => normalizeCoinSymbol(tag))
       .filter(Boolean)
 
     if (parsedTags.length === 0) {
@@ -332,6 +362,30 @@ export function CopyTaskConfigSheet({
     setToggles(prev => ({ ...prev, [key]: value }))
   }
 
+  const handleWhiteListChange = (tags: string[]) => {
+    const normalizedTags = normalizeCoinSymbolList(tags)
+    const filteredTags = normalizedTags.filter(tag => {
+      if (toggles.black_list.includes(tag)) {
+        toast.error(`标签 "${tag}" 已存在于黑名单中，不能添加到白名单`)
+        return false
+      }
+      return true
+    })
+    updateToggle('white_list', filteredTags)
+  }
+
+  const handleBlackListChange = (tags: string[]) => {
+    const normalizedTags = normalizeCoinSymbolList(tags)
+    const filteredTags = normalizedTags.filter(tag => {
+      if (toggles.white_list.includes(tag)) {
+        toast.error(`标签 "${tag}" 已存在于白名单中，不能添加到黑名单`)
+        return false
+      }
+      return true
+    })
+    updateToggle('black_list', filteredTags)
+  }
+
   const fetchBenchMark = async (isAuto = false) => {
     if (!traderPlatform || !traderId) return
 
@@ -383,9 +437,9 @@ export function CopyTaskConfigSheet({
           balance_monitor_visible: initialTaskData.balance_monitor_mode === 1,
           balance_monitor_value: initialTaskData.balance_monitor_value ? String(initialTaskData.balance_monitor_value) : '0',
           white_list_visible: initialTaskData.white_list_mode === 1,
-          white_list: Array.isArray(initialTaskData.white_list) ? initialTaskData.white_list : [],
+          white_list: normalizeCoinSymbolList(initialTaskData.white_list),
           black_list_visible: initialTaskData.black_list_mode === 1,
-          black_list: Array.isArray(initialTaskData.black_list) ? initialTaskData.black_list : []
+          black_list: normalizeCoinSymbolList(initialTaskData.black_list)
         })
       } else {
         // 普通创建任务
@@ -465,18 +519,18 @@ export function CopyTaskConfigSheet({
         benchMark: formData.benchMark,
         investment: formData.investment,
         trade_trigger_mode: toggles.trade_trigger_visible ? '1' : '0',
-        sl_trigger_px: toggles.sl_trigger_px,
-        tp_trigger_px: toggles.tp_trigger_px,
+        sl_trigger_px: toggles.trade_trigger_visible ? toggles.sl_trigger_px : '0',
+        tp_trigger_px: toggles.trade_trigger_visible ? toggles.tp_trigger_px : '0',
         pos_mode: toggles.pos_visible ? '1' : '0',
-        pos_value: toggles.pos_value,
+        pos_value: toggles.pos_visible ? toggles.pos_value : '',
         vol24h_mode: toggles.vol24h_visible ? '1' : '0',
         vol24h_num: toggles.vol24h_num,
         balance_monitor_mode: toggles.balance_monitor_visible ? '1' : '0',
         balance_monitor_value: toggles.balance_monitor_value,
         white_list_mode: toggles.white_list_visible ? '1' : '0',
-        white_list: toggles.white_list,
+        white_list: toggles.white_list_visible ? toggles.white_list : [],
         black_list_mode: toggles.black_list_visible ? '1' : '0',
-        black_list: toggles.black_list
+        black_list: toggles.black_list_visible ? toggles.black_list : []
       }
 
       console.log('Submitting Task Config:', payload)
@@ -1052,7 +1106,7 @@ export function CopyTaskConfigSheet({
                     <label className='text-sm font-medium'>输入允许跟单的币种</label>
                     <TagInput
                       tags={toggles.white_list}
-                      onChange={tags => updateToggle('white_list', tags)}
+                      onChange={handleWhiteListChange}
                       placeholder='eg. BTC'
                     />
                   </div>
@@ -1072,7 +1126,7 @@ export function CopyTaskConfigSheet({
                     <label className='text-sm font-medium'>输入禁止跟单的币种</label>
                     <TagInput
                       tags={toggles.black_list}
-                      onChange={tags => updateToggle('black_list', tags)}
+                      onChange={handleBlackListChange}
                       placeholder='eg. DOGE'
                     />
                   </div>
