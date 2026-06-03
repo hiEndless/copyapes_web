@@ -288,6 +288,7 @@ export function CopyTaskConfigSheet({
     investment: '',
     lever_set: hideFollowLeverage ? 2 : 1,
     leverage: '',
+    margin_mode_set: 0,
     first_open_type: 1,
     uplRatio: '0',
     first_order_set: 1
@@ -417,6 +418,7 @@ export function CopyTaskConfigSheet({
           investment: initialTaskData.investment ? String(initialTaskData.investment) : prev.investment,
           lever_set: initialTaskData.lever_set || (hideFollowLeverage ? 2 : 1),
           leverage: initialTaskData.leverage ? String(initialTaskData.leverage) : prev.leverage,
+          margin_mode_set: Number(initialTaskData.margin_mode_set ?? 0),
           first_open_type: initialTaskData.first_open_type || 1,
           uplRatio: initialTaskData.uplRatio ? String(initialTaskData.uplRatio) : prev.uplRatio,
           first_order_set: initialTaskData.first_order_set || 1
@@ -508,6 +510,7 @@ export function CopyTaskConfigSheet({
         ratio: '0',
         lever_set: String(formData.lever_set),
         leverage: String(formData.lever_set) === '2' && formData.leverage ? formData.leverage : '1',
+        margin_mode_set: String(formData.margin_mode_set),
         first_open_type: String(formData.first_open_type),
         uplRatio: formData.uplRatio,
         first_order_set: String(formData.first_order_set),
@@ -881,6 +884,41 @@ export function CopyTaskConfigSheet({
                   />
                 </div>
               )}
+
+              {/* 保证金模式 */}
+              <div className='space-y-2'>
+                <label className='mb-2 block text-sm font-medium'>保证金模式</label>
+                <div className='flex flex-wrap gap-3'>
+                  <label className='flex cursor-pointer items-center gap-2'>
+                    <Checkbox
+                      checked={formData.margin_mode_set === 0}
+                      onCheckedChange={checked => {
+                        if (checked) updateForm('margin_mode_set', 0)
+                      }}
+                    />
+                    <span className='text-sm'>跟随交易员</span>
+                  </label>
+                  <label className='flex cursor-pointer items-center gap-2'>
+                    <Checkbox
+                      checked={formData.margin_mode_set === 1}
+                      onCheckedChange={checked => {
+                        if (checked) updateForm('margin_mode_set', 1)
+                      }}
+                    />
+                    <span className='text-sm'>全仓</span>
+                  </label>
+                  <label className='flex cursor-pointer items-center gap-2'>
+                    <Checkbox
+                      checked={formData.margin_mode_set === 2}
+                      onCheckedChange={checked => {
+                        if (checked) updateForm('margin_mode_set', 2)
+                      }}
+                    />
+                    <span className='text-sm'>逐仓</span>
+                  </label>
+                </div>
+                <p className='text-muted-foreground text-xs'>选择全仓或逐仓后，会覆盖交易员原始保证金模式。</p>
+              </div>
 
               {/* 开仓模式 */}
               <div className='space-y-2'>
