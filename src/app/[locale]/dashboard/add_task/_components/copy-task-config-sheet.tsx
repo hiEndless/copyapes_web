@@ -120,6 +120,46 @@ function normalizeCoinSymbolList(values: unknown): string[] {
   return normalized
 }
 
+function formatAmountForDisplay(value: number): string {
+  if (!Number.isFinite(value)) return ''
+  if (Number.isInteger(value)) return String(value)
+
+  return String(Number(value.toFixed(4)))
+}
+
+function buildFollowRatioPreview(
+  investmentRaw: string,
+  benchMarkRaw: string,
+  multipleVisible: boolean,
+  multipleRaw: string
+): { ready: false; hint: string } | { ready: true; formula: string; lowRatioWarning: boolean } {
+  const investmentText = investmentRaw.trim()
+  const benchMarkText = benchMarkRaw.trim()
+
+  if (!investmentText || !benchMarkText) {
+    return { ready: false, hint: '填写本金与投资额后，将在此显示跟单比例计算过程' }
+  }
+
+  const investment = Number(investmentText)
+  const benchMark = Number(benchMarkText)
+  const multiple = multipleVisible ? Number(multipleRaw) : 1
+
+  if (!Number.isFinite(investment) || investment <= 0) {
+    return { ready: false, hint: '投资额必须大于 0' }
+  }
+  if (!Number.isFinite(benchMark) || benchMark <= 0) {
+    return { ready: false, hint: '交易员本金必须大于 0' }
+  }
+  if (!Number.isFinite(multiple) || multiple <= 0) {
+    return { ready: false, hint: '倍投倍数必须大于 0' }
+  }
+
+  const ratioPercent = (investment / benchMark) * multiple * 100
+  const formula = `跟单比例 = ${formatAmountForDisplay(investment)} ÷ ${formatAmountForDisplay(benchMark)} × ${formatAmountForDisplay(multiple)} = ${ratioPercent.toFixed(2)}%`
+
+  return { ready: true, formula, lowRatioWarning: ratioPercent < 10 }
+}
+
 // --- Utility Component for Tags ---
 function TagInput({
   tags,
@@ -619,6 +659,16 @@ export function CopyTaskConfigSheet({
     (isBicoinFollow && normalizedRoleType !== '1')
   )
 
+  const followRatioPreview =
+    formData.follow_type === '2'
+      ? buildFollowRatioPreview(
+          formData.investment,
+          formData.benchMark,
+          toggles.multiple_visible,
+          toggles.multiple
+        )
+      : null
+
   return (
     <Sheet open={isOpen} onOpenChange={open => !open && onClose()}>
       <SheetContent side='right' className='flex flex-col p-0 sm:max-w-lg'>
@@ -826,6 +876,27 @@ export function CopyTaskConfigSheet({
                       onChange={e => updateForm('investment', e.target.value)}
                       placeholder='>100'
                     />
+                  </div>
+                )}
+
+                {followRatioPreview && (
+                  <div className='bg-muted/40 rounded-md border px-3 py-2 text-xs leading-relaxed'>
+                    {followRatioPreview.ready ? (
+                      <>
+                        <div className='text-muted-foreground mb-1'>跟单比例预览</div>
+                        <div className='text-foreground font-medium'>{followRatioPreview.formula}</div>
+                        {!toggles.multiple_visible && (
+                          <div className='text-muted-foreground mt-1'>倍投模式未开启，倍数按 1 计算</div>
+                        )}
+                        {followRatioPreview.lowRatioWarning && (
+                          <div className='mt-2 font-medium text-amber-600'>
+                            当前比例低于 10%，可能出现开仓比例过低、无法正常开仓；平仓时将按交易所最低交易量执行。
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      <span className='text-muted-foreground'>{followRatioPreview.hint}</span>
+                    )}
                   </div>
                 )}
               </div>
