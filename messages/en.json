@@ -145,7 +145,7 @@
       "button": "Start for Free",
       "f1": "1 Exchange API Authorization",
       "f2": "1 Copy Trading Task",
-      "f3": "Authorized API cumulative trading funds not exceeding 1000 USDT",
+      "f3": "Authorized API cumulative trading funds not exceeding 500 USDT",
       "f4": "Only supports OKX, Gate, Bitget APIs"
     },
     "vip": {
