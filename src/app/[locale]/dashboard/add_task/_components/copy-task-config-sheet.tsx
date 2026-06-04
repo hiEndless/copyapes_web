@@ -890,7 +890,7 @@ export function CopyTaskConfigSheet({
                         )}
                         {followRatioPreview.lowRatioWarning && (
                           <div className='mt-2 font-medium text-amber-600'>
-                            当前比例低于 10%，可能出现开仓比例过低、无法正常开仓；平仓时将按交易所最低交易量执行。
+                            当前比例低于 10%，可能出现开仓量过低，导致无法开仓的情况；平仓时将按交易所最低交易量执行。
                           </div>
                         )}
                       </>
