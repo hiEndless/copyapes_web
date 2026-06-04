@@ -34,7 +34,7 @@ const defaultPlans: Plan[] = [
     subtitle: '适合个人交易',
     priceMonthly: 0,
     accounts: '1 个交易 API，1 个跟单任务',
-    features: ['1 个交易 API', '1 个跟单任务', '授权交易 API 累计资金不超过 1,000 USDT', '只能添加 OKX / Gate / Bitget 交易所 API', '不支持带单 API', '交易消息通知', '普通客服支持'],
+    features: ['1 个交易 API', '1 个跟单任务', '授权交易 API 累计资金不超过 500 USDT', '只能添加 OKX / Gate / Bitget 交易所 API', '不支持带单 API', '交易消息通知', '普通客服支持'],
     buttonText: '开通 VIP'
   },
   {
@@ -78,13 +78,13 @@ const defaultPlans: Plan[] = [
     buttonText: '购买 VIP 资金提额'
   },
   {
-    id: 'studio_limit_pack_100000',
+    id: 'studio_limit_pack_50000',
     name: '工作室 VIP 资金限额提额',
-    subtitle: '资金限额提升 100,000 USDT',
+    subtitle: '资金限额提升 50,000 USDT',
     priceMonthly: 0,
     oneTimePrice: 300,
-    accounts: '资金限额提升 100,000 USDT',
-    features: ['工作室VIP 有效期内，永久提升资金限额 100,000 USDT', '工作室VIP 到期后，资金额度提升失效', '仅限工作室 VIP 用户购买'],
+    accounts: '资金限额提升 50,000 USDT',
+    features: ['工作室VIP 有效期内，永久提升资金限额 50,000 USDT', '工作室VIP 到期后，资金额度提升失效', '仅限工作室 VIP 用户购买'],
     buttonText: '购买工作室 VIP 资金提额'
   },
 

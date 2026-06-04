@@ -61,7 +61,7 @@ export default function InvitePage() {
 
   const milestones = [
     { count: 3, reward: 'API 授权资格 +1，跟单任务额度 +1' },
-    { count: 5, reward: '账户资金上限提升 1000U' },
+    { count: 5, reward: '账户资金上限提升 500U' },
     { count: 10, reward: 'API 授权资格 +1，跟单任务额度 +1，账户资金上限提升 1000U' }
   ]
 
