@@ -1,5 +1,10 @@
 'use client'
 
+import type { ComponentType, CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
+
+import { useTheme } from 'next-themes'
+
 import { Check, ChevronDown, Copy, EyeOff, Globe, Loader2Icon, Lock, ShieldCheck, X } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -28,42 +33,61 @@ export const EXCHANGES_LOGOS = [
     label: 'OKX',
     value: 'okx',
     logo: '/exchanges/okx/logo-light.svg',
+    logoDark: '/exchanges/okx/logo-dark.png',
     logoHeight: 12,
+    logoHeightDark: 15,
 
-    // 字重偏深，提亮 + 降对比
-    logoFilter: 'grayscale(1) brightness(1.45) contrast(0.68)'
+    // 浅色背景：字重偏深
+    logoFilter: 'grayscale(1) brightness(1.45) contrast(0.68)',
+
+    // 深色背景：使用浅色版 logo，轻微压亮
+    logoFilterDark: 'grayscale(1) brightness(1.08) contrast(0.88)'
   },
   {
     label: 'Binance',
     value: 'binance',
     logo: '/exchanges/binance/logo.svg',
+    logoDark: '/exchanges/binance/logo.svg',
     logoHeight: 17,
-    logoFilter: 'grayscale(1) brightness(0.62) contrast(1.12)'
+    logoHeightDark: 14,
+    logoFilter: 'grayscale(1) brightness(0.62) contrast(1.12)',
+    logoFilterDark: 'grayscale(1) brightness(0.9) contrast(0.92)'
   },
   {
     label: 'Gate',
     value: 'gate',
     logo: '/exchanges/gate/logo.png',
+    logoDark: '/exchanges/gate/logo-dark.png',
     logoHeight: 16,
+    logoHeightDark: 20,
 
-    // 整体偏深
-    logoFilter: 'grayscale(1) brightness(1.3) contrast(0.75)'
+    // 浅色背景：整体偏深
+    logoFilter: 'grayscale(1) brightness(1.3) contrast(0.75)',
+    logoFilterDark: 'grayscale(1) brightness(1.05) contrast(0.86)'
   },
   {
     label: 'Bitget',
     value: 'bitget',
     logo: '/exchanges/bitget/logo.png',
+    logoDark: '/exchanges/bitget/logo.png',
     logoHeight: 17,
+    logoHeightDark: 14,
 
-    // 整体偏浅，压暗 + 提对比
-    logoFilter: 'grayscale(1) brightness(0.48) contrast(1.35)'
+    // 浅色背景：整体偏浅
+    logoFilter: 'grayscale(1) brightness(0.48) contrast(1.35)',
+    logoFilterDark: 'grayscale(1) brightness(1.08) contrast(0.9)'
   },
   {
     label: 'WEEX',
     value: 'weex',
     logo: '/exchanges/weex/weex_logo.png',
+    logoDark: '/exchanges/weex/weex_logo.png',
     logoHeight: 15,
-    logoFilter: 'grayscale(1) brightness(0.65) contrast(1.1)'
+    logoHeightDark: 13,
+    logoFilter: 'grayscale(1) brightness(0.65) contrast(1.1)',
+
+    // 深色背景：原图偏亮，压暗
+    logoFilterDark: 'grayscale(1) brightness(0.55) contrast(1.08)'
   }
 ] as const
 
@@ -106,10 +130,14 @@ export function ApiBindFormStep({
 }: ApiBindFormStepProps) {
   const selectedExchange = EXCHANGES.find((ex) => ex.value === formData.exchange)
 
-  const ipList = ipWhitelist
-    .split(',')
-    .map((ip) => ip.trim())
-    .filter(Boolean)
+  const ipList = [
+    ...new Set(
+      ipWhitelist
+        .split(',')
+        .map((ip) => ip.trim())
+        .filter(Boolean)
+    )
+  ]
 
   const copyIpWhitelist = async () => {
     try {
@@ -167,18 +195,8 @@ export function ApiBindFormStep({
             </p>
             <div className='grid grid-cols-3 items-center justify-items-center gap-x-2 gap-y-3 sm:grid-cols-5'>
               {EXCHANGES_LOGOS.map((ex) => (
-                <div key={ex.value} className='flex h-[18px] w-full items-center justify-center'>
-                  <img
-                    src={ex.logo}
-                    alt={ex.label}
-                    title={ex.label}
-                    className='max-w-full object-contain'
-                    style={{
-                      maxHeight: ex.logoHeight,
-                      width: 'auto',
-                      filter: ex.logoFilter
-                    }}
-                  />
+                <div key={ex.value} className='flex w-full items-center justify-center'>
+                  <ExchangeShowcaseLogo ex={ex} />
                 </div>
               ))}
             </div>
@@ -395,11 +413,42 @@ export function ApiBindFormStep({
   )
 }
 
+function ExchangeShowcaseLogo({ ex }: { ex: (typeof EXCHANGES_LOGOS)[number] }) {
+  const { resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  const isDark = mounted && resolvedTheme === 'dark'
+  const src = isDark ? ex.logoDark : ex.logo
+  const height = isDark ? ex.logoHeightDark : ex.logoHeight
+  const filter = isDark ? ex.logoFilterDark : ex.logoFilter
+
+  const imgStyle: CSSProperties = {
+    height,
+    width: 'auto',
+    maxWidth: '100%',
+    filter
+  }
+
+  return (
+    <img
+      src={src}
+      alt={ex.label}
+      title={ex.label}
+      className='max-w-full object-contain object-center'
+      style={imgStyle}
+    />
+  )
+}
+
 function SecurityBadge({
   icon: Icon,
   label
 }: {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>
+  icon: ComponentType<{ className?: string; strokeWidth?: number }>
   label: string
 }) {
   return (
