@@ -63,6 +63,7 @@ export function PaymentMethodDialog({
   const account = EXCHANGE_ACCOUNTS[exchange]
   const exchangeLabel = exchange === 'binance' ? 'Binance' : 'OKX'
   const exchangeLabelZh = exchange === 'binance' ? '币安' : 'OKX'
+  const referenceIdLabel = exchange === 'binance' ? '支付订单ID' : '参考编号'
 
   const copyAccount = async () => {
     try {
@@ -77,7 +78,7 @@ export function PaymentMethodDialog({
     const ref = referenceId.trim()
 
     if (!ref) {
-      toast.error('请输入参考编号')
+      toast.error(`请输入${referenceIdLabel}`)
 
       return
     }
@@ -206,7 +207,7 @@ export function PaymentMethodDialog({
               <div>
                 <p className='text-muted-foreground mb-2 leading-relaxed'>
                   1. 请往以下{exchangeLabelZh}账号转入{' '}
-                  <span className='text-destructive font-semibold'>${amountUsdt}</span> USDT
+                  <span className='text-destructive font-semibold'>{amountUsdt}</span> USDT
                 </p>
                 <div className='flex gap-2'>
                   <Input
@@ -226,11 +227,11 @@ export function PaymentMethodDialog({
               </p>
 
               <div>
-                <p className='text-muted-foreground mb-2'>3. 请输入参考编号</p>
+                <p className='text-muted-foreground mb-2'>3. 请输入{referenceIdLabel}</p>
                 <Input
                   value={referenceId}
                   onChange={(e) => setReferenceId(e.target.value)}
-                  placeholder='请输入参考编号'
+                  placeholder={`请输入${referenceIdLabel}`}
                   className='h-9 text-sm shadow-none'
                 />
               </div>
