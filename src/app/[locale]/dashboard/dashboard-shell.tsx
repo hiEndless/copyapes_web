@@ -17,7 +17,7 @@ import {
   MoonStarIcon,
   SettingsIcon,
   SunIcon,
-  Share2,
+  Gift,
   Cookie,
   LandPlot,
   Flame,
@@ -96,8 +96,8 @@ const menuItems: MenuItem[] = [
     href: '/dashboard/pricing'
   },
   {
-    icon: Share2,
-    label: '邀请好友',
+    icon: Gift,
+    label: '邀请奖励',
     href: '/dashboard/invite'
   }
 ]

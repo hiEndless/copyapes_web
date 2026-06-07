@@ -81,7 +81,7 @@ export default function InvitePage() {
   return (
     <div className='flex h-full flex-col gap-4 overflow-y-auto p-3 lg:p-5'>
       <div className='flex flex-col gap-1'>
-        <h2 className='text-xl font-semibold tracking-tight'>邀请好友</h2>
+        <h2 className='text-xl font-semibold tracking-tight'>邀请奖励</h2>
         <p className='text-xs text-muted-foreground'>邀请好友注册，解锁额外额度与销售分成</p>
       </div>
 
