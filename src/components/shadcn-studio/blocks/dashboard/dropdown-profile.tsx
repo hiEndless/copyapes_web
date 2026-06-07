@@ -5,7 +5,6 @@ import {
   LogOutIcon,
   MessageCircleWarning,
   Unplug,
-  DollarSignIcon,
   CrownIcon,
   Users,
   UserStar,
@@ -194,7 +193,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem className='px-3 py-2 text-sm' onClick={() => router.push('/dashboard/pricing')}>
-            <DollarSignIcon className='text-foreground mr-2 size-4' />
+            <CrownIcon className='text-foreground mr-2 size-4' />
             <span>订阅服务</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>

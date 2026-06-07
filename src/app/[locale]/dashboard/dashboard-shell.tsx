@@ -10,7 +10,7 @@ import {
   BellIcon,
   ChevronRightIcon,
   CopyIcon,
-  DollarSignIcon,
+  Crown,
   LanguagesIcon,
   LayoutGridIcon,
   LayoutListIcon,
@@ -91,7 +91,7 @@ const menuItems: MenuItem[] = [
     href: '/dashboard'
   },
   {
-    icon: DollarSignIcon,
+    icon: Crown,
     label: '订阅服务',
     href: '/dashboard/pricing'
   },
