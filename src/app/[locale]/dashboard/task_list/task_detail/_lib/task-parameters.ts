@@ -27,6 +27,23 @@ export function getFirstOrderSetLabel(value: number | string | undefined) {
   return '仅复制新开仓'
 }
 
+export function getMarginModeSetLabel(value: number | string | undefined) {
+  const v = String(value ?? '0')
+
+  if (v === '1') return '全仓'
+  if (v === '2') return '逐仓'
+
+  return '跟随交易员'
+}
+
+export function isDefaultMultiple(value: unknown) {
+  const num = Number(value)
+
+  if (!Number.isFinite(num)) return true
+
+  return num === 1
+}
+
 export function getRoleType(roleType: number | string, traderPlatform: number | string) {
   const rt = String(roleType)
   const tp = String(traderPlatform)
@@ -63,12 +80,18 @@ export function buildTaskParameterList(task: Record<string, unknown>): TaskParam
     value: getRoleType(task.role_type as number | string, task.trader_platform as number | string)
   })
   list.push({ label: '跟单模式', value: getFollowType() })
-  list.push({ label: '智能倍数', value: task.multiple as string | number })
+  if (!isDefaultMultiple(task.multiple)) {
+    list.push({ label: '智能倍数', value: task.multiple as string | number })
+  }
   list.push({ label: '投资额', value: task.investment as string | number })
   list.push({ label: '对标资金', value: task.benchMark as string | number })
   list.push({
     label: '杠杆设置',
     value: String(task.lever_set) === '1' ? '跟随交易员' : (task.leverage as string | number)
+  })
+  list.push({
+    label: '保证金模式',
+    value: getMarginModeSetLabel(task.margin_mode_set as number | string | undefined)
   })
   list.push({
     label: '首单交易设置',

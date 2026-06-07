@@ -160,6 +160,236 @@ function buildFollowRatioPreview(
   return { ready: true, formula, lowRatioWarning: ratioPercent < 10 }
 }
 
+type ConfigSummaryItem = {
+  label: string
+  value: string
+  tone?: 'normal' | 'risk' | 'warning'
+  tab?: 'basic' | 'advanced'
+}
+
+function buildConfigSummary(params: {
+  traderName?: string
+  traderId: string | null
+  apiName: string
+  formData: {
+    label: string
+    follow_type: string
+    benchMark: string
+    investment: string
+    lever_set: number
+    leverage: string
+    margin_mode_set: number
+    first_open_type: number
+    uplRatio: string
+    first_order_set: number
+  }
+  toggles: {
+    multiple_visible: boolean
+    multiple: string
+    posSide_set_visible: boolean
+    fast_mode_visible: boolean
+    trade_trigger_visible: boolean
+    tp_trigger_px: string
+    sl_trigger_px: string
+    pos_visible: boolean
+    pos_value: string
+    vol24h_visible: boolean
+    vol24h_num: string
+    balance_monitor_visible: boolean
+    balance_monitor_value: string
+    white_list_visible: boolean
+    white_list: string[]
+    black_list_visible: boolean
+    black_list: string[]
+  }
+  followRatioPreview: ReturnType<typeof buildFollowRatioPreview> | null
+}): ConfigSummaryItem[] {
+  const { traderName, traderId, apiName, formData, toggles, followRatioPreview } = params
+
+  const marginModeLabel =
+    formData.margin_mode_set === 1 ? '全仓' : formData.margin_mode_set === 2 ? '逐仓' : '跟随交易员'
+
+  const firstOrderLabel =
+    formData.first_order_set === 2
+      ? '复制当前持仓'
+      : formData.first_order_set === 3
+        ? '仅复制当前亏损仓位'
+        : '仅复制新开仓'
+
+  const ratioValue =
+    followRatioPreview?.ready === true
+      ? followRatioPreview.formula.split(' = ').pop() || '—'
+      : '待填写本金与投资额'
+
+  const items: ConfigSummaryItem[] = [
+    { label: '跟单交易员', value: traderName || traderId || '—' },
+    { label: '跟单 API', value: apiName, tab: 'basic' }
+  ]
+
+  if (formData.label.trim()) {
+    items.push({ label: '任务备注', value: formData.label.trim(), tab: 'basic' })
+  }
+
+  if (formData.follow_type === '2') {
+    items.push({ label: '跟单模式', value: '固定比例', tab: 'basic' })
+  }
+
+  items.push(
+    { label: '对标本金', value: formData.benchMark ? `${formData.benchMark} USDT` : '未填写', tab: 'basic' },
+    { label: '投资额', value: formData.investment ? `${formData.investment} USDT` : '未填写', tab: 'basic' },
+    {
+      label: '跟单比例',
+      value: ratioValue,
+      tone: followRatioPreview?.ready === true && followRatioPreview.lowRatioWarning ? 'warning' : 'normal',
+      tab: 'basic'
+    },
+    {
+      label: '杠杆',
+      value: formData.lever_set === 2 ? `自定义 ${formData.leverage || '—'}x` : '跟随交易员',
+      tone: formData.lever_set === 2 ? 'risk' : 'normal',
+      tab: 'basic'
+    },
+    {
+      label: '保证金模式',
+      value: marginModeLabel,
+      tone: formData.margin_mode_set !== 0 ? 'risk' : 'normal',
+      tab: 'basic'
+    },
+    {
+      label: '开仓模式',
+      value:
+        formData.first_open_type === 2
+          ? `区间委托（收益率 ≤ ${formData.uplRatio || '—'}%）`
+          : '当前市价',
+      tab: 'basic'
+    },
+    {
+      label: '首单设置',
+      value: firstOrderLabel,
+      tone: formData.first_order_set !== 1 ? 'risk' : 'normal',
+      tab: 'basic'
+    }
+  )
+
+  if (toggles.multiple_visible) {
+    items.push({
+      label: '倍投倍数',
+      value: `${toggles.multiple || '1'} 倍`,
+      tone: 'risk',
+      tab: 'basic'
+    })
+  }
+
+  if (toggles.posSide_set_visible) {
+    items.push({ label: '反向跟单', value: '已开启', tone: 'risk', tab: 'advanced' })
+  }
+
+  if (toggles.fast_mode_visible) {
+    items.push({ label: '极速跟单', value: '已开启', tab: 'advanced' })
+  }
+
+  if (toggles.trade_trigger_visible) {
+    items.push({
+      label: '交易止盈止损',
+      value: `止盈 ${toggles.tp_trigger_px || '0'}% / 止损 ${toggles.sl_trigger_px || '0'}%`,
+      tab: 'advanced'
+    })
+  }
+
+  if (toggles.pos_visible) {
+    items.push({
+      label: '多空策略',
+      value: toggles.pos_value === 'short' ? '只跟空单' : '只跟多单',
+      tab: 'advanced'
+    })
+  }
+
+  if (toggles.vol24h_visible) {
+    items.push({
+      label: '24h 排行榜',
+      value: `仅跟前 ${toggles.vol24h_num || '—'} 名`,
+      tab: 'advanced'
+    })
+  }
+
+  if (toggles.balance_monitor_visible) {
+    items.push({
+      label: '本金监控',
+      value: `最低 ${toggles.balance_monitor_value || '—'} USDT`,
+      tab: 'advanced'
+    })
+  }
+
+  if (toggles.white_list_visible && toggles.white_list.length > 0) {
+    items.push({
+      label: '币种白名单',
+      value: toggles.white_list.join('、'),
+      tab: 'advanced'
+    })
+  }
+
+  if (toggles.black_list_visible && toggles.black_list.length > 0) {
+    items.push({
+      label: '币种黑名单',
+      value: toggles.black_list.join('、'),
+      tab: 'advanced'
+    })
+  }
+
+  return items
+}
+
+function buildConfigSummaryBrief(items: ConfigSummaryItem[]): string {
+  const ratioItem = items.find(item => item.label === '跟单比例')
+  const leverItem = items.find(item => item.label === '杠杆')
+  const ratio = ratioItem?.value || '—'
+  const leverShort = leverItem?.value.includes('自定义') ? leverItem.value : '杠杆跟随'
+  const riskCount = items.filter(item => item.tone === 'risk' || item.tone === 'warning').length
+  const riskText = riskCount > 0 ? `${riskCount} 项需关注` : '无风险项'
+
+  return `跟单 ${ratio} · ${leverShort} · ${riskText}`
+}
+
+function ConfigSummaryDetailList({
+  items,
+  onJumpToItem
+}: {
+  items: ConfigSummaryItem[]
+  onJumpToItem: (tab?: 'basic' | 'advanced') => void
+}) {
+  return (
+    <div className='space-y-2'>
+      {items.map(item => (
+        <div key={`${item.label}-${item.value}`} className='flex items-start justify-between gap-3 text-xs'>
+          <span className='text-muted-foreground shrink-0'>{item.label}</span>
+          <div className='flex min-w-0 items-start justify-end gap-2 text-right'>
+            <span
+              className={
+                item.tone === 'risk'
+                  ? 'font-medium text-red-600'
+                  : item.tone === 'warning'
+                    ? 'font-medium text-amber-600'
+                    : 'text-foreground font-medium'
+              }
+            >
+              {item.value}
+            </span>
+            {item.tab ? (
+              <button
+                type='button'
+                className='text-primary shrink-0 hover:underline'
+                onClick={() => onJumpToItem(item.tab)}
+              >
+                修改
+              </button>
+            ) : null}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 // --- Utility Component for Tags ---
 function TagInput({
   tags,
@@ -271,6 +501,9 @@ export function CopyTaskConfigSheet({
   const [isLoading, setIsLoading] = useState(false)
   const [agreedToProtocol, setAgreedToProtocol] = useState(false)
   const [protocolDialogOpen, setProtocolDialogOpen] = useState(false)
+  const [activeTab, setActiveTab] = useState('basic')
+  const [summaryDetailOpen, setSummaryDetailOpen] = useState(false)
+  const [summaryViewed, setSummaryViewed] = useState(false)
   const [apiOptions, setApiOptions] = useState<any[]>([])
   const [user, setUser] = useState('')
   const [notificationStatus, setNotificationStatus] = useState<{
@@ -359,6 +592,9 @@ export function CopyTaskConfigSheet({
     if (!isOpen) {
       setAgreedToProtocol(false)
       setProtocolDialogOpen(false)
+      setActiveTab('basic')
+      setSummaryDetailOpen(false)
+      setSummaryViewed(false)
     }
   }, [isOpen])
 
@@ -522,9 +758,49 @@ export function CopyTaskConfigSheet({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, traderId, platform, hideFollowLeverage, initialBenchMark, initialTaskData])
 
+  const followRatioPreview =
+    formData.follow_type === '2'
+      ? buildFollowRatioPreview(
+          formData.investment,
+          formData.benchMark,
+          toggles.multiple_visible,
+          toggles.multiple
+        )
+      : null
+
+  const selectedApi = apiOptions.find(api => String(api.id) === formData.api_id)
+  const selectedApiName = selectedApi?.api_name || (formData.api_id ? `API ${formData.api_id}` : '未选择')
+
+  const configSummaryItems = buildConfigSummary({
+    traderName,
+    traderId,
+    apiName: selectedApiName,
+    formData,
+    toggles,
+    followRatioPreview
+  })
+
+  const configSummaryBrief = buildConfigSummaryBrief(configSummaryItems)
+
+  const jumpToSummaryItem = (tab?: 'basic' | 'advanced') => {
+    if (tab) {
+      setActiveTab(tab)
+    }
+    setSummaryDetailOpen(false)
+  }
+
   const handleSubmit = async () => {
     if (!agreedToProtocol) {
       toast.error('请先阅读并同意跟单交易协议')
+      return
+    }
+
+    const hasAttentionItems = configSummaryItems.some(
+      item => item.tone === 'risk' || item.tone === 'warning'
+    )
+    if (hasAttentionItems && !summaryViewed) {
+      toast.error('请先查看配置详情，确认风险项后再提交')
+      setSummaryDetailOpen(true)
       return
     }
 
@@ -659,16 +935,6 @@ export function CopyTaskConfigSheet({
     (isBicoinFollow && normalizedRoleType !== '1')
   )
 
-  const followRatioPreview =
-    formData.follow_type === '2'
-      ? buildFollowRatioPreview(
-          formData.investment,
-          formData.benchMark,
-          toggles.multiple_visible,
-          toggles.multiple
-        )
-      : null
-
   return (
     <Sheet open={isOpen} onOpenChange={open => !open && onClose()}>
       <SheetContent side='right' className='flex flex-col p-0 sm:max-w-lg'>
@@ -706,7 +972,7 @@ export function CopyTaskConfigSheet({
 
         {/* tab选择：基础设置（默认）和高级设置 */}
 
-        <Tabs defaultValue='basic' className='flex h-full flex-1 flex-col overflow-hidden'>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className='flex h-full flex-1 flex-col overflow-hidden'>
           <div className='px-6'>
             <TabsList className='grid w-full grid-cols-2'>
               <TabsTrigger value='basic'>基础设置</TabsTrigger>
@@ -1245,7 +1511,39 @@ export function CopyTaskConfigSheet({
           </div>
         </Tabs>
 
-        <SheetFooter className='bg-background/95 supports-[backdrop-filter]:bg-background/60 shrink-0 flex-col gap-3 border-t p-4 backdrop-blur sm:flex-col'>
+        <SheetFooter className='bg-background/95 supports-[backdrop-filter]:bg-background/60 relative shrink-0 flex-col gap-3 border-t p-4 backdrop-blur sm:flex-col'>
+          <div className='bg-muted/30 relative w-full rounded-md border px-3 py-2'>
+            <div className='flex items-center justify-between gap-2'>
+              <span className='text-muted-foreground min-w-0 truncate text-xs' title={configSummaryBrief}>
+                {configSummaryBrief}
+              </span>
+              <button
+                type='button'
+                className='text-primary shrink-0 text-xs hover:underline'
+                onClick={() => {
+                  setSummaryViewed(true)
+                  setSummaryDetailOpen(prev => !prev)
+                }}
+              >
+                {summaryDetailOpen ? '收起' : '查看详情'}
+              </button>
+            </div>
+            {summaryDetailOpen && (
+              <>
+                <button
+                  type='button'
+                  aria-label='关闭配置详情'
+                  className='fixed inset-0 z-40'
+                  onClick={() => setSummaryDetailOpen(false)}
+                />
+                <div className='bg-background absolute right-0 bottom-full left-0 z-50 mb-2 max-h-72 overflow-y-auto rounded-md border px-3 py-3 shadow-lg'>
+                  <div className='mb-2 text-sm font-medium'>配置确认</div>
+                  <ConfigSummaryDetailList items={configSummaryItems} onJumpToItem={jumpToSummaryItem} />
+                </div>
+              </>
+            )}
+          </div>
+
           <label className='flex w-full cursor-pointer items-start gap-2'>
             <Checkbox
               checked={agreedToProtocol}
