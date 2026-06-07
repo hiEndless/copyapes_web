@@ -552,6 +552,8 @@ export function CopyTaskConfigSheet({
     (String(traderPlatform) === '3' && mappedRoleType === '1') ||
     (String(traderPlatform) === '2' && mappedRoleType === '2')
 
+  const disableIntervalOpen = hideFollowLeverage
+
   // Form State
   const [formData, setFormData] = useState({
     api_id: '',
@@ -695,7 +697,7 @@ export function CopyTaskConfigSheet({
           lever_set: initialTaskData.lever_set || (hideFollowLeverage ? 2 : 1),
           leverage: initialTaskData.leverage ? String(initialTaskData.leverage) : prev.leverage,
           margin_mode_set: Number(initialTaskData.margin_mode_set ?? 0),
-          first_open_type: initialTaskData.first_open_type || 1,
+          first_open_type: disableIntervalOpen ? 1 : initialTaskData.first_open_type || 1,
           uplRatio: initialTaskData.uplRatio ? String(initialTaskData.uplRatio) : prev.uplRatio,
           first_order_set: initialTaskData.first_order_set || 1
         }))
@@ -725,7 +727,8 @@ export function CopyTaskConfigSheet({
           ...prev,
           lever_set: hideFollowLeverage ? 2 : 1,
           label: '',
-          benchMark: initialBenchMark ? String(initialBenchMark) : prev.benchMark
+          benchMark: initialBenchMark ? String(initialBenchMark) : prev.benchMark,
+          first_open_type: disableIntervalOpen && prev.first_open_type === 2 ? 1 : prev.first_open_type
         }))
 
         // 重置 toggles
@@ -756,7 +759,7 @@ export function CopyTaskConfigSheet({
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpen, traderId, platform, hideFollowLeverage, initialBenchMark, initialTaskData])
+  }, [isOpen, traderId, platform, hideFollowLeverage, disableIntervalOpen, initialBenchMark, initialTaskData])
 
   const followRatioPreview =
     formData.follow_type === '2'
@@ -827,7 +830,7 @@ export function CopyTaskConfigSheet({
         lever_set: String(formData.lever_set),
         leverage: String(formData.lever_set) === '2' && formData.leverage ? formData.leverage : '1',
         margin_mode_set: String(formData.margin_mode_set),
-        first_open_type: String(formData.first_open_type),
+        first_open_type: disableIntervalOpen ? '1' : String(formData.first_open_type),
         uplRatio: formData.uplRatio,
         first_order_set: String(formData.first_order_set),
         posSide_set: toggles.posSide_set_visible ? '2' : '1',
@@ -1270,9 +1273,12 @@ export function CopyTaskConfigSheet({
                     />
                     <span className='text-sm'>当前市价</span>
                   </label>
-                  <label className='flex cursor-pointer items-center gap-2'>
+                  <label
+                    className={`flex items-center gap-2 ${disableIntervalOpen ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                  >
                     <Checkbox
                       checked={formData.first_open_type === 2}
+                      disabled={disableIntervalOpen}
                       onCheckedChange={checked => {
                         if (checked) updateForm('first_open_type', 2)
                       }}
