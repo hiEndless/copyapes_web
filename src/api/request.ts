@@ -18,6 +18,22 @@ export interface RequestOptions extends Omit<RequestInit, 'body'> {
   silent?: boolean; // 如果为 true，遇到错误时不弹出 toast
 }
 
+const AUTH_ERROR_CODES = new Set([2000, 2001]);
+
+function getLoginPath(): string {
+  const localeMatch = window.location.pathname.match(/^\/(en|zh)(?=\/|$)/);
+
+  if (localeMatch?.[1] === 'zh') {
+    return '/zh/login';
+  }
+
+  return '/login';
+}
+
+function isLoginPage(pathname: string): boolean {
+  return pathname === '/login' || pathname.endsWith('/login');
+}
+
 function handleAuthExpired(message?: string) {
   if (typeof window === 'undefined' || isHandlingAuthExpired) {
     return;
@@ -33,8 +49,10 @@ function handleAuthExpired(message?: string) {
   window.dispatchEvent(new Event('entitlementProfileUpdated'));
   toast.error(message || '认证过期，请重新登录');
 
-  if (window.location.pathname !== '/login') {
-    window.location.href = '/login';
+  const pathname = window.location.pathname;
+
+  if (!isLoginPage(pathname)) {
+    window.location.href = getLoginPath();
     return;
   }
 
@@ -109,7 +127,7 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
       }
     }
 
-    if (data.code === 2001) {
+    if (AUTH_ERROR_CODES.has(data.code)) {
       handleAuthExpired(data.message || data.msg || data.error);
       return data as BaseResponse<T>;
     }
