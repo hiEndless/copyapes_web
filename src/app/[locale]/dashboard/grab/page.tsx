@@ -15,6 +15,13 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { GrabTaskConfigSheet } from './_components/grab-task-config-sheet'
+import {
+  INVALID_TRADER_URL,
+  SELECT_EXCHANGE_FIRST,
+  TRADER_URL_PLACEHOLDER,
+  isInvalidUniqueName,
+  parseTraderUrl,
+} from '../add_task/_lib/trader-url'
 import { getGrabTaskList, stopGrabTask } from '@/api/task'
 import { getCookies } from '@/api/cookie'
 
@@ -144,22 +151,21 @@ export default function GrabPage() {
       return
     }
 
-    try {
-      const url = new URL(traderUrl)
-      const segments = url.pathname.split('/').filter(Boolean)
+    if (!exchange) {
+      setUniqueName(SELECT_EXCHANGE_FIRST)
 
-      if (segments.length > 0) {
-        setUniqueName(segments[segments.length - 1])
-      } else {
-        setUniqueName('')
-      }
-    } catch {
-      setUniqueName('无效的链接格式')
+      return
     }
+
+    const parsed = parseTraderUrl(traderUrl, exchange)
+
+    setUniqueName(parsed ?? INVALID_TRADER_URL)
   }
 
   const handleExchangeChange = (value: 'okx' | 'binance') => {
     setExchange(value)
+    setTraderUrl('')
+    setUniqueName('')
   }
 
   const handleStopTask = async (taskId: string) => {
@@ -487,7 +493,9 @@ export default function GrabPage() {
                 </Label>
                 <div className='flex gap-2'>
                   <Input
-                    placeholder='请输入交易员主页链接 (例如 https://...)'
+                    placeholder={
+                      exchange ? TRADER_URL_PLACEHOLDER[exchange] : '请先选择交易所，再输入交易员主页链接'
+                    }
                     value={traderUrl}
                     onChange={e => setTraderUrl(e.target.value)}
                   />
@@ -516,8 +524,7 @@ export default function GrabPage() {
               <Button
                 disabled={
                   !exchange ||
-                  !uniqueName ||
-                  uniqueName === '无效的链接格式' ||
+                  isInvalidUniqueName(uniqueName) ||
                   !selectedTrader ||
                   selectedTrader.status !== 'active'
                 }

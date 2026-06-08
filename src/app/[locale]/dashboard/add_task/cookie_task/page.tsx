@@ -14,6 +14,13 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
+import {
+  INVALID_TRADER_URL,
+  SELECT_EXCHANGE_FIRST,
+  TRADER_URL_PLACEHOLDER,
+  isInvalidUniqueName,
+  parseTraderUrl,
+} from '../_lib/trader-url'
 
 import { getCookies, searchCookie } from '@/api/cookie'
 import { cn } from '@/lib/utils'
@@ -123,26 +130,22 @@ export default function CookieTaskPage() {
       return
     }
 
-    try {
-      const url = new URL(traderUrl)
+    if (!exchange) {
+      setUniqueName(SELECT_EXCHANGE_FIRST)
 
-      // 简单模拟解析逻辑，实际可根据具体交易所的 URL 结构进行正则或路径拆分
-      const segments = url.pathname.split('/').filter(Boolean)
-
-      if (segments.length > 0) {
-        // 取最后一段作为 uniqueName 示例
-        setUniqueName(segments[segments.length - 1])
-      } else {
-        setUniqueName('')
-      }
-    } catch {
-      setUniqueName('无效的链接格式')
+      return
     }
+
+    const parsed = parseTraderUrl(traderUrl, exchange)
+
+    setUniqueName(parsed ?? INVALID_TRADER_URL)
   }
 
   const handleExchangeChange = (value: 'okx' | 'binance') => {
     setExchange(value)
-    setTraderType('') // 切换交易所时重置交易员类型
+    setTraderUrl('')
+    setUniqueName('')
+    setTraderType('')
   }
 
   return (
@@ -461,7 +464,9 @@ export default function CookieTaskPage() {
                 </Label>
                 <div className='flex gap-2'>
                   <Input
-                    placeholder='请输入交易员主页链接 (例如 https://...)'
+                    placeholder={
+                      exchange ? TRADER_URL_PLACEHOLDER[exchange] : '请先选择交易所，再输入交易员主页链接'
+                    }
                     value={traderUrl}
                     onChange={e => setTraderUrl(e.target.value)}
                   />
@@ -515,7 +520,7 @@ export default function CookieTaskPage() {
             </CardContent>
             <CardFooter className='flex justify-end gap-2'>
               <Button
-                disabled={!exchange || !uniqueName || uniqueName === '无效的链接格式' || !traderType || !selectedTrader}
+                disabled={!exchange || isInvalidUniqueName(uniqueName) || !traderType || !selectedTrader}
                 onClick={() => setIsConfigOpen(true)}
               >
                 创建跟单
