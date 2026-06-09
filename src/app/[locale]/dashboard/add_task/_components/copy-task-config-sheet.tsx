@@ -802,8 +802,9 @@ export function CopyTaskConfigSheet({
       item => item.tone === 'risk' || item.tone === 'warning'
     )
     if (hasAttentionItems && !summaryViewed) {
-      toast.error('请先查看配置详情，确认风险项后再提交')
       setSummaryDetailOpen(true)
+      setSummaryViewed(true)
+
       return
     }
 
@@ -1517,7 +1518,7 @@ export function CopyTaskConfigSheet({
           </div>
         </Tabs>
 
-        <SheetFooter className='bg-background/95 supports-[backdrop-filter]:bg-background/60 relative shrink-0 flex-col gap-3 border-t p-4 backdrop-blur sm:flex-col'>
+        <SheetFooter className='bg-background/95 supports-[backdrop-filter]:bg-background/60 relative z-50 shrink-0 flex-col gap-3 border-t p-4 backdrop-blur sm:flex-col'>
           <div className='bg-muted/30 relative w-full rounded-md border px-3 py-2'>
             <div className='flex items-center justify-between gap-2'>
               <span className='text-muted-foreground min-w-0 truncate text-xs' title={configSummaryBrief}>
@@ -1535,18 +1536,10 @@ export function CopyTaskConfigSheet({
               </button>
             </div>
             {summaryDetailOpen && (
-              <>
-                <button
-                  type='button'
-                  aria-label='关闭配置详情'
-                  className='fixed inset-0 z-40'
-                  onClick={() => setSummaryDetailOpen(false)}
-                />
-                <div className='bg-background absolute right-0 bottom-full left-0 z-50 mb-2 max-h-72 overflow-y-auto rounded-md border px-3 py-3 shadow-lg'>
-                  <div className='mb-2 text-sm font-medium'>配置确认</div>
-                  <ConfigSummaryDetailList items={configSummaryItems} onJumpToItem={jumpToSummaryItem} />
-                </div>
-              </>
+              <div className='bg-background absolute right-0 bottom-full left-0 z-50 mb-2 max-h-72 overflow-y-auto rounded-md border px-3 py-3 shadow-lg'>
+                <div className='mb-2 text-sm font-medium'>配置确认</div>
+                <ConfigSummaryDetailList items={configSummaryItems} onJumpToItem={jumpToSummaryItem} />
+              </div>
             )}
           </div>
 
