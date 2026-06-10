@@ -50,7 +50,8 @@
     "brandName": "CopyApes"
   },
   "Hero": {
-    "badge": "Stable running for 3 years",
+    "badge": "Stable running for {years} years",
+    "badgeWithMonths": "Stable running for {years} years {months} months",
     "title": "Let The World's Top Traders Work For You",
     "description": "Fully automated contract copy trading assistant. No profit sharing with traders, no copy seat limits, supports cross-exchange and simulated copy trading. Official exchange API integration, second-level copy trading.",
     "startCopying": "Start Now",

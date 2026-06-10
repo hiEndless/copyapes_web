@@ -14,6 +14,7 @@ import { Marquee } from '@/components/ui/marquee'
 import { Magnetic } from '@/components/ui/magnet-effect'
 import { StarsBackground } from '@/components/ui/background-stars'
 
+import { getRunningDuration, LAUNCH_DATE } from '@/lib/running-duration'
 import { cn } from '@/lib/utils'
 
 type AvatarProps = {
@@ -27,6 +28,8 @@ type AvatarProps = {
 
 const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
   const t = useTranslations('Hero')
+  const { years, months } = getRunningDuration(LAUNCH_DATE)
+  const badgeKey = months > 0 ? 'badgeWithMonths' : 'badge'
 
   return (
     <section id='home' className='relative flex-1 overflow-hidden pt-32 pb-8'>
@@ -40,7 +43,7 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
                 <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-green-600 opacity-75 dark:bg-green-400'></span>
                 <span className='relative inline-flex size-2 rounded-full bg-green-600 dark:bg-green-400'></span>
               </span>
-              {t('badge')}
+              {t(badgeKey, { years, months })}
             </Badge>
           </MotionPreset>
 

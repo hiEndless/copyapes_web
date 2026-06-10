@@ -51,7 +51,8 @@
     "brandName": "跟单猿"
   },
   "Hero": {
-    "badge": "已稳定运行3年",
+    "badge": "已稳定运行{years}年",
+    "badgeWithMonths": "已稳定运行{years}年{months}个月",
     "title": "让全世界顶级交易员为你打工",
     "description": "全自动合约跟单交易助手。没有交易员盈利抽成，没有跟单席位限制，支持跨交易所和模拟盘跟单。对接交易所官方API，秒级跟单。",
     "startCopying": "立刻开始跟单",
