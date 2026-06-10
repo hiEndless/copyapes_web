@@ -8,28 +8,38 @@ export const TRADER_URL_PLACEHOLDER: Record<ExchangePlatform, string> = {
 export const INVALID_TRADER_URL = '无效的链接格式'
 export const SELECT_EXCHANGE_FIRST = '请先选择交易所'
 
+function extractSegmentAfter(segments: string[], key: string): string | null {
+  const idx = segments.indexOf(key)
+
+  if (idx === -1 || idx >= segments.length - 1) return null
+
+  return segments[idx + 1]
+}
+
 export function parseTraderUrl(urlStr: string, targetExchange: ExchangePlatform): string | null {
   try {
     const url = new URL(urlStr.trim())
     const segments = url.pathname.split('/').filter(Boolean)
 
     if (targetExchange === 'okx') {
-      if (!url.hostname.includes('okx.com')) return null
-
-      const accountIdx = segments.indexOf('account')
-
-      if (accountIdx === -1 || accountIdx >= segments.length - 1) return null
-
-      return segments[accountIdx + 1]
+      return extractSegmentAfter(segments, 'account')
     }
 
-    if (!url.hostname.includes('binance.com')) return null
+    const leadId = extractSegmentAfter(segments, 'lead-details')
 
-    const leadDetailsIdx = segments.indexOf('lead-details')
+    if (leadId) return leadId
 
-    if (leadDetailsIdx === -1 || leadDetailsIdx >= segments.length - 1) return null
+    const smartMoneyIdx = segments.indexOf('smart-money')
 
-    return segments[leadDetailsIdx + 1]
+    if (
+      smartMoneyIdx !== -1 &&
+      segments[smartMoneyIdx + 1] === 'profile' &&
+      smartMoneyIdx + 2 < segments.length
+    ) {
+      return segments[smartMoneyIdx + 2]
+    }
+
+    return null
   } catch {
     return null
   }
