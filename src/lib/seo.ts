@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { routing } from '@/i18n/routing'
 
-const DEFAULT_SITE_URL = 'http://localhost:3000'
+const DEFAULT_SITE_URL = 'http://copyapes.com'
 
 export function getSiteUrl(): string {
   const url = process.env.NEXT_PUBLIC_APP_URL
