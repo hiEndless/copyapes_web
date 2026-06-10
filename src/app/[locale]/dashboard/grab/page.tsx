@@ -18,7 +18,7 @@ import { GrabTaskConfigSheet } from './_components/grab-task-config-sheet'
 import {
   INVALID_TRADER_URL,
   SELECT_EXCHANGE_FIRST,
-  TRADER_URL_PLACEHOLDER,
+  TRADER_INPUT_PLACEHOLDER,
   isInvalidUniqueName,
   parseTraderUrl,
 } from '../add_task/_lib/trader-url'
@@ -485,16 +485,16 @@ export default function GrabPage() {
                 )}
               </div>
 
-              {/* 2. 提交交易员主页地址 */}
+              {/* 2. 提交交易员主页链接或 ID */}
               <div className='space-y-2'>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
-                  交易员主页链接
+                  交易员主页链接或 ID
                 </Label>
                 <div className='flex gap-2'>
                   <Input
                     placeholder={
-                      exchange ? TRADER_URL_PLACEHOLDER[exchange] : '请先选择交易所，再输入交易员主页链接'
+                      exchange ? TRADER_INPUT_PLACEHOLDER[exchange] : '请先选择交易所，再输入链接或 ID'
                     }
                     value={traderUrl}
                     onChange={e => setTraderUrl(e.target.value)}
