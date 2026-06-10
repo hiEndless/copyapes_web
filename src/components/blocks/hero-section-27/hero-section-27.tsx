@@ -139,32 +139,32 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
               <img
                 src='/exchanges/binance/logo.svg'
                 alt='Binance'
-                className='h-8 w-auto shrink-0 object-contain opacity-50 grayscale transition-opacity duration-300 hover:opacity-80 dark:invert'
+                className='h-8 w-auto shrink-0 object-contain opacity-80 grayscale transition-opacity duration-300 hover:opacity-90 dark:invert'
               />
               <img
                 src='/exchanges/bitget/logo.png'
                 alt='Bitget'
-                className='h-8 w-auto shrink-0 object-contain opacity-50 grayscale transition-opacity duration-300 hover:opacity-80 dark:invert'
+                className='h-8 w-auto shrink-0 object-contain opacity-95 grayscale transition-opacity duration-300 hover:opacity-100 dark:invert'
               />
               <img
                 src='/exchanges/gate/logo.png'
                 alt='Gate.io'
-                className='h-8 w-auto shrink-0 object-contain opacity-50 grayscale transition-opacity duration-300 hover:opacity-80 dark:invert'
+                className='h-8 w-auto shrink-0 object-contain opacity-35 grayscale transition-opacity duration-300 hover:opacity-70 dark:invert'
               />
               <img
                 src='/exchanges/hyperliquid/logo-light.svg'
                 alt='Hyperliquid'
-                className='h-8 w-auto shrink-0 object-contain opacity-50 grayscale transition-opacity duration-300 hover:opacity-80 dark:invert'
+                className='h-8 w-auto shrink-0 object-contain opacity-30 grayscale transition-opacity duration-300 hover:opacity-70 dark:invert'
               />
               <img
                 src='/exchanges/okx/logo-light.svg'
                 alt='OKX'
-                className='h-6 w-auto shrink-0 object-contain opacity-50 grayscale transition-opacity duration-300 hover:opacity-80 dark:invert'
+                className='h-6 w-auto shrink-0 object-contain opacity-40 grayscale transition-opacity duration-300 hover:opacity-75 dark:invert'
               />
               <img
                 src='/exchanges/weex/logoweex_black.svg'
                 alt='Aster'
-                className='h-8 w-auto shrink-0 object-contain opacity-50 grayscale transition-opacity duration-300 hover:opacity-80 dark:invert'
+                className='h-7 w-auto shrink-0 object-contain opacity-80 grayscale transition-opacity duration-300 hover:opacity-90 dark:invert'
               />
             </Marquee>
           </MotionPreset>
