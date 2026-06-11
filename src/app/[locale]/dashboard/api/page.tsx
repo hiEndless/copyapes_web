@@ -2,8 +2,10 @@
 
 import { useEffect, useState } from 'react'
 
+import { Info } from 'lucide-react'
 import { toast } from 'sonner'
 
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import ApiDatatable, { type ApiItem } from './_components/api-datatable'
 import { ApiAddButton } from './_components/api-add-button'
@@ -73,6 +75,13 @@ export default function ApiPage() {
         <h2 className='text-2xl font-bold tracking-tight'>API 管理</h2>
         <p className='text-muted-foreground text-sm'>添加和管理工作室交易员与跟单 API</p>
       </div>
+
+      <Alert className='border-amber-500/30 bg-amber-500/5 text-amber-900 dark:text-amber-200'>
+        <Info className='text-amber-600 dark:text-amber-400' />
+        <AlertDescription>
+          长期未登录使用，IP 白名单可能发生变化，需要重新在交易所授权 IP 白名单后才能继续使用。点击添加 API 按钮，查看最新 IP 白名单。
+        </AlertDescription>
+      </Alert>
 
       <Card className='col-span-full shadow-sm'>
         <CardHeader className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
