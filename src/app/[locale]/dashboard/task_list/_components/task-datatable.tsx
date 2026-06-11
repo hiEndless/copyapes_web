@@ -50,6 +50,7 @@ import { CopyTaskConfigSheet } from '../../add_task/_components/copy-task-config
 
 import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib/utils'
+import { formatTaskCreatedTime } from '@/lib/task-time'
 
 export type TaskItem = {
   id: number
@@ -58,6 +59,7 @@ export type TaskItem = {
   trader_platform: number // 1: OKX, 2: Binance, 3: 币coin ...
   api_name: string
   create_datetime: string
+  create_ts_ms?: number | string | null
   status: number // 1: 进行中, 2: 已结束
   posSide_set?: number
   lever_set?: number
@@ -168,16 +170,9 @@ const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
   },
   {
     header: '创建时间',
-    accessorKey: 'create_datetime',
+    accessorKey: 'create_ts_ms',
     cell: ({ row }) => {
-      const dateStr = row.getValue('create_datetime') as string
-      let formattedDate = '-'
-
-      if (dateStr) {
-        formattedDate = dateStr.replace('T', '  ').substring(2, 20).replace(/-/g, '/')
-      }
-
-      return <span className='text-muted-foreground'>{formattedDate}</span>
+      return <span className='text-muted-foreground'>{formatTaskCreatedTime(row.original)}</span>
     }
   },
   {

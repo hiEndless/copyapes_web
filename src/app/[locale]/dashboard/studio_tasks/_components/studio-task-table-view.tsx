@@ -18,6 +18,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import { formatTaskCreatedTime } from '@/lib/task-time'
 import type { GroupedByApiItem, StudioTaskItem } from './types'
 import { ellipsisMiddle, resolveInvestment } from './utils'
 
@@ -82,9 +83,7 @@ export function StudioTaskTableView({
                   </div>
                 </TableCell>
                 <TableCell>{resolveInvestment(task)}</TableCell>
-                <TableCell className='text-muted-foreground'>
-                  {task.create_datetime ? task.create_datetime.replace('T', '  ').substring(2, 20).replace(/-/g, '/') : '-'}
-                </TableCell>
+                <TableCell className='text-muted-foreground'>{formatTaskCreatedTime(task)}</TableCell>
                 <TableCell className='last:pr-2'>
                   <div className='flex items-center gap-1'>
                     <Tooltip>

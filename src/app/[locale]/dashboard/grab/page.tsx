@@ -38,6 +38,7 @@ import {
 } from '@/components/ui/alert-dialog'
 
 import { cn } from '@/lib/utils'
+import { formatTaskCreatedTime, resolveTaskCreatedTimeMs } from '@/lib/task-time'
 
 type CookieTrader = {
   id: string
@@ -54,7 +55,9 @@ type GrabTask = {
   follow_type: string
   status: number // 1: 进行中, 0: 结束
   info: string
-  created_at: string
+  created_at?: string
+  create_datetime?: string
+  create_ts_ms?: number | string | null
 }
 
 /** status=1 进行中；status=0 按 info 区分成功/失败/手动终止 */
@@ -191,8 +194,8 @@ export default function GrabPage() {
   const historyTasks = tasks
     .filter(t => t.status === 0)
 
-    // 根据需求，只展示最近的 10 个历史任务，并根据创建时间排序 (假设 created_at 格式可比较)
-    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    // 根据需求，只展示最近的 10 个历史任务，并根据创建时间排序。
+    .sort((a, b) => (resolveTaskCreatedTimeMs(b) ?? 0) - (resolveTaskCreatedTimeMs(a) ?? 0))
     .slice(0, 10)
 
   return (
@@ -368,7 +371,7 @@ export default function GrabPage() {
                     <div className='relative z-10 mt-4 flex items-center justify-between border-t pt-3'>
                       <div className='text-muted-foreground flex items-center gap-1.5 text-xs'>
                         <History className='h-3.5 w-3.5' />
-                        <span>{new Date(task.created_at).toLocaleDateString()}</span>
+                        <span>{formatTaskCreatedTime(task, 'date')}</span>
                       </div>
                       <Badge
                         variant='outline'
@@ -601,7 +604,7 @@ export default function GrabPage() {
                     <div className='relative z-10 mt-4 flex flex-col gap-2 border-t pt-3'>
                       <div className='flex items-center justify-between text-xs'>
                         <span className='text-muted-foreground'>创建时间</span>
-                        <span>{new Date(task.created_at).toLocaleString()}</span>
+                        <span>{formatTaskCreatedTime(task)}</span>
                       </div>
 
                       {outcome === 'failed' && task.info && (

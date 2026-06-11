@@ -9,6 +9,7 @@ export type StudioTaskItem = {
   trader_platform: number
   role_type?: number
   create_datetime?: string
+  create_ts_ms?: number | string | null
 }
 
 export type GroupedByTraderItem = {

@@ -1,4 +1,5 @@
 import type { TaskParameterItem } from './types'
+import { formatTaskCreatedTime } from '@/lib/task-time'
 
 export function getPlatformName(val: number) {
   if (val == 1) return 'OKX'
@@ -72,7 +73,7 @@ export function buildTaskParameterList(task: Record<string, unknown>): TaskParam
 
   list.push({ label: '跟单平台', value: getPlatformName(task.trader_platform as number) })
   list.push({ label: '跟单对象', value: (String(task.label || '').trim() || task.uniqueName) as string })
-  list.push({ label: '创建时间', value: String(task.create_datetime || '').replace('T', '  ') })
+  list.push({ label: '创建时间', value: formatTaskCreatedTime(task) })
   list.push({ label: '反向跟单', value: String(task.posSide_set) === '1' ? '否' : '是' })
   list.push({ label: 'API', value: task.api_name as string })
   list.push({
