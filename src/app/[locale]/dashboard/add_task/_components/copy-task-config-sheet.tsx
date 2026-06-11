@@ -77,19 +77,6 @@ function getApiExchangeLogo(platformOrExchange: string | number | undefined): st
   return API_EXCHANGE_LOGO[key] ?? API_EXCHANGE_LOGO[key.toLowerCase()] ?? null
 }
 
-function getCurrentUserId(): string | null {
-  try {
-    const raw = localStorage.getItem('userInfo')
-    if (!raw) return null
-    const info = JSON.parse(raw) as { id?: number | string }
-    if (info?.id === undefined || info?.id === null || info.id === '') return null
-
-    return String(info.id)
-  } catch {
-    return null
-  }
-}
-
 function normalizeCoinSymbol(raw: string): string {
   const tag = String(raw || '').trim().toUpperCase()
   if (!tag) return ''
@@ -505,7 +492,6 @@ export function CopyTaskConfigSheet({
   const [summaryDetailOpen, setSummaryDetailOpen] = useState(false)
   const [summaryViewed, setSummaryViewed] = useState(false)
   const [apiOptions, setApiOptions] = useState<any[]>([])
-  const [user, setUser] = useState('')
   const [notificationStatus, setNotificationStatus] = useState<{
     loading: boolean
     configured: boolean
@@ -606,18 +592,7 @@ export function CopyTaskConfigSheet({
       refreshNotificationStatus()
       getApiOptions().then(res => {
         if (res.code === 0 && Array.isArray(res.data)) {
-          const currentUserId = getCurrentUserId()
-
-          if (currentUserId) {
-            setUser(currentUserId)
-          }
-
-          const validApis = res.data.filter((item: any) => {
-            if (item.is_readonly !== false) return false
-            if (!currentUserId) return false
-
-            return String(item.user) === currentUserId
-          })
+          const validApis = res.data.filter((item: any) => item.is_readonly === false)
 
           setApiOptions(validApis)
 
@@ -835,7 +810,6 @@ export function CopyTaskConfigSheet({
         uplRatio: formData.uplRatio,
         first_order_set: String(formData.first_order_set),
         posSide_set: toggles.posSide_set_visible ? '2' : '1',
-        user,
         role_type: mappedRoleType,
         reduce_ratio: '0',
         fast_mode: toggles.fast_mode_visible ? '1' : '0',

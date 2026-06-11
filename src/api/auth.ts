@@ -21,6 +21,7 @@ export interface LoginParams {
 export interface UserInfo {
   name: string;
   id: number;
+  uid?: string | null;
   token: string;
   is_admin: boolean;
   is_vip: boolean;

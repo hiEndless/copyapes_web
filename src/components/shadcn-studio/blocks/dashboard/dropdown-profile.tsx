@@ -105,7 +105,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           </div>
           <div className='flex flex-1 flex-col items-start'>
             <span className='text-foreground text-sm font-semibold'>{userInfo?.name || '用户'}</span>
-            <span className='text-muted-foreground text-xs'>UID: {userInfo?.id || '--'}</span>
+            <span className='text-muted-foreground text-xs'>UID: {userInfo?.uid || '--'}</span>
           </div>
         </DropdownMenuLabel>
 
