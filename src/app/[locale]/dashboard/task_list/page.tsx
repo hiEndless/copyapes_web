@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useMemo } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { Plus, UserCheck, Coins, Cookie, Unplug, Flame, Droplets } from 'lucide-react'
 import { toast } from 'sonner'
@@ -95,10 +95,24 @@ export default function TaskListPage() {
   const [total, setTotal] = useState(0)
   const [hasNextPage, setHasNextPage] = useState(false)
 
-  const fetchData = async (nextPage = page) => {
+  const getStatusParam = (tab: 'all' | 'online' | 'stop') => {
+    if (tab === 'online') return 1
+    if (tab === 'stop') return 2
+
+    return undefined
+  }
+
+  const fetchData = useCallback(async (nextPage: number, tab: 'all' | 'online' | 'stop') => {
     try {
       setLoading(true)
-      const res = await getTaskList({ page: nextPage, page_size: pageSize })
+
+      const status = getStatusParam(tab)
+
+      const res = await getTaskList({
+        page: nextPage,
+        page_size: pageSize,
+        ...(status !== undefined ? { status } : {})
+      })
 
       if (res.code === 0 && Array.isArray(res.data)) {
         setData(res.data)
@@ -121,18 +135,11 @@ export default function TaskListPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [pageSize])
 
   useEffect(() => {
-    fetchData(page)
-  }, [page, pageSize])
-
-  const filteredData = useMemo(() => {
-    if (filter === 'all') return data
-    const statusToFilter = filter === 'online' ? 1 : 2
-
-    return data.filter(item => item.status === statusToFilter)
-  }, [data, filter])
+    fetchData(page, filter)
+  }, [page, pageSize, filter, fetchData])
 
   return (
     <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
@@ -220,7 +227,7 @@ export default function TaskListPage() {
 
       <Card className='col-span-full py-0 shadow-none'>
         <TaskDatatable
-          data={filteredData}
+          data={data}
           loading={loading}
           currentPage={page}
           pageSize={pageSize}
@@ -229,7 +236,7 @@ export default function TaskListPage() {
           onPrevPage={() => setPage(prev => Math.max(1, prev - 1))}
           onNextPage={() => setPage(prev => prev + 1)}
           onJumpPage={next => setPage(Math.max(1, next))}
-          onRefresh={() => fetchData(page)}
+          onRefresh={() => fetchData(page, filter)}
         />
       </Card>
     </div>

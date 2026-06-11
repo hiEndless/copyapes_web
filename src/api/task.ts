@@ -51,6 +51,7 @@ export function getTaskList(params?: {
   limit?: number
   offset?: number
   active_only?: boolean
+  status?: number
 }) {
   return request('/taskadd/', {
     method: 'GET',
