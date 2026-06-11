@@ -7,7 +7,6 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
   ActivityIcon,
-  BellIcon,
   ChevronRightIcon,
   CopyIcon,
   Crown,
@@ -25,7 +24,6 @@ import {
   ShieldUser,
   Unplug,
   MessageCircleWarning,
-  Bug,
   ListChecks,
   ListCheck,
   Boxes
@@ -57,8 +55,6 @@ import {
 
 // import SearchDialog from '@/components/shadcn-studio/blocks/dashboard/dialog-search'
 import LanguageDropdown from '@/components/shadcn-studio/blocks/dashboard/dropdown-language'
-import ActivityDialog from '@/components/shadcn-studio/blocks/dashboard/dialog-activity'
-import NotificationDropdown from '@/components/shadcn-studio/blocks/dashboard/dropdown-notification'
 import ProfileDropdown from '@/components/shadcn-studio/blocks/dashboard/dropdown-profile'
 import SupportDialog from '@/components/shadcn-studio/blocks/dashboard/dialog-support'
 import Alert10 from '@/components/shadcn-studio/alert/alert-10'
@@ -471,6 +467,16 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                     </Button>
                   }
                 />
+                <Button variant='ghost' size='icon' title='服务状态' asChild>
+                  <a
+                    href='https://watchdog.lichaoyuan.com/status'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                  >
+                    <ActivityIcon />
+                    <span className='sr-only'>服务状态</span>
+                  </a>
+                </Button>
                 <Button
                   variant='ghost'
                   size='icon'
@@ -482,13 +488,6 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                   <span className='sr-only'>Toggle theme</span>
                 </Button>
                 {/* <ActivityDialog
-                  trigger={
-                    <Button variant='ghost' size='icon'>
-                      <ActivityIcon />
-                    </Button>
-                  }
-                />
-                <ActivityDialog
                   trigger={
                     <Button variant='ghost' size='icon'>
                       <Bug />
