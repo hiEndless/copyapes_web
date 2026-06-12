@@ -48,7 +48,24 @@ const audienceOptions: { value: AdminNoticeAudienceType; label: string }[] = [
   { value: "vip_users", label: "VIP/工作室VIP用户" },
   { value: "task_users", label: "有进行中任务的用户" },
   { value: "platform_role_users", label: "按平台+交易员类型定向" },
+  { value: "custom_user_ids", label: "自定义用户ID列表" },
 ]
+
+/** 与默认 ADMIN_NOTICE_SYNC_MAX_USERS 对齐，避免前端放行而后端 422 */
+const MAX_CUSTOM_AUDIENCE_IDS = 100
+
+function parseUserIdsFromText(raw: string): number[] {
+  const parts = raw.split(/[\s,，、;；\n]+/)
+  const ids: number[] = []
+  for (const p of parts) {
+    const s = p.trim()
+    if (!s) continue
+    const n = Number(s)
+    if (!Number.isFinite(n) || !Number.isInteger(n) || n <= 0) continue
+    ids.push(n)
+  }
+  return ids
+}
 
 function getAudienceLabel(value: string) {
   const found = audienceOptions.find((item) => item.value === value)
@@ -67,6 +84,7 @@ export function SystemNoticeTab() {
   const [audienceType, setAudienceType] = useState<AdminNoticeAudienceType>("all_users")
   const [traderPlatform, setTraderPlatform] = useState("1")
   const [roleType, setRoleType] = useState("2")
+  const [customUserIdsText, setCustomUserIdsText] = useState("")
   const [wxText, setWxText] = useState("")
   const [qqText, setQqText] = useState("")
   const [dingText, setDingText] = useState("")
@@ -77,6 +95,7 @@ export function SystemNoticeTab() {
   const [sendData, setSendData] = useState<NoticeSendData | null>(null)
 
   const needsPlatformRole = audienceType === "platform_role_users"
+  const needsCustomUserIds = audienceType === "custom_user_ids"
 
   const payload: AdminNoticeBroadcastPayload = useMemo(() => {
     const body: AdminNoticeBroadcastPayload = {
@@ -89,11 +108,27 @@ export function SystemNoticeTab() {
       body.audience.trader_platform = Number(traderPlatform || "0")
       body.audience.role_type = Number(roleType || "0")
     }
+    if (needsCustomUserIds) {
+      const parsed = parseUserIdsFromText(customUserIdsText)
+      const deduped = Array.from(new Set(parsed)).sort((a, b) => a - b)
+      body.audience.user_ids = deduped
+    }
     if (wxText.trim()) body.wx = { text: wxText }
     if (qqText.trim()) body.qq_mail = { text: qqText }
     if (dingText.trim()) body.ding_bot = { text: dingText }
     return body
-  }, [audienceType, dingText, needsPlatformRole, qqText, roleType, sceneCode, traderPlatform, wxText])
+  }, [
+    audienceType,
+    customUserIdsText,
+    dingText,
+    needsCustomUserIds,
+    needsPlatformRole,
+    qqText,
+    roleType,
+    sceneCode,
+    traderPlatform,
+    wxText,
+  ])
 
   const handlePreview = async () => {
     try {
@@ -151,6 +186,18 @@ export function SystemNoticeTab() {
       }
       if (!Number.isFinite(role) || role <= 0) {
         toast.error("交易员类型必须为正整数")
+        return false
+      }
+    }
+    if (needsCustomUserIds) {
+      const ids = parseUserIdsFromText(customUserIdsText)
+      const deduped = Array.from(new Set(ids)).sort((a, b) => a - b)
+      if (deduped.length === 0) {
+        toast.error("请填写至少一个有效用户ID（正整数）")
+        return false
+      }
+      if (deduped.length > MAX_CUSTOM_AUDIENCE_IDS) {
+        toast.error(`自定义受众去重后最多 ${MAX_CUSTOM_AUDIENCE_IDS} 个用户ID`)
         return false
       }
     }
@@ -244,6 +291,21 @@ export function SystemNoticeTab() {
               <div className="space-y-2">
                 <Label>交易员类型</Label>
                 <Input value={roleType} onChange={(e) => setRoleType(e.target.value)} placeholder="2" />
+              </div>
+            </div>
+          )}
+
+          {needsCustomUserIds && (
+            <div className="space-y-2">
+              <Label>用户ID列表（逗号或换行分隔，去重后最多 {MAX_CUSTOM_AUDIENCE_IDS} 个）</Label>
+              <Textarea
+                value={customUserIdsText}
+                onChange={(e) => setCustomUserIdsText(e.target.value)}
+                placeholder={"例如：1001, 1002\n1003"}
+                className="min-h-[100px] font-mono text-sm"
+              />
+              <div className="text-muted-foreground text-xs">
+                仅对数据库中 status=1 的用户发送；无效或停用 ID 会在预览人数中被过滤。
               </div>
             </div>
           )}

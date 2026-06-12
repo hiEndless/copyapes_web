@@ -16,12 +16,19 @@ export interface UpdateInviteCodeResponse {
   invite_code: string;
 }
 
-export type AdminNoticeAudienceType = "all_users" | "vip_users" | "task_users" | "platform_role_users";
+export type AdminNoticeAudienceType =
+  | "all_users"
+  | "vip_users"
+  | "task_users"
+  | "platform_role_users"
+  | "custom_user_ids";
 
 export interface AdminNoticeAudienceFilter {
   audience_type: AdminNoticeAudienceType;
   trader_platform?: number;
   role_type?: number;
+  /** 仅 audience_type=custom_user_ids 时必填 */
+  user_ids?: number[];
 }
 
 export interface AdminNoticeBroadcastPayload {
