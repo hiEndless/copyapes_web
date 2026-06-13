@@ -15,6 +15,11 @@ import { Label } from '@/components/ui/label'
 import { PrimaryFlowButton } from '@/components/ui/flow-button'
 import { authApi } from '@/api/auth'
 import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
+import {
+  getPersistedInviteCode,
+  isValidInviteCode,
+  persistInviteCode,
+} from '@/lib/invite-code'
 
 type TurnstileWidgetId = string
 
@@ -41,6 +46,7 @@ const RegisterForm = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [inviteCode, setInviteCode] = useState('')
+  const [isInviteCodeLocked, setIsInviteCodeLocked] = useState(false)
   const [agreed, setAgreed] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSendingCode, setIsSendingCode] = useState(false)
@@ -50,6 +56,22 @@ const RegisterForm = () => {
   const turnstileWidgetIdRef = useRef<TurnstileWidgetId | null>(null)
 
   const router = useRouter()
+
+  useEffect(() => {
+    const fromUrl = new URLSearchParams(window.location.search).get('invite_code')?.trim() ?? ''
+    if (fromUrl && isValidInviteCode(fromUrl)) {
+      setInviteCode(fromUrl)
+      setIsInviteCodeLocked(true)
+      persistInviteCode(fromUrl)
+      return
+    }
+
+    const persisted = getPersistedInviteCode()
+    if (persisted) {
+      setInviteCode(persisted)
+      setIsInviteCodeLocked(true)
+    }
+  }, [])
 
   useEffect(() => {
     if (!siteKey) return
@@ -326,7 +348,8 @@ const RegisterForm = () => {
           placeholder='请输入邀请码'
           value={inviteCode}
           onChange={(e) => setInviteCode(e.target.value)}
-          disabled={isLoading}
+          disabled={isLoading || isInviteCodeLocked}
+          readOnly={isInviteCodeLocked}
         />
       </div>
 

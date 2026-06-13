@@ -2,11 +2,15 @@
 
 import { useEffect, useState, useCallback } from "react"
 
+import { Copy } from "lucide-react"
+import { toast } from "sonner"
+
 import { agentApi } from "@/api/agent"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { getInviteRegisterUrl } from "@/lib/invite-code"
 
 export function InviteCodeTab() {
   const [inviteCode, setInviteCode] = useState("")
@@ -16,6 +20,7 @@ export function InviteCodeTab() {
   const [withdrawAmount, setWithdrawAmount] = useState(0)
   const [remainAmount, setRemainAmount] = useState(0)
   const [isSaving, setIsSaving] = useState(false)
+  const [siteOrigin, setSiteOrigin] = useState<string | null>(null)
 
   const getLevel = useCallback(async () => {
     try {
@@ -50,9 +55,17 @@ export function InviteCodeTab() {
     getCommissions()
   }, [getLevel, getCommissions])
 
+  useEffect(() => {
+    setSiteOrigin(window.location.origin)
+  }, [])
+
   const trimmedInviteCode = inviteCode.trim()
   const hasChanged = trimmedInviteCode !== savedInviteCode
   const inviteCodePattern = /^[A-Za-z0-9_-]{4,32}$/
+
+  const inviteLink = savedInviteCode
+    ? getInviteRegisterUrl(savedInviteCode, siteOrigin ?? undefined)
+    : ""
 
   const inviteCodeError =
     trimmedInviteCode.length === 0
@@ -80,6 +93,17 @@ export function InviteCodeTab() {
     } finally {
       setIsSaving(false)
     }
+  }
+
+  const handleCopyInviteLink = async () => {
+    if (!inviteLink) {
+      toast.error("暂无可复制的邀请链接")
+
+      return
+    }
+
+    await navigator.clipboard.writeText(inviteLink)
+    toast.success("邀请链接已复制")
   }
 
   return (
@@ -185,6 +209,32 @@ export function InviteCodeTab() {
           <p className="text-muted-foreground text-xs">
             {inviteCodeError || "邀请码长度为 4-32 位，仅支持字母、数字、下划线和短横线。"}
           </p>
+
+          <div className="space-y-3 pt-2">
+            <Label htmlFor="invite-link" className="text-sm">邀请链接</Label>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Input
+                id="invite-link"
+                readOnly
+                value={inviteLink}
+                placeholder="保存邀请码后生成链接"
+                className="max-w-xl bg-muted/30"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                className="w-full sm:w-auto"
+                onClick={handleCopyInviteLink}
+                disabled={!inviteLink}
+              >
+                <Copy className="mr-2 h-4 w-4" />
+                复制链接
+              </Button>
+            </div>
+            <p className="text-muted-foreground text-xs">
+              分享链接后，用户打开注册页将自动填入邀请码且不可修改。
+            </p>
+          </div>
         </CardContent>
       </Card>
     </div>
