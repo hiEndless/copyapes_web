@@ -312,25 +312,30 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
         {/* 赞助商广告 */}
-        {/*<Card className='gap-3 py-4 shadow-none'>*/}
-        {/*  <CardHeader className='px-4 pb-0'>*/}
-        {/*    <CardTitle className='text-sm'>赞助商广告</CardTitle>*/}
-        {/*  </CardHeader>*/}
-        {/*  <CardContent className='grid grid-cols-3 gap-2 px-4'>*/}
-        {/*    {[1, 2, 3].map(i => (*/}
-        {/*      <div*/}
-        {/*        key={i}*/}
-        {/*        className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed'*/}
-        {/*      >*/}
-        {/*        <span className='text-muted-foreground text-center text-xs leading-tight'>*/}
-        {/*          Logo*/}
-        {/*          <br />*/}
-        {/*          {i}*/}
-        {/*        </span>*/}
-        {/*      </div>*/}
-        {/*    ))}*/}
-        {/*  </CardContent>*/}
-        {/*</Card>*/}
+        <Card className='gap-3 py-4 shadow-none'>
+          <CardHeader className='px-4 pb-0'>
+            <CardTitle className='text-sm'>赞助商广告</CardTitle>
+          </CardHeader>
+          <CardContent className='grid grid-cols-2 gap-2 px-4'>
+            <a
+              href='https://panel.supaboard.cc/#/register?code=tgL9ZBbV'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block aspect-video w-full overflow-hidden rounded-md border'
+            >
+              <img
+                src='/sponsor/supaboard.png'
+                alt='Supaboard'
+                className='h-full w-full object-cover'
+              />
+            </a>
+            <div className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed px-2'>
+              <span className='text-muted-foreground text-center text-xs leading-tight'>
+                赞助商广告位，请联系客服
+              </span>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* 其他产品 */}
         {/*<Card className='gap-3 py-4 shadow-none'>*/}
