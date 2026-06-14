@@ -67,6 +67,9 @@ export function StudioTaskTableView({
                   >
                     {group.apiName}
                   </Badge>
+                  <Badge variant='secondary' className='rounded-sm text-xs font-normal'>
+                    {group.exchangeName}
+                  </Badge>
                   <span className='text-muted-foreground text-xs'>共 {group.tasks.length} 个进行中任务</span>
                 </div>
               </TableCell>

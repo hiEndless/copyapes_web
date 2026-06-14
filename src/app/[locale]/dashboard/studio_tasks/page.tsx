@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { StudioTaskGridView } from './_components/studio-task-grid-view'
 import { StudioTaskTableView } from './_components/studio-task-table-view'
 import type { GroupedByApiItem, GroupedByTraderItem, StudioTaskItem } from './_components/types'
+import { getExchangeLabel } from './_components/utils'
 
 type ViewMode = 'grid' | 'table'
 
@@ -113,6 +114,7 @@ export default function StudioTasksPage() {
     return Array.from(map.entries()).map(([apiId, groupedTasks]) => ({
       apiId,
       apiName: (groupedTasks[0]?.api_name || '').trim() || '未命名 API',
+      exchangeName: getExchangeLabel(groupedTasks[0]?.api_platform),
       tasks: groupedTasks
     }))
   }, [activeTasks])

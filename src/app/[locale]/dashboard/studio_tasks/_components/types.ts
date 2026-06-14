@@ -4,6 +4,7 @@ export type StudioTaskItem = {
   label?: string
   api_id: number
   api_name: string
+  api_platform?: number | string
   investment?: string | number
   sums?: string | number
   status: number
@@ -22,5 +23,6 @@ export type GroupedByTraderItem = {
 export type GroupedByApiItem = {
   apiId: number
   apiName: string
+  exchangeName: string
   tasks: StudioTaskItem[]
 }
