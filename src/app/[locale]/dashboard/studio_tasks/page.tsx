@@ -98,18 +98,21 @@ export default function StudioTasksPage() {
   }, [activeTasks])
 
   const groupedByApi: GroupedByApiItem[] = useMemo(() => {
-    const map = new Map<string, StudioTaskItem[]>()
+    const map = new Map<number, StudioTaskItem[]>()
 
     for (const task of activeTasks) {
-      const key = (task.api_name || '').trim() || '未命名 API'
-      const arr = map.get(key) || []
+      const apiId = Number(task.api_id)
+      if (!Number.isFinite(apiId) || apiId <= 0) continue
+
+      const arr = map.get(apiId) || []
 
       arr.push(task)
-      map.set(key, arr)
+      map.set(apiId, arr)
     }
 
-    return Array.from(map.entries()).map(([apiName, groupedTasks]) => ({
-      apiName,
+    return Array.from(map.entries()).map(([apiId, groupedTasks]) => ({
+      apiId,
+      apiName: (groupedTasks[0]?.api_name || '').trim() || '未命名 API',
       tasks: groupedTasks
     }))
   }, [activeTasks])

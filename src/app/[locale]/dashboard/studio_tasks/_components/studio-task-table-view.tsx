@@ -58,7 +58,7 @@ export function StudioTaskTableView({
         </TableHeader>
         <TableBody>
           {groupedByApi.flatMap(group => [
-            <TableRow key={`group-${group.apiName}`} className='bg-muted/40 hover:bg-muted/40'>
+            <TableRow key={`group-${group.apiId}`} className='bg-muted/40 hover:bg-muted/40'>
               <TableCell colSpan={5} className='py-2 first:pl-4 last:pr-4'>
                 <div className='flex items-center gap-2 text-sm font-medium'>
                   <span className='inline-block h-2 w-2 rounded-full bg-primary/70' />
@@ -72,7 +72,7 @@ export function StudioTaskTableView({
               </TableCell>
             </TableRow>,
             ...group.tasks.map(task => (
-              <TableRow key={`${group.apiName}-${task.id}`}>
+              <TableRow key={`${group.apiId}-${task.id}`}>
                 <TableCell className='first:pl-8'>{task.id}</TableCell>
                 <TableCell>
                   <div className='flex flex-col'>
