@@ -1,0 +1,22 @@
+services:
+  web:
+    image: node:22.11.0-bookworm-slim
+    container_name: copyapes_web
+    working_dir: /app
+    restart: unless-stopped
+    ports:
+      - "${WEB_BIND_IP:-127.0.0.1}:${WEB_PORT:-3000}:3000"
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 0.0.0.0
+      PORT: 3000
+    volumes:
+      - .:/app
+      - web_node_modules:/app/node_modules
+    entrypoint: ["sh", "/app/scripts/docker-entrypoint.sh"]
+    command: ["pnpm", "start"]
+
+volumes:
+  web_node_modules:
