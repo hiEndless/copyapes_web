@@ -1110,6 +1110,11 @@ export function CopyTaskConfigSheet({
                       自动获取
                     </Button>
                   </div>
+                  {initialTaskData && (
+                    <div className='rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-800 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-200'>
+                      若该 API 账户仍有持仓，请保留原任务本金，勿重新获取，以免跟单比例变化，平仓后可能留有底仓。
+                    </div>
+                  )}
                 </div>
 
                 {formData.follow_type === '2' && (
