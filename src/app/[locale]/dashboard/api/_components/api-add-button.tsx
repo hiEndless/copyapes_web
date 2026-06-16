@@ -69,6 +69,12 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!formData.api_label.trim()) {
+      toast.error('请填写备注名称')
+      return
+    }
+
     setLoading(true)
 
     try {
@@ -78,12 +84,13 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
       else if (formData.exchange === 'gate') platform = 3
       else if (formData.exchange === 'bitget') platform = 4
       else if (formData.exchange === 'weex') platform = 5
+      else if (formData.exchange === 'htx') platform = 6
 
       const payload = {
         platform,
         flag: 0,
         is_readonly: formData.is_read_only,
-        api_name: formData.api_label,
+        api_name: formData.api_label.trim(),
         api_key: formData.api_key,
         secret_key: formData.api_secret,
         passPhrase: formData.api_passphrase

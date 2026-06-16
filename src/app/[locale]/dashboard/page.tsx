@@ -97,23 +97,23 @@ const DashboardPage = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className='px-4 pt-4'>
-            <div className='border-border z-20 flex w-full flex-col overflow-hidden'>
+            <div className='border-border w-full overflow-hidden'>
               <div className='grid w-full grid-cols-3 items-center justify-center'>
                 {/* Binance */}
-                <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <div className='group relative isolate flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-0 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-0 after:h-px after:w-screen after:content-[""]'>
                   <a
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='absolute inset-0 z-20'
+                    className='absolute inset-0 z-10'
                     href='https://www.binance.com/join?ref=COPYAPES'
                   >
                     <span className='sr-only'>Binance</span>
                   </a>
-                  <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
-                  <div className='absolute inset-0 overflow-hidden'>
+                  <div className='bg-primary/5 pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                  <div className='pointer-events-none absolute inset-0 overflow-hidden'>
                     <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
                   </div>
-                  <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <div className='pointer-events-none relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
                     <img
                       alt='BINANCE'
                       loading='lazy'
@@ -126,20 +126,20 @@ const DashboardPage = () => {
                 </div>
 
                 {/* Bitget */}
-                <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <div className='group relative isolate flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-0 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-0 after:h-px after:w-screen after:content-[""]'>
                   <a
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='absolute inset-0 z-20'
+                    className='absolute inset-0 z-10'
                     href='https://partner.hdmune.cn/bg/japhe6xs'
                   >
                     <span className='sr-only'>Bitget</span>
                   </a>
-                  <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
-                  <div className='absolute inset-0 overflow-hidden'>
+                  <div className='bg-primary/5 pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                  <div className='pointer-events-none absolute inset-0 overflow-hidden'>
                     <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
                   </div>
-                  <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <div className='pointer-events-none relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
                     <img
                       alt='BITGET'
                       loading='lazy'
@@ -152,20 +152,20 @@ const DashboardPage = () => {
                 </div>
 
                 {/* OKX */}
-                <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <div className='group relative isolate flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-0 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-0 after:h-px after:w-screen after:content-[""]'>
                   <a
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='absolute inset-0 z-20'
+                    className='absolute inset-0 z-10'
                     href='https://www.okx.com/join/COPY02'
                   >
                     <span className='sr-only'>OKX</span>
                   </a>
-                  <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
-                  <div className='absolute inset-0 overflow-hidden'>
+                  <div className='bg-primary/5 pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                  <div className='pointer-events-none absolute inset-0 overflow-hidden'>
                     <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
                   </div>
-                  <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <div className='pointer-events-none relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
                     <img
                       alt='OKX'
                       loading='lazy'
@@ -184,24 +184,22 @@ const DashboardPage = () => {
                     />
                   </div>
                 </div>
-              </div>
 
-              <div className='mx-auto grid w-2/3 grid-cols-2 items-center justify-center'>
                 {/* Gate */}
-                <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <div className='group relative isolate flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-0 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-0 after:h-px after:w-screen after:content-[""]'>
                   <a
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='absolute inset-0 z-20'
+                    className='absolute inset-0 z-10'
                     href='https://www.gate.io/share/COPYAPES'
                   >
                     <span className='sr-only'>Gate</span>
                   </a>
-                  <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
-                  <div className='absolute inset-0 overflow-hidden'>
+                  <div className='bg-primary/5 pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                  <div className='pointer-events-none absolute inset-0 overflow-hidden'>
                     <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
                   </div>
-                  <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <div className='pointer-events-none relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
                     <img
                       alt='GATE'
                       loading='lazy'
@@ -222,20 +220,20 @@ const DashboardPage = () => {
                 </div>
 
                 {/* Weex */}
-                <div className='group relative flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-10 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-10 after:h-px after:w-screen after:content-[""]'>
+                <div className='group relative isolate flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-0 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-0 after:h-px after:w-screen after:content-[""]'>
                   <a
                     target='_blank'
                     rel='noopener noreferrer'
-                    className='absolute inset-0 z-20'
+                    className='absolute inset-0 z-10'
                     href='https://weasexx.online/zh-CN/register?vipCode=copyapes'
                   >
                     <span className='sr-only'>Weex</span>
                   </a>
-                  <div className='bg-primary/5 absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
-                  <div className='absolute inset-0 overflow-hidden'>
+                  <div className='bg-primary/5 pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                  <div className='pointer-events-none absolute inset-0 overflow-hidden'>
                     <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
                   </div>
-                  <div className='pointer-events-none relative z-10 flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                  <div className='pointer-events-none relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
                     <img
                       alt='WEEX'
                       loading='lazy'
@@ -243,6 +241,40 @@ const DashboardPage = () => {
                       height='20'
                       className='h-5 w-auto object-contain transition-all duration-300'
                       src='/exchanges/weex/weex_logo.png'
+                    />
+                  </div>
+                </div>
+
+                {/* HTX */}
+                <div className='group relative isolate flex h-20 w-full items-center justify-center p-2 before:absolute before:top-0 before:-left-1 before:z-0 before:h-screen before:w-px before:content-[""] after:absolute after:-top-1 after:left-0 after:z-0 after:h-px after:w-screen after:content-[""]'>
+                  <a
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='absolute inset-0 z-10'
+                    href='https://www.htx.com.pt/invite/zh-cn/1h?invite_code=copyapes'
+                  >
+                    <span className='sr-only'>HTX</span>
+                  </a>
+                  <div className='bg-primary/5 pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100'></div>
+                  <div className='pointer-events-none absolute inset-0 overflow-hidden'>
+                    <div className='via-primary/10 absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent to-transparent transition-transform duration-1000 ease-in-out group-hover:translate-x-full'></div>
+                  </div>
+                  <div className='pointer-events-none relative flex h-full w-full items-center justify-center transition-transform duration-300 group-hover:scale-105'>
+                    <img
+                      alt='HTX'
+                      loading='lazy'
+                      width='100'
+                      height='28'
+                      className='h-6 w-auto object-contain dark:hidden'
+                      src='/exchanges/htx/logo-light.png'
+                    />
+                    <img
+                      alt='HTX'
+                      loading='lazy'
+                      width='100'
+                      height='28'
+                      className='hidden h-6 w-auto object-contain dark:block'
+                      src='/exchanges/htx/logo-dark.svg'
                     />
                   </div>
                 </div>

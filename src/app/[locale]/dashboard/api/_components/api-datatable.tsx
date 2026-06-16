@@ -68,7 +68,8 @@ const PLATFORM_MAP: Record<string, { name: string; logo: string }> = {
   binance: { name: 'Binance', logo: '/exchanges/binance.png' },
   gate: { name: 'Gate', logo: '/exchanges/gate.png' },
   bitget: { name: 'Bitget', logo: '/exchanges/bitget.png' },
-  weex: { name: 'WEEX', logo: '/exchanges/weex.png' }
+  weex: { name: 'WEEX', logo: '/exchanges/weex.png' },
+  htx: { name: 'HTX', logo: '/exchanges/htx.svg' }
 }
 
 const getColumns = (

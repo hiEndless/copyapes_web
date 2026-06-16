@@ -25,7 +25,8 @@ const EXCHANGES = [
   { label: 'Binance', value: 'binance', logo: '/exchanges/binance.png' },
   { label: 'Gate', value: 'gate', logo: '/exchanges/gate.png' },
   { label: 'Bitget', value: 'bitget', logo: '/exchanges/bitget.png' },
-  { label: 'WEEX', value: 'weex', logo: '/exchanges/weex.png' }
+  { label: 'WEEX', value: 'weex', logo: '/exchanges/weex.png' },
+  { label: 'HTX', value: 'htx', logo: '/exchanges/htx.svg' }
 ]
 
 export const EXCHANGES_LOGOS = [
@@ -82,12 +83,22 @@ export const EXCHANGES_LOGOS = [
     value: 'weex',
     logo: '/exchanges/weex/weex_logo.png',
     logoDark: '/exchanges/weex/weex_logo.png',
-    logoHeight: 15,
+    logoHeight: 14,
     logoHeightDark: 13,
     logoFilter: 'grayscale(1) brightness(0.65) contrast(1.1)',
 
     // 深色背景：原图偏亮，压暗
     logoFilterDark: 'grayscale(1) brightness(0.55) contrast(1.08)'
+  },
+  {
+    label: 'HTX',
+    value: 'htx',
+    logo: '/exchanges/htx/logo-light.png',
+    logoDark: '/exchanges/htx/logo-dark.svg',
+    logoHeight: 17,
+    logoHeightDark: 14,
+    logoFilter: 'grayscale(1) brightness(0.62) contrast(1.1)',
+    logoFilterDark: 'grayscale(1) brightness(1.05) contrast(0.9)'
   }
 ] as const
 
@@ -193,7 +204,7 @@ export function ApiBindFormStep({
             <p className='text-muted-foreground mb-2.5 text-center text-[10px] font-medium'>
               已支持以下交易所
             </p>
-            <div className='grid grid-cols-3 items-center justify-items-center gap-x-2 gap-y-3 sm:grid-cols-5'>
+            <div className='grid grid-cols-3 items-center justify-items-center gap-x-2 gap-y-3'>
               {EXCHANGES_LOGOS.map((ex) => (
                 <div key={ex.value} className='flex w-full items-center justify-center'>
                   <ExchangeShowcaseLogo ex={ex} />
@@ -264,11 +275,12 @@ export function ApiBindFormStep({
 
           <div>
             <label htmlFor='api_label' className={FIELD_LABEL}>
-              备注名称
+              备注名称 *
             </label>
             <Input
               id='api_label'
               placeholder='如：主账户'
+              required
               value={formData.api_label}
               onChange={(e) => onChange('api_label', e.target.value)}
               className={FIELD_INPUT}
