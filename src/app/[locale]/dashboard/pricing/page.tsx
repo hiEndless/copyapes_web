@@ -16,12 +16,20 @@ function getRebateRenewalInfoBadge(rebateDiscount?: RebateVipDiscountInfo) {
     return null;
   }
 
-  if (!rebateDiscount.renew_window_open) {
-    return '未到优惠续费窗口';
+  if (rebateDiscount.is_studio_vip_active === true || rebateDiscount.studio_vip_days > 0) {
+    return null;
+  }
+
+  if (rebateDiscount.has_rebate_binding === false) {
+    return null;
   }
 
   if (rebateDiscount.cooldown_remaining_days > 0) {
     return `${rebateDiscount.cooldown_remaining_days}天后可优惠续费`;
+  }
+
+  if (rebateDiscount.renew_window_open === false && rebateDiscount.has_rebate_binding === true) {
+    return '未到优惠续费窗口';
   }
 
   return null;
@@ -136,7 +144,6 @@ export default function PricingPage() {
               monthBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
               yearBadge: yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
               monthInfoBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? undefined : rebateRenewalInfoBadge ?? undefined,
-              yearInfoBadge: yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? undefined : rebateRenewalInfoBadge ?? undefined,
             };
           }
 

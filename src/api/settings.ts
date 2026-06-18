@@ -41,8 +41,10 @@ export interface RebateVipDiscountInfo {
   eligible: boolean;
   vip_days: number;
   studio_vip_days: number;
+  has_rebate_binding?: boolean;
   renew_window_days: number;
-  renew_window_open: boolean;
+  renew_window_open?: boolean;
+  is_studio_vip_active?: boolean;
   cooldown_remaining_days: number;
 }
 
