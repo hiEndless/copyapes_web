@@ -118,7 +118,7 @@ const adminItems: MenuItem[] = [
 const copyItems: MenuItem[] = [
   {
     icon: LayoutListIcon,
-    label: '跟单任务列表',
+    label: '我的跟单',
     href: '/dashboard/task_list'
   },
   {
