@@ -775,12 +775,10 @@ export function CopyTaskConfigSheet({
       return
     }
 
-    const hasAttentionItems = configSummaryItems.some(
-      item => item.tone === 'risk' || item.tone === 'warning'
-    )
-    if (hasAttentionItems && !summaryViewed) {
+    if (!summaryViewed) {
       setSummaryDetailOpen(true)
       setSummaryViewed(true)
+      toast.message('请核对配置清单后再次点击立即跟单')
 
       return
     }
