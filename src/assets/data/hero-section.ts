@@ -9,9 +9,9 @@ export const avatarMotionData = [
     sizeClass: 'size-16'
   },
   {
-    src: '/exchanges/bicoin.png',
-    fallback: 'BC',
-    name: 'Bicoin',
+    src: '/exchanges/htx.svg',
+    fallback: 'HTX',
+    name: 'HTX',
     duration: 0.5,
     className: 'absolute top-0 left-8',
     sizeClass: 'size-20.5'
