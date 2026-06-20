@@ -643,10 +643,12 @@ export function CopyTaskConfigSheet({
   const fetchBenchMark = async (isAuto = false) => {
     if (!traderPlatform || !traderId) return
 
+    const resolvedUniqueName = buildUniqueName(traderId || '', cookieId, traderPlatform)
+
     const res = await getTraderBalance({
       trader_platform: traderPlatform,
       role_type: roleType || '1',
-      uniqueName: traderId
+      uniqueName: resolvedUniqueName
     })
 
     if (res.code === 0) {
