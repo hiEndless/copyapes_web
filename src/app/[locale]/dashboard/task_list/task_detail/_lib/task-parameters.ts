@@ -49,9 +49,12 @@ export function getRoleType(roleType: number | string, traderPlatform: number | 
   const rt = String(roleType)
   const tp = String(traderPlatform)
 
-  if (tp === '1' || tp === '6' || tp === '8') {
+  if (tp === '1' || tp === '6') {
     if (rt === '1') return '合约带单'
     if (rt === '2') return '个人概况'
+  } else if (tp === '8') {
+    if (rt === '1') return '合约带单'
+    if (rt === '2') return '跟单项目'
   } else if (tp === '2' || tp === '5' || tp === '7') {
     if (rt === '1') return '公开带单'
     if (rt === '2') return '隐藏带单'

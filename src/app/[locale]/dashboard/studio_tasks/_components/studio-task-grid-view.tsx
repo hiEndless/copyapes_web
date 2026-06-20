@@ -39,10 +39,12 @@ const getRoleTypeLabel = (platform: number, roleType?: number | string) => {
   if (!roleType) return null
   const rt = String(roleType)
 
-  if (platform === 1 || platform === 8) {
-    // OKX 系列
+  if (platform === 1) {
     if (rt === '1') return '合约带单'
     if (rt === '2') return '个人概况'
+  } else if (platform === 8) {
+    if (rt === '1') return '合约带单'
+    if (rt === '2') return '跟单项目'
   } else if (platform === 2 || platform === 5 || platform === 7) {
     // Binance 系列
     if (rt === '1') return '公开带单'

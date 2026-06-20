@@ -36,6 +36,12 @@ function parseTraderIdFromUrl(urlStr: string, targetExchange: ExchangePlatform):
     const segments = url.pathname.split('/').filter(Boolean)
 
     if (targetExchange === 'okx') {
+      const copyRelId = url.searchParams.get('copyRelId')?.trim()
+
+      if (copyRelId && /^\d+$/.test(copyRelId)) {
+        return copyRelId
+      }
+
       return extractSegmentAfter(segments, 'account')
     }
 

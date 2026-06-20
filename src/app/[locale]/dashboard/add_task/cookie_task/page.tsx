@@ -506,6 +506,7 @@ export default function CookieTaskPage() {
                       {exchange === 'okx' ? (
                         <>
                           <SelectItem value='1'>合约带单</SelectItem>
+                          <SelectItem value='2'>跟单项目</SelectItem>
                         </>
                       ) : (
                         <>
