@@ -8,6 +8,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getPosts()
   const paths: Array<{ path: string; lastModified?: string }> = [
     { path: '' },
+    { path: '/privacy' },
     { path: '/blog' },
     ...posts.map(post => ({
       path: `/blog/${post.slug}`,

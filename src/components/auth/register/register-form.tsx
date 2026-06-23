@@ -6,7 +6,7 @@ import { EyeIcon, EyeOffIcon } from 'lucide-react'
 import Script from 'next/script'
 import { toast } from 'sonner'
 
-import { useRouter } from '@/i18n/routing'
+import { Link, useRouter } from '@/i18n/routing'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -364,6 +364,10 @@ const RegisterForm = () => {
         />
         <Label htmlFor='rememberMe' className='cursor-pointer font-normal'>
           同意{' '}
+          <Link href='/privacy' className='text-primary underline underline-offset-2' onClick={(e) => e.stopPropagation()}>
+            隐私政策
+          </Link>
+          {' & '}
           <a
             href='https://docs.lichaoyuan.com/copyapes/protocol'
             target='_blank'
@@ -371,7 +375,7 @@ const RegisterForm = () => {
             className='text-primary underline underline-offset-2'
             onClick={(e) => e.stopPropagation()}
           >
-            隐私政策 & 服务条款
+            服务条款
           </a>
         </Label>
       </div>

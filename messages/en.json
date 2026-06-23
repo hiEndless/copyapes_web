@@ -229,11 +229,74 @@
     "success": "Sent successfully",
     "sending": "Sending..."
   },
+  "PrivacyPolicy": {
+    "metadata": {
+      "title": "Privacy Policy",
+      "description": "Privacy Policy for the CopyApes website and browser extension, explaining how we collect, use, and protect your information."
+    },
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated: June 24, 2026",
+    "intro": "CopyApes (\"we\", \"us\") respects your privacy. This policy explains how we collect, use, store, and protect your information when you use our website and the CopyApes Assistant browser extension.",
+    "scope": {
+      "title": "1. Scope",
+      "body": "This policy applies to the CopyApes website (copyapes.com), related API services, and the CopyApes Assistant Chrome extension. By using our website or extension, you acknowledge this policy."
+    },
+    "collect": {
+      "title": "2. Information We Collect",
+      "body": "We collect only information necessary to provide copy-trading services, including:",
+      "items": [
+        "Account information: email, username, and other details you provide when registering.",
+        "Login credentials: your CopyApes login token to identify your account and maintain your session.",
+        "Exchange session data: cookies and related request headers read from authorized OKX/Binance pages when you initiate capture, for copy-trading cookie sync.",
+        "API information: exchange API keys you bind (we recommend trade-only permissions with IP whitelisting).",
+        "Extension local data: language, theme, cookie capture status, and panel visibility preferences stored locally in your browser.",
+        "Usage and log data: operation records and error logs to keep the service secure and reliable."
+      ]
+    },
+    "use": {
+      "title": "3. How We Use Information",
+      "body": "We use collected information only to:",
+      "items": [
+        "Provide, maintain, and improve copy-trading features.",
+        "Sync exchange login state and perform cookie capture and copy tasks you initiate.",
+        "Verify identity and protect account and trading security.",
+        "Send service-related notices when necessary.",
+        "Comply with applicable laws and regulations."
+      ]
+    },
+    "share": {
+      "title": "4. Sharing and Disclosure",
+      "body": "We do not sell your personal information. We may share necessary data only when:",
+      "items": [
+        "You have given explicit consent.",
+        "Required to complete copy-trading or cookie sync you initiated, by transmitting data to CopyApes backend services.",
+        "Required by law or valid requests from authorities.",
+        "Necessary to protect the rights and safety of users, us, or the public."
+      ]
+    },
+    "storage": {
+      "title": "5. Storage and Security",
+      "body": "We use reasonable technical and organizational measures to protect your data, including encrypted storage of sensitive credentials and access controls. API keys and similar secrets are encrypted on our servers. Extension preferences are stored locally on your device. We retain data only as long as needed for service purposes; after logout or account deletion, we delete or anonymize related data according to our rules."
+    },
+    "rights": {
+      "title": "6. Your Rights",
+      "body": "You may access, correct, or delete your account information, withdraw consent, or stop using our services. Manage API bindings in account settings; log out of the extension to clear local session data. Contact us via the website if you need assistance."
+    },
+    "contact": {
+      "title": "7. Contact Us",
+      "body": "If you have questions about this Privacy Policy, please reach us through the Contact section on the CopyApes website. We will respond within a reasonable time."
+    },
+    "changes": {
+      "title": "8. Policy Updates",
+      "body": "We may update this policy from time to time. Updates will be posted on this page with a revised \"Last updated\" date. For material changes, we may notify you via website announcements. Continued use of our services means you accept the updated policy."
+    }
+  },
   "Footer": {
     "desc": "Freely combine top lead traders from different exchanges, balance return and risk, create your exclusive copy trading strategy, and let the world's top traders work for you.",
     "product": "Product",
     "help": "Help",
     "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
     "tutorial": "Tutorial",
     "copyright": "Made with ❤️ by CopyApes."
   }
