@@ -64,10 +64,6 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
-  if (token && !params.token) {
-    params.token = token;
-  }
-
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
@@ -82,13 +78,14 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
   const hasApiPrefix = endpoint.startsWith('/api/') || endpoint === '/api';
   const apiPath = hasApiPrefix ? endpoint : `/api${endpoint.startsWith('/') ? '' : '/'}${endpoint}`;
 
-  // 如果原 endpoint 中已经包含了 `?`，则后续参数应使用 `&` 连接，避免出现 `?limit=10&offset=0?token=...` 的错误情况
+  // 如果原 endpoint 中已经包含了 `?`，则后续参数应使用 `&` 连接，避免重复问号。
   const hasQueryInPath = apiPath.includes('?');
   const separator = hasQueryInPath ? '&' : '?';
   const url = `${API_BASE_URL}${apiPath}${queryString ? separator + queryString : ''}`;
 
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...customConfig.headers,
   };
 
