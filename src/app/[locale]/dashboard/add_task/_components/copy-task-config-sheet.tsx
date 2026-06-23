@@ -778,7 +778,7 @@ export function CopyTaskConfigSheet({
     if (!summaryViewed) {
       setSummaryDetailOpen(true)
       setSummaryViewed(true)
-      toast.message('请核对配置清单后再次点击立即跟单')
+      toast.error('请核对配置清单后再次点击立即跟单')
 
       return
     }
