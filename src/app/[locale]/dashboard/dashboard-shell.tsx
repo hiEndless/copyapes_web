@@ -430,8 +430,8 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
               <SidebarContent>
                 <SidebarGroupedMenuItems data={menuItems} />
                 <SidebarGroupedMenuItems data={filteredAdminItems} groupLabel='系统服务' />
-                <SidebarGroupedMenuItems data={studioToolsItems} groupLabel='工作室服务' />
                 <SidebarGroupedMenuItems data={copyItems} groupLabel='跟单服务' />
+                <SidebarGroupedMenuItems data={studioToolsItems} groupLabel='工作室服务' />
                 <SidebarGroupedMenuItems data={toolsItems} groupLabel='工具服务' />
                 <SidebarGroupedMenuItems data={settingsItems} groupLabel='系统设置' />
               </SidebarContent>
