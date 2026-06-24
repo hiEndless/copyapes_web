@@ -421,7 +421,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                   <SidebarMenuItem>
                     <SidebarMenuButton size='lg' className='gap-2.5 !bg-transparent [&>svg]:size-8' asChild>
                       <a href='/'>
-                        <Logo />
+                        <Logo className='[&_span]:text-base' />
                       </a>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
