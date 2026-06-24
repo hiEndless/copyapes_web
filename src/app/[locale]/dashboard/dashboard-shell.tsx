@@ -441,7 +441,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                   className='block overflow-hidden rounded-lg transition-opacity hover:opacity-90'
                 >
                   <img
-                    src='/images/copyapes-chrome.png'
+                    src='/images/copyapes-chrome-zh.png'
                     alt='Cookie 获取'
                     className='w-full'
                   />
