@@ -38,6 +38,7 @@ import { Separator } from '@/components/ui/separator'
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
@@ -434,6 +435,18 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                 <SidebarGroupedMenuItems data={toolsItems} groupLabel='工具服务' />
                 <SidebarGroupedMenuItems data={settingsItems} groupLabel='系统设置' />
               </SidebarContent>
+              <SidebarFooter className='group-data-[collapsible=icon]:hidden'>
+                <Link
+                  href='/dashboard/cookie'
+                  className='block overflow-hidden rounded-lg transition-opacity hover:opacity-90'
+                >
+                  <img
+                    src='/images/copyapes-chrome.png'
+                    alt='Cookie 获取'
+                    className='w-full'
+                  />
+                </Link>
+              </SidebarFooter>
             </Sidebar>
             <div className='flex flex-1 flex-col'>
               <div className='bg-background sticky top-0 z-10 pb-1'>
