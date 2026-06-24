@@ -239,7 +239,8 @@
     "intro": "CopyApes (\"we\", \"us\") respects your privacy. This policy explains how we collect, use, store, and protect your information when you use our website and the CopyApes Assistant browser extension.",
     "scope": {
       "title": "1. Scope",
-      "body": "This policy applies to the CopyApes website (copyapes.com), related API services, and the CopyApes Assistant Chrome extension. By using our website or extension, you acknowledge this policy."
+      "body": "This policy applies to the CopyApes website (copyapes.com), related API services, and the CopyApes Assistant Chrome extension. By using our website or extension, you acknowledge this policy.",
+      "items": []
     },
     "collect": {
       "title": "2. Information We Collect",
@@ -276,19 +277,23 @@
     },
     "storage": {
       "title": "5. Storage and Security",
-      "body": "We use reasonable technical and organizational measures to protect your data, including encrypted storage of sensitive credentials and access controls. API keys and similar secrets are encrypted on our servers. Extension preferences are stored locally on your device. We retain data only as long as needed for service purposes; after logout or account deletion, we delete or anonymize related data according to our rules."
+      "body": "We use reasonable technical and organizational measures to protect your data, including encrypted storage of sensitive credentials and access controls. API keys and similar secrets are encrypted on our servers. Extension preferences are stored locally on your device. We retain data only as long as needed for service purposes; after logout or account deletion, we delete or anonymize related data according to our rules.",
+      "items": []
     },
     "rights": {
       "title": "6. Your Rights",
-      "body": "You may access, correct, or delete your account information, withdraw consent, or stop using our services. Manage API bindings in account settings; log out of the extension to clear local session data. Contact us via the website if you need assistance."
+      "body": "You may access, correct, or delete your account information, withdraw consent, or stop using our services. Manage API bindings in account settings; log out of the extension to clear local session data. Contact us via the website if you need assistance.",
+      "items": []
     },
     "contact": {
       "title": "7. Contact Us",
-      "body": "If you have questions about this Privacy Policy, please reach us through the Contact section on the CopyApes website. We will respond within a reasonable time."
+      "body": "If you have questions about this Privacy Policy, please reach us through the Contact section on the CopyApes website. We will respond within a reasonable time.",
+      "items": []
     },
     "changes": {
       "title": "8. Policy Updates",
-      "body": "We may update this policy from time to time. Updates will be posted on this page with a revised \"Last updated\" date. For material changes, we may notify you via website announcements. Continued use of our services means you accept the updated policy."
+      "body": "We may update this policy from time to time. Updates will be posted on this page with a revised \"Last updated\" date. For material changes, we may notify you via website announcements. Continued use of our services means you accept the updated policy.",
+      "items": []
     }
   },
   "Footer": {
