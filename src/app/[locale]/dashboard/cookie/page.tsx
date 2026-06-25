@@ -154,6 +154,13 @@ export default function CookiePage() {
     setNewCookie(value)
   }
 
+  const browserDownloads = [
+    { src: '/browser/chrome.svg', alt: 'Chrome 浏览器', label: 'Chrome', url: 'https://chromewebstore.google.com/detail/copyapes-assistant/affmjifigldmicnbgpghddaneomejmfo' },
+    { src: '/browser/edge.svg', alt: 'Edge 浏览器', label: 'Edge', url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub' },
+    { src: '/browser/firefox.svg', alt: 'Firefox 浏览器', label: 'Firefox', url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub' },
+    { src: '/browser/zip.svg', alt: 'ZIP 本地安装包', label: 'ZIP 本地安装', url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub' }
+  ]
+
   return (
     <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
       <div className='flex flex-col gap-2'>
@@ -182,29 +189,59 @@ export default function CookiePage() {
               <CardTitle className='text-lg'>浏览器插件自动获取</CardTitle>
             </div>
             <CardDescription>
-              推荐方式。安装我们的 Chrome 浏览器插件，登录交易所后自动获取并同步 Cookie，安全便捷。
+              强烈推荐安装我们的 Chrome 浏览器插件同步 Cookie，安全便捷。
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <ul className='text-muted-foreground mb-4 space-y-2 text-sm'>
-              <li className='flex items-center gap-2'>
-                <ShieldCheck className='h-4 w-4 text-green-500' /> 仅在本地运行，数据加密传输
-              </li>
-              <li className='flex items-center gap-2'>
-                <ShieldCheck className='h-4 w-4 text-green-500' /> 支持自动保活和更新
-              </li>
-            </ul>
-            <Button className='w-full sm:w-auto' variant='secondary' asChild>
-              <a href='https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub?from=from_copylink' target='_blank' rel='noreferrer'>
-                下载 Chrome 插件
-              </a>
-            </Button>
+            <div className='space-y-4'>
+              <div className='group relative inline-flex w-full overflow-hidden rounded-full p-[2px] sm:w-auto'>
+                <span
+                  aria-hidden
+                  className='pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[300%] -translate-x-1/2 -translate-y-1/2 bg-[conic-gradient(from_180deg_at_50%_50%,theme(colors.violet.500),theme(colors.sky.400),theme(colors.violet.500))] opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-hover:animate-[spin_3s_linear_infinite]'
+                />
+                <span
+                  aria-hidden
+                  className='pointer-events-none absolute inset-[4px] rounded-full bg-slate-950'
+                />
+                <Button
+                  className='relative z-10 h-12 w-full rounded-full border-0 bg-transparent px-6 text-base font-medium text-white shadow-none hover:bg-transparent sm:w-auto'
+                  asChild
+                >
+                  <a
+                    href='https://chromewebstore.google.com/detail/copyapes-assistant/affmjifigldmicnbgpghddaneomejmfo?authuser=0&hl=zh-CN'
+                    target='_blank'
+                    rel='noreferrer'
+                  >
+                    <Image src='/browser/chrome.svg' alt='Chrome 浏览器' width={24} height={24} className='mr-2 h-6 w-6' />
+                    安装到 Chrome
+                  </a>
+                </Button>
+              </div>
+
+              <div className='flex flex-col gap-3'>
+                <p className='text-muted-foreground text-xs'>支持以下方式使用插件：</p>
+                <div className='flex flex-wrap items-center gap-3'>
+                  {browserDownloads.map((item) => (
+                    <a
+                      key={item.label}
+                      href={item.url}
+                      target='_blank'
+                      rel='noreferrer'
+                      className='bg-muted/40 hover:bg-muted flex items-center gap-2 rounded-full border px-3 py-2 transition-colors'
+                    >
+                      <Image src={item.src} alt={item.alt} width={18} height={18} className='h-[18px] w-[18px]' />
+                      <span className='text-muted-foreground text-xs'>{item.label}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
             <Accordion type='single' collapsible className='mt-4 w-full'>
               <AccordionItem value='how-to' className='border-none'>
                 <AccordionTrigger className='text-primary py-2 text-sm hover:no-underline'>
                   <span className='flex items-center gap-1.5'>
                     <HelpCircle className='h-4 w-4' />
-                    如何使用浏览器插件？
+                    如何本地安装浏览器插件？
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className='space-y-4 pt-2'>
@@ -219,10 +256,8 @@ export default function CookiePage() {
                       </li>
                       <li>② 将插件固定在浏览器上，打开插件，登录跟单猿账号</li>
                       <li>
-                        ③
-                        打开官网，登录交易所跟单的账号，随便点击进入一个跟单项目，等待页面加载完成后，插件会自动抓取Cookie信息并提交，你可在本页面进行查看提交信息
+                        ③ 打开官网，登录交易所跟单的账号，等待页面加载完成后，点击自动抓取Cookie按钮，你可在本页面进行查看提交信息
                       </li>
-                      <li>④ 你也可以在插件中点击刷新数据按钮，手动刷新获取Cookie信息</li>
                     </ol>
                   </div>
                 </AccordionContent>
@@ -245,6 +280,9 @@ export default function CookiePage() {
             <ul className='text-muted-foreground mb-4 space-y-2 text-sm'>
               <li className='flex items-center gap-2'>
                 <ShieldCheck className='h-4 w-4 text-green-500' /> 适合无法安装插件的环境
+              </li>
+              <li className='flex items-center gap-2'>
+                <ShieldCheck className='h-4 w-4 text-green-500' /> 适合手机远程更新
               </li>
               <li className='flex items-center gap-2'>
                 <ShieldCheck className='h-4 w-4 text-yellow-500' /> 需要定期手动更新过期 Cookie

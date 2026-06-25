@@ -437,12 +437,13 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
               </SidebarContent>
               <SidebarFooter className='group-data-[collapsible=icon]:hidden'>
                 <Link
-                  href='/dashboard/cookie'
+                  href='https://chromewebstore.google.com/detail/copyapes-assistant/affmjifigldmicnbgpghddaneomejmfo'
                   className='block overflow-hidden rounded-lg transition-opacity hover:opacity-90'
+                  target='_blank'
                 >
                   <img
                     src='/images/copyapes-chrome-zh.png'
-                    alt='Cookie 获取'
+                    alt='插件安装'
                     className='w-full'
                   />
                 </Link>
