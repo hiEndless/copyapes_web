@@ -155,7 +155,7 @@ const RegisterForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    if (!username || !email || !emailCode || !password || !confirmPassword || !inviteCode) {
+    if (!username || !email || !emailCode || !password || !confirmPassword) {
       toast.error('请填写完整信息')
 
       return
@@ -195,7 +195,7 @@ const RegisterForm = () => {
         email_code: emailCode.trim(),
         password,
         confirm_password: confirmPassword,
-        invite_code: inviteCode,
+        invite_code: inviteCode.trim(),
         ...(cfToken ? { cf_turnstile_token: cfToken } : {}),
       })
 
@@ -340,12 +340,12 @@ const RegisterForm = () => {
       {/* Invite Code */}
       <div className='space-y-1'>
         <Label className='leading-5' htmlFor='inviteCode'>
-          邀请码*
+          邀请码（选填）
         </Label>
         <Input
           type='text'
           id='inviteCode'
-          placeholder='请输入邀请码'
+          placeholder='有邀请码可填写，没有可留空'
           value={inviteCode}
           onChange={(e) => setInviteCode(e.target.value)}
           disabled={isLoading || isInviteCodeLocked}
