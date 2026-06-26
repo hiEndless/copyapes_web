@@ -14,6 +14,17 @@ export default function InvitePage() {
   const [loading, setLoading] = useState(true)
   const [summary, setSummary] = useState<AgentSummaryResponse | null>(null)
   const [inviteCode, setInviteCode] = useState('')
+  const [inviteLink, setInviteLink] = useState('')
+
+  useEffect(() => {
+    if (inviteCode && typeof window !== 'undefined') {
+      const baseUrl = window.location.origin
+
+      setInviteLink(`${baseUrl}/login?invite=${inviteCode}`)
+    } else {
+      setInviteLink('')
+    }
+  }, [inviteCode])
 
   useEffect(() => {
     const init = async () => {
@@ -106,19 +117,19 @@ export default function InvitePage() {
                     <div className='absolute -right-6 top-0 h-16 w-16 rounded-full bg-primary/10 blur-2xl' />
                     <div className='relative space-y-2'>
                       <div className='text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground'>
-                        我的邀请码
+                        我的邀请链接
                       </div>
                       <div className='flex items-center gap-2'>
-                        <div className='rounded-lg border border-primary/15 bg-background/80 px-3 py-2 text-base font-semibold tracking-[0.3em] text-sm shadow-sm'>
-                          {inviteCode || '暂无'}
+                        <div className='truncate rounded-lg border border-primary/15 bg-background/80 px-3 py-2 font-semibold text-[10px] shadow-sm'>
+                          {inviteLink || '暂无'}
                         </div>
                         <Button
                           variant='ghost'
                           size='icon'
-                          className='h-8 w-8 rounded-full'
-                          onClick={() => copyToClipboard(inviteCode, '邀请码已复制')}
+                          className='h-8 w-8 shrink-0 rounded-full'
+                          onClick={() => copyToClipboard(inviteLink, '邀请链接已复制')}
                         >
-                          <span className='sr-only'>复制邀请码</span>
+                          <span className='sr-only'>复制邀请链接</span>
                           <Copy className='h-3.5 w-3.5' />
                         </Button>
                       </div>
