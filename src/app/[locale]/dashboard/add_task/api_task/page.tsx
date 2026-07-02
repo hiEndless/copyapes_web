@@ -282,8 +282,10 @@ export default function ApiTaskPage() {
                               </p>
                             </div>
                           </div>
-                          <Button className='w-full' disabled={api.platform !== 'okx' && api.platform !== 'binance'} onClick={() => handleCopy(api)}>
-                            {api.platform !== 'okx' && api.platform !== 'binance' ? '暂不支持该平台' : '发起跟单'}
+                          {/* <Button className='w-full' disabled={api.platform !== 'okx' && api.platform !== 'binance'} onClick={() => handleCopy(api)}> */}
+                          <Button className='w-full' disabled={api.platform !== 'okx'} onClick={() => handleCopy(api)}>
+                            {/* {api.platform !== 'okx' && api.platform !== 'binance' ? '暂不支持该平台' : '发起跟单'} */}
+                            {api.platform !== 'okx' ? '暂不支持该平台' : '发起跟单'}
                           </Button>
                         </Card>
                       ))}
