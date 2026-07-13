@@ -79,7 +79,7 @@ export default function ApiPage() {
         if (stored) {
           const profile = JSON.parse(stored) as EntitlementProfileResponse
 
-          setAssetLimitUsdt(profile.asset_limit_usdt ?? 0)
+          setAssetLimitUsdt(Number(profile.asset_limit_usdt) || 0)
         }
       } catch (e) {
         console.error('Failed to parse entitlement profile', e)
@@ -97,11 +97,10 @@ export default function ApiPage() {
   const totalRealtimeUsdt = useMemo(() => {
     return data
       .filter((item) => !item.is_readonly && Number(item.flag ?? 0) === 0)
-      .reduce((sum, item) => sum + (item.usdt ?? 0), 0)
+      .reduce((sum, item) => sum + Number(item.usdt ?? 0), 0)
   }, [data])
 
-  // const isAssetLimitExceeded = assetLimitUsdt > 0 && totalRealtimeUsdt >= assetLimitUsdt
-  const isAssetLimitExceeded = assetLimitUsdt > 0 && totalRealtimeUsdt >= 0
+  const isAssetLimitExceeded = assetLimitUsdt > 0 && totalRealtimeUsdt >= assetLimitUsdt
 
   return (
     <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
