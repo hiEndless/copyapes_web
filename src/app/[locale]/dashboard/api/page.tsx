@@ -1,8 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
-import { Info } from 'lucide-react'
+import { AlertCircle, Info } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -10,10 +10,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import ApiDatatable, { type ApiItem } from './_components/api-datatable'
 import { ApiAddButton } from './_components/api-add-button'
 import { getApiList } from '@/api/apiadd'
-import { settingsApi } from '@/api/settings'
+import { settingsApi, type EntitlementProfileResponse } from '@/api/settings'
 
 export default function ApiPage() {
   const [data, setData] = useState<ApiItem[]>([])
+  const [assetLimitUsdt, setAssetLimitUsdt] = useState(0)
 
   const fetchData = async () => {
     try {
@@ -70,6 +71,38 @@ export default function ApiPage() {
     fetchData()
   }, [])
 
+  useEffect(() => {
+    const loadProfile = () => {
+      try {
+        const stored = localStorage.getItem('entitlementProfile')
+
+        if (stored) {
+          const profile = JSON.parse(stored) as EntitlementProfileResponse
+
+          setAssetLimitUsdt(profile.asset_limit_usdt ?? 0)
+        }
+      } catch (e) {
+        console.error('Failed to parse entitlement profile', e)
+      }
+    }
+
+    loadProfile()
+    window.addEventListener('entitlementProfileUpdated', loadProfile)
+
+    return () => {
+      window.removeEventListener('entitlementProfileUpdated', loadProfile)
+    }
+  }, [])
+
+  const totalRealtimeUsdt = useMemo(() => {
+    return data
+      .filter((item) => !item.is_readonly && Number(item.flag ?? 0) === 0)
+      .reduce((sum, item) => sum + (item.usdt ?? 0), 0)
+  }, [data])
+
+  // const isAssetLimitExceeded = assetLimitUsdt > 0 && totalRealtimeUsdt >= assetLimitUsdt
+  const isAssetLimitExceeded = assetLimitUsdt > 0 && totalRealtimeUsdt >= 0
+
   return (
     <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
       <div className='flex flex-col gap-2'>
@@ -83,6 +116,15 @@ export default function ApiPage() {
           长期未登录使用，IP 白名单可能发生变化，需要重新在交易所授权 IP 白名单后才能继续使用。点击添加 API 按钮，查看最新 IP 白名单。
         </AlertDescription>
       </Alert>
+
+      {isAssetLimitExceeded && (
+        <Alert className='border-red-600 bg-red-600 text-white [&>svg]:text-white'>
+          <AlertCircle />
+          <AlertDescription className='text-white'>
+            累计 API 资金 {totalRealtimeUsdt.toLocaleString()} USDT，已超过最大资金上限，请付费提升账号权限或者将多余资金划转出合约交易账户。
+          </AlertDescription>
+        </Alert>
+      )}
 
       <Card className='col-span-full shadow-sm'>
         <CardHeader className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>

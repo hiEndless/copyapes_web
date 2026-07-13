@@ -58,6 +58,7 @@ export type ApiItem = {
   created_at: string
   create_datetime?: string
   is_readonly: boolean
+  flag?: number
   status: number // 1 for ok, else error
   role_type?: number | any
   exchange?: string
