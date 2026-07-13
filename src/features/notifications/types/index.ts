@@ -43,3 +43,18 @@ export interface NotificationChannelUpdate {
   recipients?: string[];
   triggers?: string[];
 }
+
+export type NotificationPreferenceKey =
+  | 'cookie_expired'
+  | 'trade_notice'
+  | 'task_auto_stop'
+  | 'system_notice';
+
+export interface NotificationPreferences {
+  cookie_expired: boolean;
+  trade_notice: boolean;
+  task_auto_stop: boolean;
+  system_notice: boolean;
+}
+
+export type NotificationPreferencePatch = Partial<NotificationPreferences>;

@@ -11,10 +11,29 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Switch } from '@/components/ui/switch';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-import type { NotificationChannel, NotificationChannelUpdate } from '@/features/notifications/types';
+import type {
+  NotificationChannel,
+  NotificationChannelUpdate,
+  NotificationPreferenceKey,
+  NotificationPreferences,
+} from '@/features/notifications/types';
 import { ChannelConfigForm } from '@/features/notifications/components/ChannelConfigForm';
 import { ChannelLogo } from '@/features/notifications/components/ChannelLogo';
+import { NotificationPreferencesPanel } from '@/features/notifications/components/NotificationPreferencesPanel';
 import { STATIC_CHANNELS } from './static-channels';
+
+const DEFAULT_PREFERENCES: NotificationPreferences = {
+  cookie_expired: true,
+  trade_notice: true,
+  task_auto_stop: true,
+  system_notice: true,
+};
+
+const PREFERENCE_LABELS: Record<Exclude<NotificationPreferenceKey, 'system_notice'>, string> = {
+  cookie_expired: 'Cookie / API 失效提醒',
+  trade_notice: '交易通知',
+  task_auto_stop: '任务自动停止提醒',
+};
 
 const StatusDot = ({ enabled }: { enabled: boolean }) => (
   <div className="relative flex h-3 w-3 mr-2">
@@ -59,30 +78,39 @@ export default function NotificationPage() {
   const locale = useLocale();
   const [channels, setChannels] = useState<NotificationChannel[]>([]);
   const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
+  const [preferences, setPreferences] = useState<NotificationPreferences>(DEFAULT_PREFERENCES);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
+  const [isUpdatingPreference, setIsUpdatingPreference] = useState(false);
 
   useEffect(() => {
     const initializeChannels = async () => {
       setIsLoading(true);
 
       try {
-        const response = await request<{
-          wx: boolean;
-          wx_code: string;
-          qq_mail: boolean;
-          qq: string;
-          password: string;
-          ding_bot: boolean;
-          ding_webhook: string;
-          ding_secret: string;
-        }>('/notify/', { method: 'GET' });
+        const [channelsResponse, preferencesResponse] = await Promise.all([
+          request<{
+            wx: boolean;
+            wx_code: string;
+            qq_mail: boolean;
+            qq: string;
+            password: string;
+            ding_bot: boolean;
+            ding_webhook: string;
+            ding_secret: string;
+          }>('/notify/', { method: 'GET' }),
+          request<NotificationPreferences>('/notify/preferences/', { method: 'GET' }),
+        ]);
 
         const mergedChannels = [...STATIC_CHANNELS];
 
-        if (response.code === 0 && response.data) {
-          const data = response.data;
+        if (preferencesResponse.code === 0 && preferencesResponse.data) {
+          setPreferences({ ...DEFAULT_PREFERENCES, ...preferencesResponse.data });
+        }
+
+        if (channelsResponse.code === 0 && channelsResponse.data) {
+          const data = channelsResponse.data;
 
           mergedChannels.forEach(channel => {
             if (channel.id === 'wechat_official') {
@@ -216,6 +244,36 @@ export default function NotificationPage() {
     }
   };
 
+  const handleTogglePreference = async (key: NotificationPreferenceKey, enabled: boolean) => {
+    if (key === 'system_notice') return;
+
+    const previous = preferences[key];
+    setPreferences(prev => ({ ...prev, [key]: enabled }));
+    setIsUpdatingPreference(true);
+
+    try {
+      const response = await request<NotificationPreferences>('/notify/preferences/', {
+        method: 'PATCH',
+        body: { [key]: enabled },
+      });
+
+      if (response.code !== 0) {
+        throw new Error(response.error || response.msg || '更新通知偏好失败');
+      }
+
+      if (response.data) {
+        setPreferences({ ...DEFAULT_PREFERENCES, ...response.data });
+      }
+
+      toast.success(`已${enabled ? '开启' : '关闭'}${PREFERENCE_LABELS[key]}`);
+    } catch (error) {
+      setPreferences(prev => ({ ...prev, [key]: previous }));
+      toast.error(`更新失败：${getErrorMessage(error)}`);
+    } finally {
+      setIsUpdatingPreference(false);
+    }
+  };
+
   const handleToggleChannel = async (id: string, enabled: boolean) => {
     const channelToToggle = channels.find(c => c.id === id);
 
@@ -268,15 +326,21 @@ export default function NotificationPage() {
   }
 
   return (
-    <div className="flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8">
-      <div className="flex flex-col gap-2">
+    <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 lg:p-8">
+      <div className="flex flex-col gap-1">
         <h2 className="text-2xl font-bold tracking-tight">通知设置</h2>
         <p className="text-muted-foreground text-sm">
-          配置您的消息通知方式与触发规则
+          配置通知类型与消息渠道
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row gap-6 h-full min-h-[600px]">
+      <NotificationPreferencesPanel
+        preferences={preferences}
+        isUpdating={isUpdatingPreference}
+        onToggle={handleTogglePreference}
+      />
+
+      <div className="flex flex-col md:flex-row gap-4 h-full min-h-[600px]">
         <Card className="w-full md:w-[30%] h-fit shadow-sm">
           <CardHeader>
             <CardTitle className="text-lg">通知渠道</CardTitle>
