@@ -5,7 +5,8 @@ const EXCHANGE_LABEL: Record<string, string> = {
   binance: 'Binance',
   gate: 'Gate',
   bitget: 'Bitget',
-  weex: 'WEEX'
+  weex: 'WEEX',
+  htx: 'HTX'
 }
 
 export const mapApiPlatformToExchangeKey = (platform: number | string | undefined) => {
@@ -15,6 +16,7 @@ export const mapApiPlatformToExchangeKey = (platform: number | string | undefine
   if (p === '3') return 'gate'
   if (p === '4') return 'bitget'
   if (p === '5') return 'weex'
+  if (p === '6') return 'htx'
 
   const lower = p.toLowerCase()
   if (lower in EXCHANGE_LABEL) return lower
