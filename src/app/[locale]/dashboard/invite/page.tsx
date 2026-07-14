@@ -335,6 +335,12 @@ export default function InvitePage() {
                       <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
                         <CheckCircle2 className='h-3 w-3' />
                       </div>
+                      <span className='text-xs leading-5 text-muted-foreground'>绑定返佣的客户自动享受5折购买 VIP 服务</span>
+                    </li>
+                    <li className='flex items-start gap-2'>
+                      <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
+                        <CheckCircle2 className='h-3 w-3' />
+                      </div>
                       <span className='text-xs leading-5 text-muted-foreground'>提现秒到账，支持 USDT (TRC20/ERC20) 等网络</span>
                     </li>
                   </ul>
