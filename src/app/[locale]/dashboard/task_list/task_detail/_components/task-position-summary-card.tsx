@@ -183,14 +183,6 @@ export function TaskPositionSummaryCard({
               快照缺失
             </Badge>
           ) : null}
-          {summary?.follow_ledger_found === false ? (
-            <Badge
-              variant='outline'
-              className='h-5 border-amber-300/80 px-1.5 text-[10px] text-amber-700 dark:border-amber-700 dark:text-amber-300'
-            >
-              账本缺失
-            </Badge>
-          ) : null}
         </div>
 
         <TooltipProvider>
