@@ -95,7 +95,9 @@ export type TaskPositionItem = {
   posSide?: string
   side?: string
   leader_pos: string
+  leader_pos_unit?: string
   follow_pos: string
+  follow_pos_unit?: string
   leader_position?: Record<string, unknown>
   follow_position?: Record<string, unknown>
 }

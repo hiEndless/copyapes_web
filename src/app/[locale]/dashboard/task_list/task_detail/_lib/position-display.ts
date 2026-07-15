@@ -35,6 +35,12 @@ export function formatPositionAmount(value?: string | number | null) {
   return text || '0'
 }
 
+export function formatPositionAmountWithUnit(value?: string | number | null, unit?: string | null) {
+  const amount = formatPositionAmount(value)
+  const unitText = String(unit ?? '').trim()
+  return unitText ? `${amount} ${unitText}` : amount
+}
+
 export function formatPositionSymbol(item: Pick<TaskPositionItem, 'raw_symbol' | 'instId'>) {
   const rawSymbol = String(item.raw_symbol ?? '').trim()
   if (rawSymbol) return rawSymbol

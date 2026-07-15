@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils'
 import type { TaskPositionItem } from '../_lib/types'
 import {
   formatPosSideLabel,
-  formatPositionAmount,
+  formatPositionAmountWithUnit,
   formatPositionSymbol,
   formatSnapshotTime,
   getPositionSideTagClass
@@ -120,13 +120,13 @@ function PositionTable({
                 {showLeaderColumn ? (
                   <TableCell className='bg-blue-500/[0.03] px-4 py-3 text-right dark:bg-blue-500/[0.06]'>
                     <span className='font-mono text-sm font-semibold tabular-nums text-blue-600 dark:text-blue-400'>
-                      {formatPositionAmount(item.leader_pos)}
+                      {formatPositionAmountWithUnit(item.leader_pos, item.leader_pos_unit)}
                     </span>
                   </TableCell>
                 ) : null}
                 <TableCell className='bg-emerald-500/[0.03] px-4 py-3 text-right dark:bg-emerald-500/[0.06]'>
                   <span className='font-mono text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400'>
-                    {formatPositionAmount(item.follow_pos)}
+                    {formatPositionAmountWithUnit(item.follow_pos, item.follow_pos_unit)}
                   </span>
                 </TableCell>
               </TableRow>
