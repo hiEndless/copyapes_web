@@ -15,6 +15,7 @@ import type { TaskPositionItem } from '../_lib/types'
 import {
   formatPosSideLabel,
   formatPositionAmount,
+  formatPositionSymbol,
   formatSnapshotTime,
   getPositionSideTagClass
 } from '../_lib/position-display'
@@ -101,6 +102,7 @@ function PositionTable({
           {positions.map((item, index) => {
             const sideLabel = formatPosSideLabel(item.posSide, item.side, locale)
             const sideTagClass = getPositionSideTagClass(item.posSide, item.side)
+            const symbolLabel = formatPositionSymbol(item)
 
             return (
               <TableRow
@@ -109,7 +111,7 @@ function PositionTable({
               >
                 <TableCell className='px-4 py-3'>
                   <div className='flex items-center gap-2'>
-                    <span className='text-sm font-semibold tracking-tight'>{item.instId}</span>
+                    <span className='text-sm font-semibold tracking-tight'>{symbolLabel}</span>
                     {sideLabel !== '-' ? (
                       <span className={cn(sideTagClass, 'px-1.5 py-0 text-[10px] leading-5')}>{sideLabel}</span>
                     ) : null}

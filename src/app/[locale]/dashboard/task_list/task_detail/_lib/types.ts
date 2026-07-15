@@ -23,6 +23,7 @@ export type TaskParameterItem = {
 
 export type TaskPositionItem = {
   instId: string
+  raw_symbol?: string
   mgnMode?: string
   posSide?: string
   side?: string

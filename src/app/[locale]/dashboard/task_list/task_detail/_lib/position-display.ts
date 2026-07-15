@@ -1,4 +1,5 @@
 import { getSideTagClass } from './task-log-formatters'
+import type { TaskPositionItem } from './types'
 
 export function normalizePosSideTag(posSide?: string, side?: string) {
   const normalized = String(posSide || '').toLowerCase()
@@ -32,6 +33,13 @@ export function getPositionSideTagClass(posSide?: string, side?: string) {
 export function formatPositionAmount(value?: string | number | null) {
   const text = String(value ?? '').trim()
   return text || '0'
+}
+
+export function formatPositionSymbol(item: Pick<TaskPositionItem, 'raw_symbol' | 'instId'>) {
+  const rawSymbol = String(item.raw_symbol ?? '').trim()
+  if (rawSymbol) return rawSymbol
+
+  return String(item.instId ?? '').trim() || '-'
 }
 
 export function formatSnapshotTime(ms?: number | null, locale = 'zh') {
