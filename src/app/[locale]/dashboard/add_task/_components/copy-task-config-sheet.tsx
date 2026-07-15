@@ -20,6 +20,7 @@ import { settingsApi } from '@/api/settings'
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
 import { CopyTradeProtocolDialog } from './copy-trade-protocol-dialog'
+import { buildFollowRatioPreview } from '@/lib/follow-ratio'
 
 function splitCookieModeUniqueName(uniqueName: string): { leaderId: string; cookieId: string | null } {
   const raw = String(uniqueName || '').trim()
@@ -105,46 +106,6 @@ function normalizeCoinSymbolList(values: unknown): string[] {
   })
 
   return normalized
-}
-
-function formatAmountForDisplay(value: number): string {
-  if (!Number.isFinite(value)) return ''
-  if (Number.isInteger(value)) return String(value)
-
-  return String(Number(value.toFixed(4)))
-}
-
-function buildFollowRatioPreview(
-  investmentRaw: string,
-  benchMarkRaw: string,
-  multipleVisible: boolean,
-  multipleRaw: string
-): { ready: false; hint: string } | { ready: true; formula: string; lowRatioWarning: boolean } {
-  const investmentText = investmentRaw.trim()
-  const benchMarkText = benchMarkRaw.trim()
-
-  if (!investmentText || !benchMarkText) {
-    return { ready: false, hint: '填写本金与投资额后，将在此显示跟单比例计算过程' }
-  }
-
-  const investment = Number(investmentText)
-  const benchMark = Number(benchMarkText)
-  const multiple = multipleVisible ? Number(multipleRaw) : 1
-
-  if (!Number.isFinite(investment) || investment <= 0) {
-    return { ready: false, hint: '投资额必须大于 0' }
-  }
-  if (!Number.isFinite(benchMark) || benchMark <= 0) {
-    return { ready: false, hint: '交易员本金必须大于 0' }
-  }
-  if (!Number.isFinite(multiple) || multiple <= 0) {
-    return { ready: false, hint: '倍投倍数必须大于 0' }
-  }
-
-  const ratioPercent = (investment / benchMark) * multiple * 100
-  const formula = `跟单比例 = ${formatAmountForDisplay(investment)} ÷ ${formatAmountForDisplay(benchMark)} × ${formatAmountForDisplay(multiple)} = ${ratioPercent.toFixed(2)}%`
-
-  return { ready: true, formula, lowRatioWarning: ratioPercent < 10 }
 }
 
 type ConfigSummaryItem = {

@@ -52,6 +52,7 @@ export default function TaskDetailPage({ params }: { params: { id?: string; loca
         <TaskPositionSummaryCard
           taskId={taskId}
           locale={locale}
+          task={task}
           showSimulatedWarning={showSimulatedPositionWarning}
         />
       ) : null}

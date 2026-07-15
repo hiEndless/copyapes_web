@@ -18,11 +18,13 @@ import {
   formatSnapshotTime,
   getPositionSideTagClass
 } from '../_lib/position-display'
+import { buildFollowRatioFromTask } from '@/lib/follow-ratio'
 import { useTaskPositionSummary } from '../_hooks/use-task-position-summary'
 
 type TaskPositionSummaryCardProps = {
   taskId: string
   locale: string
+  task?: Record<string, unknown> | null
   showSimulatedWarning?: boolean
 }
 
@@ -137,10 +139,12 @@ function PositionTable({
 export function TaskPositionSummaryCard({
   taskId,
   locale,
+  task,
   showSimulatedWarning = false
 }: TaskPositionSummaryCardProps) {
   const { summary, loading, refreshing, refresh } = useTaskPositionSummary({ taskId })
   const [followOnlyOpen, setFollowOnlyOpen] = React.useState(false)
+  const followRatioPreview = React.useMemo(() => buildFollowRatioFromTask(task), [task])
 
   const positions = summary?.positions ?? []
   const followOnlyPositions = summary?.follow_only_positions ?? []
@@ -153,6 +157,21 @@ export function TaskPositionSummaryCard({
           <span className='truncate'>快照 {snapshotTime || '-'}</span>
           {!loading && positions.length > 0 ? (
             <span className='text-foreground/70'>· {positions.length} 个仓位</span>
+          ) : null}
+          {followRatioPreview?.ready ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span
+                  className={cn(
+                    'text-foreground/70 cursor-default',
+                    followRatioPreview.lowRatioWarning && 'text-amber-600 dark:text-amber-400'
+                  )}
+                >
+                  · 开仓比例 {followRatioPreview.ratioPercent.toFixed(2)}%
+                </span>
+              </TooltipTrigger>
+              <TooltipContent className='max-w-xs'>{followRatioPreview.formula}</TooltipContent>
+            </Tooltip>
           ) : null}
           {summary?.leader_snapshot_found === false ? (
             <Badge
