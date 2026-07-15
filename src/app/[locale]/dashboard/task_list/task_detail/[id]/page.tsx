@@ -9,8 +9,13 @@ import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 import { Button } from '@/components/ui/button'
 
 import { TaskParametersCard } from '../_components/task-parameters-card'
+import { TaskPositionSummaryCard } from '../_components/task-position-summary-card'
 import { TaskLogSections } from '../_components/task-log-sections'
 import { buildTaskParameterList } from '../_lib/task-parameters'
+import {
+  shouldShowSimulatedPositionWarning,
+  shouldShowTaskPositionSummary
+} from '../_lib/task-position-visibility'
 import { useTaskDetail } from '../_hooks/use-task-detail'
 
 export default function TaskDetailPage({ params }: { params: { id?: string; locale?: string } | Promise<{ id?: string; locale?: string }> }) {
@@ -25,6 +30,8 @@ export default function TaskDetailPage({ params }: { params: { id?: string; loca
   const parameterList = React.useMemo(() => (task ? buildTaskParameterList(task) : []), [task])
   const isRunning = task?.status === 1
   const isReverseFollow = String(task?.posSide_set) === '2'
+  const showPositionSummary = shouldShowTaskPositionSummary(task)
+  const showSimulatedPositionWarning = shouldShowSimulatedPositionWarning(task)
 
   return (
     <div className='bg-muted/20 dark:bg-background flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
@@ -40,6 +47,14 @@ export default function TaskDetailPage({ params }: { params: { id?: string; loca
         isRunning={Boolean(isRunning)}
         onTerminate={handleTerminateTask}
       />
+
+      {showPositionSummary ? (
+        <TaskPositionSummaryCard
+          taskId={taskId}
+          locale={locale}
+          showSimulatedWarning={showSimulatedPositionWarning}
+        />
+      ) : null}
 
       <TaskLogSections
         spiderData={spiderData}

@@ -20,3 +20,22 @@ export type TaskParameterItem = {
   label: string
   value: ReactNode
 }
+
+export type TaskPositionItem = {
+  instId: string
+  mgnMode?: string
+  posSide?: string
+  side?: string
+  leader_pos: string
+  follow_pos: string
+  leader_position?: Record<string, unknown>
+  follow_position?: Record<string, unknown>
+}
+
+export type TaskPositionSummary = {
+  positions: TaskPositionItem[]
+  follow_only_positions: TaskPositionItem[]
+  leader_snapshot_found?: boolean
+  follow_ledger_found?: boolean
+  leader_snapshot_saved_at_ms?: number | null
+}
