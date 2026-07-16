@@ -235,7 +235,7 @@
       "description": "Privacy Policy for the CopyApes website and browser extension, explaining how we collect, use, and protect your information."
     },
     "title": "Privacy Policy",
-    "lastUpdated": "Last updated: June 24, 2026",
+    "lastUpdated": "Last updated: July 16, 2026",
     "intro": "CopyApes (\"we\", \"us\") respects your privacy. This policy explains how we collect, use, store, and protect your information when you use our website and the CopyApes Assistant browser extension.",
     "scope": {
       "title": "1. Scope",
@@ -265,33 +265,59 @@
         "Comply with applicable laws and regulations."
       ]
     },
-    "share": {
-      "title": "4. Sharing and Disclosure",
-      "body": "We do not sell your personal information. We may share necessary data only when:",
+    "extension": {
+      "title": "4. Browser Extension Data Handling",
+      "body": "The CopyApes Assistant Chrome extension handles data as follows. The extension's collection and use of user data complies with the Chrome Web Store User Data Policy, including its Limited Use requirements:",
       "items": [
-        "You have given explicit consent.",
-        "Required to complete copy-trading or cookie sync you initiated, by transmitting data to CopyApes backend services.",
-        "Required by law or valid requests from authorities.",
-        "Necessary to protect the rights and safety of users, us, or the public."
+        "Cookie and network request permissions (cookies, webRequest): reads cookies and request headers only when you visit exchange sites such as OKX and Binance, for cookie sync you initiate; we do not collect data on unrelated websites.",
+        "Local storage permission (storage): saves your login token, language, theme, and cookie capture status locally in your browser; this data is not uploaded unless you actively submit cookies.",
+        "Tab permissions (tabs, activeTab): used to identify the current exchange page and inject the operation panel with your authorization.",
+        "The extension does not collect or store your full browsing history, and is not used for advertising or user profiling."
+      ]
+    },
+    "share": {
+      "title": "5. Sharing and Disclosure",
+      "body": "We do not sell, rent, or share your personal information with advertisers, data brokers, or any unrelated third parties. We share necessary data only with the following parties:",
+      "items": [
+        "CopyApes backend services (api.copyapes.com): receives account information, login tokens, exchange cookies, and API keys you actively submit, to provide copy-trading services.",
+        "Alibaba Cloud: as our cloud infrastructure provider, hosts our servers and databases; data is stored in Alibaba Cloud data centers located in mainland China.",
+        "Exchanges (OKX, Binance, etc.): when you initiate copy-trading or cookie sync, we use your cookies or API keys to make requests to the corresponding exchange to execute authorized trading operations.",
+        "Other cases with your explicit consent.",
+        "When required by law or valid requests from authorities.",
+        "When necessary to protect the rights and safety of users, us, or the public."
       ]
     },
     "storage": {
-      "title": "5. Storage and Security",
-      "body": "We use reasonable technical and organizational measures to protect your data, including encrypted storage of sensitive credentials and access controls. API keys and similar secrets are encrypted on our servers. Extension preferences are stored locally on your device. We retain data only as long as needed for service purposes; after logout or account deletion, we delete or anonymize related data according to our rules.",
-      "items": []
+      "title": "6. Storage and Security",
+      "body": "Your data is stored on Alibaba Cloud servers located in mainland China. We use reasonable technical and organizational measures to protect your data, including encrypted storage of sensitive credentials, access controls, and security audits.",
+      "items": [
+        "API keys, exchange cookies, and other sensitive information are encrypted on our servers.",
+        "Extension preferences are stored locally on your device and can be cleared by uninstalling the extension.",
+        "While your account is active, we retain data necessary to provide our services.",
+        "After logout, your login token is immediately invalidated; after account deletion, we delete or anonymize your personal data within 30 days, unless otherwise required by law."
+      ]
     },
     "rights": {
-      "title": "6. Your Rights",
-      "body": "You may access, correct, or delete your account information, withdraw consent, or stop using our services. Manage API bindings in account settings; log out of the extension to clear local session data. Contact us via the website if you need assistance.",
-      "items": []
+      "title": "7. Your Rights",
+      "body": "You may access, correct, or delete your account information, withdraw consent, or stop using our services.",
+      "items": [
+        "Manage API bindings and personal information in account settings.",
+        "Log out of the extension to clear local session data.",
+        "Request account and data deletion via the contact methods below.",
+        "Contact us through the website or by email if you need assistance."
+      ]
     },
     "contact": {
-      "title": "7. Contact Us",
-      "body": "If you have questions about this Privacy Policy, please reach us through the Contact section on the CopyApes website. We will respond within a reasonable time.",
-      "items": []
+      "title": "8. Contact Us",
+      "body": "If you have questions about this Privacy Policy or wish to exercise your data rights, please contact us:",
+      "items": [
+        "Website: CopyApes Contact page (copyapes.com)",
+        "Email: service@copyapes.com",
+        "We will respond within 15 business days of receiving your request."
+      ]
     },
     "changes": {
-      "title": "8. Policy Updates",
+      "title": "9. Policy Updates",
       "body": "We may update this policy from time to time. Updates will be posted on this page with a revised \"Last updated\" date. For material changes, we may notify you via website announcements. Continued use of our services means you accept the updated policy.",
       "items": []
     }

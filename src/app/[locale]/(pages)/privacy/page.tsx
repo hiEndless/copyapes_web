@@ -4,7 +4,7 @@ import { getTranslations } from 'next-intl/server'
 
 import { buildAlternates } from '@/lib/seo'
 
-const SECTION_KEYS = ['scope', 'collect', 'use', 'share', 'storage', 'rights', 'contact', 'changes'] as const
+const SECTION_KEYS = ['scope', 'collect', 'use', 'extension', 'share', 'storage', 'rights', 'contact', 'changes'] as const
 
 export async function generateMetadata({
   params
