@@ -98,7 +98,7 @@ export function buildTaskParameterList(task: Record<string, unknown>): TaskParam
     value: getMarginModeSetLabel(task.margin_mode_set as number | string | undefined)
   })
   list.push({
-    label: '首单交易设置',
+    label: '首单交易',
     value: getFirstOrderSetLabel(task.first_order_set as number | string | undefined)
   })
 
