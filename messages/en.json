@@ -280,7 +280,7 @@
       "body": "We do not sell, rent, or share your personal information with advertisers, data brokers, or any unrelated third parties. We share necessary data only with the following parties:",
       "items": [
         "CopyApes backend services (api.copyapes.com): receives account information, login tokens, exchange cookies, and API keys you actively submit, to provide copy-trading services.",
-        "Alibaba Cloud: as our cloud infrastructure provider, hosts our servers and databases; data is stored in Alibaba Cloud data centers located in mainland China.",
+        "Alibaba Cloud: as our cloud infrastructure provider, hosts our servers and databases; data is stored in Alibaba Cloud data centers located in Japan.",
         "Exchanges (OKX, Binance, etc.): when you initiate copy-trading or cookie sync, we use your cookies or API keys to make requests to the corresponding exchange to execute authorized trading operations.",
         "Other cases with your explicit consent.",
         "When required by law or valid requests from authorities.",
@@ -289,7 +289,7 @@
     },
     "storage": {
       "title": "6. Storage and Security",
-      "body": "Your data is stored on Alibaba Cloud servers located in mainland China. We use reasonable technical and organizational measures to protect your data, including encrypted storage of sensitive credentials, access controls, and security audits.",
+      "body": "Your data is stored on Alibaba Cloud servers located in Japan. We use reasonable technical and organizational measures to protect your data, including encrypted storage of sensitive credentials, access controls, and security audits.",
       "items": [
         "API keys, exchange cookies, and other sensitive information are encrypted on our servers.",
         "Extension preferences are stored locally on your device and can be cleared by uninstalling the extension.",
