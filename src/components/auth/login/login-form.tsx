@@ -16,7 +16,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PrimaryFlowButton } from '@/components/ui/flow-button'
 import { authApi } from '@/api/auth'
+import {
+  TurnstileLoadHint,
+  turnstileMissingTokenMessage,
+} from '@/components/auth/turnstile-load-hint'
 import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
+import { buildTurnstileRequestFields } from '@/lib/turnstile-degrade'
 
 type TurnstileWidgetId = string
 
@@ -49,7 +54,14 @@ const LoginForm = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const { turnstileScriptLoaded, onTurnstileScriptLoad } = useTurnstileScriptLoaded(siteKey)
+  const [turnstileWidgetError, setTurnstileWidgetError] = useState(false)
+  const {
+    turnstileScriptLoaded,
+    turnstileLoadTimedOut,
+    turnstileBlocking,
+    onTurnstileScriptLoad,
+    onTurnstileScriptError,
+  } = useTurnstileScriptLoaded(siteKey)
 
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null)
   const turnstileWidgetIdRef = useRef<TurnstileWidgetId | null>(null)
@@ -68,8 +80,11 @@ const LoginForm = () => {
     if (!ts?.render) {
       return
     }
+    setTurnstileWidgetError(false)
     const id = ts.render(el, {
       sitekey: siteKey,
+      'error-callback': () => setTurnstileWidgetError(true),
+      'expired-callback': () => setTurnstileWidgetError(false),
     })
     turnstileWidgetIdRef.current = id
     return () => {
@@ -100,17 +115,21 @@ const LoginForm = () => {
       return
     }
 
-    let cfToken: string | undefined
+    let turnstileFields: { cf_turnstile_token?: string; turnstile_degrade?: boolean } = {}
     if (siteKey) {
       const wid = turnstileWidgetIdRef.current
       const raw = wid && window.turnstile?.getResponse ? window.turnstile.getResponse(wid) : ''
-      const trimmed = (raw || '').trim()
-      if (!trimmed) {
-        toast.error('请完成人机验证')
+      turnstileFields = buildTurnstileRequestFields({
+        siteKey,
+        token: raw,
+        timedOut: turnstileLoadTimedOut,
+        widgetError: turnstileWidgetError,
+      })
+      if (!turnstileFields.cf_turnstile_token && !turnstileFields.turnstile_degrade) {
+        toast.error(turnstileMissingTokenMessage(turnstileLoadTimedOut || turnstileWidgetError))
 
         return
       }
-      cfToken = trimmed
     }
 
     try {
@@ -118,7 +137,7 @@ const LoginForm = () => {
       const res = await authApi.login({
         username,
         password,
-        ...(cfToken ? { cf_turnstile_token: cfToken } : {}),
+        ...turnstileFields,
       })
 
       if (res.code === 0 && res.data) {
@@ -140,12 +159,18 @@ const LoginForm = () => {
     }
   }
 
-  const turnstileBlocking = Boolean(siteKey) && !turnstileScriptLoaded
+  const showTurnstileHint = Boolean(siteKey) && (turnstileLoadTimedOut || turnstileWidgetError)
+  const turnstileHintReason = turnstileWidgetError && !turnstileLoadTimedOut ? 'widget' : 'script'
 
   return (
     <form className='space-y-4' onSubmit={handleSubmit}>
       {siteKey ? (
-        <Script src={TURNSTILE_SCRIPT} strategy='afterInteractive' onLoad={onTurnstileScriptLoad} />
+        <Script
+          src={TURNSTILE_SCRIPT}
+          strategy='afterInteractive'
+          onLoad={onTurnstileScriptLoad}
+          onError={onTurnstileScriptError}
+        />
       ) : null}
       {/* Email */}
       <div className='space-y-1'>
@@ -192,8 +217,11 @@ const LoginForm = () => {
       </div>
 
       {siteKey ? (
-        <div className='flex min-h-[65px] justify-start'>
-          <div ref={turnstileContainerRef} />
+        <div className='space-y-2'>
+          <div className='flex min-h-[65px] justify-start'>
+            <div ref={turnstileContainerRef} />
+          </div>
+          <TurnstileLoadHint visible={showTurnstileHint} reason={turnstileHintReason} />
         </div>
       ) : null}
 

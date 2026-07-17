@@ -9,6 +9,8 @@ export interface RegisterParams {
   email_code?: string;
   /** Cloudflare Turnstile，后端配置 TURNSTILE_SECRET_KEY 时必填 */
   cf_turnstile_token?: string;
+  /** 国内网络 Turnstile 不可用时的降级标记（后端校验国内 IP + 日限额） */
+  turnstile_degrade?: boolean;
 }
 
 export interface LoginParams {
@@ -16,6 +18,8 @@ export interface LoginParams {
   password?: string;
   /** Cloudflare Turnstile，后端配置 TURNSTILE_SECRET_KEY 时必填 */
   cf_turnstile_token?: string;
+  /** 国内网络 Turnstile 不可用时的降级标记（后端校验国内 IP + 日限额） */
+  turnstile_degrade?: boolean;
 }
 
 export interface UserInfo {
@@ -52,14 +56,14 @@ export const authApi = {
   /**
    * 发送注册邮箱验证码
    */
-  registerSendCode(data: { email: string; cf_turnstile_token?: string }) {
+  registerSendCode(data: { email: string; cf_turnstile_token?: string; turnstile_degrade?: boolean }) {
     return request<null>('/register/email/send-code/', {
       method: 'POST',
       body: data,
     });
   },
 
-  passwordResetEmailSendCode(data: { email: string; cf_turnstile_token?: string }) {
+  passwordResetEmailSendCode(data: { email: string; cf_turnstile_token?: string; turnstile_degrade?: boolean }) {
     return request<null>('/password/reset/email/send-code/', {
       method: 'POST',
       body: data,
@@ -99,7 +103,7 @@ export const authApi = {
     });
   },
 
-  emailChangeOldSendCode(body: { cf_turnstile_token?: string }) {
+  emailChangeOldSendCode(body: { cf_turnstile_token?: string; turnstile_degrade?: boolean }) {
     return request<{ skip_old?: boolean } | null>('/email/change/old/send-code/', {
       method: 'POST',
       body,
@@ -113,7 +117,7 @@ export const authApi = {
     });
   },
 
-  emailChangeNewSendCode(body: { email: string; cf_turnstile_token?: string }) {
+  emailChangeNewSendCode(body: { email: string; cf_turnstile_token?: string; turnstile_degrade?: boolean }) {
     return request<null>('/email/change/new/send-code/', {
       method: 'POST',
       body,

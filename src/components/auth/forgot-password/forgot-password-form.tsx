@@ -14,12 +14,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/components/ui/input-otp'
 import { PrimaryFlowButton } from '@/components/ui/flow-button'
+import {
+  TurnstileLoadHint,
+  turnstileMissingTokenMessage,
+} from '@/components/auth/turnstile-load-hint'
 import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
+import { buildTurnstileRequestFields } from '@/lib/turnstile-degrade'
 
 type TurnstileWidgetId = string
 
 interface TurnstileRenderOptions {
   sitekey: string
+  callback?: (token: string) => void
+  'expired-callback'?: () => void
+  'error-callback'?: () => void
 }
 
 interface TurnstileAPI {
@@ -34,7 +42,14 @@ const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
 const ForgotPasswordForm = () => {
   const router = useRouter()
   const siteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '').trim()
-  const { turnstileScriptLoaded, onTurnstileScriptLoad } = useTurnstileScriptLoaded(siteKey)
+  const [turnstileWidgetError, setTurnstileWidgetError] = useState(false)
+  const {
+    turnstileScriptLoaded,
+    turnstileLoadTimedOut,
+    turnstileBlocking,
+    onTurnstileScriptLoad,
+    onTurnstileScriptError,
+  } = useTurnstileScriptLoaded(siteKey)
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null)
   const turnstileWidgetIdRef = useRef<TurnstileWidgetId | null>(null)
 
@@ -73,8 +88,13 @@ const ForgotPasswordForm = () => {
     if (!ts?.render) {
       return
     }
+    setTurnstileWidgetError(false)
     const el = turnstileContainerRef.current
-    const id = ts.render(el, { sitekey: siteKey })
+    const id = ts.render(el, {
+      sitekey: siteKey,
+      'error-callback': () => setTurnstileWidgetError(true),
+      'expired-callback': () => setTurnstileWidgetError(false),
+    })
     turnstileWidgetIdRef.current = id
     return () => {
       const wid = turnstileWidgetIdRef.current
@@ -97,21 +117,26 @@ const ForgotPasswordForm = () => {
     }
   }
 
-  const getCfToken = (): string | undefined => {
+  const getTurnstileFields = (): { cf_turnstile_token?: string; turnstile_degrade?: boolean } | null => {
     if (!siteKey) {
-      return undefined
+      return {}
     }
     const wid = turnstileWidgetIdRef.current
     const api = (window as Window & { turnstile?: TurnstileAPI }).turnstile
     const raw = wid && api?.getResponse ? api.getResponse(wid) : ''
-    const trimmed = (raw || '').trim()
-    if (!trimmed) {
-      toast.error('请先完成人机验证')
+    const fields = buildTurnstileRequestFields({
+      siteKey,
+      token: raw,
+      timedOut: turnstileLoadTimedOut,
+      widgetError: turnstileWidgetError,
+    })
+    if (!fields.cf_turnstile_token && !fields.turnstile_degrade) {
+      toast.error(turnstileMissingTokenMessage(turnstileLoadTimedOut || turnstileWidgetError))
 
-      return undefined
+      return null
     }
 
-    return trimmed
+    return fields
   }
 
   const handleSendCode = async (e: React.FormEvent) => {
@@ -132,8 +157,8 @@ const ForgotPasswordForm = () => {
       return
     }
 
-    const cf = getCfToken()
-    if (siteKey && !cf) {
+    const turnstileFields = getTurnstileFields()
+    if (turnstileFields === null) {
       return
     }
 
@@ -141,7 +166,7 @@ const ForgotPasswordForm = () => {
     try {
       const res = await authApi.passwordResetEmailSendCode({
         email: trimmed,
-        ...(cf ? { cf_turnstile_token: cf } : {}),
+        ...turnstileFields,
       })
       if (res.code === 0) {
         setEmail(trimmed)
@@ -160,15 +185,15 @@ const ForgotPasswordForm = () => {
     if (codeCooldown > 0) {
       return
     }
-    const cf = getCfToken()
-    if (siteKey && !cf) {
+    const turnstileFields = getTurnstileFields()
+    if (turnstileFields === null) {
       return
     }
     setSending(true)
     try {
       const res = await authApi.passwordResetEmailSendCode({
         email: email.trim().toLowerCase(),
-        ...(cf ? { cf_turnstile_token: cf } : {}),
+        ...turnstileFields,
       })
       if (res.code === 0) {
         setCode('')
@@ -216,15 +241,26 @@ const ForgotPasswordForm = () => {
     }
   }
 
-  const turnstileBlocking = Boolean(siteKey) && !turnstileScriptLoaded
+  const showTurnstileHint = Boolean(siteKey) && (turnstileLoadTimedOut || turnstileWidgetError)
+  const turnstileHintReason = turnstileWidgetError && !turnstileLoadTimedOut ? 'widget' : 'script'
 
   return (
     <div className='space-y-4'>
-      {siteKey ? <Script src={TURNSTILE_SCRIPT} strategy='afterInteractive' onLoad={onTurnstileScriptLoad} /> : null}
+      {siteKey ? (
+        <Script
+          src={TURNSTILE_SCRIPT}
+          strategy='afterInteractive'
+          onLoad={onTurnstileScriptLoad}
+          onError={onTurnstileScriptError}
+        />
+      ) : null}
 
       {siteKey ? (
-        <div className='flex min-h-[65px] justify-start'>
-          <div ref={turnstileContainerRef} />
+        <div className='space-y-2'>
+          <div className='flex min-h-[65px] justify-start'>
+            <div ref={turnstileContainerRef} />
+          </div>
+          <TurnstileLoadHint visible={showTurnstileHint} reason={turnstileHintReason} />
         </div>
       ) : null}
 

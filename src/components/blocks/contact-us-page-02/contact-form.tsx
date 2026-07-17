@@ -11,11 +11,20 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { settingsApi } from '@/api/settings'
+import {
+  TurnstileLoadHint,
+  turnstileMissingTokenMessage,
+} from '@/components/auth/turnstile-load-hint'
+import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
+import { buildTurnstileRequestFields } from '@/lib/turnstile-degrade'
 
 type TurnstileWidgetId = string
 
 interface TurnstileRenderOptions {
   sitekey: string
+  callback?: (token: string) => void
+  'expired-callback'?: () => void
+  'error-callback'?: () => void
 }
 
 interface TurnstileAPI {
@@ -32,12 +41,19 @@ const ContactForm = () => {
   const siteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '').trim()
 
   const [loading, setLoading] = useState(false)
-  const [turnstileScriptLoaded, setTurnstileScriptLoaded] = useState(false)
+  const [turnstileWidgetError, setTurnstileWidgetError] = useState(false)
   const [formData, setFormData] = useState({
     name: '',
     contact: '',
     message: ''
   })
+  const {
+    turnstileScriptLoaded,
+    turnstileLoadTimedOut,
+    turnstileBlocking,
+    onTurnstileScriptLoad,
+    onTurnstileScriptError,
+  } = useTurnstileScriptLoaded(siteKey)
   const turnstileContainerRef = useRef<HTMLDivElement | null>(null)
   const turnstileWidgetIdRef = useRef<TurnstileWidgetId | null>(null)
 
@@ -46,7 +62,12 @@ const ContactForm = () => {
     if (!turnstileScriptLoaded || !turnstileContainerRef.current) return
     const ts = (window as Window & { turnstile?: TurnstileAPI }).turnstile
     if (!ts?.render) return
-    const id = ts.render(turnstileContainerRef.current, { sitekey: siteKey })
+    setTurnstileWidgetError(false)
+    const id = ts.render(turnstileContainerRef.current, {
+      sitekey: siteKey,
+      'error-callback': () => setTurnstileWidgetError(true),
+      'expired-callback': () => setTurnstileWidgetError(false),
+    })
     turnstileWidgetIdRef.current = id
     return () => {
       const wid = turnstileWidgetIdRef.current
@@ -74,17 +95,21 @@ const ContactForm = () => {
       return
     }
 
-    let cfToken: string | undefined
+    let turnstileFields: { cf_turnstile_token?: string; turnstile_degrade?: boolean } = {}
     if (siteKey) {
       const wid = turnstileWidgetIdRef.current
       const api = (window as Window & { turnstile?: TurnstileAPI }).turnstile
       const raw = wid && api?.getResponse ? api.getResponse(wid) : ''
-      const trimmed = (raw || '').trim()
-      if (!trimmed) {
-        toast.error('请完成人机验证')
+      turnstileFields = buildTurnstileRequestFields({
+        siteKey,
+        token: raw,
+        timedOut: turnstileLoadTimedOut,
+        widgetError: turnstileWidgetError,
+      })
+      if (!turnstileFields.cf_turnstile_token && !turnstileFields.turnstile_degrade) {
+        toast.error(turnstileMissingTokenMessage(turnstileLoadTimedOut || turnstileWidgetError))
         return
       }
-      cfToken = trimmed
     }
 
     try {
@@ -93,7 +118,7 @@ const ContactForm = () => {
         full_name: formData.name,
         connect: formData.contact,
         message: formData.message,
-        ...(cfToken ? { cf_turnstile_token: cfToken } : {}),
+        ...turnstileFields,
       })
 
       if (res.code === 0) {
@@ -102,7 +127,7 @@ const ContactForm = () => {
       } else if (siteKey) {
         resetTurnstile()
       }
-    } catch (error) {
+    } catch {
       if (siteKey) {
         resetTurnstile()
       }
@@ -112,12 +137,18 @@ const ContactForm = () => {
     }
   }
 
-  const turnstileBlocking = Boolean(siteKey) && !turnstileScriptLoaded
+  const showTurnstileHint = Boolean(siteKey) && (turnstileLoadTimedOut || turnstileWidgetError)
+  const turnstileHintReason = turnstileWidgetError && !turnstileLoadTimedOut ? 'widget' : 'script'
 
   return (
     <form className='space-y-6' onSubmit={handleSubmit}>
       {siteKey ? (
-        <Script src={TURNSTILE_SCRIPT} strategy='afterInteractive' onLoad={() => setTurnstileScriptLoaded(true)} />
+        <Script
+          src={TURNSTILE_SCRIPT}
+          strategy='afterInteractive'
+          onLoad={onTurnstileScriptLoad}
+          onError={onTurnstileScriptError}
+        />
       ) : null}
       <div className='flex w-full flex-wrap gap-6'>
         {/* Name Input */}
@@ -163,8 +194,11 @@ const ContactForm = () => {
       </div>
 
       {siteKey ? (
-        <div className='flex min-h-[65px] justify-start'>
-          <div ref={turnstileContainerRef} />
+        <div className='space-y-2'>
+          <div className='flex min-h-[65px] justify-start'>
+            <div ref={turnstileContainerRef} />
+          </div>
+          <TurnstileLoadHint visible={showTurnstileHint} reason={turnstileHintReason} />
         </div>
       ) : null}
 

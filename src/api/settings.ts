@@ -104,7 +104,13 @@ export const settingsApi = {
     }).then(res => res.data);
   },
 
-  sendMessage: (data: { full_name: string; connect: string; message: string; cf_turnstile_token?: string }) => {
+  sendMessage: (data: {
+    full_name: string
+    connect: string
+    message: string
+    cf_turnstile_token?: string
+    turnstile_degrade?: boolean
+  }) => {
     return request<any>('/sendmessage/', {
       method: 'POST',
       body: data
