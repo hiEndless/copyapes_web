@@ -13,10 +13,12 @@ import { cn } from '@/lib/utils'
 
 import type { TaskPositionItem } from '../_lib/types'
 import {
+  formatMgnModeLabel,
   formatPosSideLabel,
   formatPositionAmountWithUnit,
   formatPositionSymbol,
   formatSnapshotTime,
+  getMgnModeTagClass,
   getPositionSideTagClass
 } from '../_lib/position-display'
 import { buildFollowRatioFromTask } from '@/lib/follow-ratio'
@@ -102,11 +104,12 @@ function PositionTable({
           {positions.map((item, index) => {
             const sideLabel = formatPosSideLabel(item.posSide, item.side, locale)
             const sideTagClass = getPositionSideTagClass(item.posSide, item.side)
+            const mgnModeLabel = formatMgnModeLabel(item.mgnMode, locale)
             const symbolLabel = formatPositionSymbol(item)
 
             return (
               <TableRow
-                key={`${item.instId}-${item.posSide}-${item.side}-${index}`}
+                key={`${item.instId}-${item.mgnMode}-${item.posSide}-${item.side}-${index}`}
                 className='border-border/50 hover:bg-muted/20'
               >
                 <TableCell className='px-4 py-3'>
@@ -114,6 +117,11 @@ function PositionTable({
                     <span className='text-sm font-semibold tracking-tight'>{symbolLabel}</span>
                     {sideLabel !== '-' ? (
                       <span className={cn(sideTagClass, 'px-1.5 py-0 text-[10px] leading-5')}>{sideLabel}</span>
+                    ) : null}
+                    {mgnModeLabel ? (
+                      <span className={cn(getMgnModeTagClass(), 'px-1.5 py-0 text-[10px] leading-5')}>
+                        {mgnModeLabel}
+                      </span>
                     ) : null}
                   </div>
                 </TableCell>

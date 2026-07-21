@@ -30,6 +30,35 @@ export function getPositionSideTagClass(posSide?: string, side?: string) {
   return getSideTagClass(normalizePosSideTag(posSide, side))
 }
 
+export function normalizeMgnModeTag(mgnMode?: string) {
+  const text = String(mgnMode || '')
+    .trim()
+    .toLowerCase()
+  if (text === 'crossed' || text === 'cross') return 'cross'
+  if (text === 'isolated' || text === 'iso') return 'isolated'
+  return text
+}
+
+export function formatMgnModeLabel(mgnMode?: string, locale = 'zh') {
+  const tag = normalizeMgnModeTag(mgnMode)
+  if (!tag) return ''
+
+  const isZh = locale.toLowerCase().startsWith('zh')
+  if (isZh) {
+    if (tag === 'cross') return '全仓'
+    if (tag === 'isolated') return '逐仓'
+  } else {
+    if (tag === 'cross') return 'Cross'
+    if (tag === 'isolated') return 'Isolated'
+  }
+
+  return tag
+}
+
+export function getMgnModeTagClass() {
+  return 'rounded bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
+}
+
 export function formatPositionAmount(value?: string | number | null) {
   const text = String(value ?? '').trim()
   return text || '0'
