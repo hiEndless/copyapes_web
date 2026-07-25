@@ -30,8 +30,32 @@ const initialTraders: Trader[] = [
     balance: 0
   },
   {
-    name: '佑凡交易',
-    avatar: '/head/default-avatar.png',
+    name: '熬鹰资本',
+    avatar: '/head/aoying.jpg',
+    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    balance: 0
+  },
+  {
+    name: '予与xx(私域)',
+    avatar: 'https://public.bnbstatic.com/image/pgc/202604/299894bb01cffbefc7f5875aef779249.jpg',
+    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    balance: 0
+  },
+  {
+    name: '意钦',
+    avatar: 'https://public.bnbstatic.com/image/pgc/202603/9501dfeea9036dc99eef5adc0994ceaf.jpg',
+    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    balance: 0
+  },
+  {
+    name: '意钦(私域)',
+    avatar: 'https://public.bnbstatic.com/image/pgc/202603/9501dfeea9036dc99eef5adc0994ceaf.jpg',
+    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    balance: 0
+  },
+  {
+    name: '创造奇迹666',
+    avatar: '/head/qiji666.jpg',
     platform: { name: 'Binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
@@ -53,36 +77,36 @@ const initialTraders: Trader[] = [
     platform: { name: 'Binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
-  {
-    name: '白羊齐夏',
-    avatar: '/head/default-avatar.png',
-    platform: { name: '币coin', logo: '/exchanges/bicoin.png' },
-    balance: 0
-  },
-  {
-    name: '用公式赚钱就是快',
-    avatar: '/head/gongshi.jpg',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
-    balance: 0
-  },
+  // {
+  //   name: '白羊齐夏',
+  //   avatar: '/head/default-avatar.png',
+  //   platform: { name: '币coin', logo: '/exchanges/bicoin.png' },
+  //   balance: 0
+  // },
+  // {
+  //   name: '用公式赚钱就是快',
+  //   avatar: '/head/gongshi.jpg',
+  //   platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+  //   balance: 0
+  // },
   {
     name: 'trader Yy',
     avatar: '/head/yy.jpg',
     platform: { name: 'Binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
-  {
-    name: '土鸭神队',
-    avatar: '/head/tuya.jpg',
-    platform: { name: '币coin', logo: '/exchanges/bicoin.png' },
-    balance: 0
-  },
-  {
-    name: '老恶魔',
-    avatar: '/head/default-avatar.png',
-    platform: { name: 'OKX', logo: '/exchanges/okx.png' },
-    balance: 0
-  },
+  // {
+  //   name: '土鸭神队',
+  //   avatar: '/head/tuya.jpg',
+  //   platform: { name: '币coin', logo: '/exchanges/bicoin.png' },
+  //   balance: 0
+  // },
+  // {
+  //   name: '老恶魔',
+  //   avatar: '/head/default-avatar.png',
+  //   platform: { name: 'OKX', logo: '/exchanges/okx.png' },
+  //   balance: 0
+  // },
   {
     name: '明明明宏',
     avatar: '/head/minghong.jpg',
