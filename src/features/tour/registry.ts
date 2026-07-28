@@ -5,7 +5,8 @@ import type { TourDef } from './types'
 /** 需要在组件里主动触发的引导，避免散落字符串 */
 export const TOUR_IDS = {
   apiFormGuide: 'api-form-guide',
-  taskConfigGuide: 'task-config-guide'
+  taskConfigGuide: 'task-config-guide',
+  grabConfigGuide: 'grab-config-guide'
 } as const
 
 /**
@@ -174,6 +175,120 @@ export const TOURS: TourDef[] = [
         description: '提交后会先校验凭据是否可用，校验通过才会保存。失败通常是权限或 IP 白名单没配好。',
         side: 'top',
         align: 'center'
+      }
+    ]
+  },
+  {
+    id: 'cookie-page',
+    kind: 'page',
+    title: 'Cookie 获取指引',
+    version: 1,
+    route: '/dashboard/cookie',
+    autoStart: true,
+    steps: [
+      {
+        anchor: TOUR_ANCHORS.cookieNotice,
+        title: '先看绑定规则',
+        description: '每个交易所只能绑一个 Cookie。同所要绑多个时，需要再注册本平台账号分别添加。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.cookiePlugin,
+        title: '推荐：浏览器插件自动获取',
+        description: '装好插件后登录跟单猿与交易所账号，点自动抓取即可同步到本页。Chrome 可直接安装，其他浏览器看下方入口说明。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.cookieManual,
+        title: '备选：手动上传',
+        description: '无法装插件或要用手机远程更新时，点「手动上传」，粘贴 Cookie 字符串或整段 cURL，系统会自动提取。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.cookieList,
+        title: '在这里查看绑定结果',
+        description: '上传成功后会出现在「我的交易所 Cookie」。绿色表示生效中，红色表示已失效，需要重新获取后更新。',
+        side: 'top',
+        align: 'start'
+      }
+    ]
+  },
+  {
+    id: 'grab-page',
+    kind: 'page',
+    title: '跟单抢位指引',
+    version: 1,
+    route: '/dashboard/grab',
+    autoStart: true,
+    steps: [
+      {
+        anchor: TOUR_ANCHORS.grabHero,
+        title: '抢位要先有 Cookie',
+        description: '热门交易员满员时，系统会自动监控并抢占名额。点「获取交易所 Cookie」先完成绑定，没有有效 Cookie 无法创建抢位。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.grabExchange,
+        title: '选择目标交易所',
+        description: '选 OKX 或币安。切换后下方会自动匹配该交易所的 Cookie。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.grabCookie,
+        title: '确认 Cookie 有效',
+        description: '这里必须显示「有效」。若提示未找到或已失效，先回 Cookie 获取页重新绑定。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.grabTrader,
+        title: '填交易员并解析',
+        description: '粘贴交易员主页链接或 ID，点「解析」提取 UID。解析成功后下方会显示识别结果。',
+        side: 'top',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.grabSubmit,
+        title: '进入金额配置',
+        description: '交易所、有效 Cookie、交易员都齐后按钮才可点。点开后可在面板右上角「配置说明」了解跟单金额怎么填。',
+        side: 'top',
+        align: 'end'
+      }
+    ]
+  },
+  {
+    id: 'grab-config-guide',
+    kind: 'feature',
+    title: '抢位配置说明',
+    version: 1,
+    hiddenInMenu: true,
+    unavailableHint: '请先打开抢位配置面板，再从面板右上角的「配置说明」打开',
+    steps: [
+      {
+        anchor: TOUR_ANCHORS.grabTraderInfo,
+        title: '核对目标交易员',
+        description: '确认头像、昵称和近期收益无误。抢到名额后会按这里的交易员开始跟单。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.grabAmount,
+        title: '填写跟单金额',
+        description: '这是抢到后用于跟单的投入金额。币安还可选定比或定额；OKX 只需填跟单金额。',
+        side: 'top',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.grabStart,
+        title: '开始抢位',
+        description: '提交后任务进入「进行中」，系统秒级轮询空位。一般 2-3 天内能抢到，也可随时在列表里终止。',
+        side: 'top',
+        align: 'end'
       }
     ]
   },

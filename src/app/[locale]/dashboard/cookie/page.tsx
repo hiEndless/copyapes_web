@@ -26,6 +26,8 @@ import { Textarea } from '@/components/ui/textarea'
 import { Badge } from '@/components/ui/badge'
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from '@/components/ui/accordion'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
+import { tourSafeDialogProps } from '@/features/tour/dialog-guard'
 
 type CookieItem = {
   curl_id: string | number
@@ -168,7 +170,7 @@ export default function CookiePage() {
         <p className='text-muted-foreground text-sm'>
           通过绑定交易所 Cookie，您可以解锁更多受限接口的功能，如获取带单员私有数据等。
         </p>
-        <Alert className='border-primary/20 bg-primary/5 text-primary mt-2'>
+        <Alert className='border-primary/20 bg-primary/5 text-primary mt-2' {...tourAnchor(TOUR_ANCHORS.cookieNotice)}>
           <AlertCircle className='h-4 w-4' />
           <AlertTitle className='font-semibold'>Cookie 提交说明</AlertTitle>
           <AlertDescription className='text-sm'>
@@ -180,7 +182,7 @@ export default function CookiePage() {
 
       {/* 获取 Cookie 的方式 */}
       <div className='grid gap-4 md:grid-cols-2'>
-        <Card className='shadow-sm'>
+        <Card className='shadow-sm' {...tourAnchor(TOUR_ANCHORS.cookiePlugin)}>
           <CardHeader>
             <div className='flex items-center gap-2'>
               <div className='bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg'>
@@ -266,7 +268,7 @@ export default function CookiePage() {
           </CardContent>
         </Card>
 
-        <Card className='shadow-sm'>
+        <Card className='shadow-sm' {...tourAnchor(TOUR_ANCHORS.cookieManual)}>
           <CardHeader>
             <div className='flex items-center gap-2'>
               <div className='bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg'>
@@ -295,7 +297,7 @@ export default function CookiePage() {
                   手动上传
                 </Button>
               </DialogTrigger>
-              <DialogContent className='sm:max-w-[425px]'>
+              <DialogContent className='sm:max-w-[425px]' {...tourSafeDialogProps}>
                 <DialogHeader>
                   <DialogTitle>手动上传 Cookie</DialogTitle>
                   <DialogDescription>请选择对应的交易所，并粘贴您获取到的完整 Cookie 字符串。</DialogDescription>
@@ -391,7 +393,7 @@ export default function CookiePage() {
         </Card>
       </div>
 
-      <div className='mt-4 flex flex-col gap-4'>
+      <div className='mt-4 flex flex-col gap-4' {...tourAnchor(TOUR_ANCHORS.cookieList)}>
         <h3 className='text-lg font-semibold'>我的交易所 Cookie</h3>
 
         {cookies.length === 0 ? (
@@ -467,7 +469,7 @@ export default function CookiePage() {
       </div>
 
       <Dialog open={isEditNameOpen} onOpenChange={setIsEditNameOpen}>
-        <DialogContent className='sm:max-w-[425px]'>
+        <DialogContent className='sm:max-w-[425px]' {...tourSafeDialogProps}>
           <DialogHeader>
             <DialogTitle>修改名称</DialogTitle>
             <DialogDescription>

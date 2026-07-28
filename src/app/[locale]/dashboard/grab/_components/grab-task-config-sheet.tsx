@@ -2,12 +2,17 @@
 
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
+import { CircleHelp } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createGrabTask, getLeaderInfo } from '@/api/task'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
+import { tourSafeDialogProps } from '@/features/tour/dialog-guard'
+import { TOUR_IDS } from '@/features/tour/registry'
+import { useTour } from '@/features/tour/tour-provider'
 
 export interface GrabTaskConfigSheetProps {
   isOpen: boolean
@@ -29,6 +34,7 @@ export function GrabTaskConfigSheet({
   traderName,
   platform
 }: GrabTaskConfigSheetProps) {
+  const { startTourById } = useTour()
   const [isLoading, setIsLoading] = useState(false)
   const [isFetchingData, setIsFetchingData] = useState(false)
 
@@ -226,12 +232,26 @@ export function GrabTaskConfigSheet({
 
   return (
     <Sheet open={isOpen} onOpenChange={open => !open && onClose()}>
-      <SheetContent side='right' className='flex flex-col p-0 sm:max-w-lg'>
+      <SheetContent side='right' className='flex flex-col p-0 sm:max-w-lg' {...tourSafeDialogProps}>
         <SheetHeader className='border-b px-6 py-4'>
-          <SheetTitle>确认抢位信息</SheetTitle>
-          <SheetDescription>
-            系统将以秒级频率自动为您抢位，全程通常不超过1秒。一般2-3天内就可以抢到，具体时间取决于带单员空位情况。
-          </SheetDescription>
+          <div className='flex items-start justify-between gap-2 pr-6'>
+            <div className='min-w-0'>
+              <SheetTitle>确认抢位信息</SheetTitle>
+              <SheetDescription>
+                系统将以秒级频率自动为您抢位，全程通常不超过1秒。一般2-3天内就可以抢到，具体时间取决于带单员空位情况。
+              </SheetDescription>
+            </div>
+            <Button
+              type='button'
+              variant='ghost'
+              size='sm'
+              className='h-8 shrink-0 gap-1.5 px-2 text-xs font-semibold'
+              onClick={() => startTourById(TOUR_IDS.grabConfigGuide)}
+            >
+              <CircleHelp className='size-4' />
+              配置说明
+            </Button>
+          </div>
         </SheetHeader>
 
         <div className='flex-1 overflow-y-auto px-6 py-6'>
@@ -249,7 +269,7 @@ export function GrabTaskConfigSheet({
             <div className='space-y-6'>
               {/* 交易员信息卡片 */}
               {nickname && (
-                <div className='rounded-xl border bg-card p-4 shadow-sm'>
+                <div className='rounded-xl border bg-card p-4 shadow-sm' {...tourAnchor(TOUR_ANCHORS.grabTraderInfo)}>
                   <div className='flex items-start gap-4'>
                     <div className='h-16 w-16 shrink-0 overflow-hidden rounded-xl border bg-muted shadow-sm'>
                       <img
@@ -290,7 +310,7 @@ export function GrabTaskConfigSheet({
               )}
 
               {/* 合约跟单设置 */}
-              <div className='space-y-4 pt-2'>
+              <div className='space-y-4 pt-2' {...tourAnchor(TOUR_ANCHORS.grabAmount)}>
                 <h4 className='font-semibold'>合约跟单设置</h4>
                 
                 {/* 币安独有：选择定额或定比 */}
@@ -348,7 +368,7 @@ export function GrabTaskConfigSheet({
           )}
         </div>
 
-        <SheetFooter className='border-t p-6'>
+        <SheetFooter className='border-t p-6' {...tourAnchor(TOUR_ANCHORS.grabStart)}>
           <Button variant='outline' onClick={onClose} disabled={isLoading}>
             取消
           </Button>

@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MotionPreset } from '@/components/ui/motion-preset'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { GrabTaskConfigSheet } from './_components/grab-task-config-sheet'
 import {
   INVALID_TRADER_URL,
@@ -215,7 +216,10 @@ export default function GrabPage() {
                   当热门交易员满员时，使用抢位功能可以自动监控并第一时间为您抢占跟单名额。此功能需要配合交易所的 Cookie
                   使用。
                 </p>
-                <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'>
+                <div
+                  className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'
+                  {...tourAnchor(TOUR_ANCHORS.grabHero)}
+                >
                   {featureActions.map(action => (
                     <a
                       key={action.title}
@@ -396,7 +400,7 @@ export default function GrabPage() {
             </CardHeader>
             <CardContent className='space-y-6'>
               {/* 0. 选择目标交易所 */}
-              <div className='space-y-3'>
+              <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.grabExchange)}>
                 <Label>选择目标交易所</Label>
                 <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                   <button
@@ -447,7 +451,7 @@ export default function GrabPage() {
               </div>
 
               {/* 1. 显示当前交易所的 Cookie 状态 */}
-              <div className='space-y-3 pt-2'>
+              <div className='space-y-3 pt-2' {...tourAnchor(TOUR_ANCHORS.grabCookie)}>
                 <Label>我的 Cookie 状态</Label>
                 {currentMyCookie ? (
                   <div
@@ -489,7 +493,7 @@ export default function GrabPage() {
               </div>
 
               {/* 2. 提交交易员主页链接或 ID */}
-              <div className='space-y-2'>
+              <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.grabTrader)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
                   交易员主页链接或 ID
@@ -523,7 +527,7 @@ export default function GrabPage() {
                 </div>
               )}
             </CardContent>
-            <CardFooter className='flex justify-end gap-2'>
+            <CardFooter className='flex justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.grabSubmit)}>
               <Button
                 disabled={
                   !exchange ||
