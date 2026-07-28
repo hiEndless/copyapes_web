@@ -67,12 +67,35 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
     if (autoStartedRef.current === pageTour.id) return
     if (hasSeenTour(pageTour)) return
 
-    const timer = window.setTimeout(() => {
-      autoStartedRef.current = pageTour.id
-      void import('./tour-runner').then(({ startTour: run }) => run(pageTour))
-    }, AUTO_START_DELAY)
+    let cancelled = false
+    let attempt = 0
+    let retryTimer: number | undefined
 
-    return () => window.clearTimeout(timer)
+    const tryStart = () => {
+      void import('./tour-runner').then(({ startTour: run }) => {
+        if (cancelled) return
+
+        if (run(pageTour)) {
+          autoStartedRef.current = pageTour.id
+
+          return
+        }
+
+        // 页面还在拉数据时锚点未挂载，短重试几次；成功才记已开场
+        if (attempt < 6) {
+          attempt += 1
+          retryTimer = window.setTimeout(tryStart, 500)
+        }
+      })
+    }
+
+    const timer = window.setTimeout(tryStart, AUTO_START_DELAY)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+      if (retryTimer) window.clearTimeout(retryTimer)
+    }
   }, [pageTour])
 
   const value = useMemo<TourContextValue>(

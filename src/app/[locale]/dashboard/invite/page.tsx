@@ -7,6 +7,7 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { agentApi } from '@/api/agent'
 import type { AgentSummaryResponse } from '@/api/agent'
 
@@ -92,17 +93,18 @@ export default function InvitePage() {
 
   return (
     <div className='flex h-full flex-col gap-4 overflow-y-auto p-3 lg:p-5'>
-      <div className='flex flex-col gap-1'>
-        <h2 className='text-xl font-semibold tracking-tight'>邀请奖励</h2>
-        <p className='text-xs text-muted-foreground'>邀请好友注册，解锁额外额度与销售分成</p>
-      </div>
-
       {loading ? (
         <div className='flex h-[40vh] items-center justify-center'>
           <Loader2 className='h-8 w-8 animate-spin text-muted-foreground' />
         </div>
       ) : (
-        <div className='grid gap-4 md:grid-cols-12'>
+        <>
+          <div className='flex flex-col gap-1' {...tourAnchor(TOUR_ANCHORS.inviteHeader)}>
+            <h2 className='text-xl font-semibold tracking-tight'>邀请奖励</h2>
+            <p className='text-xs text-muted-foreground'>邀请好友注册，解锁额外额度与销售分成</p>
+          </div>
+
+          <div className='grid gap-4 md:grid-cols-12'>
           <div className='space-y-4 md:col-span-7'>
             <Card className='overflow-hidden border-border/70 shadow-sm'>
               <CardHeader className='space-y-2 pb-3'>
@@ -113,7 +115,10 @@ export default function InvitePage() {
                 <CardDescription className='text-xs'>邀请码展示与邀请奖励进度总览</CardDescription>
               </CardHeader>
               <CardContent className='space-y-5'>
-                <div className='grid gap-3 sm:grid-cols-[1.15fr_0.85fr]'>
+                <div
+                  className='grid gap-3 sm:grid-cols-[1.15fr_0.85fr]'
+                  {...tourAnchor(TOUR_ANCHORS.inviteCode)}
+                >
                   <div className='relative overflow-hidden rounded-xl border border-primary/10 bg-gradient-to-br from-primary/[0.10] via-background to-background px-4 py-4'>
                     <div className='absolute -right-6 top-0 h-16 w-16 rounded-full bg-primary/10 blur-2xl' />
                     <div className='relative space-y-2'>
@@ -170,7 +175,7 @@ export default function InvitePage() {
                   </div>
                 </div>
 
-                <div className='space-y-3 rounded-xl border bg-muted/[0.18] p-4'>
+                <div className='space-y-3 rounded-xl border bg-muted/[0.18] p-4' {...tourAnchor(TOUR_ANCHORS.inviteProgress)}>
                   <div className='flex items-center justify-between gap-3'>
                     <div>
                       <div className='text-xs font-medium text-foreground'>任务进度</div>
@@ -273,7 +278,7 @@ export default function InvitePage() {
           </div>
 
           <div className='space-y-4 md:col-span-5'>
-            <Card className='h-full shadow-sm'>
+            <Card className='h-full shadow-sm' {...tourAnchor(TOUR_ANCHORS.inviteCommission)}>
               <CardHeader className='space-y-2 pb-3'>
                 <CardTitle className='flex items-center gap-2 text-base font-semibold'>
                   <Wallet className='h-4 w-4 text-primary' />
@@ -355,6 +360,7 @@ export default function InvitePage() {
             </Card>
           </div>
         </div>
+        </>
       )}
     </div>
   )

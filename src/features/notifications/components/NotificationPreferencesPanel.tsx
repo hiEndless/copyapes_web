@@ -2,6 +2,7 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors';
 
 import type { NotificationPreferenceKey, NotificationPreferences } from '../types';
 
@@ -48,7 +49,7 @@ export function NotificationPreferencesPanel({
   onToggle,
 }: NotificationPreferencesPanelProps) {
   return (
-    <Card className="shadow-sm">
+    <Card className="shadow-sm" {...tourAnchor(TOUR_ANCHORS.notifyPreferences)}>
       <CardHeader className="px-4 py-3 space-y-0.5">
         <CardTitle className="text-lg">通知类型</CardTitle>
         <CardDescription className="text-xs">

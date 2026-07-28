@@ -9,7 +9,7 @@ import { Loader2, Save, Send, AlertTriangle } from 'lucide-react';
 import { ChannelRegistry } from './ChannelRegistry';
 import { CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors';
 interface ChannelConfigFormProps {
   channel: NotificationChannel;
   onSave: (data: NotificationChannelUpdate) => Promise<void>;
@@ -69,7 +69,7 @@ export function ChannelConfigForm({ channel, onSave, onTest, isSaving, isTesting
 
       <Separator className="mt-auto" />
 
-      <div className="flex items-center justify-between p-6">
+      <div className="flex items-center justify-between p-6" {...tourAnchor(TOUR_ANCHORS.notifyFormActions)}>
         <Button
           type="button"
           variant="outline"

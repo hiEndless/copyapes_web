@@ -18,7 +18,7 @@ export const TOURS: TourDef[] = [
     id: 'dashboard-overview',
     kind: 'page',
     title: '新手上手指引',
-    version: 2,
+    version: 4,
     route: '/dashboard',
     autoStart: true,
     steps: [
@@ -34,8 +34,15 @@ export const TOURS: TourDef[] = [
         align: 'start'
       },
       {
+        anchor: TOUR_ANCHORS.navNotifications,
+        title: '第二步：配置消息通知',
+        description: '建单前先在这里配好通知渠道。未配置通知时无法创建跟单任务，开仓平仓和异常停任务也会漏消息。',
+        side: 'right',
+        align: 'start'
+      },
+      {
         anchor: TOUR_ANCHORS.navCreateTask,
-        title: '创建跟单',
+        title: '第三步：创建跟单',
         description: '按信号来源选择跟单方式：交易所自选、币coin、HyperLiquid、API 跟单、Cookie 跟单。',
         side: 'right',
         align: 'start'
@@ -52,6 +59,13 @@ export const TOURS: TourDef[] = [
         title: '我的跟单',
         description: '所有跟单任务的运行状态、收益和明细都在这里查看与调整。',
         side: 'right',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.homeExchanges,
+        title: '注册交易所返佣，半价用产品',
+        description: '通过下方合作交易所链接注册，可拿约 20% 手续费返佣；注册后联系客服，还能半价开通 VIP。',
+        side: 'top',
         align: 'start'
       },
       {
@@ -289,6 +303,89 @@ export const TOURS: TourDef[] = [
         description: '提交后任务进入「进行中」，系统秒级轮询空位。一般 2-3 天内能抢到，也可随时在列表里终止。',
         side: 'top',
         align: 'end'
+      }
+    ]
+  },
+  {
+    id: 'notifications-page',
+    kind: 'page',
+    title: '消息通知配置指引',
+    version: 1,
+    route: '/dashboard/notifications',
+    autoStart: true,
+    steps: [
+      {
+        anchor: TOUR_ANCHORS.notifyHeader,
+        title: '通知设置',
+        description: '跟单任务创建前通常需要先配好通知。这里控制「收什么消息」以及「发到哪个渠道」。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.notifyPreferences,
+        title: '先选通知类型',
+        description: '开关对所有已开启渠道统一生效。交易通知、Cookie/API 失效、任务停止最常用；系统通知不可关闭。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.notifyChannelList,
+        title: '选择并开启渠道',
+        description: '左侧点选要配置的渠道。配好参数后，记得打开右侧开关真正开启，否则收不到消息。',
+        side: 'right',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.notifyChannelForm,
+        title: '填写渠道配置',
+        description: '右侧按渠道填写：微信需扫码拿授权码，钉钉填 Webhook 与加签密钥，QQ 邮箱填 QQ 号与 SMTP 授权码。',
+        side: 'left',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.notifyFormActions,
+        title: '保存后再测试',
+        description: '先点「保存配置」，再打开左侧开关，最后用「测试连接」确认能收到消息。未开启时测试按钮不可用。',
+        side: 'top',
+        align: 'end'
+      }
+    ]
+  },
+  {
+    id: 'invite-page',
+    kind: 'page',
+    title: '邀请奖励指引',
+    version: 1,
+    route: '/dashboard/invite',
+    autoStart: true,
+    steps: [
+      {
+        anchor: TOUR_ANCHORS.inviteHeader,
+        title: '邀请奖励',
+        description: '邀请好友注册，可解锁额外 API / 跟单额度，好友付费后还能累计销售分成。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.inviteCode,
+        title: '复制邀请链接',
+        description: '点复制按钮把邀请链接发给好友。好友通过链接注册后计入邀请；有效邀请才会推进下方任务进度。',
+        side: 'bottom',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.inviteProgress,
+        title: '任务进度与节点奖励',
+        description: '有效邀请达到 3 / 5 / 10 人时，逐步解锁 API 授权、跟单任务额度和资金上限。这些节点奖励仅适用于免费用户。',
+        side: 'top',
+        align: 'start'
+      },
+      {
+        anchor: TOUR_ANCHORS.inviteCommission,
+        title: '销售分成与代理权益',
+        description: '这里显示累计分成收益。开通年费 VIP 或年费工作室 VIP 成为代理后，可提现并享受返佣等权益。',
+        side: 'left',
+        align: 'start'
       }
     ]
   },

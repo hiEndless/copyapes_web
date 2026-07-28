@@ -20,6 +20,7 @@ import type {
 import { ChannelConfigForm } from '@/features/notifications/components/ChannelConfigForm';
 import { ChannelLogo } from '@/features/notifications/components/ChannelLogo';
 import { NotificationPreferencesPanel } from '@/features/notifications/components/NotificationPreferencesPanel';
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors';
 import { STATIC_CHANNELS } from './static-channels';
 
 const DEFAULT_PREFERENCES: NotificationPreferences = {
@@ -327,7 +328,7 @@ export default function NotificationPage() {
 
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 lg:p-8">
-      <div className="flex flex-col gap-1">
+      <div className="flex flex-col gap-1" {...tourAnchor(TOUR_ANCHORS.notifyHeader)}>
         <h2 className="text-2xl font-bold tracking-tight">通知设置</h2>
         <p className="text-muted-foreground text-sm">
           配置通知类型与消息渠道
@@ -341,7 +342,7 @@ export default function NotificationPage() {
       />
 
       <div className="flex flex-col md:flex-row gap-4 h-full min-h-[600px]">
-        <Card className="w-full md:w-[30%] h-fit shadow-sm">
+        <Card className="w-full md:w-[30%] h-fit shadow-sm" {...tourAnchor(TOUR_ANCHORS.notifyChannelList)}>
           <CardHeader>
             <CardTitle className="text-lg">通知渠道</CardTitle>
             <CardDescription>选择要配置的渠道</CardDescription>
@@ -384,7 +385,10 @@ export default function NotificationPage() {
           </CardContent>
         </Card>
 
-        <Card className="w-full md:w-[70%] animate-in fade-in slide-in-from-right-4 duration-300 flex flex-col shadow-sm">
+        <Card
+          className="w-full md:w-[70%] animate-in fade-in slide-in-from-right-4 duration-300 flex flex-col shadow-sm"
+          {...tourAnchor(TOUR_ANCHORS.notifyChannelForm)}
+        >
           {selectedChannel ? (
             <ChannelConfigForm
               channel={selectedChannel}
