@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
@@ -218,7 +219,7 @@ export default function BicoinTaskPage() {
               </div>
 
               {/* 1. 账号关联 */}
-              <div className='space-y-3'>
+              <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.bicoinTaskAccount)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
                   关联币coin账号
@@ -258,7 +259,7 @@ export default function BicoinTaskPage() {
               </div>
 
               {/* 2. 搜索交易员 */}
-              <div className='space-y-3'>
+              <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.bicoinTaskSearch)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
                   选择交易员
@@ -371,7 +372,7 @@ export default function BicoinTaskPage() {
 
               {/* 3. 交易员类型 */}
               {selectedTrader && (
-                <div className='space-y-3'>
+                <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.bicoinTaskSource)}>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
                     跟单数据源
@@ -388,7 +389,7 @@ export default function BicoinTaskPage() {
                 </div>
               )}
             </CardContent>
-            <CardFooter className='flex justify-end'>
+            <CardFooter className='flex justify-end' {...tourAnchor(TOUR_ANCHORS.bicoinTaskSubmit)}>
               <Button
                 disabled={!isAccountSaved || !selectedTrader || !traderType}
                 onClick={() => setIsConfigOpen(true)}

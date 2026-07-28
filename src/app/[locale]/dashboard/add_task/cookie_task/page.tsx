@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 import {
   INVALID_TRADER_URL,
@@ -245,7 +246,7 @@ export default function CookieTaskPage() {
             </CardHeader>
             <CardContent className='space-y-6'>
               {/* 0. 选择目标交易所 */}
-              <div className='space-y-3'>
+              <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.cookieTaskExchange)}>
                 <Label>选择目标交易所</Label>
                 <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                   <button
@@ -320,7 +321,7 @@ export default function CookieTaskPage() {
               )} */}
 
               {/* 1. 选择目标交易所的 Cookie */}
-              <Tabs defaultValue='my-cookie' className='w-full pt-4'>
+              <Tabs defaultValue='my-cookie' className='w-full pt-4' {...tourAnchor(TOUR_ANCHORS.cookieTaskSource)}>
                 <TabsList className='mb-6 grid w-full grid-cols-2'>
                   <TabsTrigger value='my-cookie'>我的 Cookie</TabsTrigger>
                   <TabsTrigger value='search-cookie'>发现 Cookie</TabsTrigger>
@@ -457,7 +458,7 @@ export default function CookieTaskPage() {
               </Tabs>
 
               {/* 2. 提交交易员主页链接或 ID */}
-              <div className='space-y-2'>
+              <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskTrader)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
                   交易员主页链接或 ID
@@ -493,7 +494,7 @@ export default function CookieTaskPage() {
 
               {/* 3. 选择交易员类型 */}
               {exchange && (
-                <div className='space-y-2'>
+                <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskType)}>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
                     交易员类型
@@ -519,7 +520,7 @@ export default function CookieTaskPage() {
                 </div>
               )}
             </CardContent>
-            <CardFooter className='flex justify-end gap-2'>
+            <CardFooter className='flex justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskSubmit)}>
               <Button
                 disabled={!exchange || isInvalidUniqueName(uniqueName) || !traderType || !selectedTrader}
                 onClick={() => setIsConfigOpen(true)}

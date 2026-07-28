@@ -19,6 +19,11 @@ import { request } from '@/api/request'
 import { settingsApi } from '@/api/settings'
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
+import { tourSafeDialogProps } from '@/features/tour/dialog-guard'
+import { TOUR_IDS } from '@/features/tour/registry'
+import { useTour } from '@/features/tour/tour-provider'
+
 import { CopyTradeProtocolDialog } from './copy-trade-protocol-dialog'
 import { buildFollowRatioPreview } from '@/lib/follow-ratio'
 
@@ -446,6 +451,7 @@ export function CopyTaskConfigSheet({
   onSuccess
 }: CopyTaskConfigSheetProps) {
   const router = useRouter()
+  const { startTourById } = useTour()
   const [isLoading, setIsLoading] = useState(false)
   const [agreedToProtocol, setAgreedToProtocol] = useState(false)
   const [protocolDialogOpen, setProtocolDialogOpen] = useState(false)
@@ -876,15 +882,29 @@ export function CopyTaskConfigSheet({
 
   return (
     <Sheet open={isOpen} onOpenChange={open => !open && onClose()}>
-      <SheetContent side='right' className='flex flex-col p-0 sm:max-w-lg'>
+      <SheetContent side='right' className='flex flex-col p-0 sm:max-w-lg' {...tourSafeDialogProps}>
         <SheetHeader className='px-6 pt-6 pb-2'>
-          <SheetTitle>
-            跟单配置 - <span>{traderName || traderId}</span>
-          </SheetTitle>
-          <SheetDescription>配置详细的跟单参数</SheetDescription>
+          <div className='flex items-start justify-between gap-2 pr-6'>
+            <div className='min-w-0'>
+              <SheetTitle>
+                跟单配置 - <span>{traderName || traderId}</span>
+              </SheetTitle>
+              <SheetDescription>配置详细的跟单参数</SheetDescription>
+            </div>
+            <Button
+              type='button'
+              variant='ghost'
+              size='sm'
+              className='h-8 shrink-0 gap-1.5 px-2 text-xs font-semibold'
+              onClick={() => startTourById(TOUR_IDS.taskConfigGuide)}
+            >
+              <CircleHelp className='size-4' />
+              配置说明
+            </Button>
+          </div>
         </SheetHeader>
 
-        <div className='px-6 pb-1'>
+        <div className='px-6 pb-1' {...tourAnchor(TOUR_ANCHORS.taskNotifyStatus)}>
           <div className='bg-muted/40 flex items-center justify-between rounded-md border px-3 py-2 text-xs'>
             <div className='flex items-center gap-2'>
               <span className='text-muted-foreground'>消息通知配置状态：</span>
@@ -922,7 +942,7 @@ export function CopyTaskConfigSheet({
           <div className='flex-1 overflow-y-auto px-6 py-4'>
             <TabsContent value='basic' className='mt-0 space-y-6'>
               {/* 选择跟单 API */}
-              <div>
+              <div {...tourAnchor(TOUR_ANCHORS.taskApiSelect)}>
                 <div className='mb-2 text-sm font-medium'>选择你的跟单 API</div>
                 {apiOptions.length === 0 ? (
                   <div className='bg-muted/40 flex items-center justify-between rounded-md border px-3 py-2 text-xs'>
@@ -982,7 +1002,7 @@ export function CopyTaskConfigSheet({
               </div>
 
               {/* 跟单模式 */}
-              <div className='space-y-2'>
+              <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.taskFollowMode)}>
                 <label className='mb-2 block text-sm font-medium'>跟单模式</label>
                 <div className='flex items-center gap-4'>
                   <label className='flex cursor-pointer items-center gap-2'>
@@ -1059,7 +1079,7 @@ export function CopyTaskConfigSheet({
 
               {/* 本金与投资额 */}
               <div className='space-y-4'>
-                <div className='space-y-2'>
+                <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.taskBenchmark)}>
                   <label className='mb-2 block text-sm font-medium'>交易员本金对标 (USDT)</label>
                   <div className='flex gap-2'>
                     <Input
@@ -1079,7 +1099,7 @@ export function CopyTaskConfigSheet({
                 </div>
 
                 {formData.follow_type === '2' && (
-                  <div className='space-y-2'>
+                  <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.taskInvestment)}>
                     <label className='mb-2 block text-sm font-medium'>投资额 (USDT)</label>
                     <Input
                       value={formData.investment}
@@ -1090,7 +1110,10 @@ export function CopyTaskConfigSheet({
                 )}
 
                 {followRatioPreview && (
-                  <div className='bg-muted/40 rounded-md border px-3 py-2 text-xs leading-relaxed'>
+                  <div
+                    className='bg-muted/40 rounded-md border px-3 py-2 text-xs leading-relaxed'
+                    {...tourAnchor(TOUR_ANCHORS.taskRatioPreview)}
+                  >
                     {followRatioPreview.ready ? (
                       <>
                         <div className='text-muted-foreground mb-1'>跟单比例预览</div>
@@ -1112,7 +1135,7 @@ export function CopyTaskConfigSheet({
               </div>
 
               {/* 杠杆模式 */}
-              <div className='space-y-2'>
+              <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.taskLeverage)}>
                 <label className='mb-2 block text-sm font-medium'>杠杆模式</label>
                 <div className='flex items-center gap-4'>
                   {!hideFollowLeverage && (
@@ -1483,7 +1506,7 @@ export function CopyTaskConfigSheet({
             )}
           </div>
 
-          <label className='flex w-full cursor-pointer items-start gap-2'>
+          <label className='flex w-full cursor-pointer items-start gap-2' {...tourAnchor(TOUR_ANCHORS.taskProtocol)}>
             <Checkbox
               checked={agreedToProtocol}
               onCheckedChange={checked => setAgreedToProtocol(checked === true)}
@@ -1504,7 +1527,7 @@ export function CopyTaskConfigSheet({
               </button>
             </span>
           </label>
-          <div className='flex w-full justify-end gap-2'>
+          <div className='flex w-full justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.taskSubmit)}>
             <Button variant='outline' onClick={onClose} disabled={isLoading}>
               取消
             </Button>

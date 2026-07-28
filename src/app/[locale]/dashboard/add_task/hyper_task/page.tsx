@@ -7,6 +7,7 @@ import { MotionPreset } from '@/components/ui/motion-preset'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 
 const featureActions = [
@@ -41,7 +42,10 @@ export default function HyperliquidTaskPage() {
                 <p className='mb-3 text-sm text-white/70'>
                   新一代的去中心化交易所，主打链上永续合约。有很多巨鲸、内幕哥、超大单在HyperLiquid上进行交易，只要你能找到这些账户的钱包地址，你就可以跟着巨鲸、内幕哥、超大单进行交易。
                 </p>
-                <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'>
+                <div
+                  className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'
+                  {...tourAnchor(TOUR_ANCHORS.hyperTaskLinks)}
+                >
                   {featureActions.map(action => (
                     <a
                       key={action.title}
@@ -74,7 +78,7 @@ export default function HyperliquidTaskPage() {
             </CardHeader>
             <CardContent className='space-y-6'>
               {/* 1. 钱包地址 */}
-              <div className='space-y-3'>
+              <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.hyperTaskAddress)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
                   目标交易员钱包地址
@@ -92,7 +96,7 @@ export default function HyperliquidTaskPage() {
                 </div>
               </div>
             </CardContent>
-            <CardFooter className='flex justify-end'>
+            <CardFooter className='flex justify-end' {...tourAnchor(TOUR_ANCHORS.hyperTaskSubmit)}>
               <Button disabled={!walletAddress.trim()} onClick={() => setIsConfigOpen(true)}>
                 创建跟单
               </Button>

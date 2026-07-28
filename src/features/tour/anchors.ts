@@ -1,0 +1,73 @@
+/**
+ * 引导锚点单一真源。
+ *
+ * 页面只声明 `data-tour` 属性，引导步骤只引用这里的常量，
+ * 二者都不依赖 DOM 结构或 class，页面改版时不会连带失效。
+ */
+export const TOUR_ANCHORS = {
+  sidebarToggle: 'sidebar-toggle',
+  navHome: 'nav-home',
+  navPricing: 'nav-pricing',
+  navInvite: 'nav-invite',
+  navTaskList: 'nav-task-list',
+  navCreateTask: 'nav-create-task',
+  navHotKol: 'nav-hot-kol',
+  navCookie: 'nav-cookie',
+  navGrab: 'nav-grab',
+  navApi: 'nav-api',
+  navNotifications: 'nav-notifications',
+  headerTour: 'header-tour',
+  headerLanguage: 'header-language',
+  headerTheme: 'header-theme',
+  headerProfile: 'header-profile',
+  homeNotice: 'home-notice',
+  homeExchanges: 'home-exchanges',
+  homeRedeem: 'home-redeem',
+  homeChangelog: 'home-changelog',
+  hotIntro: 'hot-intro',
+  hotTraderList: 'hot-trader-list',
+  apiIpNotice: 'api-ip-notice',
+  apiAddButton: 'api-add-button',
+  apiList: 'api-list',
+  apiFormExchange: 'api-form-exchange',
+  apiFormLabel: 'api-form-label',
+  apiFormPermission: 'api-form-permission',
+  apiFormKey: 'api-form-key',
+  apiFormSecret: 'api-form-secret',
+  apiFormIpWhitelist: 'api-form-ip-whitelist',
+  apiFormSubmit: 'api-form-submit',
+  exchangeTaskExchange: 'exchange-task-exchange',
+  exchangeTaskTrader: 'exchange-task-trader',
+  exchangeTaskType: 'exchange-task-type',
+  exchangeTaskSubmit: 'exchange-task-submit',
+  cookieTaskExchange: 'cookie-task-exchange',
+  cookieTaskSource: 'cookie-task-source',
+  cookieTaskTrader: 'cookie-task-trader',
+  cookieTaskType: 'cookie-task-type',
+  cookieTaskSubmit: 'cookie-task-submit',
+  bicoinTaskAccount: 'bicoin-task-account',
+  bicoinTaskSearch: 'bicoin-task-search',
+  bicoinTaskSource: 'bicoin-task-source',
+  bicoinTaskSubmit: 'bicoin-task-submit',
+  hyperTaskLinks: 'hyper-task-links',
+  hyperTaskAddress: 'hyper-task-address',
+  hyperTaskSubmit: 'hyper-task-submit',
+  apiTaskTabs: 'api-task-tabs',
+  apiTaskMyList: 'api-task-my-list',
+  taskNotifyStatus: 'task-notify-status',
+  taskApiSelect: 'task-api-select',
+  taskFollowMode: 'task-follow-mode',
+  taskBenchmark: 'task-benchmark',
+  taskInvestment: 'task-investment',
+  taskRatioPreview: 'task-ratio-preview',
+  taskLeverage: 'task-leverage',
+  taskProtocol: 'task-protocol',
+  taskSubmit: 'task-submit'
+} as const
+
+export type TourAnchor = (typeof TOUR_ANCHORS)[keyof typeof TOUR_ANCHORS]
+
+export const anchorSelector = (anchor: TourAnchor) => `[data-tour="${anchor}"]`
+
+/** 用法：`<div {...tourAnchor(TOUR_ANCHORS.homeRedeem)}>` */
+export const tourAnchor = (anchor: TourAnchor) => ({ 'data-tour': anchor })

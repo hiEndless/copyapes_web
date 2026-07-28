@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { MotionPreset } from '@/components/ui/motion-preset'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { searchApi } from '@/api/apiadd'
 import { getApiOptions } from '@/api/task'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
@@ -231,13 +232,13 @@ export default function ApiTaskPage() {
             </CardHeader>
             <CardContent>
               <Tabs defaultValue='my-api' className='w-full'>
-                <TabsList className='mb-6 grid w-full grid-cols-2'>
+                <TabsList className='mb-6 grid w-full grid-cols-2' {...tourAnchor(TOUR_ANCHORS.apiTaskTabs)}>
                   <TabsTrigger value='my-api'>我的 API 信号</TabsTrigger>
                   <TabsTrigger value='search-api'>发现 API 信号</TabsTrigger>
                 </TabsList>
 
                 {/* 1. 我的 API 列表 */}
-                <TabsContent value='my-api' className='space-y-4'>
+                <TabsContent value='my-api' className='space-y-4' {...tourAnchor(TOUR_ANCHORS.apiTaskMyList)}>
                   {isLoadingMyApis ? (
                     <div className='text-muted-foreground py-8 text-center text-sm'>
                       加载中...

@@ -10,6 +10,8 @@ import { getIpList, validateApiAdd, addApi } from '@/api/apiadd'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
+import { tourSafeDialogProps } from '@/features/tour/dialog-guard'
 
 import { ApiBindFormStep, type ApiFormData } from './api-bind-form-step'
 import { ApiRiskDisclosureStep } from './api-risk-disclosure-step'
@@ -122,7 +124,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button size='sm' className='gap-1.5'>
+        <Button size='sm' className='gap-1.5' {...tourAnchor(TOUR_ANCHORS.apiAddButton)}>
           <PlusIcon className='size-4' />
           添加 API
         </Button>
@@ -132,6 +134,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
         className={cn(
           'flex max-h-[90dvh] flex-col gap-0 overflow-hidden p-0 shadow-none sm:max-w-2xl'
         )}
+        {...tourSafeDialogProps}
       >
         {step === 1 ? (
           <ApiRiskDisclosureStep onNext={() => setStep(2)} />

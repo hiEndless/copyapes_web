@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { settingsApi } from '@/api/settings'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 
 const DashboardPage = () => {
   const [notice, setNotice] = useState<string | null>(null)
@@ -75,7 +76,7 @@ const DashboardPage = () => {
       <div className='flex flex-col gap-4 lg:col-span-1'>
         {/* 公告栏 Card */}
         {notice && (
-          <Card className='gap-3 py-4 shadow-none'>
+          <Card className='gap-3 py-4 shadow-none' {...tourAnchor(TOUR_ANCHORS.homeNotice)}>
             <CardHeader className='px-4 pb-0'>
               <CardTitle className='text-sm'>公告栏</CardTitle>
             </CardHeader>
@@ -89,7 +90,7 @@ const DashboardPage = () => {
         )}
 
         {/* 注册交易所返佣 Card */}
-        <Card className='gap-3 py-4 shadow-none'>
+        <Card className='gap-3 py-4 shadow-none' {...tourAnchor(TOUR_ANCHORS.homeExchanges)}>
           <CardHeader className='px-4 pb-0'>
             <CardTitle className='flex items-center justify-between text-sm'>合作交易所</CardTitle>
             <CardDescription className='text-xs'>
@@ -284,7 +285,7 @@ const DashboardPage = () => {
         </Card>
 
         {/* 兑换码核销 Card */}
-        <Card className='gap-3 py-4 shadow-none'>
+        <Card className='gap-3 py-4 shadow-none' {...tourAnchor(TOUR_ANCHORS.homeRedeem)}>
           <CardHeader className='px-4 pb-0'>
             <CardTitle className='text-sm'>兑换码核销</CardTitle>
             <CardDescription className='text-xs'>请输入您的兑换码进行核销</CardDescription>
@@ -320,27 +321,26 @@ const DashboardPage = () => {
 
       {/* 右侧区域 (50%) */}
       <div className='flex flex-col gap-4 lg:col-span-1'>
-        <Card className='gap-3 py-4 shadow-none'>
+        <Card className='gap-3 py-4 shadow-none' {...tourAnchor(TOUR_ANCHORS.homeChangelog)}>
           <CardHeader className='px-4 pb-0'>
             <CardTitle className='text-sm color-red-500'>新版本更新公告</CardTitle>
           </CardHeader>
           <CardContent className='px-4'>
-            <p className='text-muted-foreground text-xs leading-relaxed'>
-              当前版本更新时间：2026-06-10 <br />
-              更新内容：
-              <ul className='list-disc list-inside text-muted-foreground text-xs leading-relaxed'>
+            <div className='text-muted-foreground text-xs leading-relaxed'>
+              <p>当前版本更新时间：2026-06-10</p>
+              <p className='mt-1'>更新内容：</p>
+              <ul className='list-inside list-disc'>
                 <li>全新产品界面设计</li>
                 <li>全新的跟单系统架构，稳定性升级，跟单性能大幅提升</li>
                 <li>新增了工作室功能，更适合做自己的私域客户管理</li>
                 <li>新增了币安聪明钱跟单任务</li>
               </ul>
-              <br />
-              <span className='text-red-500 font-medium'>注意事项：</span>
-              <ul className='list-disc list-inside text-muted-foreground text-xs leading-relaxed'>
+              <p className='mt-3 font-medium text-red-500'>注意事项：</p>
+              <ul className='list-inside list-disc'>
                 <li>此次更新影响面较大，7月之前需要多留意自己的跟单任务状态，避免造成不必要的损失</li>
                 <li>如遇问题请及时联系客服，提供跟单任务ID，我们会尽快解决</li>
               </ul>
-            </p>
+            </div>
           </CardContent>
         </Card>
         {/* 赞助商广告 */}

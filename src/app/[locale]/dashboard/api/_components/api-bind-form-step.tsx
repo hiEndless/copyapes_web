@@ -5,7 +5,18 @@ import { useEffect, useState } from 'react'
 
 import { useTheme } from 'next-themes'
 
-import { Check, ChevronDown, Copy, EyeOff, Globe, Loader2Icon, Lock, ShieldCheck, X } from 'lucide-react'
+import {
+  Check,
+  ChevronDown,
+  CircleHelpIcon,
+  Copy,
+  EyeOff,
+  Globe,
+  Loader2Icon,
+  Lock,
+  ShieldCheck,
+  X
+} from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -19,6 +30,9 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
+import { TOUR_IDS } from '@/features/tour/registry'
+import { useTour } from '@/features/tour/tour-provider'
 
 const EXCHANGES = [
   { label: 'OKX', value: 'okx', logo: '/exchanges/okx.png' },
@@ -139,6 +153,7 @@ export function ApiBindFormStep({
   onChange,
   onSubmit
 }: ApiBindFormStepProps) {
+  const { startTourById } = useTour()
   const selectedExchange = EXCHANGES.find((ex) => ex.value === formData.exchange)
 
   const ipList = [
@@ -168,17 +183,29 @@ export function ApiBindFormStep({
           </DialogTitle>
           <p className='text-muted-foreground mt-1 text-xs font-medium'>第 2 步 / 共 2 步</p>
         </div>
-        <DialogClose asChild>
+        <div className='flex shrink-0 items-center gap-1'>
           <Button
             type='button'
             variant='ghost'
-            size='icon'
-            className='size-8 shrink-0'
-            aria-label='关闭'
+            size='sm'
+            className='h-8 gap-1.5 px-2 text-xs font-semibold'
+            onClick={() => startTourById(TOUR_IDS.apiFormGuide)}
           >
-            <X className='size-4' />
+            <CircleHelpIcon className='size-4' />
+            填写说明
           </Button>
-        </DialogClose>
+          <DialogClose asChild>
+            <Button
+              type='button'
+              variant='ghost'
+              size='icon'
+              className='size-8 shrink-0'
+              aria-label='关闭'
+            >
+              <X className='size-4' />
+            </Button>
+          </DialogClose>
+        </div>
       </DialogHeader>
 
       <form
@@ -215,7 +242,7 @@ export function ApiBindFormStep({
         </div>
 
         <div className='grid gap-3 md:grid-cols-2'>
-          <div>
+          <div {...tourAnchor(TOUR_ANCHORS.apiFormExchange)}>
             <label htmlFor='exchange' className={FIELD_LABEL}>
               交易所 *
             </label>
@@ -273,7 +300,7 @@ export function ApiBindFormStep({
             </DropdownMenu>
           </div>
 
-          <div>
+          <div {...tourAnchor(TOUR_ANCHORS.apiFormLabel)}>
             <label htmlFor='api_label' className={FIELD_LABEL}>
               备注名称 *
             </label>
@@ -288,7 +315,7 @@ export function ApiBindFormStep({
           </div>
         </div>
 
-        <div>
+        <div {...tourAnchor(TOUR_ANCHORS.apiFormPermission)}>
           <p className={FIELD_LABEL}>API 权限类型</p>
           <div className='flex items-center gap-6'>
             <label className='flex cursor-pointer items-center gap-2'>
@@ -308,7 +335,7 @@ export function ApiBindFormStep({
           </div>
         </div>
 
-        <div>
+        <div {...tourAnchor(TOUR_ANCHORS.apiFormKey)}>
           <label htmlFor='api_key' className={FIELD_LABEL}>
             API Key *
           </label>
@@ -322,7 +349,7 @@ export function ApiBindFormStep({
           />
         </div>
 
-        <div>
+        <div {...tourAnchor(TOUR_ANCHORS.apiFormSecret)}>
           <label htmlFor='api_secret' className={FIELD_LABEL}>
             API Secret *
           </label>
@@ -354,7 +381,7 @@ export function ApiBindFormStep({
           </div>
         )}
 
-        <div className='bg-muted rounded-lg p-4'>
+        <div className='bg-muted rounded-lg p-4' {...tourAnchor(TOUR_ANCHORS.apiFormIpWhitelist)}>
           <div className='flex gap-2.5'>
             <div className='bg-primary flex size-8 shrink-0 items-center justify-center rounded-full'>
               <Check className='text-primary-foreground size-4' strokeWidth={3} />
@@ -401,7 +428,7 @@ export function ApiBindFormStep({
           </div>
         </div>
 
-        <div className='flex gap-2 pt-2'>
+        <div className='flex gap-2 pt-2' {...tourAnchor(TOUR_ANCHORS.apiFormSubmit)}>
           <Button
             type='submit'
             disabled={loading}

@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 import {
   INVALID_TRADER_URL,
@@ -139,7 +140,7 @@ export default function ExchangeTaskPage() {
             </CardHeader>
             <CardContent className='space-y-6'>
               {/* 1. 选择目标交易所 */}
-              <div className='space-y-3'>
+              <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.exchangeTaskExchange)}>
                 <Label>选择目标交易所</Label>
                 <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                   <button
@@ -230,7 +231,7 @@ export default function ExchangeTaskPage() {
               )}
 
               {/* 2. 提交交易员主页链接或 ID */}
-              <div className='space-y-2'>
+              <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.exchangeTaskTrader)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
                   交易员主页链接或 ID
@@ -266,7 +267,7 @@ export default function ExchangeTaskPage() {
 
               {/* 3. 选择交易员类型 */}
               {exchange && (
-                <div className='space-y-2'>
+                <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.exchangeTaskType)}>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
                     交易员类型
@@ -292,7 +293,7 @@ export default function ExchangeTaskPage() {
                 </div>
               )}
             </CardContent>
-            <CardFooter className='flex justify-end gap-2'>
+            <CardFooter className='flex justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.exchangeTaskSubmit)}>
               <Button
                 disabled={!exchange || isInvalidUniqueName(uniqueName) || !traderType}
                 onClick={() => setIsConfigOpen(true)}

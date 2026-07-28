@@ -11,6 +11,7 @@ import ApiDatatable, { type ApiItem } from './_components/api-datatable'
 import { ApiAddButton } from './_components/api-add-button'
 import { getApiList } from '@/api/apiadd'
 import { settingsApi, type EntitlementProfileResponse } from '@/api/settings'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 
 export default function ApiPage() {
   const [data, setData] = useState<ApiItem[]>([])
@@ -109,7 +110,10 @@ export default function ApiPage() {
         <p className='text-muted-foreground text-sm'>添加和管理工作室交易员与跟单 API</p>
       </div>
 
-      <Alert className='border-amber-500/30 bg-amber-500/5 text-amber-900 dark:text-amber-200'>
+      <Alert
+        className='border-amber-500/30 bg-amber-500/5 text-amber-900 dark:text-amber-200'
+        {...tourAnchor(TOUR_ANCHORS.apiIpNotice)}
+      >
         <Info className='text-amber-600 dark:text-amber-400' />
         <AlertDescription>
           长期未登录使用，IP 白名单可能发生变化，需要重新在交易所授权 IP 白名单后才能继续使用。点击添加 API 按钮，查看最新 IP 白名单。
@@ -125,7 +129,7 @@ export default function ApiPage() {
         </Alert>
       )}
 
-      <Card className='col-span-full shadow-sm'>
+      <Card className='col-span-full shadow-sm' {...tourAnchor(TOUR_ANCHORS.apiList)}>
         <CardHeader className='flex flex-col gap-4 md:flex-row md:items-center md:justify-between'>
           <div className='space-y-1.5'>
             <CardTitle>交易所 API 列表</CardTitle>

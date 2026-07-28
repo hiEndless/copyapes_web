@@ -62,6 +62,9 @@ import Alert10 from '@/components/shadcn-studio/alert/alert-10'
 
 import Logo from '@/components/logo'
 import { settingsApi } from '@/api/settings'
+import { TOUR_ANCHORS, tourAnchor, type TourAnchor } from '@/features/tour/anchors'
+import { TourProvider } from '@/features/tour/tour-provider'
+import TourHelpMenu from '@/features/tour/components/tour-help-menu'
 
 type MenuSubItem = {
   label: string
@@ -72,6 +75,8 @@ type MenuSubItem = {
 type MenuItem = {
   icon: ComponentType
   label: string
+  /** 引导锚点，供新手指引与功能点介绍定位 */
+  anchor?: TourAnchor
 } & (
   | {
       href: string
@@ -85,17 +90,20 @@ const menuItems: MenuItem[] = [
   {
     icon: LayoutGridIcon,
     label: '首页',
-    href: '/dashboard'
+    href: '/dashboard',
+    anchor: TOUR_ANCHORS.navHome
   },
   {
     icon: Crown,
     label: '订阅服务',
-    href: '/dashboard/pricing'
+    href: '/dashboard/pricing',
+    anchor: TOUR_ANCHORS.navPricing
   },
   {
     icon: Gift,
     label: '邀请奖励',
-    href: '/dashboard/invite'
+    href: '/dashboard/invite',
+    anchor: TOUR_ANCHORS.navInvite
   }
 ]
 
@@ -120,11 +128,13 @@ const copyItems: MenuItem[] = [
   {
     icon: LayoutListIcon,
     label: '我的跟单',
-    href: '/dashboard/task_list'
+    href: '/dashboard/task_list',
+    anchor: TOUR_ANCHORS.navTaskList
   },
   {
     icon: CopyIcon,
     label: '创建跟单',
+    anchor: TOUR_ANCHORS.navCreateTask,
     items: [
       { label: '交易所自选', href: '/dashboard/add_task/exchange_task' },
       { label: '币coin 自选', href: '/dashboard/add_task/bicoin_task' },
@@ -136,7 +146,8 @@ const copyItems: MenuItem[] = [
   {
     icon: Flame,
     label: '热门带单 KOL ',
-    href: '/dashboard/add_task/hot'
+    href: '/dashboard/add_task/hot',
+    anchor: TOUR_ANCHORS.navHotKol
   },
   {
     icon: Flame,
@@ -149,13 +160,15 @@ const toolsItems: MenuItem[] = [
   {
     icon: Cookie,
     label: 'Cookie 获取',
-    href: '/dashboard/cookie'
+    href: '/dashboard/cookie',
+    anchor: TOUR_ANCHORS.navCookie
   },
   {
     icon: LandPlot,
     label: '跟单抢位',
     href: '/dashboard/grab',
-    badge: '4天必中'
+    badge: '4天必中',
+    anchor: TOUR_ANCHORS.navGrab
   }
 ]
 
@@ -181,7 +194,8 @@ const settingsItems: MenuItem[] = [
   {
     icon: Unplug,
     label: 'API 管理',
-    href: '/dashboard/api'
+    href: '/dashboard/api',
+    anchor: TOUR_ANCHORS.navApi
   },
   {
     icon: SettingsIcon,
@@ -191,7 +205,8 @@ const settingsItems: MenuItem[] = [
   {
     icon: MessageCircleWarning,
     label: '消息通知',
-    href: '/dashboard/notifications'
+    href: '/dashboard/notifications',
+    anchor: TOUR_ANCHORS.navNotifications
   }
 ]
 
@@ -227,9 +242,11 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
                 (subItem.href !== '/dashboard' && pathnameWithoutLocale.startsWith(`${subItem.href}/`))
             )
 
+            const anchorProps = item.anchor ? tourAnchor(item.anchor) : undefined
+
             return item.items ? (
               <Collapsible className='group/collapsible' key={item.label} defaultOpen={isSubMenuActive}>
-                <SidebarMenuItem>
+                <SidebarMenuItem {...anchorProps}>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton tooltip={item.label} isActive={isSubMenuActive}>
                       <item.icon />
@@ -265,7 +282,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
                 </SidebarMenuItem>
               </Collapsible>
             ) : (
-              <SidebarMenuItem key={item.label}>
+              <SidebarMenuItem key={item.label} {...anchorProps}>
                 <SidebarMenuButton tooltip={item.label} isActive={isActiveItem} asChild>
                   <Link href={item.href} onClick={() => startNavigationLoader(item.href)}>
                     <item.icon />
@@ -410,7 +427,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   })
 
   return (
-    <>
+    <TourProvider>
       <NextTopLoader color='var(--primary)' height={4} shadow='0 0 12px var(--primary), 0 0 6px var(--primary)' showSpinner={false} />
       {!mounted ? null : (
         <div className='flex min-h-dvh w-full'>
@@ -454,7 +471,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                 <header className='before:bg-background/60 relative before:absolute before:inset-0 before:mask-[linear-gradient(var(--card),var(--card)_18%,transparent_100%)] before:backdrop-blur-md'>
                 <div className='bg-card relative z-51 mx-auto mt-3 flex w-[calc(100%-2rem)] max-w-[calc(1280px-3rem)] items-center justify-between rounded-xl border px-6 py-2 sm:w-[calc(100%-3rem)]'>
                   <div className='flex items-center gap-1.5 sm:gap-4'>
-                    <SidebarTrigger className='[&_svg]:!size-5' />
+                    <SidebarTrigger className='[&_svg]:!size-5' {...tourAnchor(TOUR_ANCHORS.sidebarToggle)} />
                     <Separator orientation='vertical' className='hidden !h-4 sm:block' />
                     {/* <SearchDialog
                   trigger={
@@ -474,9 +491,10 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                 /> */}
               </div>
               <div className='flex items-center gap-1.5'>
+                <TourHelpMenu />
                 <LanguageDropdown
                   trigger={
-                    <Button variant='ghost' size='icon'>
+                    <Button variant='ghost' size='icon' {...tourAnchor(TOUR_ANCHORS.headerLanguage)}>
                       <LanguagesIcon />
                     </Button>
                   }
@@ -496,6 +514,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                   size='icon'
                   className='relative'
                   onClick={() => setTheme(resolvedTheme === 'light' ? 'dark' : 'light')}
+                  {...tourAnchor(TOUR_ANCHORS.headerTheme)}
                 >
                   <MoonStarIcon className='scale-100 dark:scale-0' />
                   <SunIcon className='absolute scale-0 dark:scale-100' />
@@ -518,7 +537,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                 /> */}
                 <ProfileDropdown
                   trigger={
-                    <Button variant='ghost' size='icon' className='size-9.5'>
+                    <Button variant='ghost' size='icon' className='size-9.5' {...tourAnchor(TOUR_ANCHORS.headerProfile)}>
                       <Avatar className='size-9.5 rounded-md'>
                         <AvatarImage src='https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-1.png' />
                         <AvatarFallback>JD</AvatarFallback>
@@ -550,7 +569,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
           </SidebarProvider>
         </div>
       )}
-    </>
+    </TourProvider>
   )
 }
 
