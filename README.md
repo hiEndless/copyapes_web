@@ -64,6 +64,7 @@ docker compose restart web
 | `NEXT_PUBLIC_APP_URL` | 站点 URL，用于 SEO canonical |
 | `NEXT_PUBLIC_API_URL` | 后端 API 地址 |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Cloudflare Turnstile 站点密钥 |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google 登录 Web Client ID（空则隐藏按钮） |
 | `NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION` | Google Search Console 验证 |
 
 注意：`NEXT_PUBLIC_*` 在 **构建时** 注入，修改 `.env` 后必须重新 `pnpm build`。

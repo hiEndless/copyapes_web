@@ -40,6 +40,13 @@ export interface UserInfo {
   task_limit?: number
   email?: string | null
   email_verified?: boolean
+  /** Google 登录时：是否本次新建账号 */
+  created?: boolean
+}
+
+export interface GoogleLoginParams {
+  id_token: string;
+  invite_code?: string;
 }
 
 export const authApi = {
@@ -82,6 +89,16 @@ export const authApi = {
    */
   login(data: LoginParams) {
     return request<UserInfo>('/login/', {
+      method: 'POST',
+      body: data,
+    });
+  },
+
+  /**
+   * Google 登录/注册（携带浏览器缓存邀请码时用于新用户归属）
+   */
+  googleLogin(data: GoogleLoginParams) {
+    return request<UserInfo>('/oauth/google/', {
       method: 'POST',
       body: data,
     });

@@ -1,10 +1,12 @@
 import { Link } from '@/i18n/routing'
 
-import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 
 import Logo from '@/components/logo'
+import GoogleLoginButton from '@/components/auth/google-login-button'
 import LoginForm from '@/components/auth/login/login-form'
+
+const googleClientId = (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '').trim()
 
 const Login = () => {
   return (
@@ -18,24 +20,18 @@ const Login = () => {
         <p className='text-muted-foreground'>开始您的免费体验</p>
       </div>
 
-      {/* Quick Login Buttons */}
-      {/* <div className='flex flex-wrap gap-3'>
-        <Button variant='outline' className='grow' asChild>
-          <Link href='#'>Login with Google</Link>
-        </Button>
-        <Button variant='outline' className='grow' asChild>
-          <Link href='#'>Login with Facebook</Link>
-        </Button>
-      </div>
-
-      <div className='flex items-center gap-4'>
-        <Separator className='flex-1' />
-        <p>Or</p>
-        <Separator className='flex-1' />
-      </div> */}
+      {googleClientId ? (
+        <>
+          <GoogleLoginButton />
+          <div className='flex items-center gap-4'>
+            <Separator className='flex-1' />
+            <p className='text-muted-foreground text-sm'>或</p>
+            <Separator className='flex-1' />
+          </div>
+        </>
+      ) : null}
 
       <div className='space-y-6'>
-        {/* Form */}
         <LoginForm />
 
         <p className='text-muted-foreground text-center'>

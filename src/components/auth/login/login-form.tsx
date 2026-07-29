@@ -21,6 +21,7 @@ import {
   turnstileMissingTokenMessage,
 } from '@/components/auth/turnstile-load-hint'
 import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
+import { persistAuthSession } from '@/lib/auth-session'
 import { buildTurnstileRequestFields } from '@/lib/turnstile-degrade'
 
 type TurnstileWidgetId = string
@@ -142,9 +143,7 @@ const LoginForm = () => {
 
       if (res.code === 0 && res.data) {
         toast.success('登录成功')
-        localStorage.setItem('token', res.data.token)
-        localStorage.setItem('userInfo', JSON.stringify(res.data))
-        document.cookie = `token=${res.data.token}; path=/; max-age=1209600;` // 14 days
+        persistAuthSession(res.data)
         router.push('/dashboard') // or '/' depending on where it should go
       } else if (siteKey) {
         resetTurnstile()
