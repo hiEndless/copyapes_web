@@ -66,7 +66,7 @@ const data = [
   },
   {
     name: 'BITGET',
-    href: 'https://partner.hdmune.cn/bg/japhe6xs',
+    href: 'https://partner.bitget.cafe/bg/japhe6xs',
     img: (
       <img
         alt='BITGET'

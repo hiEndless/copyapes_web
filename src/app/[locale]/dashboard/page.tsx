@@ -132,7 +132,7 @@ const DashboardPage = () => {
                     target='_blank'
                     rel='noopener noreferrer'
                     className='absolute inset-0 z-10'
-                    href='https://partner.hdmune.cn/bg/japhe6xs'
+                    href='https://partner.bitget.cafe/bg/japhe6xs'
                   >
                     <span className='sr-only'>Bitget</span>
                   </a>
