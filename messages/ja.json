@@ -1171,5 +1171,540 @@
         "deleteRetry": "削除に失敗しました。もう一度お試しください。"
       }
     }
+  },
+  "DashboardAccount": {
+    "page": {
+      "title": "アカウント設定",
+      "subtitle": "アカウント情報とセキュリティ設定を管理します"
+    },
+    "tabs": {
+      "account": {
+        "label": "アカウント情報",
+        "title": "アカウント情報",
+        "description": "ユーザー名と登録メールアドレスを変更できます。"
+      },
+      "password": {
+        "label": "パスワード変更",
+        "title": "パスワード変更",
+        "description": "アカウントを保護するため、定期的にパスワードを変更してください。"
+      }
+    },
+    "username": {
+      "title": "ユーザー名を変更",
+      "current": "現在のユーザー名：{name}",
+      "newLabel": "新しいユーザー名",
+      "newPlaceholder": "5文字以上、英数字および @ _ . -",
+      "passwordLabel": "現在のパスワード",
+      "passwordPlaceholder": "本人確認のために入力",
+      "saving": "保存中...",
+      "save": "ユーザー名を保存",
+      "needUsername": "新しいユーザー名を入力してください",
+      "updated": "ユーザー名を更新しました"
+    },
+    "password": {
+      "title": "パスワード変更",
+      "description": "新しいパスワードは6文字以上にしてください。",
+      "oldLabel": "現在のパスワード",
+      "oldPlaceholder": "現在のパスワードを入力",
+      "newLabel": "新しいパスワード",
+      "newPlaceholder": "新しいパスワードを入力",
+      "confirmLabel": "新しいパスワード（確認）",
+      "confirmPlaceholder": "新しいパスワードを再入力",
+      "saving": "保存中...",
+      "save": "変更を保存",
+      "mismatch": "新しいパスワードと確認用パスワードが一致しません",
+      "tooShort": "新しいパスワードは6文字以上にしてください"
+    },
+    "email": {
+      "title": "メールアドレスを変更",
+      "current": "現在のメール：{email}",
+      "unbound": "未設定",
+      "updated": "メールアドレスを更新しました",
+      "oldSendHint": "アカウント保護のため、現在のメールに認証コードを送信します。確認後に新しいメールを登録できます。",
+      "sendToCurrent": "現在のメールにコードを送信",
+      "sendToNew": "新しいメールにコードを送信",
+      "sending": "送信中...",
+      "resendIn": "{seconds}秒後に再送信",
+      "resend": "コードを再送信",
+      "oldOtpLabel": "現在のメールに送信された6桁のコードを入力",
+      "newOtpLabel": "新しいメールに送信された6桁のコードを入力",
+      "verifyOld": "現在のメールを確認",
+      "completeBind": "登録を完了",
+      "newLabel": "新しいメール",
+      "needOtp": "6桁の認証コードを入力してください",
+      "needEmail": "新しいメールアドレスを入力してください",
+      "invalidEmail": "メール形式が正しくありません"
+    }
+  },
+  "DashboardCookie": {
+    "page": {
+      "title": "Cookie 管理",
+      "subtitle": "取引所 Cookie を連携すると、リードトレーダーの非公開データなど制限 API を利用できます。"
+    },
+    "notice": {
+      "title": "Cookie 送信について",
+      "body": "各取引所につき Cookie は1件のみ連携できます。同じ取引所で複数 Cookie が必要な場合は、本サービスで追加アカウントを無料登録してください。"
+    },
+    "plugin": {
+      "title": "ブラウザ拡張で自動取得",
+      "desc": "Chrome 拡張機能での Cookie 同期を強くおすすめします。安全で簡単です。",
+      "installChrome": "Chrome にインストール",
+      "supportWays": "拡張機能の利用方法：",
+      "howToTitle": "拡張機能をローカルインストールするには？",
+      "tutorialTitle": "使い方：",
+      "step1Prefix": "① 拡張機能のインストール：",
+      "step1Link": "Chrome 拡張機能のインストールと使い方",
+      "step2": "② 拡張機能を固定し、開いて CopyApes アカウントでログイン",
+      "step3": "③ 取引所サイトを開き、コピー取引用アカウントでログイン。読み込み完了後に「Cookie 自動取得」をクリック。本ページで確認・送信できます。"
+    },
+    "browsers": {
+      "chromeAlt": "Chrome ブラウザ",
+      "edgeAlt": "Edge ブラウザ",
+      "firefoxAlt": "Firefox ブラウザ",
+      "zipAlt": "ZIP ローカルパッケージ",
+      "zipLabel": "ZIP ローカルインストール"
+    },
+    "manual": {
+      "title": "Cookie を手動アップロード",
+      "desc": "上級者向け。ブラウザの開発者ツールから Cookie 文字列を取得し、貼り付けてアップロードします。",
+      "benefit1": "拡張機能を入れられない環境向け",
+      "benefit2": "スマホからのリモート更新にも便利",
+      "benefit3": "期限切れ Cookie は手動更新が必要",
+      "uploadButton": "手動アップロード",
+      "dialogTitle": "Cookie を手動アップロード",
+      "dialogDesc": "取引所を選び、取得した完全な Cookie 文字列を貼り付けてください。",
+      "platformLabel": "取引所",
+      "platformPlaceholder": "取引所を選択",
+      "binance": "Binance",
+      "okx": "OKX",
+      "cookieLabel": "Cookie 文字列",
+      "cookiePlaceholder": "\"lang=zh-CN; session_id=...\" のような内容、または Cookie を含む cURL を貼り付けてください。自動抽出されます。",
+      "cancel": "キャンセル",
+      "save": "保存してアップロード",
+      "howToTitle": "Cookie を手動で取得するには？",
+      "guideIntro": "Chrome で cURL をコピーする手順：",
+      "guide1": "Chrome の開発者ツールを開く（F12）、ページを再読み込み",
+      "guide2Before": "— ネットワークパネルで次のリクエストを探す：",
+      "guide2After": "。xxxxx はコピー取引のプロジェクト ID",
+      "guide3Before": "（先物コピー > 現在のリード）— ネットワークパネルで次のリクエストを探す：",
+      "guide3After": "。xxxxx はコピー取引のプロジェクト ID",
+      "guide4": "リクエストを右クリックし、「コピー」→「cURL としてコピー」",
+      "guide5": "cURL をクリップボードにコピーし、上のテキスト欄に貼り付けます。",
+      "guideOtherBrowsers": "他のブラウザでも同様の手順が使えます",
+      "exampleAlt": "Cookie 取得の例",
+      "warningTitle": "警告",
+      "warningBody": "この情報を他人に共有しないでください。資産損失のリスクがあります。"
+    },
+    "list": {
+      "title": "マイ取引所 Cookie",
+      "emptyTitle": "Cookie データがありません",
+      "emptyDesc": "まだ取引所 Cookie が連携されていません。上の拡張機能または手動アップロードをご利用ください。",
+      "uploadNow": "今すぐアップロード",
+      "active": "有効",
+      "inactive": "無効",
+      "lastUpdated": "最終更新: {time}"
+    },
+    "edit": {
+      "title": "名前を変更",
+      "desc": "検索しやすいユニークな名前を設定できます。名前変更は実行中のコピー取引に影響しません。",
+      "nameLabel": "Cookie 名",
+      "namePlaceholder": "新しい名前を入力",
+      "cancel": "キャンセル",
+      "saving": "保存中...",
+      "confirm": "変更を確定"
+    },
+    "toast": {
+      "fetchFailed": "データの取得に失敗しました",
+      "noData": "データがありません",
+      "uploadSuccess": "アップロードしました",
+      "updateSuccess": "更新しました"
+    }
+  },
+  "DashboardPricing": {
+    "page": {
+      "title": "会員サービス",
+      "subtitle": "自分に合ったプランを選択",
+      "fetchFailed": "プラン価格の取得に失敗しました"
+    },
+    "badges": {
+      "rebateExclusive": "リベート限定特典",
+      "renewInDays": "{days}日後に割引更新可能",
+      "renewWindowClosed": "割引更新期間外です"
+    },
+    "ui": {
+      "monthly": "月額",
+      "yearly": "年額",
+      "yearlyEnjoy": "年額で",
+      "discountPercent": "{percent}% オフ",
+      "subscriptionPaid": "サブスクリプション",
+      "featurePaid": "アドオン",
+      "perMonth": "/月",
+      "perYear": "/年",
+      "perPermanent": "/永久",
+      "paymentMethod": "支払い方法",
+      "paymentMethodSelectedAria": "支払い方法：取引所送金（選択済み）",
+      "exchangeTransfer": "取引所送金",
+      "needStudioVip": "先に Studio VIP が必要です",
+      "needVip": "先に VIP が必要です",
+      "studioNoNeedThisPack": "Studio VIP では不要です",
+      "assetLimitReached": "資金上限に達しています"
+    },
+    "pay": {
+      "title": "支払い方法を選択",
+      "closeAria": "閉じる",
+      "selectExchange": "取引所を選択",
+      "stepsTitle": "送金手順",
+      "step1Before": "1. 以下の{exchange}アカウントへ送金",
+      "step2": "2. {exchange}の公式サイト/アプリで送金し、成功後に詳細ページを開く",
+      "step3": "3. {label}を入力",
+      "placeholder": "{label}を入力",
+      "copy": "コピー",
+      "copied": "クリップボードにコピーしました",
+      "copyFailed": "コピーに失敗しました",
+      "needReference": "{label}を入力してください",
+      "binanceZh": "Binance",
+      "okxZh": "OKX",
+      "orderId": "支払い注文ID",
+      "referenceNo": "参照番号",
+      "tip": "ヒント：送金失敗やネットワークエラーの場合はお問い合わせください。",
+      "close": "閉じる",
+      "submit": "検証を送信",
+      "submitSuccess": "送信完了。送金額を確認しました！",
+      "submitFailed": "送信に失敗しました"
+    },
+    "plans": {
+      "free_vip": {
+        "name": "無料体験",
+        "subtitle": "個人トレーダー向け",
+        "accounts": "取引 API 1件、コピー任務 1件",
+        "buttonText": "VIP を開通",
+        "features": [
+          "取引 API 1件",
+          "コピー任務 1件",
+          "取引 API 合計資金上限 500 USDT",
+          "OKX / Gate / Bitget の API のみ",
+          "リード API 非対応",
+          "取引通知",
+          "通常サポート"
+        ]
+      },
+      "vip_month": {
+        "name": "VIP",
+        "subtitle": "個人トレーダー向け",
+        "accounts": "取引 API 5件、コピー任務 15件",
+        "buttonText": "VIP を開通",
+        "features": [
+          "取引 API 5件",
+          "コピー任務 15件",
+          "取引 API 合計資金上限 5,000 USDT",
+          "任意の取引所 API を追加可能",
+          "リード API 対応",
+          "取引通知",
+          "24時間専門サポート"
+        ],
+        "yearlyFeatures": [
+          "取引 API 5件",
+          "コピー任務 15件",
+          "取引 API 合計資金上限 5,000 USDT",
+          "任意の取引所 API を追加可能",
+          "リード API 対応",
+          "取引通知",
+          "24時間専門サポート",
+          "年額 10% オフ",
+          "永久パートナー権限を付与"
+        ]
+      },
+      "studio_vip_month": {
+        "name": "Studio VIP",
+        "subtitle": "小規模コピースタジオ向け",
+        "accounts": "取引 API 10件、コピー任務 50件",
+        "buttonText": "Studio VIP を開通",
+        "features": [
+          "取引 API 10件",
+          "コピー任務 50件",
+          "取引 API 合計資金上限 20,000 USDT",
+          "任意の取引所 API を追加可能",
+          "リード API 対応",
+          "取引通知",
+          "スタジオ管理機能",
+          "24時間専門サポート",
+          "機能カスタム対応"
+        ],
+        "yearlyFeatures": [
+          "取引 API 10件",
+          "コピー任務 50件",
+          "取引 API 合計資金上限 20,000 USDT",
+          "任意の取引所 API を追加可能",
+          "リード API 対応",
+          "取引通知",
+          "スタジオ管理機能",
+          "24時間専門サポート",
+          "機能カスタム対応",
+          "永久パートナー権限を付与"
+        ]
+      },
+      "vip_permanent": {
+        "name": "永久 VIP",
+        "subtitle": "個人トレーダー向け",
+        "accounts": "取引 API 5件、コピー任務 15件",
+        "buttonText": "永久 VIP を開通",
+        "features": [
+          "取引 API 5件",
+          "コピー任務 15件",
+          "取引 API 合計資金上限 5,000 USDT",
+          "任意の取引所 API を追加可能",
+          "リード API 対応",
+          "取引通知",
+          "24時間専門サポート",
+          "機能カスタム対応"
+        ]
+      },
+      "vip_limit_pack_20000": {
+        "name": "VIP 資金上限アップ",
+        "subtitle": "資金上限を 20,000 USDT 引き上げ",
+        "accounts": "資金上限を 20,000 USDT 引き上げ",
+        "buttonText": "VIP 資金アップを購入",
+        "features": [
+          "VIP 有効期間中、資金上限を 20,000 USDT 永久引き上げ",
+          "VIP 期限後は引き上げが無効",
+          "個人 VIP ユーザー限定"
+        ]
+      },
+      "studio_limit_pack_50000": {
+        "name": "Studio VIP 資金上限アップ",
+        "subtitle": "資金上限を 50,000 USDT 引き上げ",
+        "accounts": "資金上限を 50,000 USDT 引き上げ",
+        "buttonText": "Studio VIP 資金アップを購入",
+        "features": [
+          "Studio VIP 有効期間中、資金上限を 50,000 USDT 永久引き上げ",
+          "Studio VIP 期限後は引き上げが無効",
+          "Studio VIP ユーザー限定"
+        ]
+      },
+      "studio_api_slot_pack_5": {
+        "name": "Studio VIP API 枠アップ",
+        "subtitle": "API 認可数を増加",
+        "accounts": "取引 API 認可数を 5 件追加",
+        "buttonText": "Studio VIP API 枠を購入",
+        "features": [
+          "Studio VIP 有効期間中、取引 API 枠を 5 件永久追加（積み上げ可）",
+          "Studio VIP 有効期間中、コピー任務を 25 件永久追加（積み上げ可）",
+          "Studio VIP 期限後は追加枠が無効",
+          "Studio VIP ユーザー限定"
+        ]
+      }
+    }
+  },
+  "DashboardTaskList": {
+    "page": {
+      "title": "コピー一覧",
+      "subtitle": "コピー取引タスクを確認・管理します",
+      "fetchFailed": "タスク一覧の取得に失敗しました",
+      "create": "新規作成",
+      "selectType": "コピー種別を選択"
+    },
+    "tabs": {
+      "all": "すべて",
+      "online": "実行中",
+      "stop": "終了"
+    },
+    "types": {
+      "exchange": {
+        "title": "取引所リードコピー",
+        "desc": "取引所口座に直接接続。最も安定・高速なシグナル。"
+      },
+      "bicoin": {
+        "title": "BiCoin コピー",
+        "desc": "操作履歴または建玉に基づいてコピー。"
+      },
+      "cookie": {
+        "title": "Cookie ベースコピー",
+        "desc": "取引所 Cookie で認証し、ほぼゼロ遅延でコピー。"
+      },
+      "api": {
+        "title": "API-to-API コピー",
+        "desc": "取引所 API を登録して超高速コピー。"
+      },
+      "hot": {
+        "title": "注目 KOL リード",
+        "desc": "厳選トップトレーダー戦略をワンクリックでフォロー。"
+      },
+      "hyper": {
+        "title": "Hyperliquid コピー",
+        "desc": "次世代オンチェーン無期限コピー。クジラを追従。"
+      }
+    },
+    "table": {
+      "trader": "リード対象",
+      "apiName": "API 名",
+      "createdAt": "作成日時",
+      "status": "状態",
+      "actions": "操作",
+      "taskId": "タスクID: {id}",
+      "unknown": "不明",
+      "reverse": "逆",
+      "running": "実行中",
+      "stopped": "終了",
+      "empty": "タスクがありません",
+      "pagination": "{total} 件中 {from} 〜 {to} 件を表示",
+      "prev": "前へ",
+      "next": "次へ"
+    },
+    "platforms": {
+      "3": "BiCoin",
+      "4": "人気",
+      "9": "NOF1 / AIモデル"
+    },
+    "roleType": {
+      "okxContract": "先物リード",
+      "okxProfile": "プロフィール",
+      "okxCookieProject": "コピー案件",
+      "binancePublic": "公開リード",
+      "binanceHidden": "非公開リード",
+      "binanceSmart": "スマートマネー",
+      "bicoinOps": "操作履歴",
+      "bicoinPosition": "先物建玉"
+    },
+    "actions": {
+      "view": "詳細を見る",
+      "copy": "タスクを複製",
+      "stop": "コピーを停止",
+      "stopTitle": "このコピーを停止しますか？",
+      "stopDesc": "停止しても決済は行われません。建玉がある場合はご自身で決済してください。",
+      "cancel": "キャンセル",
+      "confirmStop": "停止する",
+      "stopSuccess": "コピーを停止しました",
+      "stopFailed": "停止に失敗しました",
+      "stopRequestFailed": "停止リクエストに失敗しました。再試行してください"
+    }
+  },
+  "DashboardGrab": {
+    "hero": {
+      "title": "席の争奪",
+      "desc": "人気トレーダーが満員のとき、席争奪機能が空きを監視し、フォロー枠をいち早く確保します。取引所 Cookie が必要です。",
+      "getCookie": "取引所 Cookie を取得"
+    },
+    "active": {
+      "title": "進行中の争奪タスク",
+      "stopTitle": "争奪を停止",
+      "stopConfirmTitle": "争奪タスクを停止しますか？",
+      "stopConfirmDesc": "トレーダー {name} の争奪を停止しますか？停止すると待ち行列の位置を失います。",
+      "cancel": "キャンセル",
+      "confirmStop": "停止する",
+      "grabbing": "争奪中..."
+    },
+    "form": {
+      "title": "争奪タスクを作成",
+      "desc": "争奪パラメータを設定し、対象トレーダーの枠を監視します。",
+      "selectExchange": "対象取引所を選択",
+      "cookieStatus": "自分の Cookie 状態",
+      "statusLabel": "状態:",
+      "statusActive": "有効",
+      "statusExpired": "失効",
+      "cookieNotFound": "{exchange} の Cookie が見つかりません。先に追加してください。",
+      "exchangeOkx": "OKX",
+      "exchangeBinance": "Binance",
+      "traderUrlLabel": "トレーダーのプロフィール URL または ID",
+      "traderUrlPlaceholder": "プロフィール URL または UID / リード案件 ID を入力",
+      "selectExchangeFirstPlaceholder": "先に取引所を選択し、URL または ID を入力してください",
+      "parse": "解析",
+      "traderIdLabel": "トレーダー（UID またはリード案件 ID）",
+      "invalidTraderUrl": "無効な URL または ID 形式",
+      "selectExchangeFirst": "先に取引所を選択してください",
+      "nextStep": "次へ"
+    },
+    "history": {
+      "title": "争奪履歴",
+      "subtitle": "（直近10件のみ表示）",
+      "success": "成功",
+      "stopped": "停止済み",
+      "failed": "失敗",
+      "createdAt": "作成日時",
+      "manuallyStopped": "この争奪タスクを手動で停止しました"
+    },
+    "toast": {
+      "stopSuccess": "争奪タスクを停止しました",
+      "stopFailed": "停止に失敗しました",
+      "requestFailed": "リクエストに失敗しました",
+      "createSuccess": "争奪タスクを作成しました",
+      "createFailed": "作成に失敗しました"
+    },
+    "config": {
+      "title": "争奪内容の確認",
+      "desc": "秒単位で自動争奪し、通常1秒以内に完了します。空き状況によりますが、一般的に2〜3日で取得できます。",
+      "guide": "設定ガイド",
+      "loading": "トレーダー情報を読み込み中...",
+      "unknownTrader": "不明なトレーダー",
+      "fetchFailed": "データの取得に失敗しました",
+      "networkFailed": "ネットワークエラーです。後でもう一度お試しください。",
+      "platform": "プラットフォーム: {name}",
+      "platformOkx": "OKX",
+      "platformBinance": "Binance",
+      "noDesc": "自己紹介なし",
+      "pnl7d": "7日損益 (USDT)",
+      "roi7d": "7日収益率",
+      "contractSettings": "先物コピー設定",
+      "ratioFollow": "比率コピー",
+      "fixedFollow": "定額コピー",
+      "ratioHint": "* 注文は比率で開きます（利用可能証拠金 / リーダーの利用可能証拠金）。",
+      "fixedHint": "* 各注文は固定証拠金（1注文あたり）で開きます。",
+      "okxHint": "コピー金額：このトレーダー専用の投資総額で、取引口座から隔離されます。",
+      "costPerOrder": "1注文あたりの金額 (USDT)",
+      "investAmount": "コピー金額 (USDT)",
+      "minPlaceholder": "最低 {min}",
+      "cancel": "キャンセル",
+      "submitting": "送信中...",
+      "start": "争奪を開始",
+      "errors": {
+        "investRequired": "コピー金額を入力してください！",
+        "invalidNumber": "有効な数値を入力してください！",
+        "invalidFormat": "数字以外の文字を含まない標準形式で入力してください",
+        "minValue": "値は {min} 以上である必要があります",
+        "costRequired": "1注文あたりの金額を入力してください！"
+      }
+    }
+  },
+  "DashboardHotKol": {
+    "title": "注目リード KOL",
+    "subtitle": "Binance ランキング、OKX リーダーボード、BiCoin などから厳選。成績は各取引所で確認可能。シグナルは第三者経由のため不安定な場合があり、可能ならオリジナルシグナルを優先してください。",
+    "currentBalance": "現在の資金",
+    "followNow": "今すぐコピー",
+    "unavailable": "現在コピー不可",
+    "platforms": {
+      "okx": "OKX",
+      "binance": "Binance",
+      "bicoin": "BiCoin"
+    }
+  },
+  "DashboardHyperKol": {
+    "page": {
+      "title": "Hyperliquid KOL 発見",
+      "subtitle": "Hyperliquid で価値の高いトレーダーを見つける"
+    },
+    "badges": {
+      "hotAddresses": "人気アドレス",
+      "twitterKols": "Twitter KOL"
+    },
+    "tabs": {
+      "hotAddresses": "人気アドレス",
+      "twitterKols": "Twitter KOL"
+    },
+    "card": {
+      "copyAddress": "アドレスをコピー",
+      "analyze": "分析",
+      "follow": "コピー",
+      "accountValue": "口座総額（先物+現物）",
+      "netPnlMonth": "純損益(1ヶ月)",
+      "openPositions": "現在の建玉",
+      "winRateMonth": "勝率(1ヶ月)",
+      "loading": "読み込み中...",
+      "loadMore": "さらに読み込む"
+    },
+    "toast": {
+      "copied": "アドレスをコピーしました",
+      "copyFailed": "コピーに失敗しました。手動でコピーしてください",
+      "invalidAddress": "無効なアドレスです",
+      "loadMoreFailed": "追加読み込みに失敗しました。後でもう一度お試しください"
+    }
   }
 }

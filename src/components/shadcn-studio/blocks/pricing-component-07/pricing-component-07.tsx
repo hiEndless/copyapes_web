@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 
 import { CheckIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -19,16 +20,16 @@ export type Plan = {
   name: string
   subtitle: string
 
-  /** 订阅月价（USDT）；一次性方案可为 0 */
+  /** Monthly subscription price (USDT); one-time plans may be 0 */
   priceMonthly: number
 
-  /** 订阅年价（USDT） */
+  /** Yearly subscription price (USDT) */
   priceYearly?: number
 
-  /** 若设置：固定金额一次性支付，不参与月付/年付 */
+  /** If set: fixed one-time payment, not monthly/yearly */
   oneTimePrice?: number
 
-  /** 对应的后端 plan_code */
+  /** Backend plan_code */
   monthPlanCode?: string
   yearPlanCode?: string
   oneTimePlanCode?: string
@@ -68,14 +69,14 @@ function yearlyTotal(monthly: number) {
   return Math.round(monthly * 12 * YEARLY_DISCOUNT_RATE)
 }
 
-/** 年付划线价：按原价计全年（不打折） */
+/** Yearly strikethrough price: full year without discount */
 function yearlyOriginalTotal(monthly: number) {
   return Math.round(monthly * 12)
 }
 
 export type BillingCycle = 'month' | 'year'
 
-/** 当前方案应付 USDT 数额（与展示价格一致） */
+/** Payable USDT for the selected plan (matches displayed price) */
 export function getPaymentAmountUsdt(plan: Plan, billing: BillingCycle): number {
   if (plan.oneTimePrice != null) return plan.oneTimePrice
   if (plan.priceMonthly <= 0) return 0
@@ -84,7 +85,7 @@ export function getPaymentAmountUsdt(plan: Plan, billing: BillingCycle): number 
   return plan.priceYearly ?? yearlyTotal(plan.priceMonthly)
 }
 
-/** 当前方案原价 USDT 数额（不打折的数值） */
+/** Original USDT amount without discount */
 export function getOriginalPriceUsdt(plan: Plan, billing: BillingCycle): number {
   if (plan.oneTimePrice != null) return plan.oneTimePrice
   if (plan.priceMonthly <= 0) return 0
@@ -93,20 +94,27 @@ export function getOriginalPriceUsdt(plan: Plan, billing: BillingCycle): number 
   return yearlyOriginalTotal(plan.priceMonthly)
 }
 
-function priceLabel(plan: Plan, cycle: BillingCycle): { main: string; suffix: string } {
+function priceLabel(
+  plan: Plan,
+  cycle: BillingCycle,
+  suffixes: { perMonth: string; perYear: string; perPermanent: string }
+): { main: string; suffix: string } {
   if (plan.oneTimePrice != null) {
-    return { main: formatYuan(plan.oneTimePrice), suffix: '/永久' }
+    return { main: formatYuan(plan.oneTimePrice), suffix: suffixes.perPermanent }
   }
 
   if (plan.priceMonthly <= 0) {
-    return { main: formatYuan(0), suffix: cycle === 'month' ? '/月' : '/年' }
+    return { main: formatYuan(0), suffix: cycle === 'month' ? suffixes.perMonth : suffixes.perYear }
   }
 
   if (cycle === 'month') {
-    return { main: formatYuan(plan.priceMonthly), suffix: '/月' }
+    return { main: formatYuan(plan.priceMonthly), suffix: suffixes.perMonth }
   }
 
-  return { main: formatYuan(plan.priceYearly ?? yearlyTotal(plan.priceMonthly)), suffix: '/年' }
+  return {
+    main: formatYuan(plan.priceYearly ?? yearlyTotal(plan.priceMonthly)),
+    suffix: suffixes.perYear
+  }
 }
 
 function planBadge(plan: Plan, cycle: BillingCycle): string | undefined {
@@ -130,10 +138,17 @@ const infoBadgeClassName =
   'border-sky-200 bg-sky-50 text-sky-700 dark:border-sky-800/60 dark:bg-sky-950/40 dark:text-sky-200'
 
 const Pricing = ({ plans }: { plans: Plan[] }) => {
+  const t = useTranslations('DashboardPricing')
   const [selectedPlan, setSelectedPlan] = useState<string>(() => plans[0]?.id ?? '')
   const [billing, setBilling] = useState<BillingCycle>('month')
   const [payDialogOpen, setPayDialogOpen] = useState(false)
   const [profile, setProfile] = useState<EntitlementProfileResponse | null>(null)
+
+  const suffixes = {
+    perMonth: t('ui.perMonth'),
+    perYear: t('ui.perYear'),
+    perPermanent: t('ui.perPermanent')
+  }
 
   useEffect(() => {
     try {
@@ -166,33 +181,39 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
   const selectedPlanBadge = planBadge(selectedPlanData, billing)
   const selectedPlanInfoBadge = planInfoBadge(selectedPlanData, billing)
 
-  const activePlanCode = selectedPlanData.oneTimePrice != null
-    ? selectedPlanData.oneTimePlanCode || selectedPlanData.id
-    : billing === 'month'
-      ? selectedPlanData.monthPlanCode || selectedPlanData.id
-      : selectedPlanData.yearPlanCode || selectedPlanData.id
+  const activePlanCode =
+    selectedPlanData.oneTimePrice != null
+      ? selectedPlanData.oneTimePlanCode || selectedPlanData.id
+      : billing === 'month'
+        ? selectedPlanData.monthPlanCode || selectedPlanData.id
+        : selectedPlanData.yearPlanCode || selectedPlanData.id
 
-  const displayFeatures = billing === 'year' && selectedPlanData.yearlyFeatures
-    ? selectedPlanData.yearlyFeatures
-    : selectedPlanData.features
+  const displayFeatures =
+    billing === 'year' && selectedPlanData.yearlyFeatures
+      ? selectedPlanData.yearlyFeatures
+      : selectedPlanData.features
 
   const effectiveTier = profile?.is_studio_vip ? 'studio_vip' : profile?.is_vip ? 'vip' : 'free'
 
   let buttonDisabled = false
   let buttonLabel = selectedPlanData.buttonText
 
-  if (activePlanCode === 'studio_limit_pack_100000' || activePlanCode === 'studio_api_slot_pack_5') {
+  if (
+    activePlanCode === 'studio_limit_pack_100000' ||
+    activePlanCode === 'studio_api_slot_pack_5' ||
+    activePlanCode === 'studio_limit_pack_50000'
+  ) {
     if (effectiveTier !== 'studio_vip') {
       buttonDisabled = true
-      buttonLabel = '需先开通工作室 VIP'
+      buttonLabel = t('ui.needStudioVip')
     }
   } else if (activePlanCode === 'vip_limit_pack_20000') {
     if (effectiveTier !== 'vip') {
       buttonDisabled = true
-      buttonLabel = effectiveTier === 'studio_vip' ? '工作室 VIP 无需购买此包' : '需先开通 VIP'
+      buttonLabel = effectiveTier === 'studio_vip' ? t('ui.studioNoNeedThisPack') : t('ui.needVip')
     } else if ((profile?.asset_limit_usdt ?? 0) >= 20000) {
       buttonDisabled = true
-      buttonLabel = '已达资金上限'
+      buttonLabel = t('ui.assetLimitReached')
     }
   }
 
@@ -211,7 +232,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              月付
+              {t('ui.monthly')}
             </button>
             <button
               type='button'
@@ -223,14 +244,14 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              年付
+              {t('ui.yearly')}
             </button>
           </div>
           {YEARLY_DISCOUNT_PERCENT > 0 && (
             <div className='flex items-center gap-1.5'>
-              <span className='text-muted-foreground text-[11px]'>年付享</span>
+              <span className='text-muted-foreground text-[11px]'>{t('ui.yearlyEnjoy')}</span>
               <span className='inline-flex items-center rounded-full bg-emerald-50 px-2 py-px text-[11px] font-medium text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200'>
-                优惠 {YEARLY_DISCOUNT_PERCENT}%
+                {t('ui.discountPercent', { percent: YEARLY_DISCOUNT_PERCENT })}
               </span>
             </div>
           )}
@@ -238,130 +259,154 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
         <div className='flex flex-col gap-4 lg:flex-row lg:items-stretch'>
           <div className='flex flex-1 flex-col gap-2.5'>
-            <div className='mb-2 text-sm font-medium text-muted-foreground'>订阅付费</div>
-            {plans.filter(plan => plan.id.toLowerCase().includes('month') || plan.id.toLowerCase().includes('year') || plan.id.toLowerCase() === 'free_vip').map((plan, index) => {
-              const { main, suffix } = priceLabel(plan, billing)
-              const badgeText = planBadge(plan, billing)
-              const infoBadgeText = planInfoBadge(plan, billing)
-
-              return (
-                <MotionPreset
-                  key={plan.id}
-                  fade
-                  blur
-                  slide={{ direction: 'up', offset: 50 }}
-                  delay={0.6 + index * 0.15}
-                  transition={{ duration: 0.7 }}
-                >
-                  <Card
-                    className={cn(
-                      `cursor-pointer gap-0 py-0 shadow-none transition-colors ${
-                        selectedPlan === plan.id ? 'bg-muted border-primary' : 'border-border'
-                      }`
-                    )}
-                    onClick={() => setSelectedPlan(plan.id)}
-                  >
-                    <CardContent className='flex items-center gap-3 px-4 py-2.5'>
-                      <div className='border-input flex size-5 shrink-0 items-center justify-center rounded-full border'>
-                        {selectedPlan === plan.id && <div className='bg-primary size-3 rounded-full' />}
-                      </div>
-                      <div className='flex min-w-0 flex-1 flex-col gap-0'>
-                        <div className='flex items-center gap-2'>
-                          <p className='text-sm font-semibold leading-tight'>{plan.name}</p>
-                          {badgeText && (
-                            <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', specialPriceBadgeClassName)}>
-                              {badgeText}
-                            </Badge>
-                          )}
-                          {infoBadgeText && (
-                            <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', infoBadgeClassName)}>
-                              {infoBadgeText}
-                            </Badge>
-                          )}
-                        </div>
-                        <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
-                      </div>
-                      <div className='flex shrink-0 flex-col items-end gap-0'>
-                        {billing === 'year' &&
-                          plan.oneTimePrice == null &&
-                          plan.priceMonthly > 0 && (
-                          <span className='text-muted-foreground text-[11px] line-through tabular-nums'>
-                            {formatYuan(yearlyOriginalTotal(plan.priceMonthly))}/年
-                          </span>
-                        )}
-                        <div className='flex items-end gap-0.5'>
-                          <span className='text-xl font-bold tabular-nums'>{main}</span>
-                          <span className='text-muted-foreground text-xs'>{suffix}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </MotionPreset>
+            <div className='mb-2 text-sm font-medium text-muted-foreground'>{t('ui.subscriptionPaid')}</div>
+            {plans
+              .filter(
+                plan =>
+                  plan.id.toLowerCase().includes('month') ||
+                  plan.id.toLowerCase().includes('year') ||
+                  plan.id.toLowerCase() === 'free_vip'
               )
-            })}
+              .map((plan, index) => {
+                const { main, suffix } = priceLabel(plan, billing, suffixes)
+                const badgeText = planBadge(plan, billing)
+                const infoBadgeText = planInfoBadge(plan, billing)
+
+                return (
+                  <MotionPreset
+                    key={plan.id}
+                    fade
+                    blur
+                    slide={{ direction: 'up', offset: 50 }}
+                    delay={0.6 + index * 0.15}
+                    transition={{ duration: 0.7 }}
+                  >
+                    <Card
+                      className={cn(
+                        `cursor-pointer gap-0 py-0 shadow-none transition-colors ${
+                          selectedPlan === plan.id ? 'bg-muted border-primary' : 'border-border'
+                        }`
+                      )}
+                      onClick={() => setSelectedPlan(plan.id)}
+                    >
+                      <CardContent className='flex items-center gap-3 px-4 py-2.5'>
+                        <div className='border-input flex size-5 shrink-0 items-center justify-center rounded-full border'>
+                          {selectedPlan === plan.id && <div className='bg-primary size-3 rounded-full' />}
+                        </div>
+                        <div className='flex min-w-0 flex-1 flex-col gap-0'>
+                          <div className='flex items-center gap-2'>
+                            <p className='text-sm font-semibold leading-tight'>{plan.name}</p>
+                            {badgeText && (
+                              <Badge
+                                variant='outline'
+                                className={cn('h-5 px-1.5 text-[10px]', specialPriceBadgeClassName)}
+                              >
+                                {badgeText}
+                              </Badge>
+                            )}
+                            {infoBadgeText && (
+                              <Badge
+                                variant='outline'
+                                className={cn('h-5 px-1.5 text-[10px]', infoBadgeClassName)}
+                              >
+                                {infoBadgeText}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
+                        </div>
+                        <div className='flex shrink-0 flex-col items-end gap-0'>
+                          {billing === 'year' && plan.oneTimePrice == null && plan.priceMonthly > 0 && (
+                            <span className='text-muted-foreground text-[11px] line-through tabular-nums'>
+                              {formatYuan(yearlyOriginalTotal(plan.priceMonthly))}
+                              {suffixes.perYear}
+                            </span>
+                          )}
+                          <div className='flex items-end gap-0.5'>
+                            <span className='text-xl font-bold tabular-nums'>{main}</span>
+                            <span className='text-muted-foreground text-xs'>{suffix}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </MotionPreset>
+                )
+              })}
 
             <div className='my-2 border-t border-dashed border-border' />
-            <div className='mb-2 text-sm font-medium text-muted-foreground'>功能付费</div>
-            {plans.filter(plan => !plan.id.toLowerCase().includes('month') && !plan.id.toLowerCase().includes('year') && plan.id.toLowerCase() !== 'free_vip').map((plan, index) => {
-              const { main, suffix } = priceLabel(plan, billing)
-              const badgeText = planBadge(plan, billing)
-              const infoBadgeText = planInfoBadge(plan, billing)
-
-              return (
-                <MotionPreset
-                  key={plan.id}
-                  fade
-                  blur
-                  slide={{ direction: 'up', offset: 50 }}
-                  delay={0.6 + (plans.length + index) * 0.15}
-                  transition={{ duration: 0.7 }}
-                >
-                  <Card
-                    className={cn(
-                      `cursor-pointer gap-0 py-0 shadow-none transition-colors ${
-                        selectedPlan === plan.id ? 'bg-muted border-primary' : 'border-border'
-                      }`
-                    )}
-                    onClick={() => setSelectedPlan(plan.id)}
-                  >
-                    <CardContent className='flex items-center gap-3 px-4 py-2.5'>
-                      <div className='border-input flex size-5 shrink-0 items-center justify-center rounded-full border'>
-                        {selectedPlan === plan.id && <div className='bg-primary size-3 rounded-full' />}
-                      </div>
-                      <div className='flex min-w-0 flex-1 flex-col gap-0'>
-                        <div className='flex items-center gap-2'>
-                          <p className='text-sm font-semibold leading-tight'>{plan.name}</p>
-                          {badgeText && (
-                            <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', specialPriceBadgeClassName)}>
-                              {badgeText}
-                            </Badge>
-                          )}
-                          {infoBadgeText && (
-                            <Badge variant='outline' className={cn('h-5 px-1.5 text-[10px]', infoBadgeClassName)}>
-                              {infoBadgeText}
-                            </Badge>
-                          )}
-                        </div>
-                        <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
-                      </div>
-                      <div className='flex shrink-0 flex-col items-end gap-0'>
-                        {billing === 'year' &&
-                          plan.oneTimePrice == null &&
-                          plan.priceMonthly > 0 && (
-                          <span className='text-muted-foreground text-[11px] line-through tabular-nums'>
-                            {formatYuan(yearlyOriginalTotal(plan.priceMonthly))}/年
-                          </span>
-                        )}
-                        <div className='flex items-end gap-0.5'>
-                          <span className='text-xl font-bold tabular-nums'>{main}</span>
-                          <span className='text-muted-foreground text-xs'>{suffix}</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </MotionPreset>
+            <div className='mb-2 text-sm font-medium text-muted-foreground'>{t('ui.featurePaid')}</div>
+            {plans
+              .filter(
+                plan =>
+                  !plan.id.toLowerCase().includes('month') &&
+                  !plan.id.toLowerCase().includes('year') &&
+                  plan.id.toLowerCase() !== 'free_vip'
               )
-            })}
+              .map((plan, index) => {
+                const { main, suffix } = priceLabel(plan, billing, suffixes)
+                const badgeText = planBadge(plan, billing)
+                const infoBadgeText = planInfoBadge(plan, billing)
+
+                return (
+                  <MotionPreset
+                    key={plan.id}
+                    fade
+                    blur
+                    slide={{ direction: 'up', offset: 50 }}
+                    delay={0.6 + (plans.length + index) * 0.15}
+                    transition={{ duration: 0.7 }}
+                  >
+                    <Card
+                      className={cn(
+                        `cursor-pointer gap-0 py-0 shadow-none transition-colors ${
+                          selectedPlan === plan.id ? 'bg-muted border-primary' : 'border-border'
+                        }`
+                      )}
+                      onClick={() => setSelectedPlan(plan.id)}
+                    >
+                      <CardContent className='flex items-center gap-3 px-4 py-2.5'>
+                        <div className='border-input flex size-5 shrink-0 items-center justify-center rounded-full border'>
+                          {selectedPlan === plan.id && <div className='bg-primary size-3 rounded-full' />}
+                        </div>
+                        <div className='flex min-w-0 flex-1 flex-col gap-0'>
+                          <div className='flex items-center gap-2'>
+                            <p className='text-sm font-semibold leading-tight'>{plan.name}</p>
+                            {badgeText && (
+                              <Badge
+                                variant='outline'
+                                className={cn('h-5 px-1.5 text-[10px]', specialPriceBadgeClassName)}
+                              >
+                                {badgeText}
+                              </Badge>
+                            )}
+                            {infoBadgeText && (
+                              <Badge
+                                variant='outline'
+                                className={cn('h-5 px-1.5 text-[10px]', infoBadgeClassName)}
+                              >
+                                {infoBadgeText}
+                              </Badge>
+                            )}
+                          </div>
+                          <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
+                        </div>
+                        <div className='flex shrink-0 flex-col items-end gap-0'>
+                          {billing === 'year' && plan.oneTimePrice == null && plan.priceMonthly > 0 && (
+                            <span className='text-muted-foreground text-[11px] line-through tabular-nums'>
+                              {formatYuan(yearlyOriginalTotal(plan.priceMonthly))}
+                              {suffixes.perYear}
+                            </span>
+                          )}
+                          <div className='flex items-end gap-0.5'>
+                            <span className='text-xl font-bold tabular-nums'>{main}</span>
+                            <span className='text-muted-foreground text-xs'>{suffix}</span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </MotionPreset>
+                )
+              })}
           </div>
 
           <MotionPreset
@@ -379,12 +424,18 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                   {selectedPlanData.name}
                 </h3>
                 {selectedPlanBadge && (
-                  <Badge variant='outline' className={cn('border-white/30 bg-white/15 text-white', 'h-5 px-1.5 text-[10px]')}>
+                  <Badge
+                    variant='outline'
+                    className={cn('border-white/30 bg-white/15 text-white', 'h-5 px-1.5 text-[10px]')}
+                  >
                     {selectedPlanBadge}
                   </Badge>
                 )}
                 {selectedPlanInfoBadge && (
-                  <Badge variant='outline' className={cn('border-white/30 bg-white/15 text-white', 'h-5 px-1.5 text-[10px]')}>
+                  <Badge
+                    variant='outline'
+                    className={cn('border-white/30 bg-white/15 text-white', 'h-5 px-1.5 text-[10px]')}
+                  >
                     {selectedPlanInfoBadge}
                   </Badge>
                 )}
@@ -399,16 +450,17 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                     {billing === 'year' &&
                       selectedPlanData.oneTimePrice == null &&
                       selectedPlanData.priceMonthly > 0 && (
-                      <span className='text-muted-foreground text-sm line-through tabular-nums'>
-                        {formatYuan(yearlyOriginalTotal(selectedPlanData.priceMonthly))}/年
-                      </span>
-                    )}
+                        <span className='text-muted-foreground text-sm line-through tabular-nums'>
+                          {formatYuan(yearlyOriginalTotal(selectedPlanData.priceMonthly))}
+                          {suffixes.perYear}
+                        </span>
+                      )}
                     <div className='flex items-end gap-0.5'>
                       <span className='text-2xl font-semibold tabular-nums'>
-                        {priceLabel(selectedPlanData, billing).main}
+                        {priceLabel(selectedPlanData, billing, suffixes).main}
                       </span>
                       <span className='text-muted-foreground text-sm'>
-                        {priceLabel(selectedPlanData, billing).suffix}
+                        {priceLabel(selectedPlanData, billing, suffixes).suffix}
                       </span>
                     </div>
                   </div>
@@ -423,33 +475,33 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                 </div>
 
                 {paymentAmountUsdt > 0 && (
-                <div className='flex flex-col gap-3'>
-                  <div className='flex flex-col gap-1.5'>
-                    <span className='text-muted-foreground text-xs'>支付方式</span>
-                    <div
-                      className='flex items-center gap-2'
-                      role='status'
-                      aria-label='支付方式：交易所转账（已选定）'
-                    >
-                      <span
-                        className='border-primary flex size-4 shrink-0 items-center justify-center rounded-full border-2 bg-background'
-                        aria-hidden
+                  <div className='flex flex-col gap-3'>
+                    <div className='flex flex-col gap-1.5'>
+                      <span className='text-muted-foreground text-xs'>{t('ui.paymentMethod')}</span>
+                      <div
+                        className='flex items-center gap-2'
+                        role='status'
+                        aria-label={t('ui.paymentMethodSelectedAria')}
                       >
-                        <span className='bg-primary size-2 rounded-full' />
-                      </span>
-                      <span className='text-sm font-normal'>交易所转账</span>
+                        <span
+                          className='border-primary flex size-4 shrink-0 items-center justify-center rounded-full border-2 bg-background'
+                          aria-hidden
+                        >
+                          <span className='bg-primary size-2 rounded-full' />
+                        </span>
+                        <span className='text-sm font-normal'>{t('ui.exchangeTransfer')}</span>
+                      </div>
                     </div>
+                    <Button
+                      size='sm'
+                      className='shadow-none w-full'
+                      type='button'
+                      disabled={buttonDisabled}
+                      onClick={() => setPayDialogOpen(true)}
+                    >
+                      {buttonLabel}
+                    </Button>
                   </div>
-                  <Button
-                    size='sm'
-                    className='shadow-none w-full'
-                    type='button'
-                    disabled={buttonDisabled}
-                    onClick={() => setPayDialogOpen(true)}
-                  >
-                    {buttonLabel}
-                  </Button>
-                </div>
                 )}
               </CardContent>
             </Card>

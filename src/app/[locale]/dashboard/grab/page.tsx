@@ -5,6 +5,7 @@ import * as React from 'react'
 import { Zap, History, Loader2, StopCircle, CheckCircle2, XCircle, Info } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
+import { useTranslations } from 'next-intl'
 
 import { toast } from 'sonner'
 
@@ -19,7 +20,6 @@ import { GrabTaskConfigSheet } from './_components/grab-task-config-sheet'
 import {
   INVALID_TRADER_URL,
   SELECT_EXCHANGE_FIRST,
-  TRADER_INPUT_PLACEHOLDER,
   isInvalidUniqueName,
   parseTraderUrl,
 } from '../add_task/_lib/trader-url'
@@ -77,14 +77,8 @@ function getGrabTaskOutcome(task: Pick<GrabTask, 'status' | 'info'>): GrabTaskOu
   return 'failed'
 }
 
-const featureActions = [
-  {
-    title: '获取交易所 Cookie',
-    href: '/dashboard/cookie'
-  }
-]
-
 export default function GrabPage() {
+  const t = useTranslations('DashboardGrab')
   const [exchange, setExchange] = React.useState<'okx' | 'binance' | ''>('okx')
   const [traderUrl, setTraderUrl] = React.useState('')
   const [uniqueName, setUniqueName] = React.useState('')
@@ -96,6 +90,13 @@ export default function GrabPage() {
   // 抢位任务状态
   const [tasks, setTasks] = React.useState<GrabTask[]>([])
   const [stoppingTaskId, setStoppingTaskId] = React.useState<string | null>(null)
+
+  const featureActions = [
+    {
+      title: t('hero.getCookie'),
+      href: '/dashboard/cookie'
+    }
+  ]
 
   const fetchTasks = async () => {
     try {
@@ -166,6 +167,20 @@ export default function GrabPage() {
     setUniqueName(parsed ?? INVALID_TRADER_URL)
   }
 
+  const displayUniqueName =
+    uniqueName === INVALID_TRADER_URL
+      ? t('form.invalidTraderUrl')
+      : uniqueName === SELECT_EXCHANGE_FIRST
+        ? t('form.selectExchangeFirst')
+        : uniqueName
+
+  const exchangeDisplayName =
+    exchange === 'okx'
+      ? t('form.exchangeOkx')
+      : exchange === 'binance'
+        ? t('form.exchangeBinance')
+        : exchange
+
   const handleExchangeChange = (value: 'okx' | 'binance') => {
     setExchange(value)
     setTraderUrl('')
@@ -176,24 +191,24 @@ export default function GrabPage() {
     try {
       const res = await stopGrabTask(taskId)
       if (res.code === 0) {
-        toast.success('已终止抢位任务')
+        toast.success(t('toast.stopSuccess'))
         // 刷新列表
         fetchTasks()
       } else {
-        toast.error(res.error || '终止失败')
+        toast.error(res.error || t('toast.stopFailed'))
       }
     } catch (error) {
       console.error(error)
-      toast.error('请求失败')
+      toast.error(t('toast.requestFailed'))
     } finally {
       setStoppingTaskId(null)
     }
   }
 
-  const activeTasks = tasks.filter(t => t.status === 1)
+  const activeTasks = tasks.filter(task => task.status === 1)
 
   const historyTasks = tasks
-    .filter(t => t.status === 0)
+    .filter(task => task.status === 0)
 
     // 根据需求，只展示最近的 10 个历史任务，并根据创建时间排序。
     .sort((a, b) => (resolveTaskCreatedTimeMs(b) ?? 0) - (resolveTaskCreatedTimeMs(a) ?? 0))
@@ -210,19 +225,16 @@ export default function GrabPage() {
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
                 <h2 className='flex items-center gap-2 text-xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-xl md:text-xl'>
                   <Zap className='h-6 w-6' fill='currentColor' />
-                  跟单抢位
+                  {t('hero.title')}
                 </h2>
-                <p className='mb-3 text-sm text-white/70'>
-                  当热门交易员满员时，使用抢位功能可以自动监控并第一时间为您抢占跟单名额。此功能需要配合交易所的 Cookie
-                  使用。
-                </p>
+                <p className='mb-3 text-sm text-white/70'>{t('hero.desc')}</p>
                 <div
                   className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'
                   {...tourAnchor(TOUR_ANCHORS.grabHero)}
                 >
                   {featureActions.map(action => (
                     <a
-                      key={action.title}
+                      key={action.href}
                       href={action.href}
                       rel='noopener noreferrer'
                       className='flex h-8 items-center justify-center rounded-md bg-white px-3 text-xs font-medium text-black/90 sm:h-9 sm:text-sm'
@@ -298,7 +310,7 @@ export default function GrabPage() {
               <div className='flex items-center justify-between px-1'>
                 <h3 className='flex items-center gap-2 text-base font-semibold text-blue-600 dark:text-blue-400'>
                   <Loader2 className='h-4 w-4 animate-spin' />
-                  进行中的抢位任务
+                  {t('active.title')}
                   <Badge
                     variant='secondary'
                     className='ml-1 bg-blue-100 text-blue-700 hover:bg-blue-100 dark:bg-blue-900/40 dark:text-blue-300'
@@ -344,28 +356,26 @@ export default function GrabPage() {
                             size='icon'
                             className='text-muted-foreground hover:bg-destructive/10 hover:text-destructive h-8 w-8 shrink-0'
                             onClick={() => setStoppingTaskId(task.id)}
-                            title='终止抢位'
+                            title={t('active.stopTitle')}
                           >
                             <StopCircle className='h-4 w-4' />
-                            <span className='sr-only'>终止抢位</span>
+                            <span className='sr-only'>{t('active.stopTitle')}</span>
                           </Button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>确认终止抢位任务？</AlertDialogTitle>
+                            <AlertDialogTitle>{t('active.stopConfirmTitle')}</AlertDialogTitle>
                             <AlertDialogDescription>
-                              您确定要终止对交易员{' '}
-                              <span className='text-foreground font-semibold'>{task.nickname}</span>{' '}
-                              的抢位吗？终止后您将失去排队位置。
+                              {t('active.stopConfirmDesc', { name: task.nickname })}
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>取消</AlertDialogCancel>
+                            <AlertDialogCancel>{t('active.cancel')}</AlertDialogCancel>
                             <AlertDialogAction
                               className='bg-destructive text-destructive-foreground hover:bg-destructive/90'
                               onClick={() => handleStopTask(task.id)}
                             >
-                              确认终止
+                              {t('active.confirmStop')}
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -381,7 +391,7 @@ export default function GrabPage() {
                         variant='outline'
                         className='border-blue-200 bg-blue-50 text-[10px] font-normal text-blue-600 dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-400'
                       >
-                        正在抢位中...
+                        {t('active.grabbing')}
                       </Badge>
                     </div>
                   </div>
@@ -395,13 +405,13 @@ export default function GrabPage() {
         <MotionPreset fade blur slide={{ direction: 'down' }} delay={0.6} transition={{ duration: 0.5 }}>
           <Card>
             <CardHeader>
-              <CardTitle>创建抢位任务</CardTitle>
-              <CardDescription>配置您的抢位参数，以开始监控目标交易员的名额。</CardDescription>
+              <CardTitle>{t('form.title')}</CardTitle>
+              <CardDescription>{t('form.desc')}</CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
               {/* 0. 选择目标交易所 */}
               <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.grabExchange)}>
-                <Label>选择目标交易所</Label>
+                <Label>{t('form.selectExchange')}</Label>
                 <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                   <button
                     type='button'
@@ -452,7 +462,7 @@ export default function GrabPage() {
 
               {/* 1. 显示当前交易所的 Cookie 状态 */}
               <div className='space-y-3 pt-2' {...tourAnchor(TOUR_ANCHORS.grabCookie)}>
-                <Label>我的 Cookie 状态</Label>
+                <Label>{t('form.cookieStatus')}</Label>
                 {currentMyCookie ? (
                   <div
                     className={cn(
@@ -471,14 +481,16 @@ export default function GrabPage() {
                       <div className='flex-1 overflow-hidden'>
                         <h3 className='truncate text-sm font-semibold'>{currentMyCookie.name}</h3>
                         <p className='text-muted-foreground mt-1 text-xs'>
-                          状态:{' '}
+                          {t('form.statusLabel')}{' '}
                           <span
                             className={cn(
                               'font-medium',
                               currentMyCookie.status === 'active' ? 'text-green-500' : 'text-destructive'
                             )}
                           >
-                            {currentMyCookie.status === 'active' ? '有效' : '已失效'}
+                            {currentMyCookie.status === 'active'
+                              ? t('form.statusActive')
+                              : t('form.statusExpired')}
                           </span>
                         </p>
                       </div>
@@ -486,8 +498,7 @@ export default function GrabPage() {
                   </div>
                 ) : (
                   <div className='text-muted-foreground rounded-xl border border-dashed py-8 text-center text-sm'>
-                    未找到您在 {exchange === 'okx' ? '欧易' : exchange === 'binance' ? '币安' : exchange} 的
-                    Cookie，请先前往添加
+                    {t('form.cookieNotFound', { exchange: exchangeDisplayName })}
                   </div>
                 )}
               </div>
@@ -496,12 +507,14 @@ export default function GrabPage() {
               <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.grabTrader)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
-                  交易员主页链接或 ID
+                  {t('form.traderUrlLabel')}
                 </Label>
                 <div className='flex gap-2'>
                   <Input
                     placeholder={
-                      exchange ? TRADER_INPUT_PLACEHOLDER[exchange] : '请先选择交易所，再输入链接或 ID'
+                      exchange
+                        ? t('form.traderUrlPlaceholder')
+                        : t('form.selectExchangeFirstPlaceholder')
                     }
                     value={traderUrl}
                     onChange={e => setTraderUrl(e.target.value)}
@@ -511,7 +524,7 @@ export default function GrabPage() {
                     className='dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80 dark:border-border dark:border'
                     variant='secondary'
                   >
-                    解析
+                    {t('form.parse')}
                   </Button>
                 </div>
               </div>
@@ -521,9 +534,9 @@ export default function GrabPage() {
                 <div className='space-y-2'>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
-                    交易员 （ UID 或 带单项目 ID）
+                    {t('form.traderIdLabel')}
                   </Label>
-                  <Input value={uniqueName} readOnly className='bg-muted' />
+                  <Input value={displayUniqueName} readOnly className='bg-muted' />
                 </div>
               )}
             </CardContent>
@@ -537,7 +550,7 @@ export default function GrabPage() {
                 }
                 onClick={() => setIsConfigOpen(true)}
               >
-                进入下一步
+                {t('form.nextStep')}
               </Button>
             </CardFooter>
           </Card>
@@ -550,8 +563,8 @@ export default function GrabPage() {
               <div className='flex items-center justify-between px-1'>
                 <h3 className='flex items-center gap-2 text-base font-semibold'>
                   <History className='text-muted-foreground h-4 w-4' />
-                  历史抢位任务
-                  <span className='text-muted-foreground ml-1 text-xs font-normal'>(只展示最近10条抢位任务)</span>
+                  {t('history.title')}
+                  <span className='text-muted-foreground ml-1 text-xs font-normal'>{t('history.subtitle')}</span>
                 </h3>
               </div>
               <div className='grid gap-3 sm:grid-cols-2'>
@@ -584,7 +597,7 @@ export default function GrabPage() {
                           className='shrink-0 border-green-500/20 bg-green-500/10 text-green-600 dark:bg-green-500/5'
                         >
                           <CheckCircle2 className='mr-1 h-3 w-3' />
-                          成功
+                          {t('history.success')}
                         </Badge>
                       ) : outcome === 'stopped' ? (
                         <Badge
@@ -592,7 +605,7 @@ export default function GrabPage() {
                           className='text-muted-foreground shrink-0 border-muted-foreground/30 bg-muted/50'
                         >
                           <StopCircle className='mr-1 h-3 w-3' />
-                          已终止
+                          {t('history.stopped')}
                         </Badge>
                       ) : (
                         <Badge
@@ -600,14 +613,14 @@ export default function GrabPage() {
                           className='border-destructive/20 bg-destructive/10 text-destructive dark:bg-destructive/5 shrink-0'
                         >
                           <XCircle className='mr-1 h-3 w-3' />
-                          失败
+                          {t('history.failed')}
                         </Badge>
                       )}
                     </div>
 
                     <div className='relative z-10 mt-4 flex flex-col gap-2 border-t pt-3'>
                       <div className='flex items-center justify-between text-xs'>
-                        <span className='text-muted-foreground'>创建时间</span>
+                        <span className='text-muted-foreground'>{t('history.createdAt')}</span>
                         <span>{formatTaskCreatedTime(task)}</span>
                       </div>
 
@@ -621,7 +634,7 @@ export default function GrabPage() {
                       {outcome === 'stopped' && (
                         <div className='bg-muted/50 text-muted-foreground flex items-start gap-1.5 rounded-md p-2 text-xs'>
                           <Info className='mt-0.5 h-3.5 w-3.5 shrink-0' />
-                          <span>您已手动终止该抢位任务</span>
+                          <span>{t('history.manuallyStopped')}</span>
                         </div>
                       )}
                     </div>

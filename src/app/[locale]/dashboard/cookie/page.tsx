@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 
 import { Plus, Cookie, Chrome, Upload, ShieldCheck, HelpCircle, AlertCircle, Edit2, Clock } from 'lucide-react'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { getCookies, addOrUpdateCookie, updateCookieName } from '@/api/cookie'
@@ -38,16 +39,19 @@ type CookieItem = {
 }
 
 export default function CookiePage() {
+  const t = useTranslations('DashboardCookie')
   const [cookies, setCookies] = useState<CookieItem[]>([])
   const [isUploadOpen, setIsUploadOpen] = useState(false)
-  const [newPlatform, setNewPlatform] = useState('2') // 2: 币安, 1: 欧易
+  const [newPlatform, setNewPlatform] = useState('2') // 2: Binance, 1: OKX
   const [newCookie, setNewCookie] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
-  // Edit Name State
   const [isEditNameOpen, setIsEditNameOpen] = useState(false)
   const [editingCookie, setEditingCookie] = useState<CookieItem | null>(null)
   const [newCookieName, setNewCookieName] = useState('')
+
+  const exchangeLabel = (exchange: number | string) =>
+    String(exchange) === '2' ? t('manual.binance') : t('manual.okx')
 
   const fetchCookies = async () => {
     setIsLoading(true)
@@ -58,11 +62,11 @@ export default function CookiePage() {
       if (res.code === 0 && Array.isArray(res.data)) {
         setCookies(res.data)
       } else {
-        toast.error(res.error || '获取数据失败')
+        toast.error(res.error || t('toast.fetchFailed'))
       }
     } catch (e) {
       console.error(e)
-      toast.error('暂无数据')
+      toast.error(t('toast.noData'))
     } finally {
       setIsLoading(false)
     }
@@ -70,6 +74,7 @@ export default function CookiePage() {
 
   useEffect(() => {
     fetchCookies()
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- initial load only
   }, [])
 
   const handleUpload = async () => {
@@ -84,12 +89,10 @@ export default function CookiePage() {
       })
 
       if (res.code === 0) {
-        toast.success('上传成功')
+        toast.success(t('toast.uploadSuccess'))
         setNewCookie('')
         setIsUploadOpen(false)
         fetchCookies()
-      } else {
-        // toast is handled in request.ts, but we keep this branch
       }
     } catch (e) {
       console.error(e)
@@ -110,7 +113,7 @@ export default function CookiePage() {
       })
 
       if (res.code === 0) {
-        toast.success('修改成功')
+        toast.success(t('toast.updateSuccess'))
         setIsEditNameOpen(false)
         setEditingCookie(null)
         setNewCookieName('')
@@ -132,9 +135,7 @@ export default function CookiePage() {
   const handleCookieChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value
 
-    // Auto-extract cookie from cURL command
     if (value.trim().startsWith('curl') || value.includes('-H')) {
-      // match -H 'cookie: ...' or -H "cookie: ..."
       const match = value.match(/-H\s+(['"])[cC]ookie:\s*(.*?)\1/)
 
       if (match && match[2]) {
@@ -143,7 +144,6 @@ export default function CookiePage() {
         return
       }
 
-      // fallback for unquoted or differently formatted cookies
       const unquotedMatch = value.match(/-H\s+[cC]ookie:\s*(\S+)/)
 
       if (unquotedMatch && unquotedMatch[1]) {
@@ -157,30 +157,44 @@ export default function CookiePage() {
   }
 
   const browserDownloads = [
-    { src: '/browser/chrome.svg', alt: 'Chrome 浏览器', label: 'Chrome', url: 'https://chromewebstore.google.com/detail/copyapes-assistant/affmjifigldmicnbgpghddaneomejmfo' },
-    { src: '/browser/edge.svg', alt: 'Edge 浏览器', label: 'Edge', url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub' },
-    { src: '/browser/firefox.svg', alt: 'Firefox 浏览器', label: 'Firefox', url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub' },
-    { src: '/browser/zip.svg', alt: 'ZIP 本地安装包', label: 'ZIP 本地安装', url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub' }
+    {
+      src: '/browser/chrome.svg',
+      alt: t('browsers.chromeAlt'),
+      label: 'Chrome',
+      url: 'https://chromewebstore.google.com/detail/copyapes-assistant/affmjifigldmicnbgpghddaneomejmfo'
+    },
+    {
+      src: '/browser/edge.svg',
+      alt: t('browsers.edgeAlt'),
+      label: 'Edge',
+      url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub'
+    },
+    {
+      src: '/browser/firefox.svg',
+      alt: t('browsers.firefoxAlt'),
+      label: 'Firefox',
+      url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub'
+    },
+    {
+      src: '/browser/zip.svg',
+      alt: t('browsers.zipAlt'),
+      label: t('browsers.zipLabel'),
+      url: 'https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub'
+    }
   ]
 
   return (
     <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
       <div className='flex flex-col gap-2'>
-        <h2 className='text-2xl font-bold tracking-tight'>Cookie 管理</h2>
-        <p className='text-muted-foreground text-sm'>
-          通过绑定交易所 Cookie，您可以解锁更多受限接口的功能，如获取带单员私有数据等。
-        </p>
+        <h2 className='text-2xl font-bold tracking-tight'>{t('page.title')}</h2>
+        <p className='text-muted-foreground text-sm'>{t('page.subtitle')}</p>
         <Alert className='border-primary/20 bg-primary/5 text-primary mt-2' {...tourAnchor(TOUR_ANCHORS.cookieNotice)}>
           <AlertCircle className='h-4 w-4' />
-          <AlertTitle className='font-semibold'>Cookie 提交说明</AlertTitle>
-          <AlertDescription className='text-sm'>
-            每个交易所平台只能绑定一个 Cookie 信息。如果您需要绑定同一个交易所的多个
-            Cookie，可以免费注册多个本平台账号进行添加和使用。
-          </AlertDescription>
+          <AlertTitle className='font-semibold'>{t('notice.title')}</AlertTitle>
+          <AlertDescription className='text-sm'>{t('notice.body')}</AlertDescription>
         </Alert>
       </div>
 
-      {/* 获取 Cookie 的方式 */}
       <div className='grid gap-4 md:grid-cols-2'>
         <Card className='shadow-sm' {...tourAnchor(TOUR_ANCHORS.cookiePlugin)}>
           <CardHeader>
@@ -188,11 +202,9 @@ export default function CookiePage() {
               <div className='bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg'>
                 <Chrome className='text-primary h-5 w-5' />
               </div>
-              <CardTitle className='text-lg'>浏览器插件自动获取</CardTitle>
+              <CardTitle className='text-lg'>{t('plugin.title')}</CardTitle>
             </div>
-            <CardDescription>
-              强烈推荐安装我们的 Chrome 浏览器插件同步 Cookie，安全便捷。
-            </CardDescription>
+            <CardDescription>{t('plugin.desc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className='space-y-4'>
@@ -214,16 +226,22 @@ export default function CookiePage() {
                     target='_blank'
                     rel='noreferrer'
                   >
-                    <Image src='/browser/chrome.svg' alt='Chrome 浏览器' width={24} height={24} className='mr-2 h-6 w-6' />
-                    安装到 Chrome
+                    <Image
+                      src='/browser/chrome.svg'
+                      alt={t('browsers.chromeAlt')}
+                      width={24}
+                      height={24}
+                      className='mr-2 h-6 w-6'
+                    />
+                    {t('plugin.installChrome')}
                   </a>
                 </Button>
               </div>
 
               <div className='flex flex-col gap-3'>
-                <p className='text-muted-foreground text-xs'>支持以下方式使用插件：</p>
+                <p className='text-muted-foreground text-xs'>{t('plugin.supportWays')}</p>
                 <div className='flex flex-wrap items-center gap-3'>
-                  {browserDownloads.map((item) => (
+                  {browserDownloads.map(item => (
                     <a
                       key={item.label}
                       href={item.url}
@@ -243,23 +261,25 @@ export default function CookiePage() {
                 <AccordionTrigger className='text-primary py-2 text-sm hover:no-underline'>
                   <span className='flex items-center gap-1.5'>
                     <HelpCircle className='h-4 w-4' />
-                    如何本地安装浏览器插件？
+                    {t('plugin.howToTitle')}
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className='space-y-4 pt-2'>
                   <div className='text-muted-foreground space-y-2'>
-                    <p className='text-foreground font-medium mt-2'>使用教程：</p>
+                    <p className='text-foreground font-medium mt-2'>{t('plugin.tutorialTitle')}</p>
                     <ol className='space-y-2 text-sm'>
                       <li>
-                        ① 插件安装：
-                        <a href='https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub?from=from_copylink' className='text-primary hover:underline' target='_blank'>
-                          如何安装使用Chrome浏览器插件
+                        {t('plugin.step1Prefix')}
+                        <a
+                          href='https://xwvmohge80.feishu.cn/docx/OWvbdwKKvo4qpXxRVOAcg40mnub?from=from_copylink'
+                          className='text-primary hover:underline'
+                          target='_blank'
+                        >
+                          {t('plugin.step1Link')}
                         </a>
                       </li>
-                      <li>② 将插件固定在浏览器上，打开插件，登录跟单猿账号</li>
-                      <li>
-                        ③ 打开官网，登录交易所跟单的账号，等待页面加载完成后，点击自动抓取Cookie按钮，你可在本页面进行查看提交信息
-                      </li>
+                      <li>{t('plugin.step2')}</li>
+                      <li>{t('plugin.step3')}</li>
                     </ol>
                   </div>
                 </AccordionContent>
@@ -274,53 +294,53 @@ export default function CookiePage() {
               <div className='bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg'>
                 <Upload className='text-primary h-5 w-5' />
               </div>
-              <CardTitle className='text-lg'>手动上传 Cookie</CardTitle>
+              <CardTitle className='text-lg'>{t('manual.title')}</CardTitle>
             </div>
-            <CardDescription>适合高级用户。在浏览器开发者工具中提取 Cookie 字符串并手动粘贴上传。</CardDescription>
+            <CardDescription>{t('manual.desc')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ul className='text-muted-foreground mb-4 space-y-2 text-sm'>
               <li className='flex items-center gap-2'>
-                <ShieldCheck className='h-4 w-4 text-green-500' /> 适合无法安装插件的环境
+                <ShieldCheck className='h-4 w-4 text-green-500' /> {t('manual.benefit1')}
               </li>
               <li className='flex items-center gap-2'>
-                <ShieldCheck className='h-4 w-4 text-green-500' /> 适合手机远程更新
+                <ShieldCheck className='h-4 w-4 text-green-500' /> {t('manual.benefit2')}
               </li>
               <li className='flex items-center gap-2'>
-                <ShieldCheck className='h-4 w-4 text-yellow-500' /> 需要定期手动更新过期 Cookie
+                <ShieldCheck className='h-4 w-4 text-yellow-500' /> {t('manual.benefit3')}
               </li>
             </ul>
             <Dialog open={isUploadOpen} onOpenChange={setIsUploadOpen}>
               <DialogTrigger asChild>
                 <Button className='w-full sm:w-auto' variant='outline'>
                   <Plus className='mr-2 h-4 w-4' />
-                  手动上传
+                  {t('manual.uploadButton')}
                 </Button>
               </DialogTrigger>
               <DialogContent className='sm:max-w-[425px]' {...tourSafeDialogProps}>
                 <DialogHeader>
-                  <DialogTitle>手动上传 Cookie</DialogTitle>
-                  <DialogDescription>请选择对应的交易所，并粘贴您获取到的完整 Cookie 字符串。</DialogDescription>
+                  <DialogTitle>{t('manual.dialogTitle')}</DialogTitle>
+                  <DialogDescription>{t('manual.dialogDesc')}</DialogDescription>
                 </DialogHeader>
                 <div className='grid gap-4 py-4'>
                   <div className='grid gap-2'>
-                    <Label htmlFor='platform'>交易所平台</Label>
+                    <Label htmlFor='platform'>{t('manual.platformLabel')}</Label>
                     <Select value={newPlatform} onValueChange={setNewPlatform}>
                       <SelectTrigger id='platform'>
-                        <SelectValue placeholder='选择交易所' />
+                        <SelectValue placeholder={t('manual.platformPlaceholder')} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value='2'>Binance (币安)</SelectItem>
-                        <SelectItem value='1'>OKX (欧易)</SelectItem>
+                        <SelectItem value='2'>{t('manual.binance')}</SelectItem>
+                        <SelectItem value='1'>{t('manual.okx')}</SelectItem>
                         <SelectItem value='bitget'>Bitget</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className='grid gap-2'>
-                    <Label htmlFor='cookie'>Cookie 字符串</Label>
+                    <Label htmlFor='cookie'>{t('manual.cookieLabel')}</Label>
                     <Textarea
                       id='cookie'
-                      placeholder='粘贴类似于 "lang=zh-CN; session_id=..." 的内容，或者直接粘贴包含 Cookie 的 cURL 命令，系统会自动提取。'
+                      placeholder={t('manual.cookiePlaceholder')}
                       className='h-32 resize-none'
                       value={newCookie}
                       onChange={handleCookieChange}
@@ -329,10 +349,10 @@ export default function CookiePage() {
                 </div>
                 <DialogFooter>
                   <Button variant='outline' onClick={() => setIsUploadOpen(false)}>
-                    取消
+                    {t('manual.cancel')}
                   </Button>
                   <Button onClick={handleUpload} disabled={!newCookie}>
-                    保存上传
+                    {t('manual.save')}
                   </Button>
                 </DialogFooter>
               </DialogContent>
@@ -343,36 +363,36 @@ export default function CookiePage() {
                 <AccordionTrigger className='text-primary py-2 text-sm hover:no-underline'>
                   <span className='flex items-center gap-1.5'>
                     <HelpCircle className='h-4 w-4' />
-                    如何手动获取 Cookie？
+                    {t('manual.howToTitle')}
                   </span>
                 </AccordionTrigger>
                 <AccordionContent className='space-y-4 pt-2'>
                   <div className='text-muted-foreground space-y-2'>
-                    <p className='text-foreground font-medium'>在Chrome浏览器中复制cURL命令，可以按照以下步骤操作：</p>
+                    <p className='text-foreground font-medium'>{t('manual.guideIntro')}</p>
                     <ol className='list-decimal space-y-1.5 pl-5'>
-                      <li>打开Chrome开发者工具（按F12），然后刷新网页</li>
+                      <li>{t('manual.guide1')}</li>
                       <li>
-                        <strong>币安</strong>在“网络”面板中找到请求：
+                        <strong>{t('manual.binance')}</strong> {t('manual.guide2Before')}
                         <code className='bg-muted rounded px-1 py-0.5'>positions?portfolioId=xxxxx</code>
-                        ，xxxxx为跟单的项目id
+                        {t('manual.guide2After')}
                       </li>
                       <li>
-                        <strong>欧易</strong>(合约带单&gt;当前带单)在“网络”面板中找到请求：
+                        <strong>{t('manual.okx')}</strong> {t('manual.guide3Before')}
                         <code className='bg-muted rounded px-1 py-0.5'>
                           position-detail?instType=SWAP&amp;uniqueName=xxxxx
                         </code>
-                        ，xxxxx为跟单的项目id
+                        {t('manual.guide3After')}
                       </li>
-                      <li>右键点击该请求，选择“复制” -&gt; “以cURL格式复制”</li>
-                      <li>将请求的cURL命令复制到剪贴板，然后在上方文本框中粘贴。</li>
+                      <li>{t('manual.guide4')}</li>
+                      <li>{t('manual.guide5')}</li>
                     </ol>
-                    <p className='mt-2 text-xs'>此方法也适用于其他浏览器</p>
+                    <p className='mt-2 text-xs'>{t('manual.guideOtherBrowsers')}</p>
                   </div>
 
                   <div className='overflow-hidden rounded-md border'>
                     <Image
                       src='/images/cookie.png'
-                      alt='获取 Cookie 示例图'
+                      alt={t('manual.exampleAlt')}
                       width={800}
                       height={400}
                       className='h-auto w-full object-cover'
@@ -381,10 +401,8 @@ export default function CookiePage() {
 
                   <Alert variant='destructive' className='mt-4 py-2'>
                     <AlertCircle className='h-4 w-4' />
-                    <AlertTitle className='text-sm font-semibold'>警告</AlertTitle>
-                    <AlertDescription className='text-xs'>
-                      请勿将此信息透露给其他人，以免造成资产损失。
-                    </AlertDescription>
+                    <AlertTitle className='text-sm font-semibold'>{t('manual.warningTitle')}</AlertTitle>
+                    <AlertDescription className='text-xs'>{t('manual.warningBody')}</AlertDescription>
                   </Alert>
                 </AccordionContent>
               </AccordionItem>
@@ -394,20 +412,18 @@ export default function CookiePage() {
       </div>
 
       <div className='mt-4 flex flex-col gap-4' {...tourAnchor(TOUR_ANCHORS.cookieList)}>
-        <h3 className='text-lg font-semibold'>我的交易所 Cookie</h3>
+        <h3 className='text-lg font-semibold'>{t('list.title')}</h3>
 
         {cookies.length === 0 ? (
           <div className='animate-in fade-in-50 flex min-h-[300px] flex-col items-center justify-center rounded-xl border border-dashed p-8 text-center'>
             <div className='bg-muted flex h-20 w-20 items-center justify-center rounded-full'>
               <Cookie className='text-muted-foreground h-10 w-10' />
             </div>
-            <h3 className='mt-4 text-lg font-semibold'>暂无 Cookie 数据</h3>
-            <p className='text-muted-foreground mt-2 mb-6 max-w-sm text-sm'>
-              您还没有绑定任何交易所的 Cookie，请通过上方浏览器插件或手动上传来获取并绑定。
-            </p>
+            <h3 className='mt-4 text-lg font-semibold'>{t('list.emptyTitle')}</h3>
+            <p className='text-muted-foreground mt-2 mb-6 max-w-sm text-sm'>{t('list.emptyDesc')}</p>
             <Button onClick={() => setIsUploadOpen(true)}>
               <Plus className='mr-2 h-4 w-4' />
-              立即上传
+              {t('list.uploadNow')}
             </Button>
           </div>
         ) : (
@@ -419,7 +435,9 @@ export default function CookiePage() {
               >
                 <div
                   className={`absolute inset-x-0 top-0 h-1 w-full ${
-                    cookie.available ? 'bg-gradient-to-r from-emerald-400 to-green-500' : 'bg-gradient-to-r from-red-400 to-rose-500'
+                    cookie.available
+                      ? 'bg-gradient-to-r from-emerald-400 to-green-500'
+                      : 'bg-gradient-to-r from-red-400 to-rose-500'
                   }`}
                 />
                 <CardHeader>
@@ -432,7 +450,7 @@ export default function CookiePage() {
                       />
                       <div className='flex flex-col gap-1'>
                         <CardTitle className='text-sm font-semibold tracking-tight'>
-                          {cookie.curl_name || (String(cookie.exchange) === '2' ? 'Binance (币安)' : 'OKX (欧易)')}
+                          {cookie.curl_name || exchangeLabel(cookie.exchange)}
                         </CardTitle>
                         <Badge
                           variant='secondary'
@@ -442,7 +460,7 @@ export default function CookiePage() {
                               : 'bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400'
                           }`}
                         >
-                          {cookie.available ? '生效中' : '已失效'}
+                          {cookie.available ? t('list.active') : t('list.inactive')}
                         </Badge>
                       </div>
                     </div>
@@ -459,7 +477,7 @@ export default function CookiePage() {
                 <CardContent className='mt-auto'>
                   <div className='flex items-center gap-1.5 text-[10px] text-muted-foreground'>
                     <Clock className='h-3 w-3' />
-                    <span>最后更新: {cookie.updated_at}</span>
+                    <span>{t('list.lastUpdated', { time: cookie.updated_at })}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -471,17 +489,15 @@ export default function CookiePage() {
       <Dialog open={isEditNameOpen} onOpenChange={setIsEditNameOpen}>
         <DialogContent className='sm:max-w-[425px]' {...tourSafeDialogProps}>
           <DialogHeader>
-            <DialogTitle>修改名称</DialogTitle>
-            <DialogDescription>
-              自定义一个独特名字，便于自己和他人搜索使用。更改名字不会影响正在进行中的跟单。
-            </DialogDescription>
+            <DialogTitle>{t('edit.title')}</DialogTitle>
+            <DialogDescription>{t('edit.desc')}</DialogDescription>
           </DialogHeader>
           <div className='grid gap-4 py-4'>
             <div className='grid gap-2'>
-              <Label htmlFor='cookieName'>Cookie 名称</Label>
+              <Label htmlFor='cookieName'>{t('edit.nameLabel')}</Label>
               <Input
                 id='cookieName'
-                placeholder='输入修改的名字'
+                placeholder={t('edit.namePlaceholder')}
                 value={newCookieName}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setNewCookieName(e.target.value)}
               />
@@ -489,10 +505,10 @@ export default function CookiePage() {
           </div>
           <DialogFooter>
             <Button variant='outline' onClick={() => setIsEditNameOpen(false)}>
-              取消
+              {t('edit.cancel')}
             </Button>
             <Button onClick={handleEditName} disabled={!newCookieName || isLoading}>
-              {isLoading ? '保存中...' : '确认修改'}
+              {isLoading ? t('edit.saving') : t('edit.confirm')}
             </Button>
           </DialogFooter>
         </DialogContent>

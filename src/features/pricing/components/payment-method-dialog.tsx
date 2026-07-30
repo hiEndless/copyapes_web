@@ -4,6 +4,7 @@ import { useState } from 'react'
 
 import Image from 'next/image'
 import { Copy, X, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -37,10 +38,10 @@ export interface PaymentMethodDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 
-  /** 应付 USDT 数量（与定价区一致） */
+  /** Payable USDT amount (matches pricing UI) */
   amountUsdt: number
 
-  /** 原价 USDT 数量 */
+  /** Original USDT amount */
   price: number
   planCode: string
   couponCode?: string
@@ -56,21 +57,22 @@ export function PaymentMethodDialog({
   couponCode = '',
   discount = 1
 }: PaymentMethodDialogProps) {
+  const t = useTranslations('DashboardPricing')
   const [exchange, setExchange] = useState<PaymentExchange>('binance')
   const [referenceId, setReferenceId] = useState('')
   const [submitting, setSubmitting] = useState(false)
 
   const account = EXCHANGE_ACCOUNTS[exchange]
   const exchangeLabel = exchange === 'binance' ? 'Binance' : 'OKX'
-  const exchangeLabelZh = exchange === 'binance' ? '币安' : 'OKX'
-  const referenceIdLabel = exchange === 'binance' ? '支付订单ID' : '参考编号'
+  const exchangeLabelLocal = exchange === 'binance' ? t('pay.binanceZh') : t('pay.okxZh')
+  const referenceIdLabel = exchange === 'binance' ? t('pay.orderId') : t('pay.referenceNo')
 
   const copyAccount = async () => {
     try {
       await navigator.clipboard.writeText(account)
-      toast.success('已复制到剪贴板')
+      toast.success(t('pay.copied'))
     } catch {
-      toast.error('复制失败')
+      toast.error(t('pay.copyFailed'))
     }
   }
 
@@ -78,7 +80,7 @@ export function PaymentMethodDialog({
     const ref = referenceId.trim()
 
     if (!ref) {
-      toast.error(`请输入${referenceIdLabel}`)
+      toast.error(t('pay.needReference', { label: referenceIdLabel }))
 
       return
     }
@@ -100,22 +102,18 @@ export function PaymentMethodDialog({
       })
 
       if (res.code === 0) {
-        toast.success('提交成功，转账金额已确认！')
+        toast.success(t('pay.submitSuccess'))
         onOpenChange(false)
         setReferenceId('')
 
-        // 支付成功后获取最新的权益信息并单独存储
         try {
           const profile = await settingsApi.getEntitlementProfile()
 
           if (profile) {
             localStorage.setItem('entitlementProfile', JSON.stringify(profile))
-
-            // 触发自定义事件，通知其他组件更新权益信息
             window.dispatchEvent(new Event('entitlementProfileUpdated'))
           }
 
-          // 再次获取用户信息确认身份，更新本地浏览器缓存
           const userInfoRes = await authApi.getLoginInfo()
 
           if (userInfoRes.code === 0 && userInfoRes.data) {
@@ -125,8 +123,6 @@ export function PaymentMethodDialog({
             if (oldUserInfoStr) {
               try {
                 const oldUserInfo = JSON.parse(oldUserInfoStr)
-
-                // 保留旧的 token，因为 GET /login/ 接口返回的数据中没有 token
                 newUserInfo = { ...oldUserInfo, ...userInfoRes.data }
               } catch (e) {
                 console.error('Failed to parse old userInfo:', e)
@@ -141,7 +137,7 @@ export function PaymentMethodDialog({
         }
       }
     } catch (err: any) {
-      toast.error(err.message || '提交失败')
+      toast.error(err.message || t('pay.submitFailed'))
     } finally {
       setSubmitting(false)
     }
@@ -156,23 +152,23 @@ export function PaymentMethodDialog({
         )}
       >
         <DialogHeader className='border-border bg-muted/50 flex flex-row items-center justify-between gap-2 space-y-0 border-b px-4 py-3 text-left'>
-          <DialogTitle className='text-foreground text-base font-semibold'>选择支付方式</DialogTitle>
+          <DialogTitle className='text-foreground text-base font-semibold'>{t('pay.title')}</DialogTitle>
           <DialogClose asChild>
-            <Button type='button' variant='ghost' size='icon' className='size-8 shrink-0' aria-label='关闭'>
+            <Button type='button' variant='ghost' size='icon' className='size-8 shrink-0' aria-label={t('pay.closeAria')}>
               <X className='size-4' />
             </Button>
           </DialogClose>
         </DialogHeader>
 
         <div className='max-h-[calc(90dvh-200px)] overflow-y-auto px-4 py-4'>
-          <p className='text-foreground mb-2 text-sm font-medium'>选择交易所</p>
+          <p className='text-foreground mb-2 text-sm font-medium'>{t('pay.selectExchange')}</p>
           <div className='mb-5 grid grid-cols-2 gap-2'>
             {(
               [
                 { id: 'binance' as const, name: 'Binance', logo: EXCHANGE_LOGO_SRC.binance },
                 { id: 'okx' as const, name: 'OKX', logo: EXCHANGE_LOGO_SRC.okx }
               ] as const
-            ).map((ex) => {
+            ).map(ex => {
               const selected = exchange === ex.id
 
               return (
@@ -201,12 +197,12 @@ export function PaymentMethodDialog({
           </div>
 
           <div className='border-border bg-muted/30 rounded-lg border p-3'>
-            <p className='text-foreground mb-3 text-sm font-medium'>转账步骤</p>
+            <p className='text-foreground mb-3 text-sm font-medium'>{t('pay.stepsTitle')}</p>
 
             <div className='text-foreground space-y-4 text-sm'>
               <div>
                 <p className='text-muted-foreground mb-2 leading-relaxed'>
-                  1. 请往以下{exchangeLabelZh}账号转入{' '}
+                  {t('pay.step1Before', { exchange: exchangeLabelLocal })}{' '}
                   <span className='text-destructive font-semibold'>{amountUsdt}</span> USDT
                 </p>
                 <div className='flex gap-2'>
@@ -217,28 +213,28 @@ export function PaymentMethodDialog({
                   />
                   <Button type='button' variant='secondary' size='sm' onClick={copyAccount} className='shrink-0'>
                     <Copy className='size-4' />
-                    复制
+                    {t('pay.copy')}
                   </Button>
                 </div>
               </div>
 
               <p className='text-muted-foreground leading-relaxed'>
-                2. 在{exchangeLabel}官网/APP 上进行转账操作，等待转账成功后进入转账详情页
+                {t('pay.step2', { exchange: exchangeLabel })}
               </p>
 
               <div>
-                <p className='text-muted-foreground mb-2'>3. 请输入{referenceIdLabel}</p>
+                <p className='text-muted-foreground mb-2'>{t('pay.step3', { label: referenceIdLabel })}</p>
                 <Input
                   value={referenceId}
-                  onChange={(e) => setReferenceId(e.target.value)}
-                  placeholder={`请输入${referenceIdLabel}`}
+                  onChange={e => setReferenceId(e.target.value)}
+                  placeholder={t('pay.placeholder', { label: referenceIdLabel })}
                   className='h-9 text-sm shadow-none'
                 />
               </div>
             </div>
 
             <div className='mt-4 rounded-md bg-amber-50 px-3 py-2 text-xs leading-relaxed text-foreground'>
-              转账提示：如遇「转账失败」、「网络错误」等情况，请联系我们处理。
+              {t('pay.tip')}
             </div>
           </div>
         </div>
@@ -246,12 +242,12 @@ export function PaymentMethodDialog({
         <DialogFooter className='border-border bg-background gap-2 border-t px-4 py-3 sm:justify-end'>
           <DialogClose asChild>
             <Button type='button' variant='outline' size='sm' disabled={submitting}>
-              关闭
+              {t('pay.close')}
             </Button>
           </DialogClose>
           <Button type='button' size='sm' onClick={handleSubmit} disabled={submitting}>
             {submitting && <Loader2 className='mr-2 size-4 animate-spin' />}
-            提交验证
+            {t('pay.submit')}
           </Button>
         </DialogFooter>
       </DialogContent>

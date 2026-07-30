@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 
 import { Flame } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useTranslations } from 'next-intl'
 
 import { request } from '@/api/request'
 import { Card, CardContent } from '@/components/ui/card'
@@ -13,11 +14,13 @@ import { MotionPreset } from '@/components/ui/motion-preset'
 import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
 
+type PlatformKey = 'okx' | 'binance' | 'bicoin'
+
 interface Trader {
   name: string
   avatar: string
   platform: {
-    name: string
+    key: PlatformKey
     logo: string
   }
   balance: number
@@ -27,120 +30,97 @@ const initialTraders: Trader[] = [
   {
     name: '平凡无奇交易员',
     avatar: '/head/default-avatar.png',
-    platform: { name: 'OKX', logo: '/exchanges/okx.png' },
+    platform: { key: 'okx', logo: '/exchanges/okx.png' },
     balance: 0
   },
   {
     name: '熬鹰资本',
     avatar: '/head/aoying.jpg',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
   {
     name: '予与xx(私域)',
     avatar: 'https://public.bnbstatic.com/image/pgc/202604/299894bb01cffbefc7f5875aef779249.jpg',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
   {
     name: '意钦',
     avatar: 'https://public.bnbstatic.com/image/pgc/202603/9501dfeea9036dc99eef5adc0994ceaf.jpg',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
   {
     name: '意钦(私域)',
     avatar: 'https://public.bnbstatic.com/image/pgc/202603/9501dfeea9036dc99eef5adc0994ceaf.jpg',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
   {
     name: '创造奇迹666',
     avatar: '/head/qiji666.jpg',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
   {
     name: 'Callme卢本伟',
     avatar: '/head/default-avatar.png',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
   {
     name: 'Btc星辰',
     avatar: '/head/default-avatar.png',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
   {
     name: 'MasterRayn(私域)',
     avatar: '/head/default-avatar.png',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
-  // {
-  //   name: '白羊齐夏',
-  //   avatar: '/head/default-avatar.png',
-  //   platform: { name: '币coin', logo: '/exchanges/bicoin.png' },
-  //   balance: 0
-  // },
-  // {
-  //   name: '用公式赚钱就是快',
-  //   avatar: '/head/gongshi.jpg',
-  //   platform: { name: 'Binance', logo: '/exchanges/binance.png' },
-  //   balance: 0
-  // },
   {
     name: 'trader Yy',
     avatar: '/head/yy.jpg',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
-  // {
-  //   name: '土鸭神队',
-  //   avatar: '/head/tuya.jpg',
-  //   platform: { name: '币coin', logo: '/exchanges/bicoin.png' },
-  //   balance: 0
-  // },
-  // {
-  //   name: '老恶魔',
-  //   avatar: '/head/default-avatar.png',
-  //   platform: { name: 'OKX', logo: '/exchanges/okx.png' },
-  //   balance: 0
-  // },
   {
     name: '明明明宏',
     avatar: '/head/minghong.jpg',
-    platform: { name: 'OKX', logo: '/exchanges/okx.png' },
+    platform: { key: 'okx', logo: '/exchanges/okx.png' },
     balance: 0
   },
   {
     name: '牛的青山在',
     avatar: '/head/niude.jpg',
-    platform: { name: '币coin', logo: '/exchanges/bicoin.png' },
+    platform: { key: 'bicoin', logo: '/exchanges/bicoin.png' },
     balance: 0
   },
   {
     name: '暖然-风火山林(聪明钱)',
     avatar: '/head/fenghuoshanlin.jpg',
-    platform: { name: 'Binance', logo: '/exchanges/binance.png' },
+    platform: { key: 'binance', logo: '/exchanges/binance.png' },
     balance: 0
   },
   {
     name: '星辰社区',
     avatar: '/head/default-avatar.png',
-    platform: { name: 'OKX', logo: '/exchanges/okx.png' },
+    platform: { key: 'okx', logo: '/exchanges/okx.png' },
     balance: 0
   },
   {
     name: '小周同学',
     avatar: '/head/xiaozhou.jpg',
-    platform: { name: 'OKX', logo: '/exchanges/okx.png' },
+    platform: { key: 'okx', logo: '/exchanges/okx.png' },
     balance: 0
   }
 ]
 
 export default function HotTaskPage() {
+  const t = useTranslations('DashboardHotKol')
   const [traders, setTraders] = useState<Trader[]>(initialTraders)
   const [selectedTrader, setSelectedTrader] = useState<Trader | null>(null)
   const [isConfigOpen, setIsConfigOpen] = useState(false)
@@ -176,7 +156,6 @@ export default function HotTaskPage() {
     fetchBalance()
   }, [])
 
-  // TODO: 后续可以接入真实资金获取接口，这里仅做格式化展示
   const formatBalance = (balance: number) => {
     return balance.toLocaleString('en-US', {
       minimumFractionDigits: 2,
@@ -201,16 +180,12 @@ export default function HotTaskPage() {
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
                 <h2 className='flex items-center gap-2 text-xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-xl md:text-xl'>
                   <Flame className='h-6 w-6' />
-                  精选热门带单 KOL
+                  {t('title')}
                 </h2>
-                <p className='mb-3 text-sm text-white/70'>
-                  精选全网来自币安排行榜、欧意牛人榜、币coin等平台的顶级交易员，收益各个平台可查。信号来源第三方渠道，可能有时不稳定，建议优先选择原版信号跟单！
-                </p>
+                <p className='mb-3 text-sm text-white/70'>{t('subtitle')}</p>
               </div>
               <div className='flex items-center justify-center pb-6 sm:my-auto sm:min-w-56 sm:pb-0'>
-                {/* Logo 云布局：移动端一行四列，大屏两行两列错位 */}
                 <div className='flex flex-row gap-3 sm:flex-row sm:gap-4'>
-                  {/* 第一组：在移动端是前两个，大屏是第一列 */}
                   <div className='flex flex-row gap-3 sm:flex-col sm:gap-4'>
                     <motion.div
                       className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-blue-600 shadow-lg backdrop-blur-sm sm:h-14 sm:w-14'
@@ -235,7 +210,6 @@ export default function HotTaskPage() {
                       />
                     </motion.div>
                   </div>
-                  {/* 第二组：在移动端是后两个，大屏是第二列（错位排布） */}
                   <div className='flex flex-row gap-3 sm:mt-8 sm:flex-col sm:gap-4'>
                     <motion.div
                       className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white shadow-lg backdrop-blur-sm sm:h-14 sm:w-14'
@@ -286,14 +260,14 @@ export default function HotTaskPage() {
                     <span className='text-foreground truncate text-xs font-medium'>{trader.name}</span>
                     <div className='mt-0.5 flex items-center gap-1.5'>
                       <span className='bg-muted text-muted-foreground truncate rounded px-1 py-0.5 text-[10px] leading-none'>
-                        {trader.platform.name}
+                        {t(`platforms.${trader.platform.key}`)}
                       </span>
                     </div>
                   </div>
                 </div>
 
                 <div className='bg-muted/30 flex items-center justify-between rounded-md px-2 py-1.5'>
-                  <span className='text-muted-foreground text-[10px]'>当前资金</span>
+                  <span className='text-muted-foreground text-[10px]'>{t('currentBalance')}</span>
                   <span className='text-foreground text-xs font-medium'>${formatBalance(trader.balance)}</span>
                 </div>
 
@@ -303,7 +277,7 @@ export default function HotTaskPage() {
                   onClick={() => handleFollow(trader)}
                   disabled={trader.balance === 0}
                 >
-                  {trader.balance === 0 ? '暂时无法跟单' : '立即跟单'}
+                  {trader.balance === 0 ? t('unavailable') : t('followNow')}
                 </Button>
               </Card>
             ))}
@@ -316,8 +290,8 @@ export default function HotTaskPage() {
         onClose={() => setIsConfigOpen(false)}
         traderId={selectedTrader?.name || ''}
         traderName={selectedTrader?.name || ''}
-        platform='4' // 4 代表热门交易员
-        roleType='1' // 默认传1
+        platform='4'
+        roleType='1'
         traderPlatform={4}
       />
     </div>

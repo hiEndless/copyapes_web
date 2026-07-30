@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { Copy } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { request } from '@/api/request'
@@ -294,6 +295,7 @@ function TraderAvatar({ avatarUrl, avatarType, alt }: { avatarUrl: string; avata
 }
 
 export function TwitterKolDiscover() {
+  const t = useTranslations('DashboardHyperKol')
   const [items, setItems] = useState<TwitterKolItem[]>([])
   const [currentPage, setCurrentPage] = useState(DEFAULT_PAGE_NUM)
   const [hasMore, setHasMore] = useState(true)
@@ -305,10 +307,10 @@ export function TwitterKolDiscover() {
   const handleCopy = async (address: string) => {
     try {
       await navigator.clipboard.writeText(address)
-      toast.success('地址已复制')
+      toast.success(t('toast.copied'))
     } catch (error) {
       console.error('Failed to copy address:', error)
-      toast.error('复制失败，请手动复制')
+      toast.error(t('toast.copyFailed'))
     }
   }
 
@@ -333,7 +335,7 @@ export function TwitterKolDiscover() {
       })
 
       if (res.code !== 0 || !res.data) {
-        toast.error('加载更多失败，请稍后重试')
+        toast.error(t('toast.loadMoreFailed'))
 
         return
       }
@@ -371,7 +373,7 @@ export function TwitterKolDiscover() {
 
   const handleAnalyze = (address: string) => {
     if (!address) {
-      toast.error('地址无效')
+      toast.error(t('toast.invalidAddress'))
 
       return
     }
@@ -383,7 +385,7 @@ export function TwitterKolDiscover() {
 
   const handleFollow = (item: TwitterKolItem) => {
     if (!item.address) {
-      toast.error('地址无效')
+      toast.error(t('toast.invalidAddress'))
 
       return
     }
@@ -479,7 +481,7 @@ export function TwitterKolDiscover() {
                         <p className='truncate text-[11px] text-zinc-900 dark:text-white'>{formatAddress(item.address)}</p>
                         <button
                           type='button'
-                          aria-label='复制地址'
+                          aria-label={t('card.copyAddress')}
                           className='text-zinc-400 transition-colors hover:text-zinc-600 dark:text-[#888] dark:hover:text-white'
                           onClick={() => handleCopy(item.address)}
                         >
@@ -495,14 +497,14 @@ export function TwitterKolDiscover() {
                       onClick={() => handleAnalyze(item.address)}
                       className='rounded-md border border-zinc-200 px-2.5 py-1 text-[11px] text-zinc-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:border-white/10 dark:text-[#888] dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-white'
                     >
-                      分析
+                      {t('card.analyze')}
                     </button>
                     <button
                       type='button'
                       onClick={() => handleFollow(item)}
                       className='rounded-md border border-zinc-200 px-2.5 py-1 text-[11px] text-zinc-500 transition-colors hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 dark:border-white/10 dark:text-[#888] dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-white'
                     >
-                      跟单
+                      {t('card.follow')}
                     </button>
                   </div>
                 </div>
@@ -510,7 +512,7 @@ export function TwitterKolDiscover() {
 
               <div className='mt-auto'>
                 <div className='space-y-0.5'>
-                  <p className='text-[11px] text-zinc-500 dark:text-[#777]'>账户总价值（合约+现货）</p>
+                  <p className='text-[11px] text-zinc-500 dark:text-[#777]'>{t('card.accountValue')}</p>
                   <p className='tracking-tight text-[18px] font-bold text-zinc-900 dark:text-white'>
                     {formatCurrency(item.accountValue)}
                   </p>
@@ -518,17 +520,17 @@ export function TwitterKolDiscover() {
 
                 <div className='mt-2.5 grid grid-cols-3 gap-3'>
                   <div className='flex flex-col gap-0.5 min-w-0'>
-                    <p className='text-[11px] text-zinc-500 dark:text-[#777]'>净盈亏(1月)</p>
+                    <p className='text-[11px] text-zinc-500 dark:text-[#777]'>{t('card.netPnlMonth')}</p>
                     <p className={`truncate text-[12px] font-semibold ${profit.color}`}>{profit.text}</p>
                   </div>
 
                   <div className='flex flex-col gap-0.5'>
-                    <p className='text-[11px] text-zinc-500 dark:text-[#777]'>当前持仓</p>
+                    <p className='text-[11px] text-zinc-500 dark:text-[#777]'>{t('card.openPositions')}</p>
                     <p className='text-[12px] font-semibold text-zinc-900 dark:text-white'>{item.positions}</p>
                   </div>
 
                   <div className='flex flex-col gap-0.5'>
-                    <p className='text-[11px] text-zinc-500 dark:text-[#777]'>胜率(1月)</p>
+                    <p className='text-[11px] text-zinc-500 dark:text-[#777]'>{t('card.winRateMonth')}</p>
                     <p
                       className={`text-[12px] font-semibold ${item.winRate === '-%' ? 'text-zinc-400 dark:text-[#777]' : 'text-zinc-900 dark:text-white'}`}
                     >
@@ -543,7 +545,7 @@ export function TwitterKolDiscover() {
       </div>
 
       {isInitialLoading ? (
-        <div className='mt-4 text-center text-sm text-zinc-500 dark:text-[#888]'>加载中...</div>
+        <div className='mt-4 text-center text-sm text-zinc-500 dark:text-[#888]'>{t('card.loading')}</div>
       ) : null}
 
       {!isInitialLoading && hasMore ? (
@@ -554,7 +556,7 @@ export function TwitterKolDiscover() {
             onClick={handleLoadMore}
             disabled={isLoadingMore}
           >
-            {isLoadingMore ? '加载中...' : '加载更多'}
+            {isLoadingMore ? t('card.loading') : t('card.loadMore')}
           </button>
         </div>
       ) : null}

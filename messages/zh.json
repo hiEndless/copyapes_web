@@ -1173,5 +1173,540 @@
         "deleteRetry": "删除失败，请重试"
       }
     }
+  },
+  "DashboardAccount": {
+    "page": {
+      "title": "账户设置",
+      "subtitle": "管理您的个人账户信息与安全设置"
+    },
+    "tabs": {
+      "account": {
+        "label": "账户信息",
+        "title": "账户信息",
+        "description": "修改用户名与绑定邮箱。"
+      },
+      "password": {
+        "label": "修改密码",
+        "title": "修改密码",
+        "description": "定期修改密码以保护您的账户安全。"
+      }
+    },
+    "username": {
+      "title": "修改用户名",
+      "current": "当前用户名：{name}",
+      "newLabel": "新用户名",
+      "newPlaceholder": "至少 5 位，字母数字及 @ _ . -",
+      "passwordLabel": "当前密码",
+      "passwordPlaceholder": "用于确认身份",
+      "saving": "保存中...",
+      "save": "保存用户名",
+      "needUsername": "请输入新用户名",
+      "updated": "用户名已更新"
+    },
+    "password": {
+      "title": "修改密码",
+      "description": "新密码长度不能少于 6 个字符。",
+      "oldLabel": "原密码",
+      "oldPlaceholder": "请输入当前使用的密码",
+      "newLabel": "新密码",
+      "newPlaceholder": "请输入新密码",
+      "confirmLabel": "确认新密码",
+      "confirmPlaceholder": "请再次输入新密码",
+      "saving": "正在保存...",
+      "save": "保存修改",
+      "mismatch": "新密码与确认密码不一致",
+      "tooShort": "新密码长度不能少于 6 位"
+    },
+    "email": {
+      "title": "修改邮箱",
+      "current": "当前邮箱：{email}",
+      "unbound": "未绑定",
+      "updated": "邮箱已更新",
+      "oldSendHint": "为保障账号安全，将向当前绑定邮箱发送验证码，验证通过后再绑定新邮箱。",
+      "sendToCurrent": "发送验证码至当前邮箱",
+      "sendToNew": "发送验证码至新邮箱",
+      "sending": "发送中...",
+      "resendIn": "{seconds}s后重发",
+      "resend": "重发验证码",
+      "oldOtpLabel": "请输入发送至当前邮箱的 6 位验证码",
+      "newOtpLabel": "请输入发送至新邮箱的 6 位验证码",
+      "verifyOld": "验证原邮箱",
+      "completeBind": "完成绑定",
+      "newLabel": "新邮箱",
+      "needOtp": "请输入 6 位验证码",
+      "needEmail": "请输入新邮箱",
+      "invalidEmail": "邮箱格式错误"
+    }
+  },
+  "DashboardCookie": {
+    "page": {
+      "title": "Cookie 管理",
+      "subtitle": "通过绑定交易所 Cookie，您可以解锁更多受限接口的功能，如获取带单员私有数据等。"
+    },
+    "notice": {
+      "title": "Cookie 提交说明",
+      "body": "每个交易所平台只能绑定一个 Cookie 信息。如果您需要绑定同一个交易所的多个 Cookie，可以免费注册多个本平台账号进行添加和使用。"
+    },
+    "plugin": {
+      "title": "浏览器插件自动获取",
+      "desc": "强烈推荐安装我们的 Chrome 浏览器插件同步 Cookie，安全便捷。",
+      "installChrome": "安装到 Chrome",
+      "supportWays": "支持以下方式使用插件：",
+      "howToTitle": "如何本地安装浏览器插件？",
+      "tutorialTitle": "使用教程：",
+      "step1Prefix": "① 插件安装：",
+      "step1Link": "如何安装使用Chrome浏览器插件",
+      "step2": "② 将插件固定在浏览器上，打开插件，登录跟单猿账号",
+      "step3": "③ 打开官网，登录交易所跟单的账号，等待页面加载完成后，点击自动抓取Cookie按钮，你可在本页面进行查看提交信息"
+    },
+    "browsers": {
+      "chromeAlt": "Chrome 浏览器",
+      "edgeAlt": "Edge 浏览器",
+      "firefoxAlt": "Firefox 浏览器",
+      "zipAlt": "ZIP 本地安装包",
+      "zipLabel": "ZIP 本地安装"
+    },
+    "manual": {
+      "title": "手动上传 Cookie",
+      "desc": "适合高级用户。在浏览器开发者工具中提取 Cookie 字符串并手动粘贴上传。",
+      "benefit1": "适合无法安装插件的环境",
+      "benefit2": "适合手机远程更新",
+      "benefit3": "需要定期手动更新过期 Cookie",
+      "uploadButton": "手动上传",
+      "dialogTitle": "手动上传 Cookie",
+      "dialogDesc": "请选择对应的交易所，并粘贴您获取到的完整 Cookie 字符串。",
+      "platformLabel": "交易所平台",
+      "platformPlaceholder": "选择交易所",
+      "binance": "Binance (币安)",
+      "okx": "OKX (欧易)",
+      "cookieLabel": "Cookie 字符串",
+      "cookiePlaceholder": "粘贴类似于 \"lang=zh-CN; session_id=...\" 的内容，或者直接粘贴包含 Cookie 的 cURL 命令，系统会自动提取。",
+      "cancel": "取消",
+      "save": "保存上传",
+      "howToTitle": "如何手动获取 Cookie？",
+      "guideIntro": "在Chrome浏览器中复制cURL命令，可以按照以下步骤操作：",
+      "guide1": "打开Chrome开发者工具（按F12），然后刷新网页",
+      "guide2Before": "在“网络”面板中找到请求：",
+      "guide2After": "，xxxxx为跟单的项目id",
+      "guide3Before": "(合约带单>当前带单)在“网络”面板中找到请求：",
+      "guide3After": "，xxxxx为跟单的项目id",
+      "guide4": "右键点击该请求，选择“复制” -> “以cURL格式复制”",
+      "guide5": "将请求的cURL命令复制到剪贴板，然后在上方文本框中粘贴。",
+      "guideOtherBrowsers": "此方法也适用于其他浏览器",
+      "exampleAlt": "获取 Cookie 示例图",
+      "warningTitle": "警告",
+      "warningBody": "请勿将此信息透露给其他人，以免造成资产损失。"
+    },
+    "list": {
+      "title": "我的交易所 Cookie",
+      "emptyTitle": "暂无 Cookie 数据",
+      "emptyDesc": "您还没有绑定任何交易所的 Cookie，请通过上方浏览器插件或手动上传来获取并绑定。",
+      "uploadNow": "立即上传",
+      "active": "生效中",
+      "inactive": "已失效",
+      "lastUpdated": "最后更新: {time}"
+    },
+    "edit": {
+      "title": "修改名称",
+      "desc": "自定义一个独特名字，便于自己和他人搜索使用。更改名字不会影响正在进行中的跟单。",
+      "nameLabel": "Cookie 名称",
+      "namePlaceholder": "输入修改的名字",
+      "cancel": "取消",
+      "saving": "保存中...",
+      "confirm": "确认修改"
+    },
+    "toast": {
+      "fetchFailed": "获取数据失败",
+      "noData": "暂无数据",
+      "uploadSuccess": "上传成功",
+      "updateSuccess": "修改成功"
+    }
+  },
+  "DashboardPricing": {
+    "page": {
+      "title": "会员服务",
+      "subtitle": "选择适合自己的会员服务",
+      "fetchFailed": "获取套餐价格失败"
+    },
+    "badges": {
+      "rebateExclusive": "返佣专属优惠",
+      "renewInDays": "{days}天后可优惠续费",
+      "renewWindowClosed": "未到优惠续费窗口"
+    },
+    "ui": {
+      "monthly": "月付",
+      "yearly": "年付",
+      "yearlyEnjoy": "年付享",
+      "discountPercent": "优惠 {percent}%",
+      "subscriptionPaid": "订阅付费",
+      "featurePaid": "功能付费",
+      "perMonth": "/月",
+      "perYear": "/年",
+      "perPermanent": "/永久",
+      "paymentMethod": "支付方式",
+      "paymentMethodSelectedAria": "支付方式：交易所转账（已选定）",
+      "exchangeTransfer": "交易所转账",
+      "needStudioVip": "需先开通工作室 VIP",
+      "needVip": "需先开通 VIP",
+      "studioNoNeedThisPack": "工作室 VIP 无需购买此包",
+      "assetLimitReached": "已达资金上限"
+    },
+    "pay": {
+      "title": "选择支付方式",
+      "closeAria": "关闭",
+      "selectExchange": "选择交易所",
+      "stepsTitle": "转账步骤",
+      "step1Before": "1. 请往以下{exchange}账号转入",
+      "step2": "2. 在{exchange}官网/APP 上进行转账操作，等待转账成功后进入转账详情页",
+      "step3": "3. 请输入{label}",
+      "placeholder": "请输入{label}",
+      "copy": "复制",
+      "copied": "已复制到剪贴板",
+      "copyFailed": "复制失败",
+      "needReference": "请输入{label}",
+      "binanceZh": "币安",
+      "okxZh": "OKX",
+      "orderId": "支付订单ID",
+      "referenceNo": "参考编号",
+      "tip": "转账提示：如遇「转账失败」、「网络错误」等情况，请联系我们处理。",
+      "close": "关闭",
+      "submit": "提交验证",
+      "submitSuccess": "提交成功，转账金额已确认！",
+      "submitFailed": "提交失败"
+    },
+    "plans": {
+      "free_vip": {
+        "name": "免费体验",
+        "subtitle": "适合个人交易",
+        "accounts": "1 个交易 API，1 个跟单任务",
+        "buttonText": "开通 VIP",
+        "features": [
+          "1 个交易 API",
+          "1 个跟单任务",
+          "授权交易 API 累计资金不超过 500 USDT",
+          "只能添加 OKX / Gate / Bitget 交易所 API",
+          "不支持带单 API",
+          "交易消息通知",
+          "普通客服支持"
+        ]
+      },
+      "vip_month": {
+        "name": "VIP",
+        "subtitle": "适合个人交易",
+        "accounts": "5 个交易 API，15 个跟单任务",
+        "buttonText": "开通 VIP",
+        "features": [
+          "5 个交易 API",
+          "15 个跟单任务",
+          "授权交易 API 累计资金不超过 5,000 USDT",
+          "可添加任意交易所 API",
+          "支持带单 API",
+          "交易消息通知",
+          "7 * 24 小时专业客服支持"
+        ],
+        "yearlyFeatures": [
+          "5 个交易 API",
+          "15 个跟单任务",
+          "授权交易 API 累计资金不超过 5,000 USDT",
+          "可添加任意交易所 API",
+          "支持带单 API",
+          "交易消息通知",
+          "7 * 24 小时专业客服支持",
+          "享包年 9 折优惠",
+          "额外赠送永久代理商权限"
+        ]
+      },
+      "studio_vip_month": {
+        "name": "工作室 VIP",
+        "subtitle": "适合小型跟单工作室",
+        "accounts": "10 个交易 API，50 个跟单任务",
+        "buttonText": "开通工作室 VIP",
+        "features": [
+          "10 个交易 API",
+          "50 个跟单任务",
+          "授权交易 API 累计资金不超过 20,000 USDT",
+          "可添加任意交易所 API",
+          "支持带单 API",
+          "交易消息通知",
+          "专属工作室管理功能",
+          "7 * 24 小时专业客服支持",
+          "支持功能定制"
+        ],
+        "yearlyFeatures": [
+          "10 个交易 API",
+          "50 个跟单任务",
+          "授权交易 API 累计资金不超过 20,000 USDT",
+          "可添加任意交易所 API",
+          "支持带单 API",
+          "交易消息通知",
+          "专属工作室管理功能",
+          "7 * 24 小时专业客服支持",
+          "支持功能定制",
+          "额外赠送永久代理商权限"
+        ]
+      },
+      "vip_permanent": {
+        "name": "永久 VIP",
+        "subtitle": "适合个人交易",
+        "accounts": "5 个交易 API，15 个跟单任务",
+        "buttonText": "开通永久 VIP",
+        "features": [
+          "5 个交易 API",
+          "15 个跟单任务",
+          "授权交易 API 累计资金不超过 5,000 USDT",
+          "可添加任意交易所 API",
+          "支持带单 API",
+          "交易消息通知",
+          "7 * 24 小时专业客服支持",
+          "支持功能定制"
+        ]
+      },
+      "vip_limit_pack_20000": {
+        "name": "VIP 资金限额提额",
+        "subtitle": "资金限额提升 20,000 USDT",
+        "accounts": "资金限额提升 20,000 USDT",
+        "buttonText": "购买 VIP 资金提额",
+        "features": [
+          "VIP 有效期内，永久提升资金限额 20,000 USDT",
+          "VIP 到期后，资金额度提升失效",
+          "仅限个人 VIP 用户购买"
+        ]
+      },
+      "studio_limit_pack_50000": {
+        "name": "工作室 VIP 资金限额提额",
+        "subtitle": "资金限额提升 50,000 USDT",
+        "accounts": "资金限额提升 50,000 USDT",
+        "buttonText": "购买工作室 VIP 资金提额",
+        "features": [
+          "工作室VIP 有效期内，永久提升资金限额 50,000 USDT",
+          "工作室VIP 到期后，资金额度提升失效",
+          "仅限工作室 VIP 用户购买"
+        ]
+      },
+      "studio_api_slot_pack_5": {
+        "name": "工作室 VIP 提升 API 授权数量",
+        "subtitle": "提升 API 授权数量",
+        "accounts": "提升交易 API 授权数量 5个",
+        "buttonText": "购买工作室 VIP API 授权数量",
+        "features": [
+          "工作室VIP 有效期内，永久提升交易 API 授权数量 5 个，可叠加",
+          "工作室VIP 有效期内，永久提升跟单任务数量 25 个，可叠加",
+          "工作室VIP 到期后，额外提升失效",
+          "仅限工作室 VIP 用户购买"
+        ]
+      }
+    }
+  },
+  "DashboardTaskList": {
+    "page": {
+      "title": "跟单列表",
+      "subtitle": "查看和管理您的跟单任务",
+      "fetchFailed": "获取任务列表失败",
+      "create": "创建新跟单",
+      "selectType": "选择跟单类型"
+    },
+    "tabs": {
+      "all": "全部",
+      "online": "进行中",
+      "stop": "已结束"
+    },
+    "types": {
+      "exchange": {
+        "title": "交易所自选跟单",
+        "desc": "直接连接交易所账户，信号最稳定，速度最快！"
+      },
+      "bicoin": {
+        "title": "币Coin跟单",
+        "desc": "基于操作记录或交易持仓进行跟单"
+      },
+      "cookie": {
+        "title": "Cookie跟单",
+        "desc": "使用交易所Cookie授权，实现0延迟跟单"
+      },
+      "api": {
+        "title": "API跟单",
+        "desc": "提交交易所API进行跟单，极速响应无延迟"
+      },
+      "hot": {
+        "title": "精选热门带单 KOL",
+        "desc": "一键跟随平台精选的顶级交易员策略"
+      },
+      "hyper": {
+        "title": "Hyperliquid跟单",
+        "desc": "新一代去中心化合约跟单，跟随链上巨鲸交易"
+      }
+    },
+    "table": {
+      "trader": "跟单对象",
+      "apiName": "API 名称",
+      "createdAt": "创建时间",
+      "status": "任务状态",
+      "actions": "操作",
+      "taskId": "任务ID: {id}",
+      "unknown": "未知",
+      "reverse": "反",
+      "running": "进行中",
+      "stopped": "已结束",
+      "empty": "暂无任务数据",
+      "pagination": "显示 {from} 到 {to} 条，共 {total} 条数据",
+      "prev": "上一页",
+      "next": "下一页"
+    },
+    "platforms": {
+      "3": "币coin",
+      "4": "热门",
+      "9": "NOF1 / AI模型"
+    },
+    "roleType": {
+      "okxContract": "合约带单",
+      "okxProfile": "个人概况",
+      "okxCookieProject": "跟单项目",
+      "binancePublic": "公开带单",
+      "binanceHidden": "隐藏带单",
+      "binanceSmart": "聪明钱",
+      "bicoinOps": "操作记录",
+      "bicoinPosition": "合约仓位"
+    },
+    "actions": {
+      "view": "查看详情",
+      "copy": "复制任务",
+      "stop": "终止跟单",
+      "stopTitle": "确认终止跟单？",
+      "stopDesc": "终止任务不会进行平仓，当前如有持仓，后续请自行平仓。",
+      "cancel": "取消",
+      "confirmStop": "确认终止",
+      "stopSuccess": "终止跟单成功",
+      "stopFailed": "终止跟单失败",
+      "stopRequestFailed": "终止请求失败，请重试"
+    }
+  },
+  "DashboardGrab": {
+    "hero": {
+      "title": "跟单抢位",
+      "desc": "当热门交易员满员时，使用抢位功能可以自动监控并第一时间为您抢占跟单名额。此功能需要配合交易所的 Cookie 使用。",
+      "getCookie": "获取交易所 Cookie"
+    },
+    "active": {
+      "title": "进行中的抢位任务",
+      "stopTitle": "终止抢位",
+      "stopConfirmTitle": "确认终止抢位任务？",
+      "stopConfirmDesc": "您确定要终止对交易员 {name} 的抢位吗？终止后您将失去排队位置。",
+      "cancel": "取消",
+      "confirmStop": "确认终止",
+      "grabbing": "正在抢位中..."
+    },
+    "form": {
+      "title": "创建抢位任务",
+      "desc": "配置您的抢位参数，以开始监控目标交易员的名额。",
+      "selectExchange": "选择目标交易所",
+      "cookieStatus": "我的 Cookie 状态",
+      "statusLabel": "状态:",
+      "statusActive": "有效",
+      "statusExpired": "已失效",
+      "cookieNotFound": "未找到您在 {exchange} 的 Cookie，请先前往添加",
+      "exchangeOkx": "欧易",
+      "exchangeBinance": "币安",
+      "traderUrlLabel": "交易员主页链接或 ID",
+      "traderUrlPlaceholder": "输入主页链接或 UID / 带单项目 ID",
+      "selectExchangeFirstPlaceholder": "请先选择交易所，再输入链接或 ID",
+      "parse": "解析",
+      "traderIdLabel": "交易员 （ UID 或 带单项目 ID）",
+      "invalidTraderUrl": "无效的链接或 ID 格式",
+      "selectExchangeFirst": "请先选择交易所",
+      "nextStep": "进入下一步"
+    },
+    "history": {
+      "title": "历史抢位任务",
+      "subtitle": "(只展示最近10条抢位任务)",
+      "success": "成功",
+      "stopped": "已终止",
+      "failed": "失败",
+      "createdAt": "创建时间",
+      "manuallyStopped": "您已手动终止该抢位任务"
+    },
+    "toast": {
+      "stopSuccess": "已终止抢位任务",
+      "stopFailed": "终止失败",
+      "requestFailed": "请求失败",
+      "createSuccess": "抢位任务已创建",
+      "createFailed": "创建失败"
+    },
+    "config": {
+      "title": "确认抢位信息",
+      "desc": "系统将以秒级频率自动为您抢位，全程通常不超过1秒。一般2-3天内就可以抢到，具体时间取决于带单员空位情况。",
+      "guide": "配置说明",
+      "loading": "加载交易员信息中...",
+      "unknownTrader": "未知交易员",
+      "fetchFailed": "获取数据失败",
+      "networkFailed": "网络请求失败，请稍后重试",
+      "platform": "平台: {name}",
+      "platformOkx": "欧易 OKX",
+      "platformBinance": "币安 Binance",
+      "noDesc": "暂无简介",
+      "pnl7d": "7天盈亏(USDT)",
+      "roi7d": "7天收益率",
+      "contractSettings": "合约跟单设置",
+      "ratioFollow": "定比跟单",
+      "fixedFollow": "定额跟单",
+      "ratioHint": "* 订单将按比例开仓（您的可用保证金余额 / 带单员的可用保证金余额）。",
+      "fixedHint": "* 每笔订单均使用固定保证金（每单跟单保证金）开仓。",
+      "okxHint": "跟单金额：专门用于跟随该交易员的总投资金额，将从您的交易账户中隔离占用。",
+      "costPerOrder": "每笔跟单金额 (USDT)",
+      "investAmount": "跟单金额 (USDT)",
+      "minPlaceholder": "最低{min}",
+      "cancel": "取消",
+      "submitting": "抢位提交中...",
+      "start": "开始抢位",
+      "errors": {
+        "investRequired": "请输入跟单金额！",
+        "invalidNumber": "请输入有效的数字！",
+        "invalidFormat": "请输入标准的数字格式，不要包含非数字字符",
+        "minValue": "输入数值必须大于等于{min}",
+        "costRequired": "请输入每笔跟单金额！"
+      }
+    }
+  },
+  "DashboardHotKol": {
+    "title": "精选热门带单 KOL",
+    "subtitle": "精选全网来自币安排行榜、欧意牛人榜、币coin等平台的顶级交易员，收益各个平台可查。信号来源第三方渠道，可能有时不稳定，建议优先选择原版信号跟单！",
+    "currentBalance": "当前资金",
+    "followNow": "立即跟单",
+    "unavailable": "暂时无法跟单",
+    "platforms": {
+      "okx": "OKX",
+      "binance": "Binance",
+      "bicoin": "币coin"
+    }
+  },
+  "DashboardHyperKol": {
+    "page": {
+      "title": "Hyperliquid KOL 发现",
+      "subtitle": "发现 Hyperliquid 中最有价值的交易者"
+    },
+    "badges": {
+      "hotAddresses": "热门地址",
+      "twitterKols": "推特 KOL"
+    },
+    "tabs": {
+      "hotAddresses": "热门地址",
+      "twitterKols": "推特 KOL"
+    },
+    "card": {
+      "copyAddress": "复制地址",
+      "analyze": "分析",
+      "follow": "跟单",
+      "accountValue": "账户总价值（合约+现货）",
+      "netPnlMonth": "净盈亏(1月)",
+      "openPositions": "当前持仓",
+      "winRateMonth": "胜率(1月)",
+      "loading": "加载中...",
+      "loadMore": "加载更多"
+    },
+    "toast": {
+      "copied": "地址已复制",
+      "copyFailed": "复制失败，请手动复制",
+      "invalidAddress": "地址无效",
+      "loadMoreFailed": "加载更多失败，请稍后重试"
+    }
   }
 }

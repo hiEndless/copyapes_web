@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Script from 'next/script'
 import { toast } from 'sonner'
 
@@ -51,6 +52,7 @@ const readSkipOld = (res: { code: number; data?: unknown }) => {
 }
 
 export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
+  const t = useTranslations('DashboardAccount')
   const siteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '').trim()
   const [turnstileWidgetError, setTurnstileWidgetError] = useState(false)
   const {
@@ -199,7 +201,7 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
   const verifyOld = async () => {
     const code = oldOtp.trim()
     if (code.length !== 6) {
-      toast.error('请输入 6 位验证码')
+      toast.error(t('email.needOtp'))
 
       return
     }
@@ -226,13 +228,13 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
     }
     const email = newEmail.trim().toLowerCase()
     if (!email) {
-      toast.error('请输入新邮箱')
+      toast.error(t('email.needEmail'))
 
       return
     }
     const re = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
     if (!re.test(email)) {
-      toast.error('邮箱格式错误')
+      toast.error(t('email.invalidEmail'))
 
       return
     }
@@ -262,7 +264,7 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
     const email = newEmail.trim().toLowerCase()
     const code = newOtp.trim()
     if (code.length !== 6) {
-      toast.error('请输入 6 位验证码')
+      toast.error(t('email.needOtp'))
 
       return
     }
@@ -285,14 +287,14 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
 
   const showTurnstileHint = Boolean(siteKey) && (turnstileLoadTimedOut || turnstileWidgetError)
   const turnstileHintReason = turnstileWidgetError && !turnstileLoadTimedOut ? 'widget' : 'script'
-  const displayCurrent = hasBound ? boundEmail : '未绑定'
+  const displayCurrent = hasBound ? boundEmail : t('email.unbound')
 
   return (
     <Card className='shadow-sm'>
       <CardHeader>
-        <CardTitle>修改邮箱</CardTitle>
+        <CardTitle>{t('email.title')}</CardTitle>
         <CardDescription>
-          当前邮箱：<span className='text-foreground font-medium'>{displayCurrent}</span>
+          {t('email.current', { email: displayCurrent ?? '' })}
         </CardDescription>
       </CardHeader>
       <CardContent className='space-y-6'>
@@ -316,9 +318,7 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
 
         {phase === 'old_send' ? (
           <div className='space-y-4'>
-            <p className='text-muted-foreground text-sm'>
-              为保障账号安全，将向当前绑定邮箱发送验证码，验证通过后再绑定新邮箱。
-            </p>
+            <p className='text-muted-foreground text-sm'>{t('email.oldSendHint')}</p>
             <Button
               type='button'
               onClick={() => void sendOldCode()}
@@ -326,14 +326,18 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
               className='w-full'
             >
               {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              {cooldownOld > 0 && !sending ? `${cooldownOld}s后重发` : sending ? '发送中...' : '发送验证码至当前邮箱'}
+              {cooldownOld > 0 && !sending
+                ? t('email.resendIn', { seconds: cooldownOld })
+                : sending
+                  ? t('email.sending')
+                  : t('email.sendToCurrent')}
             </Button>
           </div>
         ) : null}
 
         {phase === 'old_verify' ? (
           <div className='space-y-4'>
-            <Label htmlFor={oldOtpId}>请输入发送至当前邮箱的 6 位验证码</Label>
+            <Label htmlFor={oldOtpId}>{t('email.oldOtpLabel')}</Label>
             <InputOTP id={oldOtpId} maxLength={6} value={oldOtp} onChange={setOldOtp} disabled={verifying}>
               <InputOTPGroup className='gap-2 *:data-[slot=input-otp-slot]:rounded-md *:data-[slot=input-otp-slot]:border'>
                 <InputOTPSlot index={0} />
@@ -356,11 +360,11 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
                 disabled={sending || turnstileBlocking || cooldownOld > 0}
               >
                 {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                {cooldownOld > 0 && !sending ? `${cooldownOld}s后重发` : '重发验证码'}
+                {cooldownOld > 0 && !sending ? t('email.resendIn', { seconds: cooldownOld }) : t('email.resend')}
               </Button>
               <Button type='button' className='sm:flex-1' onClick={() => void verifyOld()} disabled={verifying || oldOtp.trim().length !== 6}>
                 {verifying && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                验证原邮箱
+                {t('email.verifyOld')}
               </Button>
             </div>
           </div>
@@ -369,7 +373,7 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
         {phase === 'new_input' ? (
           <div className='space-y-4'>
             <div className='space-y-2'>
-              <Label htmlFor='newEmailBind'>新邮箱</Label>
+              <Label htmlFor='newEmailBind'>{t('email.newLabel')}</Label>
               <Input
                 id='newEmailBind'
                 type='email'
@@ -386,14 +390,18 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
               className='w-full'
             >
               {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              {cooldownNew > 0 && !sending ? `${cooldownNew}s后重发` : sending ? '发送中...' : '发送验证码至新邮箱'}
+              {cooldownNew > 0 && !sending
+                ? t('email.resendIn', { seconds: cooldownNew })
+                : sending
+                  ? t('email.sending')
+                  : t('email.sendToNew')}
             </Button>
           </div>
         ) : null}
 
         {phase === 'new_verify' ? (
           <div className='space-y-4'>
-            <Label htmlFor={newOtpId}>请输入发送至新邮箱的 6 位验证码</Label>
+            <Label htmlFor={newOtpId}>{t('email.newOtpLabel')}</Label>
             <InputOTP id={newOtpId} maxLength={6} value={newOtp} onChange={setNewOtp} disabled={verifying}>
               <InputOTPGroup className='gap-2 *:data-[slot=input-otp-slot]:rounded-md *:data-[slot=input-otp-slot]:border'>
                 <InputOTPSlot index={0} />
@@ -416,11 +424,11 @@ export function EmailChangeCard({ boundEmail, onEmailUpdated }: Props) {
                 disabled={sending || turnstileBlocking || cooldownNew > 0}
               >
                 {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                {cooldownNew > 0 && !sending ? `${cooldownNew}s后重发` : '重发验证码'}
+                {cooldownNew > 0 && !sending ? t('email.resendIn', { seconds: cooldownNew }) : t('email.resend')}
               </Button>
               <Button type='button' className='sm:flex-1' onClick={() => void verifyNew()} disabled={verifying || newOtp.trim().length !== 6}>
                 {verifying && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                完成绑定
+                {t('email.completeBind')}
               </Button>
             </div>
           </div>

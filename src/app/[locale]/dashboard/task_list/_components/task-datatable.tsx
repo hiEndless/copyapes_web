@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import {
   EyeIcon,
@@ -24,6 +24,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
@@ -56,11 +57,11 @@ export type TaskItem = {
   id: number
   uniqueName: string
   label?: string
-  trader_platform: number // 1: OKX, 2: Binance, 3: 币coin ...
+  trader_platform: number // 1: OKX, 2: Binance, 3: BiCoin ...
   api_name: string
   create_datetime: string
   create_ts_ms?: number | string | null
-  status: number // 1: 进行中, 2: 已结束
+  status: number // 1: running, 2: ended
   posSide_set?: number
   lever_set?: number
   role_type?: number
@@ -69,257 +70,267 @@ export type TaskItem = {
   pnl?: string | number
 }
 
-const PLATFORM_MAP: Record<number, { name: string; logo: string | React.ReactNode }> = {
+type TranslateFn = {
+  (key: string, values?: Record<string, string | number | Date>): string
+}
+
+const getPlatformMap = (t: TranslateFn): Record<number, { name: string; logo: string | React.ReactNode }> => ({
   1: { name: 'OKX', logo: '/exchanges/okx.png' },
   2: { name: 'Binance', logo: '/exchanges/binance.png' },
-  3: { name: '币coin', logo: '/exchanges/bicoin.png' },
-  4: { name: '热门', logo: <Flame className='text-orange-500 h-full w-full' /> },
+  3: { name: t('platforms.3'), logo: '/exchanges/bicoin.png' },
+  4: { name: t('platforms.4'), logo: <Flame className='text-orange-500 h-full w-full' /> },
   5: { name: 'Binance API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
   6: { name: 'OKX API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
   7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
   8: { name: 'OKX Cookie', logo: '/exchanges/okx.png' },
-  9: { name: 'NOF1 / AI模型', logo: '/exchanges/default.png' }, // TODO: 更新 logo
+  9: { name: t('platforms.9'), logo: '/exchanges/default.png' },
   10: { name: 'Hyperliquid', logo: '/exchanges/hlq_logo.png' }
-}
+})
 
-const getRoleTypeLabel = (platform: number, roleType?: number | string) => {
+const getRoleTypeLabel = (t: TranslateFn, platform: number, roleType?: number | string) => {
   if (!roleType) return null
   const rt = String(roleType)
 
   if (platform === 1) {
-    if (rt === '1') return '合约带单'
-    if (rt === '2') return '个人概况'
+    if (rt === '1') return t('roleType.okxContract')
+    if (rt === '2') return t('roleType.okxProfile')
   } else if (platform === 8) {
-    if (rt === '1') return '合约带单'
-    if (rt === '2') return '跟单项目'
+    if (rt === '1') return t('roleType.okxContract')
+    if (rt === '2') return t('roleType.okxCookieProject')
   } else if (platform === 2 || platform === 5 || platform === 7) {
-    // Binance 系列
-    if (rt === '1') return '公开带单'
-    if (rt === '2') return '隐藏带单'
-    if (rt === '3') return '聪明钱'
+    if (rt === '1') return t('roleType.binancePublic')
+    if (rt === '2') return t('roleType.binanceHidden')
+    if (rt === '3') return t('roleType.binanceSmart')
   } else if (platform === 3) {
-    // 币coin
-    if (rt === '1') return '操作记录'
-    if (rt === '2') return '合约仓位'
+    if (rt === '1') return t('roleType.bicoinOps')
+    if (rt === '2') return t('roleType.bicoinPosition')
   }
 
   return null
 }
 
-const getColumns = (onRefresh?: () => void): ColumnDef<TaskItem>[] => [
-  {
-    header: '跟单对象',
-    accessorKey: 'uniqueName',
-    cell: ({ row }) => {
-      const platformInfo = PLATFORM_MAP[row.original.trader_platform] || {
-        name: '未知',
-        logo: '/exchanges/default.png'
-      }
+const getColumns = (t: TranslateFn, onRefresh?: () => void): ColumnDef<TaskItem>[] => {
+  const platformMap = getPlatformMap(t)
 
-      const roleTypeLabel = getRoleTypeLabel(row.original.trader_platform, row.original.role_type)
+  return [
+    {
+      header: t('table.trader'),
+      accessorKey: 'uniqueName',
+      cell: ({ row }) => {
+        const platformInfo = platformMap[row.original.trader_platform] || {
+          name: t('table.unknown'),
+          logo: '/exchanges/default.png'
+        }
 
-      return (
-        <div className='flex items-center gap-2'>
-          <div className='mr-2 flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full'>
-            {typeof platformInfo.logo === 'string' ? (
-              <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-cover' />
-            ) : (
-              platformInfo.logo
-            )}
-          </div>
-          <div className='flex flex-col'>
-            <span className='font-medium max-w-[200px] break-words whitespace-normal leading-snug'>
-              {(row.original.label || '').trim() || (row.getValue('uniqueName') as string)}
-            </span>
-            <div className='mt-1 flex flex-wrap items-center gap-1 text-xs text-muted-foreground'>
-              <span>任务ID: {row.original.id}</span>
-              {roleTypeLabel && (
-                <span className='bg-primary/10 text-primary rounded-[2px] px-1 py-0.5 scale-90 origin-left'>
-                  {roleTypeLabel}
-                </span>
-              )}
-              {row.original.posSide_set === 2 && (
-                <span className='bg-red-500 text-white rounded-[2px] px-1 py-0.5 scale-90 origin-left'>反</span>
+        const roleTypeLabel = getRoleTypeLabel(t, row.original.trader_platform, row.original.role_type)
+
+        return (
+          <div className='flex items-center gap-2'>
+            <div className='mr-2 flex h-7 w-7 shrink-0 items-center justify-center overflow-hidden rounded-full'>
+              {typeof platformInfo.logo === 'string' ? (
+                <img src={platformInfo.logo} alt={platformInfo.name} className='h-full w-full object-cover' />
+              ) : (
+                platformInfo.logo
               )}
             </div>
+            <div className='flex flex-col'>
+              <span className='font-medium max-w-[200px] break-words whitespace-normal leading-snug'>
+                {(row.original.label || '').trim() || (row.getValue('uniqueName') as string)}
+              </span>
+              <div className='mt-1 flex flex-wrap items-center gap-1 text-xs text-muted-foreground'>
+                <span>{t('table.taskId', { id: row.original.id })}</span>
+                {roleTypeLabel && (
+                  <span className='bg-primary/10 text-primary rounded-[2px] px-1 py-0.5 scale-90 origin-left'>
+                    {roleTypeLabel}
+                  </span>
+                )}
+                {row.original.posSide_set === 2 && (
+                  <span className='bg-red-500 text-white rounded-[2px] px-1 py-0.5 scale-90 origin-left'>
+                    {t('table.reverse')}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-      )
+        )
+      },
+      size: 250
     },
-    size: 250
-  },
-  {
-    header: 'API 名称',
-    accessorKey: 'api_name',
-    cell: ({ row }) => {
-      const flag = row.original.flag
-      const isPrimary = String(flag) === '1'
-      const apiName = row.getValue('api_name') as string
+    {
+      header: t('table.apiName'),
+      accessorKey: 'api_name',
+      cell: ({ row }) => {
+        const flag = row.original.flag
+        const isPrimary = String(flag) === '1'
+        const apiName = row.getValue('api_name') as string
 
-      return (
-        <Badge
-          className={cn(
-            'rounded-sm border-none focus-visible:outline-none',
-            isPrimary
-              ? 'bg-blue-600/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400'
-              : 'bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400'
-          )}
-        >
-          {apiName && apiName.length > 6 ? apiName.slice(0, 6) + '...' : apiName}
-        </Badge>
-      )
-    }
-  },
-  {
-    header: '创建时间',
-    accessorKey: 'create_ts_ms',
-    cell: ({ row }) => {
-      return <span className='text-muted-foreground'>{formatTaskCreatedTime(row.original)}</span>
-    }
-  },
-  {
-    header: '任务状态',
-    accessorKey: 'status',
-    cell: ({ row }) => {
-      const status = row.getValue('status') as number
-      const isRunning = status === 1
-
-      return (
-        <Badge
-          className={cn(
-            'rounded-sm border-none focus-visible:outline-none',
-            isRunning
-              ? 'bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400'
-              : 'bg-muted text-muted-foreground'
-          )}
-        >
-          {isRunning ? '进行中' : '已结束'}
-        </Badge>
-      )
-    }
-  },
-  {
-    id: 'actions',
-    header: () => '操作',
-    cell: function Cell({ row }) {
-      const router = useRouter()
-      const isRunning = row.original.status === 1
-      const [isConfigOpen, setIsConfigOpen] = useState(false)
-
-      const handleTerminateTask = async () => {
-        try {
-          const res = await stopTask(row.original.id)
-
-          if (res.code === 0) {
-            toast.success('终止跟单成功')
-            onRefresh?.()
-
-            // 刷新全局权益信息，同步剩余任务额度
-            try {
-              const profile = await settingsApi.getEntitlementProfile()
-
-              if (profile) {
-                localStorage.setItem('entitlementProfile', JSON.stringify(profile))
-                window.dispatchEvent(new Event('entitlementProfileUpdated'))
-              }
-            } catch (err) {
-              console.error('Failed to fetch entitlement profile after terminating task:', err)
-            }
-          } else {
-            toast.error(res.error || '终止跟单失败')
-          }
-        } catch (error) {
-          console.error('终止请求失败:', error)
-          toast.error('终止请求失败，请重试')
-        }
+        return (
+          <Badge
+            className={cn(
+              'rounded-sm border-none focus-visible:outline-none',
+              isPrimary
+                ? 'bg-blue-600/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400'
+                : 'bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400'
+            )}
+          >
+            {apiName && apiName.length > 6 ? apiName.slice(0, 6) + '...' : apiName}
+          </Badge>
+        )
       }
-
-      return (
-        <div className='flex items-center gap-1'>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size={'icon'}
-                aria-label='查看详情'
-                onClick={() => {
-                  if (typeof window !== 'undefined') {
-                    sessionStorage.setItem('current_task', JSON.stringify(row.original))
-                  }
-
-                  router.push(`/dashboard/task_list/task_detail/${row.original.id}` as any)
-                }}
-              >
-                <EyeIcon className='size-4.5 text-blue-600' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>查看详情</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant='ghost'
-                size={'icon'}
-                aria-label='复制任务'
-                onClick={() => setIsConfigOpen(true)}
-              >
-                <CopyIcon className='size-4.5 text-orange-500' />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>复制任务</p>
-            </TooltipContent>
-          </Tooltip>
-
-          <CopyTaskConfigSheet
-            isOpen={isConfigOpen}
-            onClose={() => setIsConfigOpen(false)}
-            traderId={row.original.uniqueName}
-            traderName={(row.original.label || '').trim() || row.original.uniqueName}
-            platform={PLATFORM_MAP[row.original.trader_platform]?.name?.toLowerCase() || 'okx'}
-            traderPlatform={row.original.trader_platform}
-            roleType={String(row.original.role_type || 1)}
-            initialTaskData={row.original}
-            onSuccess={onRefresh}
-          />
-
-          {isRunning && (
-            <AlertDialog>
-              <Tooltip>
-                <AlertDialogTrigger asChild>
-                  <TooltipTrigger asChild>
-                    <Button variant='ghost' size={'icon'} aria-label='终止跟单'>
-                      <BanIcon className='text-destructive size-4.5' />
-                    </Button>
-                  </TooltipTrigger>
-                </AlertDialogTrigger>
-                <TooltipContent>
-                  <p>终止跟单</p>
-                </TooltipContent>
-              </Tooltip>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>确认终止跟单？</AlertDialogTitle>
-                  <AlertDialogDescription>终止任务不会进行平仓，当前如有持仓，后续请自行平仓。</AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>取消</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleTerminateTask} className='bg-red-500 text-white hover:bg-red-600'>
-                    确认终止
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
-        </div>
-      )
     },
-    enableHiding: false
-  }
-]
+    {
+      header: t('table.createdAt'),
+      accessorKey: 'create_ts_ms',
+      cell: ({ row }) => {
+        return <span className='text-muted-foreground'>{formatTaskCreatedTime(row.original)}</span>
+      }
+    },
+    {
+      header: t('table.status'),
+      accessorKey: 'status',
+      cell: ({ row }) => {
+        const status = row.getValue('status') as number
+        const isRunning = status === 1
+
+        return (
+          <Badge
+            className={cn(
+              'rounded-sm border-none focus-visible:outline-none',
+              isRunning
+                ? 'bg-green-600/10 text-green-600 dark:bg-green-400/10 dark:text-green-400'
+                : 'bg-muted text-muted-foreground'
+            )}
+          >
+            {isRunning ? t('table.running') : t('table.stopped')}
+          </Badge>
+        )
+      }
+    },
+    {
+      id: 'actions',
+      header: () => t('table.actions'),
+      cell: function Cell({ row }) {
+        const router = useRouter()
+        const isRunning = row.original.status === 1
+        const [isConfigOpen, setIsConfigOpen] = useState(false)
+
+        const handleTerminateTask = async () => {
+          try {
+            const res = await stopTask(row.original.id)
+
+            if (res.code === 0) {
+              toast.success(t('actions.stopSuccess'))
+              onRefresh?.()
+
+              try {
+                const profile = await settingsApi.getEntitlementProfile()
+
+                if (profile) {
+                  localStorage.setItem('entitlementProfile', JSON.stringify(profile))
+                  window.dispatchEvent(new Event('entitlementProfileUpdated'))
+                }
+              } catch (err) {
+                console.error('Failed to fetch entitlement profile after terminating task:', err)
+              }
+            } else {
+              toast.error(res.error || t('actions.stopFailed'))
+            }
+          } catch (error) {
+            console.error('Stop request failed:', error)
+            toast.error(t('actions.stopRequestFailed'))
+          }
+        }
+
+        return (
+          <div className='flex items-center gap-1'>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size={'icon'}
+                  aria-label={t('actions.view')}
+                  onClick={() => {
+                    if (typeof window !== 'undefined') {
+                      sessionStorage.setItem('current_task', JSON.stringify(row.original))
+                    }
+
+                    router.push(`/dashboard/task_list/task_detail/${row.original.id}` as any)
+                  }}
+                >
+                  <EyeIcon className='size-4.5 text-blue-600' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('actions.view')}</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size={'icon'}
+                  aria-label={t('actions.copy')}
+                  onClick={() => setIsConfigOpen(true)}
+                >
+                  <CopyIcon className='size-4.5 text-orange-500' />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>{t('actions.copy')}</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <CopyTaskConfigSheet
+              isOpen={isConfigOpen}
+              onClose={() => setIsConfigOpen(false)}
+              traderId={row.original.uniqueName}
+              traderName={(row.original.label || '').trim() || row.original.uniqueName}
+              platform={platformMap[row.original.trader_platform]?.name?.toLowerCase() || 'okx'}
+              traderPlatform={row.original.trader_platform}
+              roleType={String(row.original.role_type || 1)}
+              initialTaskData={row.original}
+              onSuccess={onRefresh}
+            />
+
+            {isRunning && (
+              <AlertDialog>
+                <Tooltip>
+                  <AlertDialogTrigger asChild>
+                    <TooltipTrigger asChild>
+                      <Button variant='ghost' size={'icon'} aria-label={t('actions.stop')}>
+                        <BanIcon className='text-destructive size-4.5' />
+                      </Button>
+                    </TooltipTrigger>
+                  </AlertDialogTrigger>
+                  <TooltipContent>
+                    <p>{t('actions.stop')}</p>
+                  </TooltipContent>
+                </Tooltip>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>{t('actions.stopTitle')}</AlertDialogTitle>
+                    <AlertDialogDescription>{t('actions.stopDesc')}</AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>{t('actions.cancel')}</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={handleTerminateTask}
+                      className='bg-red-500 text-white hover:bg-red-600'
+                    >
+                      {t('actions.confirmStop')}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
+        )
+      },
+      enableHiding: false
+    }
+  ]
+}
 
 const TaskDatatable = ({
   data,
@@ -344,9 +355,10 @@ const TaskDatatable = ({
   onJumpPage?: (page: number) => void
   onRefresh?: () => void
 }) => {
+  const t = useTranslations('DashboardTaskList')
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
-  const columns = getColumns(onRefresh)
+  const columns = useMemo(() => getColumns(t, onRefresh), [t, onRefresh])
 
   const table = useReactTable({
     data,
@@ -371,6 +383,9 @@ const TaskDatatable = ({
     totalPages,
     paginationItemsToDisplay: 3
   })
+
+  const from = total > 0 ? (currentPage - 1) * pageSize + 1 : 0
+  const to = Math.min(currentPage * pageSize, total)
 
   return (
     <div className='w-full'>
@@ -423,7 +438,7 @@ const TaskDatatable = ({
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className='h-24 text-center'>
-                  暂无任务数据
+                  {t('table.empty')}
                 </TableCell>
               </TableRow>
             )}
@@ -433,11 +448,7 @@ const TaskDatatable = ({
 
       <div className='flex items-center justify-between gap-3 px-6 py-4 max-sm:flex-col md:max-lg:flex-col'>
         <p className='text-muted-foreground text-sm whitespace-nowrap' aria-live='polite'>
-          显示{' '}
-          <span>
-            {total > 0 ? (currentPage - 1) * pageSize + 1 : 0} 到 {Math.min(currentPage * pageSize, total)}
-          </span>{' '}
-          条，共 <span>{total.toString()}</span> 条数据
+          {t('table.pagination', { from, to, total })}
         </p>
 
         <div>
@@ -452,7 +463,7 @@ const TaskDatatable = ({
                   aria-label='Go to previous page'
                 >
                   <ChevronLeftIcon aria-hidden='true' />
-                  上一页
+                  {t('table.prev')}
                 </Button>
               </PaginationItem>
 
@@ -494,7 +505,7 @@ const TaskDatatable = ({
                   disabled={loading || (!hasNextPage && currentPage >= totalPages)}
                   aria-label='Go to next page'
                 >
-                  下一页
+                  {t('table.next')}
                   <ChevronRightIcon aria-hidden='true' />
                 </Button>
               </PaginationItem>

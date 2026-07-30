@@ -1,8 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { Plus, UserCheck, Coins, Cookie, Unplug, Flame, Droplets } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { cn } from '@/lib/utils'
@@ -14,11 +15,9 @@ import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 import TaskDatatable, { type TaskItem } from './_components/task-datatable'
 import { getTaskList } from '@/api/task'
 
-const TASK_TYPES = [
+const TASK_TYPE_DEFS = [
   {
     id: 'exchange',
-    title: '交易所自选跟单',
-    desc: '直接连接交易所账户，信号最稳定，速度最快！',
     icon: UserCheck,
     color: 'text-blue-600 dark:text-blue-400',
     bg: 'bg-blue-500',
@@ -28,8 +27,6 @@ const TASK_TYPES = [
   },
   {
     id: 'bicoin',
-    title: '币Coin跟单',
-    desc: '基于操作记录或交易持仓进行跟单',
     icon: Coins,
     logo: '/exchanges/bicoin.png',
     color: 'text-orange-600 dark:text-orange-400',
@@ -40,8 +37,6 @@ const TASK_TYPES = [
   },
   {
     id: 'cookie',
-    title: 'Cookie跟单',
-    desc: '使用交易所Cookie授权，实现0延迟跟单',
     icon: Cookie,
     color: 'text-purple-600 dark:text-purple-400',
     bg: 'bg-purple-500',
@@ -51,8 +46,6 @@ const TASK_TYPES = [
   },
   {
     id: 'api',
-    title: 'API跟单',
-    desc: '提交交易所API进行跟单，极速响应无延迟',
     icon: Unplug,
     color: 'text-cyan-600 dark:text-cyan-400',
     bg: 'bg-cyan-500',
@@ -62,8 +55,6 @@ const TASK_TYPES = [
   },
   {
     id: 'hot',
-    title: '精选热门带单 KOL',
-    desc: '一键跟随平台精选的顶级交易员策略',
     icon: Flame,
     color: 'text-rose-600 dark:text-rose-400',
     bg: 'bg-rose-500',
@@ -73,8 +64,6 @@ const TASK_TYPES = [
   },
   {
     id: 'hyper',
-    title: 'Hyperliquid跟单',
-    desc: '新一代去中心化合约跟单，跟随链上巨鲸交易',
     icon: Droplets,
     logo: '/exchanges/hlq_logo.png',
     color: 'text-emerald-600 dark:text-emerald-400',
@@ -83,9 +72,10 @@ const TASK_TYPES = [
     hoverBorder: 'hover:border-emerald-500/50',
     path: '/dashboard/add_task/hyper_task'
   }
-]
+] as const
 
 export default function TaskListPage() {
+  const t = useTranslations('DashboardTaskList')
   const router = useRouter()
   const [data, setData] = useState<TaskItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -95,6 +85,16 @@ export default function TaskListPage() {
   const [total, setTotal] = useState(0)
   const [hasNextPage, setHasNextPage] = useState(false)
 
+  const taskTypes = useMemo(
+    () =>
+      TASK_TYPE_DEFS.map(task => ({
+        ...task,
+        title: t(`types.${task.id}.title`),
+        desc: t(`types.${task.id}.desc`)
+      })),
+    [t]
+  )
+
   const getStatusParam = (tab: 'all' | 'online' | 'stop') => {
     if (tab === 'online') return 1
     if (tab === 'stop') return 2
@@ -102,40 +102,43 @@ export default function TaskListPage() {
     return undefined
   }
 
-  const fetchData = useCallback(async (nextPage: number, tab: 'all' | 'online' | 'stop') => {
-    try {
-      setLoading(true)
+  const fetchData = useCallback(
+    async (nextPage: number, tab: 'all' | 'online' | 'stop') => {
+      try {
+        setLoading(true)
 
-      const status = getStatusParam(tab)
+        const status = getStatusParam(tab)
 
-      const res = await getTaskList({
-        page: nextPage,
-        page_size: pageSize,
-        ...(status !== undefined ? { status } : {})
-      })
+        const res = await getTaskList({
+          page: nextPage,
+          page_size: pageSize,
+          ...(status !== undefined ? { status } : {})
+        })
 
-      if (res.code === 0 && Array.isArray(res.data)) {
-        setData(res.data)
-        const pagination = (res as any).pagination || {}
-        const resolvedTotal = Number(pagination.total ?? res.data.length ?? 0)
+        if (res.code === 0 && Array.isArray(res.data)) {
+          setData(res.data)
+          const pagination = (res as any).pagination || {}
+          const resolvedTotal = Number(pagination.total ?? res.data.length ?? 0)
 
-        setTotal(resolvedTotal)
+          setTotal(resolvedTotal)
 
-        if (typeof pagination.has_next === 'boolean') {
-          setHasNextPage(pagination.has_next)
+          if (typeof pagination.has_next === 'boolean') {
+            setHasNextPage(pagination.has_next)
+          } else {
+            setHasNextPage(res.data.length >= pageSize)
+          }
         } else {
-          setHasNextPage(res.data.length >= pageSize)
+          toast.error(res.error || t('page.fetchFailed'))
         }
-      } else {
-        toast.error(res.error || '获取任务列表失败')
+      } catch (error) {
+        console.error('Failed to fetch task list:', error)
+        toast.error(t('page.fetchFailed'))
+      } finally {
+        setLoading(false)
       }
-    } catch (error) {
-      console.error('获取任务列表失败:', error)
-      toast.error('获取任务列表失败')
-    } finally {
-      setLoading(false)
-    }
-  }, [pageSize])
+    },
+    [pageSize, t]
+  )
 
   useEffect(() => {
     fetchData(page, filter)
@@ -145,8 +148,8 @@ export default function TaskListPage() {
     <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
       <div className='flex flex-col sm:flex-row sm:items-center justify-between gap-4'>
         <div className='flex flex-col gap-2'>
-          <h2 className='text-2xl font-bold tracking-tight'>跟单列表</h2>
-          <p className='text-muted-foreground text-sm'>查看和管理您的跟单任务</p>
+          <h2 className='text-2xl font-bold tracking-tight'>{t('page.title')}</h2>
+          <p className='text-muted-foreground text-sm'>{t('page.subtitle')}</p>
         </div>
         <div className='flex items-center gap-4'>
           <Tabs
@@ -158,24 +161,24 @@ export default function TaskListPage() {
             className='w-full sm:w-auto'
           >
             <TabsList className='grid w-full grid-cols-3 sm:w-auto'>
-              <TabsTrigger value='all'>全部</TabsTrigger>
-              <TabsTrigger value='online'>进行中</TabsTrigger>
-              <TabsTrigger value='stop'>已结束</TabsTrigger>
+              <TabsTrigger value='all'>{t('tabs.all')}</TabsTrigger>
+              <TabsTrigger value='online'>{t('tabs.online')}</TabsTrigger>
+              <TabsTrigger value='stop'>{t('tabs.stop')}</TabsTrigger>
             </TabsList>
           </Tabs>
           <Dialog>
             <DialogTrigger asChild>
               <Button className='shrink-0' size='sm'>
                 <Plus className='mr-2 h-4 w-4' />
-                创建新跟单
+                {t('page.create')}
               </Button>
             </DialogTrigger>
             <DialogContent className='sm:max-w-2xl'>
               <DialogHeader>
-                <DialogTitle className='text-xl'>选择跟单类型</DialogTitle>
+                <DialogTitle className='text-xl'>{t('page.selectType')}</DialogTitle>
               </DialogHeader>
               <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 py-2'>
-                {TASK_TYPES.map(task => (
+                {taskTypes.map(task => (
                   <Card
                     key={task.id}
                     className={cn(
@@ -184,14 +187,13 @@ export default function TaskListPage() {
                     )}
                     onClick={() => router.push(task.path as any)}
                   >
-                    {/* Background watermark icon */}
                     <div
                       className={cn(
                         'absolute -right-3 -top-3 flex h-20 w-20 items-center justify-center rounded-full opacity-10 transition-transform duration-300 group-hover:scale-125',
                         task.color
                       )}
                     >
-                      {task.logo ? (
+                      {'logo' in task && task.logo ? (
                         <img src={task.logo} alt={task.title} className='h-14 w-14 object-contain opacity-50 grayscale' />
                       ) : (
                         <task.icon className='h-10 w-10' />
@@ -206,7 +208,7 @@ export default function TaskListPage() {
                           task.color
                         )}
                       >
-                        {task.logo ? (
+                        {'logo' in task && task.logo ? (
                           <img src={task.logo} alt={task.title} className='h-5 w-5 object-contain rounded-full' />
                         ) : (
                           <task.icon className='h-5 w-5' />

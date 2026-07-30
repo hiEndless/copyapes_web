@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { CircleHelp } from 'lucide-react'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription, SheetFooter } from '@/components/ui/sheet'
@@ -34,6 +35,7 @@ export function GrabTaskConfigSheet({
   traderName,
   platform
 }: GrabTaskConfigSheetProps) {
+  const t = useTranslations('DashboardGrab')
   const { startTourById } = useTour()
   const [isLoading, setIsLoading] = useState(false)
   const [isFetchingData, setIsFetchingData] = useState(false)
@@ -96,7 +98,7 @@ export function GrabTaskConfigSheet({
 
       if (res.code === 0 && res.data) {
         const data = res.data
-        setNickname(data.detail?.nicknameTranslate || traderName || traderId || '未知交易员')
+        setNickname(data.detail?.nicknameTranslate || traderName || traderId || t('config.unknownTrader'))
 
         let avatar = data.detail?.avatarUrl || `/exchanges/${platform}.png`
         if (avatar === 'https://bin.bnbstatic.com/static/images/copytrading/default-avatar.png') {
@@ -112,7 +114,7 @@ export function GrabTaskConfigSheet({
         if (platform === 'okx') {
           const minRatio = toStr(limit.fixRatioMinCopyAmount)
           setFixRatioMinCopyAmount(minRatio)
-          setRatioDec(`最低${minRatio}`)
+          setRatioDec(t('config.minPlaceholder', { min: minRatio }))
         } else {
           const minCost = toStr(limit.minCostPerOrderAmount)
           const maxCost = toStr(limit.maxCostPerOrderAmount)
@@ -133,10 +135,10 @@ export function GrabTaskConfigSheet({
           setPerOrderDec(`${minCost}~${maxCost}`)
         }
       } else {
-        setMsg(res.msg || res.error || '获取数据失败')
+        setMsg(res.msg || res.error || t('config.fetchFailed'))
       }
     } catch (e) {
-      setMsg('网络请求失败，请稍后重试')
+      setMsg(t('config.networkFailed'))
       console.error(e)
     } finally {
       setIsFetchingData(false)
@@ -150,27 +152,27 @@ export function GrabTaskConfigSheet({
 
     // 验证 investAmount (跟单金额)
     if (!investAmount) {
-      newErrors.investAmount = '请输入跟单金额！'
+      newErrors.investAmount = t('config.errors.investRequired')
       isValid = false
     } else {
       const investNum = parseFloat(investAmount)
       if (isNaN(investNum) || !isFinite(investNum)) {
-        newErrors.investAmount = '请输入有效的数字！'
+        newErrors.investAmount = t('config.errors.invalidNumber')
         isValid = false
       } else if (!/^\d+(\.\d+)?$/.test(investAmount)) {
-        newErrors.investAmount = '请输入标准的数字格式，不要包含非数字字符'
+        newErrors.investAmount = t('config.errors.invalidFormat')
         isValid = false
       } else {
         if (platform === 'binance' && followType === '2') {
           // 定额跟单 (Binance)
           if (investNum < parseFloat(fixAmtMinCopyAmount)) {
-            newErrors.investAmount = `输入数值必须大于等于${fixAmtMinCopyAmount}`
+            newErrors.investAmount = t('config.errors.minValue', { min: fixAmtMinCopyAmount })
             isValid = false
           }
         } else {
           // 定比跟单 (OKX 或 Binance)
           if (investNum < parseFloat(fixRatioMinCopyAmount)) {
-            newErrors.investAmount = `输入数值必须大于等于${fixRatioMinCopyAmount}`
+            newErrors.investAmount = t('config.errors.minValue', { min: fixRatioMinCopyAmount })
             isValid = false
           }
         }
@@ -180,18 +182,18 @@ export function GrabTaskConfigSheet({
     // 验证 costPerOrder (每笔跟单金额) - 仅币安定额跟单
     if (platform === 'binance' && followType === '2') {
       if (!costPerOrder) {
-        newErrors.costPerOrder = '请输入每笔跟单金额！'
+        newErrors.costPerOrder = t('config.errors.costRequired')
         isValid = false
       } else {
         const costNum = parseFloat(costPerOrder)
         if (isNaN(costNum) || !isFinite(costNum)) {
-          newErrors.costPerOrder = '请输入有效的数字！'
+          newErrors.costPerOrder = t('config.errors.invalidNumber')
           isValid = false
         } else if (!/^\d+(\.\d+)?$/.test(costPerOrder)) {
-          newErrors.costPerOrder = '请输入标准的数字格式，不要包含非数字字符'
+          newErrors.costPerOrder = t('config.errors.invalidFormat')
           isValid = false
         } else if (costNum < parseFloat(minCostPerOrderAmount)) {
-          newErrors.costPerOrder = `输入数值必须大于等于${minCostPerOrderAmount}`
+          newErrors.costPerOrder = t('config.errors.minValue', { min: minCostPerOrderAmount })
           isValid = false
         }
       }
@@ -216,19 +218,26 @@ export function GrabTaskConfigSheet({
       })
 
       if (res.code === 0) {
-        toast.success('抢位任务已创建')
+        toast.success(t('toast.createSuccess'))
         onSuccess?.()
         onClose()
       } else {
-        toast.error(res.error || res.msg || '创建失败')
+        toast.error(res.error || res.msg || t('toast.createFailed'))
       }
     } catch (e) {
       console.error(e)
-      toast.error('请求失败')
+      toast.error(t('toast.requestFailed'))
     } finally {
       setIsLoading(false)
     }
   }
+
+  const platformName =
+    platform === 'okx'
+      ? t('config.platformOkx')
+      : platform === 'binance'
+        ? t('config.platformBinance')
+        : platform
 
   return (
     <Sheet open={isOpen} onOpenChange={open => !open && onClose()}>
@@ -236,10 +245,8 @@ export function GrabTaskConfigSheet({
         <SheetHeader className='border-b px-6 py-4'>
           <div className='flex items-start justify-between gap-2 pr-6'>
             <div className='min-w-0'>
-              <SheetTitle>确认抢位信息</SheetTitle>
-              <SheetDescription>
-                系统将以秒级频率自动为您抢位，全程通常不超过1秒。一般2-3天内就可以抢到，具体时间取决于带单员空位情况。
-              </SheetDescription>
+              <SheetTitle>{t('config.title')}</SheetTitle>
+              <SheetDescription>{t('config.desc')}</SheetDescription>
             </div>
             <Button
               type='button'
@@ -249,7 +256,7 @@ export function GrabTaskConfigSheet({
               onClick={() => startTourById(TOUR_IDS.grabConfigGuide)}
             >
               <CircleHelp className='size-4' />
-              配置说明
+              {t('config.guide')}
             </Button>
           </div>
         </SheetHeader>
@@ -263,7 +270,7 @@ export function GrabTaskConfigSheet({
 
           {isFetchingData ? (
             <div className='flex h-40 items-center justify-center text-sm text-muted-foreground'>
-              加载交易员信息中...
+              {t('config.loading')}
             </div>
           ) : (
             <div className='space-y-6'>
@@ -283,24 +290,24 @@ export function GrabTaskConfigSheet({
                       <div className='flex items-center gap-3 text-xs text-muted-foreground'>
                         <span className='flex items-center gap-1'>
                           <span className='inline-block h-2 w-2 rounded-full bg-green-500'></span>
-                          平台: {platform === 'okx' ? '欧易 OKX' : platform === 'binance' ? '币安 Binance' : platform}
+                          {t('config.platform', { name: platformName })}
                         </span>
                       </div>
                       <p className='text-sm text-muted-foreground mt-2 line-clamp-2'>
-                        {desc || '暂无简介'}
+                        {desc || t('config.noDesc')}
                       </p>
                     </div>
                   </div>
                   
                   <div className='mt-4 grid grid-cols-2 gap-2 rounded-lg border bg-muted/30 p-3 text-center'>
                     <div className='flex flex-col items-center'>
-                      <p className='text-xs text-muted-foreground mb-1'>7天盈亏(USDT)</p>
+                      <p className='text-xs text-muted-foreground mb-1'>{t('config.pnl7d')}</p>
                       <p className={`font-bold text-lg ${parseFloat(pnl) >= 0 ? 'text-[#31bd65]' : 'text-[#eb4b6d]'}`}>
                         {pnl || '-'}
                       </p>
                     </div>
                     <div className='flex flex-col items-center'>
-                      <p className='text-xs text-muted-foreground mb-1'>7天收益率</p>
+                      <p className='text-xs text-muted-foreground mb-1'>{t('config.roi7d')}</p>
                       <p className={`font-bold text-lg ${parseFloat(roi) >= 0 ? 'text-[#31bd65]' : 'text-[#eb4b6d]'}`}>
                         {roi ? `${roi}%` : '-'}
                       </p>
@@ -311,34 +318,34 @@ export function GrabTaskConfigSheet({
 
               {/* 合约跟单设置 */}
               <div className='space-y-4 pt-2' {...tourAnchor(TOUR_ANCHORS.grabAmount)}>
-                <h4 className='font-semibold'>合约跟单设置</h4>
+                <h4 className='font-semibold'>{t('config.contractSettings')}</h4>
                 
                 {/* 币安独有：选择定额或定比 */}
                 {platform === 'binance' && (
                   <Tabs value={followType} onValueChange={setFollowType} className='w-full'>
                     <TabsList className='grid w-full grid-cols-2'>
-                      <TabsTrigger value='1'>定比跟单</TabsTrigger>
-                      <TabsTrigger value='2'>定额跟单</TabsTrigger>
+                      <TabsTrigger value='1'>{t('config.ratioFollow')}</TabsTrigger>
+                      <TabsTrigger value='2'>{t('config.fixedFollow')}</TabsTrigger>
                     </TabsList>
                   </Tabs>
                 )}
 
                 <div className='rounded-lg bg-muted/50 p-4 space-y-4 text-sm'>
                   {platform === 'binance' && followType === '1' && (
-                    <p className='text-muted-foreground'>* 订单将按比例开仓（您的可用保证金余额 / 带单员的可用保证金余额）。</p>
+                    <p className='text-muted-foreground'>{t('config.ratioHint')}</p>
                   )}
                   {platform === 'binance' && followType === '2' && (
-                    <p className='text-muted-foreground'>* 每笔订单均使用固定保证金（每单跟单保证金）开仓。</p>
+                    <p className='text-muted-foreground'>{t('config.fixedHint')}</p>
                   )}
                   {platform === 'okx' && (
-                    <p className='text-muted-foreground'>跟单金额：专门用于跟随该交易员的总投资金额，将从您的交易账户中隔离占用。</p>
+                    <p className='text-muted-foreground'>{t('config.okxHint')}</p>
                   )}
 
                   <div className='space-y-4 pt-2'>
                     {/* 币安 定额跟单：每笔跟单金额 */}
                     {platform === 'binance' && followType === '2' && (
                       <div className='space-y-2'>
-                        <Label>每笔跟单金额 (USDT)</Label>
+                        <Label>{t('config.costPerOrder')}</Label>
                         <Input 
                           placeholder={perOrderDec}
                           value={costPerOrder}
@@ -351,7 +358,7 @@ export function GrabTaskConfigSheet({
 
                     {/* 跟单金额 */}
                     <div className='space-y-2'>
-                      <Label>跟单金额 (USDT)</Label>
+                      <Label>{t('config.investAmount')}</Label>
                       <Input 
                         placeholder={platform === 'binance' && followType === '2' ? amtDec : ratioDec}
                         value={investAmount}
@@ -370,10 +377,10 @@ export function GrabTaskConfigSheet({
 
         <SheetFooter className='border-t p-6' {...tourAnchor(TOUR_ANCHORS.grabStart)}>
           <Button variant='outline' onClick={onClose} disabled={isLoading}>
-            取消
+            {t('config.cancel')}
           </Button>
           <Button onClick={handleSubmit} disabled={isLoading || !!msg || !nickname}>
-            {isLoading ? '抢位提交中...' : '开始抢位'}
+            {isLoading ? t('config.submitting') : t('config.start')}
           </Button>
         </SheetFooter>
       </SheetContent>

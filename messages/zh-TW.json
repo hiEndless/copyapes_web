@@ -1173,5 +1173,540 @@
         "deleteRetry": "刪除失敗，請重試"
       }
     }
+  },
+  "DashboardAccount": {
+    "page": {
+      "title": "帳戶設定",
+      "subtitle": "管理您的個人帳戶資訊與安全設定"
+    },
+    "tabs": {
+      "account": {
+        "label": "帳戶資訊",
+        "title": "帳戶資訊",
+        "description": "修改使用者名稱與綁定電子郵件。"
+      },
+      "password": {
+        "label": "修改密碼",
+        "title": "修改密碼",
+        "description": "定期修改密碼以保護您的帳戶安全。"
+      }
+    },
+    "username": {
+      "title": "修改使用者名稱",
+      "current": "目前使用者名稱：{name}",
+      "newLabel": "新使用者名稱",
+      "newPlaceholder": "至少 5 位，字母數字及 @ _ . -",
+      "passwordLabel": "目前密碼",
+      "passwordPlaceholder": "用於確認身分",
+      "saving": "儲存中...",
+      "save": "儲存使用者名稱",
+      "needUsername": "請輸入新使用者名稱",
+      "updated": "使用者名稱已更新"
+    },
+    "password": {
+      "title": "修改密碼",
+      "description": "新密碼長度不能少於 6 個字元。",
+      "oldLabel": "原密碼",
+      "oldPlaceholder": "請輸入目前使用的密碼",
+      "newLabel": "新密碼",
+      "newPlaceholder": "請輸入新密碼",
+      "confirmLabel": "確認新密碼",
+      "confirmPlaceholder": "請再次輸入新密碼",
+      "saving": "正在儲存...",
+      "save": "儲存修改",
+      "mismatch": "新密碼與確認密碼不一致",
+      "tooShort": "新密碼長度不能少於 6 位"
+    },
+    "email": {
+      "title": "修改電子郵件",
+      "current": "目前電子郵件：{email}",
+      "unbound": "未綁定",
+      "updated": "電子郵件已更新",
+      "oldSendHint": "為保障帳號安全，將向目前綁定電子郵件發送驗證碼，驗證通過後再綁定新電子郵件。",
+      "sendToCurrent": "發送驗證碼至目前電子郵件",
+      "sendToNew": "發送驗證碼至新電子郵件",
+      "sending": "發送中...",
+      "resendIn": "{seconds}s後重發",
+      "resend": "重發驗證碼",
+      "oldOtpLabel": "請輸入發送至目前電子郵件的 6 位驗證碼",
+      "newOtpLabel": "請輸入發送至新電子郵件的 6 位驗證碼",
+      "verifyOld": "驗證原電子郵件",
+      "completeBind": "完成綁定",
+      "newLabel": "新電子郵件",
+      "needOtp": "請輸入 6 位驗證碼",
+      "needEmail": "請輸入新電子郵件",
+      "invalidEmail": "電子郵件格式錯誤"
+    }
+  },
+  "DashboardCookie": {
+    "page": {
+      "title": "Cookie 管理",
+      "subtitle": "透過綁定交易所 Cookie，您可以解鎖更多受限介面的功能，如取得帶單員私有資料等。"
+    },
+    "notice": {
+      "title": "Cookie 提交說明",
+      "body": "每個交易所平台只能綁定一個 Cookie 資訊。如果您需要綁定同一個交易所的多個 Cookie，可以免費註冊多個本平台帳號進行新增和使用。"
+    },
+    "plugin": {
+      "title": "瀏覽器外掛自動取得",
+      "desc": "強烈建議安裝我們的 Chrome 瀏覽器外掛同步 Cookie，安全便捷。",
+      "installChrome": "安裝到 Chrome",
+      "supportWays": "支援以下方式使用外掛：",
+      "howToTitle": "如何本機安裝瀏覽器外掛？",
+      "tutorialTitle": "使用教學：",
+      "step1Prefix": "① 外掛安裝：",
+      "step1Link": "如何安裝使用 Chrome 瀏覽器外掛",
+      "step2": "② 將外掛固定在瀏覽器上，開啟外掛，登入跟單猿帳號",
+      "step3": "③ 開啟官網，登入交易所跟單帳號，等待頁面載入完成後，點擊自動擷取 Cookie 按鈕，即可在本頁查看並提交資訊"
+    },
+    "browsers": {
+      "chromeAlt": "Chrome 瀏覽器",
+      "edgeAlt": "Edge 瀏覽器",
+      "firefoxAlt": "Firefox 瀏覽器",
+      "zipAlt": "ZIP 本機安裝包",
+      "zipLabel": "ZIP 本機安裝"
+    },
+    "manual": {
+      "title": "手動上傳 Cookie",
+      "desc": "適合進階使用者。在瀏覽器開發者工具中擷取 Cookie 字串並手動貼上上傳。",
+      "benefit1": "適合無法安裝外掛的環境",
+      "benefit2": "適合手機遠端更新",
+      "benefit3": "需要定期手動更新過期 Cookie",
+      "uploadButton": "手動上傳",
+      "dialogTitle": "手動上傳 Cookie",
+      "dialogDesc": "請選擇對應的交易所，並貼上您取得的完整 Cookie 字串。",
+      "platformLabel": "交易所平台",
+      "platformPlaceholder": "選擇交易所",
+      "binance": "Binance (幣安)",
+      "okx": "OKX (歐易)",
+      "cookieLabel": "Cookie 字串",
+      "cookiePlaceholder": "貼上類似 \"lang=zh-CN; session_id=...\" 的內容，或直接貼上包含 Cookie 的 cURL 指令，系統會自動擷取。",
+      "cancel": "取消",
+      "save": "儲存上傳",
+      "howToTitle": "如何手動取得 Cookie？",
+      "guideIntro": "在 Chrome 瀏覽器中複製 cURL 指令，可依下列步驟操作：",
+      "guide1": "開啟 Chrome 開發者工具（按 F12），然後重新整理網頁",
+      "guide2Before": "在「網路」面板中找到請求：",
+      "guide2After": "，xxxxx 為跟單的專案 id",
+      "guide3Before": "(合約帶單>目前帶單)在「網路」面板中找到請求：",
+      "guide3After": "，xxxxx 為跟單的專案 id",
+      "guide4": "右鍵點擊該請求，選擇「複製」 -> 「以 cURL 格式複製」",
+      "guide5": "將請求的 cURL 指令複製到剪貼簿，然後貼到上方文字框。",
+      "guideOtherBrowsers": "此方法也適用於其他瀏覽器",
+      "exampleAlt": "取得 Cookie 範例圖",
+      "warningTitle": "警告",
+      "warningBody": "請勿將此資訊透露給其他人，以免造成資產損失。"
+    },
+    "list": {
+      "title": "我的交易所 Cookie",
+      "emptyTitle": "暫無 Cookie 資料",
+      "emptyDesc": "您尚未綁定任何交易所 Cookie，請透過上方瀏覽器外掛或手動上傳來取得並綁定。",
+      "uploadNow": "立即上傳",
+      "active": "生效中",
+      "inactive": "已失效",
+      "lastUpdated": "最後更新: {time}"
+    },
+    "edit": {
+      "title": "修改名稱",
+      "desc": "自訂一個獨特名稱，方便自己與他人搜尋使用。更改名稱不會影響進行中的跟單。",
+      "nameLabel": "Cookie 名稱",
+      "namePlaceholder": "輸入要修改的名稱",
+      "cancel": "取消",
+      "saving": "儲存中...",
+      "confirm": "確認修改"
+    },
+    "toast": {
+      "fetchFailed": "取得資料失敗",
+      "noData": "暫無資料",
+      "uploadSuccess": "上傳成功",
+      "updateSuccess": "修改成功"
+    }
+  },
+  "DashboardPricing": {
+    "page": {
+      "title": "會員服務",
+      "subtitle": "選擇適合自己的會員服務",
+      "fetchFailed": "取得套餐價格失敗"
+    },
+    "badges": {
+      "rebateExclusive": "返佣專屬優惠",
+      "renewInDays": "{days}天後可優惠續費",
+      "renewWindowClosed": "未到優惠續費窗口"
+    },
+    "ui": {
+      "monthly": "月付",
+      "yearly": "年付",
+      "yearlyEnjoy": "年付享",
+      "discountPercent": "優惠 {percent}%",
+      "subscriptionPaid": "訂閱付費",
+      "featurePaid": "功能付費",
+      "perMonth": "/月",
+      "perYear": "/年",
+      "perPermanent": "/永久",
+      "paymentMethod": "支付方式",
+      "paymentMethodSelectedAria": "支付方式：交易所轉帳（已選定）",
+      "exchangeTransfer": "交易所轉帳",
+      "needStudioVip": "需先開通工作室 VIP",
+      "needVip": "需先開通 VIP",
+      "studioNoNeedThisPack": "工作室 VIP 無需購買此包",
+      "assetLimitReached": "已達資金上限"
+    },
+    "pay": {
+      "title": "選擇支付方式",
+      "closeAria": "關閉",
+      "selectExchange": "選擇交易所",
+      "stepsTitle": "轉帳步驟",
+      "step1Before": "1. 請往以下{exchange}帳號轉入",
+      "step2": "2. 在{exchange}官網/APP 上進行轉帳，等待成功後進入轉帳詳情頁",
+      "step3": "3. 請輸入{label}",
+      "placeholder": "請輸入{label}",
+      "copy": "複製",
+      "copied": "已複製到剪貼簿",
+      "copyFailed": "複製失敗",
+      "needReference": "請輸入{label}",
+      "binanceZh": "幣安",
+      "okxZh": "OKX",
+      "orderId": "支付訂單ID",
+      "referenceNo": "參考編號",
+      "tip": "轉帳提示：如遇「轉帳失敗」、「網路錯誤」等情況，請聯絡我們處理。",
+      "close": "關閉",
+      "submit": "提交驗證",
+      "submitSuccess": "提交成功，轉帳金額已確認！",
+      "submitFailed": "提交失敗"
+    },
+    "plans": {
+      "free_vip": {
+        "name": "免費體驗",
+        "subtitle": "適合個人交易",
+        "accounts": "1 個交易 API，1 個跟單任務",
+        "buttonText": "開通 VIP",
+        "features": [
+          "1 個交易 API",
+          "1 個跟單任務",
+          "授權交易 API 累計資金不超過 500 USDT",
+          "只能新增 OKX / Gate / Bitget 交易所 API",
+          "不支援帶單 API",
+          "交易訊息通知",
+          "一般客服支援"
+        ]
+      },
+      "vip_month": {
+        "name": "VIP",
+        "subtitle": "適合個人交易",
+        "accounts": "5 個交易 API，15 個跟單任務",
+        "buttonText": "開通 VIP",
+        "features": [
+          "5 個交易 API",
+          "15 個跟單任務",
+          "授權交易 API 累計資金不超過 5,000 USDT",
+          "可新增任意交易所 API",
+          "支援帶單 API",
+          "交易訊息通知",
+          "7 * 24 小時專業客服支援"
+        ],
+        "yearlyFeatures": [
+          "5 個交易 API",
+          "15 個跟單任務",
+          "授權交易 API 累計資金不超過 5,000 USDT",
+          "可新增任意交易所 API",
+          "支援帶單 API",
+          "交易訊息通知",
+          "7 * 24 小時專業客服支援",
+          "享包年 9 折優惠",
+          "額外贈送永久代理商權限"
+        ]
+      },
+      "studio_vip_month": {
+        "name": "工作室 VIP",
+        "subtitle": "適合小型跟單工作室",
+        "accounts": "10 個交易 API，50 個跟單任務",
+        "buttonText": "開通工作室 VIP",
+        "features": [
+          "10 個交易 API",
+          "50 個跟單任務",
+          "授權交易 API 累計資金不超過 20,000 USDT",
+          "可新增任意交易所 API",
+          "支援帶單 API",
+          "交易訊息通知",
+          "專屬工作室管理功能",
+          "7 * 24 小時專業客服支援",
+          "支援功能客製"
+        ],
+        "yearlyFeatures": [
+          "10 個交易 API",
+          "50 個跟單任務",
+          "授權交易 API 累計資金不超過 20,000 USDT",
+          "可新增任意交易所 API",
+          "支援帶單 API",
+          "交易訊息通知",
+          "專屬工作室管理功能",
+          "7 * 24 小時專業客服支援",
+          "支援功能客製",
+          "額外贈送永久代理商權限"
+        ]
+      },
+      "vip_permanent": {
+        "name": "永久 VIP",
+        "subtitle": "適合個人交易",
+        "accounts": "5 個交易 API，15 個跟單任務",
+        "buttonText": "開通永久 VIP",
+        "features": [
+          "5 個交易 API",
+          "15 個跟單任務",
+          "授權交易 API 累計資金不超過 5,000 USDT",
+          "可新增任意交易所 API",
+          "支援帶單 API",
+          "交易訊息通知",
+          "7 * 24 小時專業客服支援",
+          "支援功能客製"
+        ]
+      },
+      "vip_limit_pack_20000": {
+        "name": "VIP 資金限額提額",
+        "subtitle": "資金限額提升 20,000 USDT",
+        "accounts": "資金限額提升 20,000 USDT",
+        "buttonText": "購買 VIP 資金提額",
+        "features": [
+          "VIP 有效期內，永久提升資金限額 20,000 USDT",
+          "VIP 到期後，資金額度提升失效",
+          "僅限個人 VIP 用戶購買"
+        ]
+      },
+      "studio_limit_pack_50000": {
+        "name": "工作室 VIP 資金限額提額",
+        "subtitle": "資金限額提升 50,000 USDT",
+        "accounts": "資金限額提升 50,000 USDT",
+        "buttonText": "購買工作室 VIP 資金提額",
+        "features": [
+          "工作室VIP 有效期內，永久提升資金限額 50,000 USDT",
+          "工作室VIP 到期後，資金額度提升失效",
+          "僅限工作室 VIP 用戶購買"
+        ]
+      },
+      "studio_api_slot_pack_5": {
+        "name": "工作室 VIP 提升 API 授權數量",
+        "subtitle": "提升 API 授權數量",
+        "accounts": "提升交易 API 授權數量 5 個",
+        "buttonText": "購買工作室 VIP API 授權數量",
+        "features": [
+          "工作室VIP 有效期內，永久提升交易 API 授權數量 5 個，可疊加",
+          "工作室VIP 有效期內，永久提升跟單任務數量 25 個，可疊加",
+          "工作室VIP 到期後，額外提升失效",
+          "僅限工作室 VIP 用戶購買"
+        ]
+      }
+    }
+  },
+  "DashboardTaskList": {
+    "page": {
+      "title": "跟單列表",
+      "subtitle": "查看和管理您的跟單任務",
+      "fetchFailed": "取得任務列表失敗",
+      "create": "建立新跟單",
+      "selectType": "選擇跟單類型"
+    },
+    "tabs": {
+      "all": "全部",
+      "online": "進行中",
+      "stop": "已結束"
+    },
+    "types": {
+      "exchange": {
+        "title": "交易所自選跟單",
+        "desc": "直接連接交易所帳戶，訊號最穩定，速度最快！"
+      },
+      "bicoin": {
+        "title": "幣Coin跟單",
+        "desc": "基於操作記錄或交易持倉進行跟單"
+      },
+      "cookie": {
+        "title": "Cookie跟單",
+        "desc": "使用交易所 Cookie 授權，實現 0 延遲跟單"
+      },
+      "api": {
+        "title": "API跟單",
+        "desc": "提交交易所 API 進行跟單，極速響應無延遲"
+      },
+      "hot": {
+        "title": "精選熱門帶單 KOL",
+        "desc": "一鍵跟隨平台精選的頂級交易員策略"
+      },
+      "hyper": {
+        "title": "Hyperliquid跟單",
+        "desc": "新一代去中心化合約跟單，跟隨鏈上巨鯨交易"
+      }
+    },
+    "table": {
+      "trader": "跟單對象",
+      "apiName": "API 名稱",
+      "createdAt": "建立時間",
+      "status": "任務狀態",
+      "actions": "操作",
+      "taskId": "任務ID: {id}",
+      "unknown": "未知",
+      "reverse": "反",
+      "running": "進行中",
+      "stopped": "已結束",
+      "empty": "暫無任務資料",
+      "pagination": "顯示 {from} 到 {to} 條，共 {total} 條資料",
+      "prev": "上一頁",
+      "next": "下一頁"
+    },
+    "platforms": {
+      "3": "幣coin",
+      "4": "熱門",
+      "9": "NOF1 / AI模型"
+    },
+    "roleType": {
+      "okxContract": "合約帶單",
+      "okxProfile": "個人概況",
+      "okxCookieProject": "跟單專案",
+      "binancePublic": "公開帶單",
+      "binanceHidden": "隱藏帶單",
+      "binanceSmart": "聰明錢",
+      "bicoinOps": "操作記錄",
+      "bicoinPosition": "合約倉位"
+    },
+    "actions": {
+      "view": "查看詳情",
+      "copy": "複製任務",
+      "stop": "終止跟單",
+      "stopTitle": "確認終止跟單？",
+      "stopDesc": "終止任務不會進行平倉，目前如有持倉，後續請自行平倉。",
+      "cancel": "取消",
+      "confirmStop": "確認終止",
+      "stopSuccess": "終止跟單成功",
+      "stopFailed": "終止跟單失敗",
+      "stopRequestFailed": "終止請求失敗，請重試"
+    }
+  },
+  "DashboardGrab": {
+    "hero": {
+      "title": "跟單搶位",
+      "desc": "當熱門交易員滿員時，使用搶位功能可以自動監控並第一時間為您搶占跟單名額。此功能需要配合交易所的 Cookie 使用。",
+      "getCookie": "取得交易所 Cookie"
+    },
+    "active": {
+      "title": "進行中的搶位任務",
+      "stopTitle": "終止搶位",
+      "stopConfirmTitle": "確認終止搶位任務？",
+      "stopConfirmDesc": "您確定要終止對交易員 {name} 的搶位嗎？終止後您將失去排隊位置。",
+      "cancel": "取消",
+      "confirmStop": "確認終止",
+      "grabbing": "正在搶位中..."
+    },
+    "form": {
+      "title": "建立搶位任務",
+      "desc": "設定您的搶位參數，以開始監控目標交易員的名額。",
+      "selectExchange": "選擇目標交易所",
+      "cookieStatus": "我的 Cookie 狀態",
+      "statusLabel": "狀態:",
+      "statusActive": "有效",
+      "statusExpired": "已失效",
+      "cookieNotFound": "找不到您在 {exchange} 的 Cookie，請先前往新增",
+      "exchangeOkx": "歐易",
+      "exchangeBinance": "幣安",
+      "traderUrlLabel": "交易員主頁連結或 ID",
+      "traderUrlPlaceholder": "輸入主頁連結或 UID / 帶單專案 ID",
+      "selectExchangeFirstPlaceholder": "請先選擇交易所，再輸入連結或 ID",
+      "parse": "解析",
+      "traderIdLabel": "交易員 （ UID 或 帶單專案 ID）",
+      "invalidTraderUrl": "無效的連結或 ID 格式",
+      "selectExchangeFirst": "請先選擇交易所",
+      "nextStep": "進入下一步"
+    },
+    "history": {
+      "title": "歷史搶位任務",
+      "subtitle": "(只展示最近10條搶位任務)",
+      "success": "成功",
+      "stopped": "已終止",
+      "failed": "失敗",
+      "createdAt": "建立時間",
+      "manuallyStopped": "您已手動終止該搶位任務"
+    },
+    "toast": {
+      "stopSuccess": "已終止搶位任務",
+      "stopFailed": "終止失敗",
+      "requestFailed": "請求失敗",
+      "createSuccess": "搶位任務已建立",
+      "createFailed": "建立失敗"
+    },
+    "config": {
+      "title": "確認搶位資訊",
+      "desc": "系統將以秒級頻率自動為您搶位，全程通常不超過1秒。一般2-3天內就可以搶到，具體時間取決於帶單員空位情況。",
+      "guide": "設定說明",
+      "loading": "載入交易員資訊中...",
+      "unknownTrader": "未知交易員",
+      "fetchFailed": "取得資料失敗",
+      "networkFailed": "網路請求失敗，請稍後重試",
+      "platform": "平台: {name}",
+      "platformOkx": "歐易 OKX",
+      "platformBinance": "幣安 Binance",
+      "noDesc": "暫無簡介",
+      "pnl7d": "7天盈虧(USDT)",
+      "roi7d": "7天收益率",
+      "contractSettings": "合約跟單設定",
+      "ratioFollow": "定比跟單",
+      "fixedFollow": "定額跟單",
+      "ratioHint": "* 訂單將按比例開倉（您的可用保證金餘額 / 帶單員的可用保證金餘額）。",
+      "fixedHint": "* 每筆訂單均使用固定保證金（每單跟單保證金）開倉。",
+      "okxHint": "跟單金額：專門用於跟隨該交易員的總投資金額，將從您的交易帳戶中隔離占用。",
+      "costPerOrder": "每筆跟單金額 (USDT)",
+      "investAmount": "跟單金額 (USDT)",
+      "minPlaceholder": "最低{min}",
+      "cancel": "取消",
+      "submitting": "搶位提交中...",
+      "start": "開始搶位",
+      "errors": {
+        "investRequired": "請輸入跟單金額！",
+        "invalidNumber": "請輸入有效的數字！",
+        "invalidFormat": "請輸入標準的數字格式，不要包含非數字字元",
+        "minValue": "輸入數值必須大於等於{min}",
+        "costRequired": "請輸入每筆跟單金額！"
+      }
+    }
+  },
+  "DashboardHotKol": {
+    "title": "精選熱門帶單 KOL",
+    "subtitle": "精選全網來自幣安排行榜、歐意牛人榜、幣coin等平台的頂級交易員，收益各平台可查。訊號來自第三方渠道，可能有時不穩定，建議優先選擇原版訊號跟單！",
+    "currentBalance": "目前資金",
+    "followNow": "立即跟單",
+    "unavailable": "暫時無法跟單",
+    "platforms": {
+      "okx": "OKX",
+      "binance": "Binance",
+      "bicoin": "幣coin"
+    }
+  },
+  "DashboardHyperKol": {
+    "page": {
+      "title": "Hyperliquid KOL 發現",
+      "subtitle": "發現 Hyperliquid 中最有價值的交易者"
+    },
+    "badges": {
+      "hotAddresses": "熱門地址",
+      "twitterKols": "推特 KOL"
+    },
+    "tabs": {
+      "hotAddresses": "熱門地址",
+      "twitterKols": "推特 KOL"
+    },
+    "card": {
+      "copyAddress": "複製地址",
+      "analyze": "分析",
+      "follow": "跟單",
+      "accountValue": "帳戶總價值（合約+現貨）",
+      "netPnlMonth": "淨盈虧(1月)",
+      "openPositions": "目前持倉",
+      "winRateMonth": "勝率(1月)",
+      "loading": "載入中...",
+      "loadMore": "載入更多"
+    },
+    "toast": {
+      "copied": "地址已複製",
+      "copyFailed": "複製失敗，請手動複製",
+      "invalidAddress": "地址無效",
+      "loadMoreFailed": "載入更多失敗，請稍後重試"
+    }
   }
 }

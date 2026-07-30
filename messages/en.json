@@ -1171,5 +1171,540 @@
         "deleteRetry": "Delete failed. Please try again."
       }
     }
+  },
+  "DashboardAccount": {
+    "page": {
+      "title": "Account Settings",
+      "subtitle": "Manage your account information and security settings"
+    },
+    "tabs": {
+      "account": {
+        "label": "Account",
+        "title": "Account",
+        "description": "Update your username and bound email."
+      },
+      "password": {
+        "label": "Password",
+        "title": "Change Password",
+        "description": "Change your password regularly to keep your account secure."
+      }
+    },
+    "username": {
+      "title": "Change Username",
+      "current": "Current username: {name}",
+      "newLabel": "New username",
+      "newPlaceholder": "At least 5 characters: letters, numbers, and @ _ . -",
+      "passwordLabel": "Current password",
+      "passwordPlaceholder": "Used to confirm your identity",
+      "saving": "Saving...",
+      "save": "Save username",
+      "needUsername": "Please enter a new username",
+      "updated": "Username updated"
+    },
+    "password": {
+      "title": "Change Password",
+      "description": "New password must be at least 6 characters.",
+      "oldLabel": "Current password",
+      "oldPlaceholder": "Enter your current password",
+      "newLabel": "New password",
+      "newPlaceholder": "Enter a new password",
+      "confirmLabel": "Confirm new password",
+      "confirmPlaceholder": "Enter the new password again",
+      "saving": "Saving...",
+      "save": "Save changes",
+      "mismatch": "New password and confirmation do not match",
+      "tooShort": "New password must be at least 6 characters"
+    },
+    "email": {
+      "title": "Change Email",
+      "current": "Current email: {email}",
+      "unbound": "Not bound",
+      "updated": "Email updated",
+      "oldSendHint": "For account security, we will send a verification code to your current email. After verification, you can bind a new email.",
+      "sendToCurrent": "Send code to current email",
+      "sendToNew": "Send code to new email",
+      "sending": "Sending...",
+      "resendIn": "Resend in {seconds}s",
+      "resend": "Resend code",
+      "oldOtpLabel": "Enter the 6-digit code sent to your current email",
+      "newOtpLabel": "Enter the 6-digit code sent to your new email",
+      "verifyOld": "Verify current email",
+      "completeBind": "Complete binding",
+      "newLabel": "New email",
+      "needOtp": "Please enter the 6-digit code",
+      "needEmail": "Please enter a new email",
+      "invalidEmail": "Invalid email format"
+    }
+  },
+  "DashboardCookie": {
+    "page": {
+      "title": "Cookie Management",
+      "subtitle": "Bind exchange cookies to unlock restricted APIs, such as private lead-trader data."
+    },
+    "notice": {
+      "title": "Cookie submission notes",
+      "body": "Each exchange can have only one bound Cookie. To bind multiple Cookies for the same exchange, register additional free accounts on this platform."
+    },
+    "plugin": {
+      "title": "Browser extension (recommended)",
+      "desc": "We strongly recommend installing our Chrome extension to sync Cookies securely and easily.",
+      "installChrome": "Install for Chrome",
+      "supportWays": "Supported install options:",
+      "howToTitle": "How to install the extension locally?",
+      "tutorialTitle": "Tutorial:",
+      "step1Prefix": "1. Install the extension:",
+      "step1Link": "How to install and use the Chrome extension",
+      "step2": "2. Pin the extension, open it, and sign in to your CopyApes account",
+      "step3": "3. Open the exchange site, sign in to the copy-trading account, wait for the page to load, then click Auto-capture Cookie. You can review and submit it on this page."
+    },
+    "browsers": {
+      "chromeAlt": "Chrome browser",
+      "edgeAlt": "Edge browser",
+      "firefoxAlt": "Firefox browser",
+      "zipAlt": "ZIP local package",
+      "zipLabel": "ZIP local install"
+    },
+    "manual": {
+      "title": "Upload Cookie manually",
+      "desc": "For advanced users. Extract the Cookie string from browser DevTools and paste it here.",
+      "benefit1": "Works when the extension cannot be installed",
+      "benefit2": "Convenient for remote updates from a phone",
+      "benefit3": "Expired Cookies must be updated manually",
+      "uploadButton": "Manual upload",
+      "dialogTitle": "Upload Cookie manually",
+      "dialogDesc": "Select the exchange and paste the full Cookie string you obtained.",
+      "platformLabel": "Exchange",
+      "platformPlaceholder": "Select exchange",
+      "binance": "Binance",
+      "okx": "OKX",
+      "cookieLabel": "Cookie string",
+      "cookiePlaceholder": "Paste content like \"lang=zh-CN; session_id=...\", or paste a cURL command that includes Cookie — it will be extracted automatically.",
+      "cancel": "Cancel",
+      "save": "Save upload",
+      "howToTitle": "How to get a Cookie manually?",
+      "guideIntro": "To copy a cURL command in Chrome, follow these steps:",
+      "guide1": "Open Chrome DevTools (press F12), then refresh the page",
+      "guide2Before": "— find this request in the Network panel:",
+      "guide2After": ", where xxxxx is the copy-trading project ID",
+      "guide3Before": "(Futures copy trading > Current leads) — find this request in the Network panel:",
+      "guide3After": ", where xxxxx is the copy-trading project ID",
+      "guide4": "Right-click the request, choose Copy -> Copy as cURL",
+      "guide5": "Paste the cURL command into the text box above.",
+      "guideOtherBrowsers": "This method also works in other browsers",
+      "exampleAlt": "Cookie capture example",
+      "warningTitle": "Warning",
+      "warningBody": "Do not share this information with others, or you may risk asset loss."
+    },
+    "list": {
+      "title": "My exchange Cookies",
+      "emptyTitle": "No Cookie data yet",
+      "emptyDesc": "You have not bound any exchange Cookie. Use the browser extension or manual upload above.",
+      "uploadNow": "Upload now",
+      "active": "Active",
+      "inactive": "Expired",
+      "lastUpdated": "Last updated: {time}"
+    },
+    "edit": {
+      "title": "Rename",
+      "desc": "Set a unique name for yourself and others to find. Renaming does not affect running copy tasks.",
+      "nameLabel": "Cookie name",
+      "namePlaceholder": "Enter a new name",
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "confirm": "Confirm"
+    },
+    "toast": {
+      "fetchFailed": "Failed to load data",
+      "noData": "No data available",
+      "uploadSuccess": "Uploaded successfully",
+      "updateSuccess": "Updated successfully"
+    }
+  },
+  "DashboardPricing": {
+    "page": {
+      "title": "Membership",
+      "subtitle": "Choose the plan that fits you",
+      "fetchFailed": "Failed to load plan prices"
+    },
+    "badges": {
+      "rebateExclusive": "Rebate exclusive offer",
+      "renewInDays": "Discount renewal in {days} days",
+      "renewWindowClosed": "Discount renewal window not open yet"
+    },
+    "ui": {
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "yearlyEnjoy": "Yearly saves",
+      "discountPercent": "{percent}% off",
+      "subscriptionPaid": "Subscription",
+      "featurePaid": "Add-ons",
+      "perMonth": "/mo",
+      "perYear": "/yr",
+      "perPermanent": "/lifetime",
+      "paymentMethod": "Payment method",
+      "paymentMethodSelectedAria": "Payment method: exchange transfer (selected)",
+      "exchangeTransfer": "Exchange transfer",
+      "needStudioVip": "Studio VIP required first",
+      "needVip": "VIP required first",
+      "studioNoNeedThisPack": "Not needed for Studio VIP",
+      "assetLimitReached": "Asset limit already reached"
+    },
+    "pay": {
+      "title": "Choose payment method",
+      "closeAria": "Close",
+      "selectExchange": "Select exchange",
+      "stepsTitle": "Transfer steps",
+      "step1Before": "1. Transfer to the following {exchange} account",
+      "step2": "2. Transfer on the {exchange} website/app, then open the transfer details page after success",
+      "step3": "3. Enter {label}",
+      "placeholder": "Enter {label}",
+      "copy": "Copy",
+      "copied": "Copied to clipboard",
+      "copyFailed": "Copy failed",
+      "needReference": "Please enter {label}",
+      "binanceZh": "Binance",
+      "okxZh": "OKX",
+      "orderId": "Payment order ID",
+      "referenceNo": "Reference number",
+      "tip": "Tip: If you see transfer failed or network errors, contact us for help.",
+      "close": "Close",
+      "submit": "Submit verification",
+      "submitSuccess": "Submitted. Transfer amount confirmed!",
+      "submitFailed": "Submit failed"
+    },
+    "plans": {
+      "free_vip": {
+        "name": "Free Trial",
+        "subtitle": "For individual traders",
+        "accounts": "1 trading API, 1 copy task",
+        "buttonText": "Upgrade to VIP",
+        "features": [
+          "1 trading API",
+          "1 copy task",
+          "Authorized trading API assets up to 500 USDT",
+          "OKX / Gate / Bitget APIs only",
+          "Lead-trader API not supported",
+          "Trade notifications",
+          "Standard support"
+        ]
+      },
+      "vip_month": {
+        "name": "VIP",
+        "subtitle": "For individual traders",
+        "accounts": "5 trading APIs, 15 copy tasks",
+        "buttonText": "Get VIP",
+        "features": [
+          "5 trading APIs",
+          "15 copy tasks",
+          "Authorized trading API assets up to 5,000 USDT",
+          "Any exchange API",
+          "Lead-trader API supported",
+          "Trade notifications",
+          "24/7 professional support"
+        ],
+        "yearlyFeatures": [
+          "5 trading APIs",
+          "15 copy tasks",
+          "Authorized trading API assets up to 5,000 USDT",
+          "Any exchange API",
+          "Lead-trader API supported",
+          "Trade notifications",
+          "24/7 professional support",
+          "10% off yearly plan",
+          "Permanent partner privileges included"
+        ]
+      },
+      "studio_vip_month": {
+        "name": "Studio VIP",
+        "subtitle": "For small copy-trading studios",
+        "accounts": "10 trading APIs, 50 copy tasks",
+        "buttonText": "Get Studio VIP",
+        "features": [
+          "10 trading APIs",
+          "50 copy tasks",
+          "Authorized trading API assets up to 20,000 USDT",
+          "Any exchange API",
+          "Lead-trader API supported",
+          "Trade notifications",
+          "Studio management features",
+          "24/7 professional support",
+          "Custom feature support"
+        ],
+        "yearlyFeatures": [
+          "10 trading APIs",
+          "50 copy tasks",
+          "Authorized trading API assets up to 20,000 USDT",
+          "Any exchange API",
+          "Lead-trader API supported",
+          "Trade notifications",
+          "Studio management features",
+          "24/7 professional support",
+          "Custom feature support",
+          "Permanent partner privileges included"
+        ]
+      },
+      "vip_permanent": {
+        "name": "Lifetime VIP",
+        "subtitle": "For individual traders",
+        "accounts": "5 trading APIs, 15 copy tasks",
+        "buttonText": "Get Lifetime VIP",
+        "features": [
+          "5 trading APIs",
+          "15 copy tasks",
+          "Authorized trading API assets up to 5,000 USDT",
+          "Any exchange API",
+          "Lead-trader API supported",
+          "Trade notifications",
+          "24/7 professional support",
+          "Custom feature support"
+        ]
+      },
+      "vip_limit_pack_20000": {
+        "name": "VIP Asset Limit Boost",
+        "subtitle": "Raise asset limit by 20,000 USDT",
+        "accounts": "Raise asset limit by 20,000 USDT",
+        "buttonText": "Buy VIP asset boost",
+        "features": [
+          "Permanently raise asset limit by 20,000 USDT while VIP is active",
+          "Boost expires when VIP expires",
+          "Personal VIP users only"
+        ]
+      },
+      "studio_limit_pack_50000": {
+        "name": "Studio VIP Asset Limit Boost",
+        "subtitle": "Raise asset limit by 50,000 USDT",
+        "accounts": "Raise asset limit by 50,000 USDT",
+        "buttonText": "Buy Studio VIP asset boost",
+        "features": [
+          "Permanently raise asset limit by 50,000 USDT while Studio VIP is active",
+          "Boost expires when Studio VIP expires",
+          "Studio VIP users only"
+        ]
+      },
+      "studio_api_slot_pack_5": {
+        "name": "Studio VIP API Slot Boost",
+        "subtitle": "Increase API authorization slots",
+        "accounts": "Add 5 trading API slots",
+        "buttonText": "Buy Studio VIP API slots",
+        "features": [
+          "Permanently add 5 trading API slots while Studio VIP is active (stackable)",
+          "Permanently add 25 copy tasks while Studio VIP is active (stackable)",
+          "Extra boosts expire when Studio VIP expires",
+          "Studio VIP users only"
+        ]
+      }
+    }
+  },
+  "DashboardTaskList": {
+    "page": {
+      "title": "Copy Tasks",
+      "subtitle": "View and manage your copy-trading tasks",
+      "fetchFailed": "Failed to load task list",
+      "create": "Create task",
+      "selectType": "Choose copy type"
+    },
+    "tabs": {
+      "all": "All",
+      "online": "Running",
+      "stop": "Ended"
+    },
+    "types": {
+      "exchange": {
+        "title": "Exchange lead copy",
+        "desc": "Connect exchange accounts directly for the most stable and fastest signals."
+      },
+      "bicoin": {
+        "title": "BiCoin copy",
+        "desc": "Copy based on operation history or positions."
+      },
+      "cookie": {
+        "title": "Cookie-based Copy",
+        "desc": "Authorize with exchange cookies for near-zero latency."
+      },
+      "api": {
+        "title": "API-to-API Copy",
+        "desc": "Submit exchange APIs for ultra-fast copy trading."
+      },
+      "hot": {
+        "title": "Featured KOL leads",
+        "desc": "One-click follow curated top trader strategies."
+      },
+      "hyper": {
+        "title": "Hyperliquid copy",
+        "desc": "Next-gen on-chain perpetual copy trading for whale wallets."
+      }
+    },
+    "table": {
+      "trader": "Lead trader",
+      "apiName": "API name",
+      "createdAt": "Created at",
+      "status": "Status",
+      "actions": "Actions",
+      "taskId": "Task ID: {id}",
+      "unknown": "Unknown",
+      "reverse": "REV",
+      "running": "Running",
+      "stopped": "Ended",
+      "empty": "No tasks yet",
+      "pagination": "Showing {from} to {to} of {total} entries",
+      "prev": "Previous",
+      "next": "Next"
+    },
+    "platforms": {
+      "3": "BiCoin",
+      "4": "Hot",
+      "9": "NOF1 / AI Model"
+    },
+    "roleType": {
+      "okxContract": "Futures lead",
+      "okxProfile": "Profile",
+      "okxCookieProject": "Copy project",
+      "binancePublic": "Public lead",
+      "binanceHidden": "Hidden lead",
+      "binanceSmart": "Smart money",
+      "bicoinOps": "Operations",
+      "bicoinPosition": "Futures positions"
+    },
+    "actions": {
+      "view": "View details",
+      "copy": "Copy task",
+      "stop": "Stop task",
+      "stopTitle": "Stop this copy task?",
+      "stopDesc": "Stopping will not close positions. Please close any open positions yourself afterward.",
+      "cancel": "Cancel",
+      "confirmStop": "Confirm stop",
+      "stopSuccess": "Task stopped",
+      "stopFailed": "Failed to stop task",
+      "stopRequestFailed": "Stop request failed, please retry"
+    }
+  },
+  "DashboardGrab": {
+    "hero": {
+      "title": "Seat Grab",
+      "desc": "When popular traders are full, seat grab monitors openings and claims a copy-trading slot for you as soon as one is available. This feature requires an exchange Cookie.",
+      "getCookie": "Get exchange Cookie"
+    },
+    "active": {
+      "title": "Active grab tasks",
+      "stopTitle": "Stop grab",
+      "stopConfirmTitle": "Stop this grab task?",
+      "stopConfirmDesc": "Stop grabbing a seat for trader {name}? You will lose your place in the queue.",
+      "cancel": "Cancel",
+      "confirmStop": "Confirm stop",
+      "grabbing": "Grabbing..."
+    },
+    "form": {
+      "title": "Create grab task",
+      "desc": "Configure grab parameters to start monitoring seats for the target trader.",
+      "selectExchange": "Select target exchange",
+      "cookieStatus": "My Cookie status",
+      "statusLabel": "Status:",
+      "statusActive": "Valid",
+      "statusExpired": "Expired",
+      "cookieNotFound": "No Cookie found for {exchange}. Please add one first.",
+      "exchangeOkx": "OKX",
+      "exchangeBinance": "Binance",
+      "traderUrlLabel": "Trader profile URL or ID",
+      "traderUrlPlaceholder": "Enter profile URL or UID / lead project ID",
+      "selectExchangeFirstPlaceholder": "Select an exchange first, then enter a URL or ID",
+      "parse": "Parse",
+      "traderIdLabel": "Trader (UID or lead project ID)",
+      "invalidTraderUrl": "Invalid URL or ID format",
+      "selectExchangeFirst": "Please select an exchange first",
+      "nextStep": "Next step"
+    },
+    "history": {
+      "title": "Grab history",
+      "subtitle": "(Showing the latest 10 grab tasks)",
+      "success": "Success",
+      "stopped": "Stopped",
+      "failed": "Failed",
+      "createdAt": "Created at",
+      "manuallyStopped": "You manually stopped this grab task"
+    },
+    "toast": {
+      "stopSuccess": "Grab task stopped",
+      "stopFailed": "Failed to stop",
+      "requestFailed": "Request failed",
+      "createSuccess": "Grab task created",
+      "createFailed": "Failed to create"
+    },
+    "config": {
+      "title": "Confirm grab details",
+      "desc": "The system grabs seats at second-level frequency, usually finishing within 1 second. Most seats are won in 2–3 days, depending on openings.",
+      "guide": "Config guide",
+      "loading": "Loading trader info...",
+      "unknownTrader": "Unknown trader",
+      "fetchFailed": "Failed to load data",
+      "networkFailed": "Network error. Please try again later.",
+      "platform": "Platform: {name}",
+      "platformOkx": "OKX",
+      "platformBinance": "Binance",
+      "noDesc": "No bio",
+      "pnl7d": "7D PnL (USDT)",
+      "roi7d": "7D ROI",
+      "contractSettings": "Futures copy settings",
+      "ratioFollow": "Ratio copy",
+      "fixedFollow": "Fixed copy",
+      "ratioHint": "* Orders open by ratio (your available margin / leader's available margin).",
+      "fixedHint": "* Each order uses a fixed margin (margin per order).",
+      "okxHint": "Copy amount: total capital reserved for this trader, isolated from your trading account.",
+      "costPerOrder": "Amount per order (USDT)",
+      "investAmount": "Copy amount (USDT)",
+      "minPlaceholder": "Min {min}",
+      "cancel": "Cancel",
+      "submitting": "Submitting...",
+      "start": "Start grab",
+      "errors": {
+        "investRequired": "Please enter a copy amount!",
+        "invalidNumber": "Please enter a valid number!",
+        "invalidFormat": "Please enter a standard number without non-numeric characters",
+        "minValue": "Value must be greater than or equal to {min}",
+        "costRequired": "Please enter the amount per order!"
+      }
+    }
+  },
+  "DashboardHotKol": {
+    "title": "Featured Lead KOLs",
+    "subtitle": "Curated top traders from Binance rankings, OKX leaderboards, BiCoin and more. Performance is verifiable on each platform. Signals come from third-party channels and may be unstable at times — prefer original-signal copy when possible.",
+    "currentBalance": "Current equity",
+    "followNow": "Copy now",
+    "unavailable": "Unavailable",
+    "platforms": {
+      "okx": "OKX",
+      "binance": "Binance",
+      "bicoin": "BiCoin"
+    }
+  },
+  "DashboardHyperKol": {
+    "page": {
+      "title": "Hyperliquid KOL Discover",
+      "subtitle": "Find the most valuable traders on Hyperliquid"
+    },
+    "badges": {
+      "hotAddresses": "Hot addresses",
+      "twitterKols": "Twitter KOLs"
+    },
+    "tabs": {
+      "hotAddresses": "Hot addresses",
+      "twitterKols": "Twitter KOLs"
+    },
+    "card": {
+      "copyAddress": "Copy address",
+      "analyze": "Analyze",
+      "follow": "Copy",
+      "accountValue": "Account value (perps + spot)",
+      "netPnlMonth": "Net PnL (1M)",
+      "openPositions": "Open positions",
+      "winRateMonth": "Win rate (1M)",
+      "loading": "Loading...",
+      "loadMore": "Load more"
+    },
+    "toast": {
+      "copied": "Address copied",
+      "copyFailed": "Copy failed. Please copy manually",
+      "invalidAddress": "Invalid address",
+      "loadMoreFailed": "Failed to load more. Please try again"
+    }
   }
 }

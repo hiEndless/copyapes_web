@@ -1,139 +1,101 @@
-'use client';
+'use client'
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react'
 
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { toast } from 'sonner'
 
-import Pricing, { type Plan } from '@/components/shadcn-studio/blocks/pricing-component-07/pricing-component-07';
-import { settingsApi, type RebateVipDiscountInfo } from '@/api/settings';
+import Pricing, { type Plan } from '@/components/shadcn-studio/blocks/pricing-component-07/pricing-component-07'
+import { settingsApi, type RebateVipDiscountInfo } from '@/api/settings'
 
-const REBATE_VIP_DISCOUNT_PRICE_SOURCE = 'rebate_vip_discount_price';
-const REBATE_VIP_BADGE_TEXT = '返佣专属优惠';
+const REBATE_VIP_DISCOUNT_PRICE_SOURCE = 'rebate_vip_discount_price'
 
-function getRebateRenewalInfoBadge(rebateDiscount?: RebateVipDiscountInfo) {
+const PLAN_DEFS: Array<{
+  id: Plan['id']
+  priceMonthly: number
+  oneTimePrice?: number
+  hasYearlyFeatures?: boolean
+}> = [
+  { id: 'free_vip', priceMonthly: 0 },
+  { id: 'vip_month', priceMonthly: 50, hasYearlyFeatures: true },
+  { id: 'studio_vip_month', priceMonthly: 100, hasYearlyFeatures: true },
+  { id: 'vip_permanent', priceMonthly: 0, oneTimePrice: 1200 },
+  { id: 'vip_limit_pack_20000', priceMonthly: 0, oneTimePrice: 100 },
+  { id: 'studio_limit_pack_50000', priceMonthly: 0, oneTimePrice: 300 },
+  { id: 'studio_api_slot_pack_5', priceMonthly: 0, oneTimePrice: 300 }
+]
+
+function getRebateRenewalInfoBadge(
+  t: (key: string, values?: Record<string, string | number | Date>) => string,
+  rebateDiscount?: RebateVipDiscountInfo
+) {
   if (!rebateDiscount || rebateDiscount.eligible) {
-    return null;
+    return null
   }
 
   if (rebateDiscount.is_studio_vip_active === true || rebateDiscount.studio_vip_days > 0) {
-    return null;
+    return null
   }
 
   if (rebateDiscount.has_rebate_binding === false) {
-    return null;
+    return null
   }
 
   if (rebateDiscount.cooldown_remaining_days > 0) {
-    return `${rebateDiscount.cooldown_remaining_days}天后可优惠续费`;
+    return t('badges.renewInDays', { days: rebateDiscount.cooldown_remaining_days })
   }
 
   if (rebateDiscount.renew_window_open === false && rebateDiscount.has_rebate_binding === true) {
-    return '未到优惠续费窗口';
+    return t('badges.renewWindowClosed')
   }
 
-  return null;
+  return null
 }
 
-const defaultPlans: Plan[] = [
-  {
-    id: 'free_vip',
-    name: '免费体验',
-    subtitle: '适合个人交易',
-    priceMonthly: 0,
-    accounts: '1 个交易 API，1 个跟单任务',
-    features: ['1 个交易 API', '1 个跟单任务', '授权交易 API 累计资金不超过 500 USDT', '只能添加 OKX / Gate / Bitget 交易所 API', '不支持带单 API', '交易消息通知', '普通客服支持'],
-    buttonText: '开通 VIP'
-  },
-  {
-    id: 'vip_month',
-    name: 'VIP',
-    subtitle: '适合个人交易',
-    priceMonthly: 50,
-    accounts: '5 个交易 API，15 个跟单任务',
-    features: ['5 个交易 API', '15 个跟单任务', '授权交易 API 累计资金不超过 5,000 USDT', '可添加任意交易所 API', '支持带单 API', '交易消息通知', '7 * 24 小时专业客服支持'],
-    yearlyFeatures: ['5 个交易 API', '15 个跟单任务', '授权交易 API 累计资金不超过 5,000 USDT', '可添加任意交易所 API', '支持带单 API', '交易消息通知', '7 * 24 小时专业客服支持', '享包年 9 折优惠', '额外赠送永久代理商权限'],
-    buttonText: '开通 VIP'
-  },
-  {
-    id: 'studio_vip_month',
-    name: '工作室 VIP',
-    subtitle: '适合小型跟单工作室',
-    priceMonthly: 100,
-    accounts: '10 个交易 API，50 个跟单任务',
-    features: ['10 个交易 API', '50 个跟单任务', '授权交易 API 累计资金不超过 20,000 USDT', '可添加任意交易所 API','支持带单 API', '交易消息通知', '专属工作室管理功能', '7 * 24 小时专业客服支持', '支持功能定制'],
-    yearlyFeatures: ['10 个交易 API', '50 个跟单任务', '授权交易 API 累计资金不超过 20,000 USDT', '可添加任意交易所 API','支持带单 API', '交易消息通知', '专属工作室管理功能', '7 * 24 小时专业客服支持', '支持功能定制', '额外赠送永久代理商权限'],
-    buttonText: '开通工作室 VIP'
-  },
-  {
-    id: 'vip_permanent',
-    name: '永久 VIP',
-    subtitle: '适合个人交易',
-    priceMonthly: 0,
-    oneTimePrice: 1200,
-    accounts: '5 个交易 API，15 个跟单任务',
-    features: ['5 个交易 API', '15 个跟单任务', '授权交易 API 累计资金不超过 5,000 USDT', '可添加任意交易所 API', '支持带单 API', '交易消息通知', '7 * 24 小时专业客服支持', '支持功能定制'],
-    buttonText: '开通永久 VIP'
-  },
-  {
-    id: 'vip_limit_pack_20000',
-    name: 'VIP 资金限额提额',
-    subtitle: '资金限额提升 20,000 USDT',
-    priceMonthly: 0,
-    oneTimePrice: 100,
-    accounts: '资金限额提升 20,000 USDT',
-    features: ['VIP 有效期内，永久提升资金限额 20,000 USDT', 'VIP 到期后，资金额度提升失效', '仅限个人 VIP 用户购买'],
-    buttonText: '购买 VIP 资金提额'
-  },
-  {
-    id: 'studio_limit_pack_50000',
-    name: '工作室 VIP 资金限额提额',
-    subtitle: '资金限额提升 50,000 USDT',
-    priceMonthly: 0,
-    oneTimePrice: 300,
-    accounts: '资金限额提升 50,000 USDT',
-    features: ['工作室VIP 有效期内，永久提升资金限额 50,000 USDT', '工作室VIP 到期后，资金额度提升失效', '仅限工作室 VIP 用户购买'],
-    buttonText: '购买工作室 VIP 资金提额'
-  },
-
-  // {
-  //   id: 'vip_api',
-  //   name: 'VIP 提升 API 授权数量',
-  //   subtitle: '提升 API 授权数量',
-  //   priceMonthly: 0,
-  //   oneTimePrice: 100,
-  //   accounts: '提升交易 API 授权数量 5个',
-  //   features: ['VIP 有效期内，永久提升交易 API 授权数量 5个，可叠加', 'VIP 到期后，授权数量提升失效', '仅限个人 VIP 用户购买'],
-  //   buttonText: '购买 VIP API 授权数量'
-  // },
-  {
-    id: 'studio_api_slot_pack_5',
-    name: '工作室 VIP 提升 API 授权数量',
-    subtitle: '提升 API 授权数量',
-    priceMonthly: 0,
-    oneTimePrice: 300,
-    accounts: '提升交易 API 授权数量 5个',
-    features: ['工作室VIP 有效期内，永久提升交易 API 授权数量 5 个，可叠加', '工作室VIP 有效期内，永久提升跟单任务数量 25 个，可叠加','工作室VIP 到期后，额外提升失效', '仅限工作室 VIP 用户购买'],
-    buttonText: '购买工作室 VIP API 授权数量'
-  }
-];
-
 export default function PricingPage() {
-  const [plans, setPlans] = useState<Plan[]>(defaultPlans);
-  const [loading, setLoading] = useState(true);
+  const t = useTranslations('DashboardPricing')
+
+  const defaultPlans = useMemo<Plan[]>(() => {
+    return PLAN_DEFS.map(def => {
+      const base: Plan = {
+        id: def.id,
+        name: t(`plans.${def.id}.name`),
+        subtitle: t(`plans.${def.id}.subtitle`),
+        priceMonthly: def.priceMonthly,
+        oneTimePrice: def.oneTimePrice,
+        accounts: t(`plans.${def.id}.accounts`),
+        features: t.raw(`plans.${def.id}.features`) as string[],
+        buttonText: t(`plans.${def.id}.buttonText`)
+      }
+
+      if (def.hasYearlyFeatures) {
+        base.yearlyFeatures = t.raw(`plans.${def.id}.yearlyFeatures`) as string[]
+      }
+
+      return base
+    })
+  }, [t])
+
+  const [plans, setPlans] = useState<Plan[]>(defaultPlans)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    setPlans(defaultPlans)
+  }, [defaultPlans])
 
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const res = await settingsApi.getPriceInfo();
-        const items = res?.plans || [];
-        const rebateRenewalInfoBadge = getRebateRenewalInfoBadge(res?.rebate_vip_discount);
+        const res = await settingsApi.getPriceInfo()
+        const items = res?.plans || []
+        const rebateRenewalInfoBadge = getRebateRenewalInfoBadge(t, res?.rebate_vip_discount)
+        const rebateBadge = t('badges.rebateExclusive')
 
-        // Merge fetched prices into defaultPlans
         const updatedPlans = defaultPlans.map(plan => {
           if (plan.id === 'vip_month') {
-            const monthPlan = items.find(item => item.plan_code === 'vip_month');
-            const yearPlan = items.find(item => item.plan_code === 'vip_year');
+            const monthPlan = items.find(item => item.plan_code === 'vip_month')
+            const yearPlan = items.find(item => item.plan_code === 'vip_year')
 
             return {
               ...plan,
@@ -141,15 +103,20 @@ export default function PricingPage() {
               priceYearly: yearPlan ? Number(yearPlan.effective_price) : undefined,
               monthPlanCode: 'vip_month',
               yearPlanCode: 'vip_year',
-              monthBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-              yearBadge: yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-              monthInfoBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? undefined : rebateRenewalInfoBadge ?? undefined,
-            };
+              monthBadge:
+                monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined,
+              yearBadge:
+                yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined,
+              monthInfoBadge:
+                monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE
+                  ? undefined
+                  : rebateRenewalInfoBadge ?? undefined
+            }
           }
 
           if (plan.id === 'studio_vip_month') {
-            const monthPlan = items.find(item => item.plan_code === 'studio_vip_month');
-            const yearPlan = items.find(item => item.plan_code === 'studio_vip_year');
+            const monthPlan = items.find(item => item.plan_code === 'studio_vip_month')
+            const yearPlan = items.find(item => item.plan_code === 'studio_vip_year')
 
             return {
               ...plan,
@@ -157,88 +124,108 @@ export default function PricingPage() {
               priceYearly: yearPlan ? Number(yearPlan.effective_price) : undefined,
               monthPlanCode: 'studio_vip_month',
               yearPlanCode: 'studio_vip_year',
-              monthBadge: monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-              yearBadge: yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-            };
+              monthBadge:
+                monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined,
+              yearBadge:
+                yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
+            }
           }
 
           if (plan.id === 'vip_permanent') {
-            const serverPlan = items.find(item => item.plan_code === 'vip_permanent');
+            const serverPlan = items.find(item => item.plan_code === 'vip_permanent')
 
             return {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'vip_permanent',
-              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-            };
+              oneTimeBadge:
+                serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
+            }
           }
 
           if (plan.id === 'vip_limit_pack_20000') {
-            const serverPlan = items.find(item => item.plan_code === 'vip_limit_pack_20000');
+            const serverPlan = items.find(item => item.plan_code === 'vip_limit_pack_20000')
 
             return {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'vip_limit_pack_20000',
-              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-            };
+              oneTimeBadge:
+                serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
+            }
           }
 
           if (plan.id === 'studio_limit_pack_100000') {
-            const serverPlan = items.find(item => item.plan_code === 'studio_limit_pack_100000');
+            const serverPlan = items.find(item => item.plan_code === 'studio_limit_pack_100000')
 
             return {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'studio_limit_pack_100000',
-              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-            };
+              oneTimeBadge:
+                serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
+            }
           }
 
           if (plan.id === 'vip_api_slot_pack_5') {
-            const serverPlan = items.find(item => item.plan_code === 'vip_api_slot_pack_5');
+            const serverPlan = items.find(item => item.plan_code === 'vip_api_slot_pack_5')
 
             return {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'vip_api_slot_pack_5',
-              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-            };
+              oneTimeBadge:
+                serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
+            }
           }
 
           if (plan.id === 'studio_api_slot_pack_5') {
-            const serverPlan = items.find(item => item.plan_code === 'studio_api_slot_pack_5');
+            const serverPlan = items.find(item => item.plan_code === 'studio_api_slot_pack_5')
 
             return {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
               oneTimePlanCode: 'studio_api_slot_pack_5',
-              oneTimeBadge: serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? REBATE_VIP_BADGE_TEXT : undefined,
-            };
+              oneTimeBadge:
+                serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
+            }
           }
 
-          return plan;
-        });
+          // Keep studio_limit_pack_50000 price merge aligned with plan id in UI defaults
+          if (plan.id === 'studio_limit_pack_50000') {
+            const serverPlan =
+              items.find(item => item.plan_code === 'studio_limit_pack_50000') ||
+              items.find(item => item.plan_code === 'studio_limit_pack_100000')
 
-        setPlans(updatedPlans);
+            return {
+              ...plan,
+              oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
+              oneTimePlanCode: serverPlan?.plan_code || 'studio_limit_pack_50000',
+              oneTimeBadge:
+                serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
+            }
+          }
+
+          return plan
+        })
+
+        setPlans(updatedPlans)
       } catch {
-        toast.error('获取套餐价格失败');
+        toast.error(t('page.fetchFailed'))
       } finally {
-        setLoading(false);
+        setLoading(false)
       }
-    };
+    }
 
-    fetchPrices();
-  }, []);
+    fetchPrices()
+  }, [defaultPlans, t])
 
   return (
     <div className='flex flex-1 flex-col p-4 md:px-6'>
       <div className='space-y-4'>
         <div>
-          <h1 className='text-2xl font-semibold tracking-tight'>会员服务</h1>
-          <p className='text-muted-foreground mt-1 text-sm'>
-            选择适合自己的会员服务
-          </p>
+          <h1 className='text-2xl font-semibold tracking-tight'>{t('page.title')}</h1>
+          <p className='text-muted-foreground mt-1 text-sm'>{t('page.subtitle')}</p>
         </div>
 
         {loading ? (
@@ -250,5 +237,5 @@ export default function PricingPage() {
         )}
       </div>
     </div>
-  );
+  )
 }
