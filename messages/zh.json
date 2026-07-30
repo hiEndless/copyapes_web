@@ -2407,5 +2407,192 @@
         }
       }
     }
+  },
+  "DashboardTaskDetail": {
+    "page": {
+      "title": "任务详情"
+    },
+    "params": {
+      "labels": {
+        "platform": "跟单平台",
+        "trader": "跟单对象",
+        "createdAt": "创建时间",
+        "reverse": "反向跟单",
+        "api": "API",
+        "roleType": "交易员类型",
+        "followMode": "跟单模式",
+        "multiple": "智能倍数",
+        "investment": "投资额",
+        "benchMark": "对标资金",
+        "leverage": "杠杆设置",
+        "marginMode": "保证金模式",
+        "firstOrder": "首单交易",
+        "tp": "单笔止盈",
+        "sl": "单笔止损",
+        "intervalOrder": "区间委托(新开仓)",
+        "posStrategy": "多空策略",
+        "vol24h": "24h成交量",
+        "balanceMonitor": "带单本金",
+        "whitelist": "白名单策略",
+        "blacklist": "黑名单策略",
+        "status": "任务状态"
+      },
+      "values": {
+        "yes": "是",
+        "no": "否",
+        "unknown": "未知",
+        "followTrader": "跟随交易员",
+        "notSet": "未设置",
+        "fixedRatio": "固定比例",
+        "longOnly": "只开多单",
+        "shortOnly": "只开空单",
+        "uplRatioFollow": "收益率小于{ratio}%时跟单",
+        "vol24hTop": "只跟排行前{num}的币种",
+        "balanceBelow": "低于{value}U不跟单",
+        "percent": "{value}%"
+      },
+      "platforms": {
+        "1": "OKX",
+        "2": "Binance",
+        "3": "币coin",
+        "4": "热门交易员",
+        "5": "API",
+        "6": "API",
+        "7": "Binance",
+        "8": "OKX",
+        "9": "NOF1",
+        "10": "HyperLiquid",
+        "unknown": "未知"
+      },
+      "roleTypes": {
+        "okxContract": "合约带单",
+        "okxProfile": "个人概况",
+        "okxCookieProject": "跟单项目",
+        "binancePublic": "公开带单",
+        "binanceHidden": "隐藏带单",
+        "binanceSmart": "聪明钱",
+        "bicoinOps": "操作记录",
+        "bicoinPosition": "合约仓位",
+        "aiModel": "AI模型",
+        "wallet": "钱包地址",
+        "unknown": "未知"
+      },
+      "firstOrder": {
+        "newOnly": "仅复制新开仓",
+        "copyCurrent": "复制当前持仓",
+        "copyLossOnly": "仅复制当前亏损仓位"
+      },
+      "marginMode": {
+        "follow": "跟随交易员",
+        "cross": "全仓",
+        "isolated": "逐仓"
+      },
+      "status": {
+        "running": "进行中",
+        "stopped": "已结束"
+      },
+      "terminate": {
+        "button": "终止跟单",
+        "title": "确认终止跟单？",
+        "desc": "终止任务不会进行平仓，当前如有持仓，后续请自行平仓。",
+        "cancel": "取消",
+        "confirm": "确认终止"
+      }
+    },
+    "positions": {
+      "snapshot": "快照 {time}",
+      "positionCount": "{count} 个仓位",
+      "openRatio": "开仓比例 {ratio}%",
+      "snapshotMissing": "快照缺失",
+      "calibrate": "手动校准",
+      "calibrateSoon": "手动校准 · 即将上线",
+      "refresh": "刷新",
+      "refreshPositions": "刷新仓位",
+      "simulatedWarning": "交易员持仓根据操作记录模拟建仓，与实际持仓可能存在出入",
+      "followOnly": "仅跟单账本存在",
+      "empty": "暂无持仓",
+      "emptyAbnormal": "暂无异常仓位",
+      "symbol": "合约",
+      "leader": "交易员",
+      "follow": "当前任务跟单",
+      "side": {
+        "long": "多",
+        "short": "空"
+      },
+      "mgn": {
+        "cross": "全仓",
+        "isolated": "逐仓"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "trader": "交易记录",
+        "follower": "跟单记录"
+      },
+      "spiderTitle": "交易员交易记录",
+      "tradeTitle": "跟单猿跟单记录",
+      "empty": "暂无数据",
+      "reverseBadge": "反向跟单",
+      "actions": {
+        "open": "开仓",
+        "add": "加仓",
+        "reduce": "减仓",
+        "close": "平仓",
+        "change": "变更"
+      },
+      "results": {
+        "success": "成功",
+        "failed": "失败",
+        "info": "提示"
+      },
+      "titles": {
+        "followEnded": "结束跟单",
+        "traderOpen": "交易员{name}开仓",
+        "traderOpenNoName": "交易员开仓",
+        "traderAdd": "交易员{name}加仓",
+        "traderAddNoName": "交易员加仓",
+        "traderReduce": "交易员{name}减仓",
+        "traderReduceNoName": "交易员减仓",
+        "traderClose": "交易员{name}平仓",
+        "traderCloseNoName": "交易员平仓",
+        "traderChange": "交易员{name}仓位变更",
+        "traderChangeNoName": "交易员仓位变更",
+        "signalRejected": "信号被拦截",
+        "tradeFailed": "交易失败",
+        "commandPublishFailed": "交易指令投递失败",
+        "fallback": "日志"
+      },
+      "desc": {
+        "terminationReason": "结束原因：{reason}",
+        "tradeTermination": "当前已有持仓不会平仓，后续请手动平仓",
+        "noDetail": "暂无详情",
+        "positionOpen": "交易量：{tradeVolume}\n持仓量：{positionVolume}\n当前收益率：{uplRatio}\n是否满足开仓条件：{openConditionMet}",
+        "positionDelta": "交易量：{tradeVolume}\n持仓量：{positionVolume}",
+        "positionChangedGeneric": "交易员仓位变更：{instId} {posSide}，信号：{signalType}。",
+        "signalRejected": "信号被拦截：{instId} {posSide}，信号：{signalType}。原因：交易精度限制导致数量过低。",
+        "tradeFailed": "交易失败：{instId} {posSide}，信号：{signalType}。原因：交易精度限制导致数量过低（交易员仓位量：{traderPositionSize}）。",
+        "commandPublishFailed": "交易指令投递失败：{instId} {posSide}，信号：{signalType}，交易员仓位量：{traderPositionSize}，stream_error={streamError}，legacy_error={legacyError}。",
+        "tradeSuccess": "交易所：{exchange}\n交易量：{volume}",
+        "tradeFailedFull": "交易所：{exchange}\n交易量：{volume}\n失败原因：{reason}",
+        "leverageWarning": "\n杠杆调整错误：{reason}"
+      },
+      "reasons": {
+        "target_volume_rounded_to_zero": "由于币种交易精度限制，交易量过低，无法下单",
+        "leader_positions_hidden_or_closed": "交易员已关闭带单项目或隐藏了仓位",
+        "cookie_auth_expired": "Cookie已过期，请重新获取后再跟单",
+        "token_expired_auto_close": "IP和TOKEN过期，任务自动终止",
+        "crawler_auto_stop_fetch_failure": "爬虫自动停机（连续抓取失败）",
+        "manual_stop": "用户手动终止",
+        "task_terminated_manual_close_required": "任务已结束，需手动平仓",
+        "task_follow_terminated_manual_close_required": "任务已结束，需手动平仓"
+      }
+    },
+    "toast": {
+      "fetchFailed": "获取任务失败",
+      "loadFailed": "加载失败",
+      "terminateStarted": "已发起终止跟单请求",
+      "terminateFailed": "终止请求失败",
+      "terminateRetry": "终止请求失败，请重试"
+    }
   }
 }

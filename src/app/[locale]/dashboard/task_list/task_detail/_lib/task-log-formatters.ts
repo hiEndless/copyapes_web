@@ -1,5 +1,7 @@
 import type { TaskLogItem } from './types'
 
+type TranslateFn = (key: string, values?: Record<string, string | number | Date>) => string
+
 type LogFormatContext = {
   payload: Record<string, unknown>
   payloadUniqueName: string
@@ -24,16 +26,51 @@ const TERMINATION_EVENT_CODES = new Set([
   'task_follow_terminated_manual_close_required'
 ])
 
-const EVENT_CODE_TERMINATION_REASON: Record<string, string> = {
-  leader_close_requested: '交易员已关闭带单项目或隐藏了仓位',
-  leader_positions_hidden_or_closed: '交易员已关闭带单项目或隐藏了仓位',
-  task_manual_stopped: '用户手动终止',
-  manual_stop: '用户手动终止',
-  cookie_auth_expired: 'Cookie已过期，请重新获取后再跟单',
-  token_expired_auto_close: 'IP和TOKEN过期，任务自动终止',
-  crawler_auto_stop_fetch_failure: '爬虫自动停机（连续抓取失败）',
-  task_terminated_manual_close_required: '任务已结束，需手动平仓',
-  task_follow_terminated_manual_close_required: '任务已结束，需手动平仓'
+const EVENT_CODE_TERMINATION_REASON_KEY: Record<string, string> = {
+  leader_close_requested: 'leader_positions_hidden_or_closed',
+  leader_positions_hidden_or_closed: 'leader_positions_hidden_or_closed',
+  task_manual_stopped: 'manual_stop',
+  manual_stop: 'manual_stop',
+  cookie_auth_expired: 'cookie_auth_expired',
+  token_expired_auto_close: 'token_expired_auto_close',
+  crawler_auto_stop_fetch_failure: 'crawler_auto_stop_fetch_failure',
+  task_terminated_manual_close_required: 'task_terminated_manual_close_required',
+  task_follow_terminated_manual_close_required: 'task_follow_terminated_manual_close_required'
+}
+
+const KNOWN_REASON_KEYS = new Set([
+  'target_volume_rounded_to_zero',
+  'leader_positions_hidden_or_closed',
+  'cookie_auth_expired',
+  'token_expired_auto_close',
+  'crawler_auto_stop_fetch_failure',
+  'manual_stop',
+  'task_terminated_manual_close_required',
+  'task_follow_terminated_manual_close_required'
+])
+
+const ACTION_CODE_FROM_LEGACY: Record<string, string> = {
+  开仓: 'open',
+  加仓: 'add',
+  减仓: 'reduce',
+  平仓: 'close',
+  变更: 'change'
+}
+
+const RESULT_CODE_FROM_LEGACY: Record<string, string> = {
+  成功: 'success',
+  失败: 'failed',
+  提示: 'info'
+}
+
+function normalizeActionCode(actionTag: string) {
+  const raw = String(actionTag || '').trim()
+  return (ACTION_CODE_FROM_LEGACY[raw] || raw).toLowerCase()
+}
+
+function normalizeResultCode(resultTag: string) {
+  const raw = String(resultTag || '').trim()
+  return (RESULT_CODE_FROM_LEGACY[raw] || raw).toLowerCase()
 }
 
 export function getColorClass(color: string | undefined) {
@@ -56,27 +93,28 @@ export function getSideTagClass(sideTag: string) {
 }
 
 export function getActionTagClass(actionTag: string) {
-  const action = String(actionTag || '').trim()
-  if (action === '开仓' || action === '加仓') {
+  const action = normalizeActionCode(actionTag)
+  if (action === 'open' || action === 'add') {
     return 'rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
   }
-  if (action === '减仓' || action === '平仓') {
+  if (action === 'reduce' || action === 'close') {
     return 'rounded bg-amber-100 px-2 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
   }
   return 'rounded bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'
 }
 
 export function getResultTagClass(resultTag: string) {
-  if (resultTag === '成功') {
+  const result = normalizeResultCode(resultTag)
+  if (result === 'success') {
     return 'rounded bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
   }
-  if (resultTag === '提示') {
+  if (result === 'info') {
     return 'rounded bg-blue-100 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
   }
   return 'rounded bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-700 dark:bg-rose-900/40 dark:text-rose-300'
 }
 
-export function createTaskLogFormatters(locale: string) {
+export function createTaskLogFormatters(t: TranslateFn) {
   const asText = (v: unknown, fallback = '-') => {
     const s = String(v ?? '').trim()
     return s || fallback
@@ -91,42 +129,15 @@ export function createTaskLogFormatters(locale: string) {
   const localizeReason = (reasonRaw: string) => {
     const key = String(reasonRaw || '').trim()
     if (!key) return '-'
-    const lang = locale.toLowerCase().startsWith('en') ? 'en' : 'zh'
-    const reasonI18nMap: Record<string, Record<string, string>> = {
-      target_volume_rounded_to_zero: {
-        zh: '由于币种交易精度限制，交易量过低，无法下单',
-        en: 'Order quantity is too small after precision rounding'
-      },
-      leader_positions_hidden_or_closed: {
-        zh: '交易员已关闭带单项目或隐藏了仓位',
-        en: 'Trader copy project closed or positions hidden'
-      },
-      cookie_auth_expired: {
-        zh: 'Cookie已过期，请重新获取后再跟单',
-        en: 'Cookie authentication expired'
-      },
-      token_expired_auto_close: {
-        zh: 'IP和TOKEN过期，任务自动终止',
-        en: 'IP and token expired, task auto-terminated'
-      },
-      crawler_auto_stop_fetch_failure: {
-        zh: '爬虫自动停机（连续抓取失败）',
-        en: 'Crawler auto-stopped due to consecutive fetch failures'
-      },
-      manual_stop: {
-        zh: '用户手动终止',
-        en: 'Manually stopped by user'
-      },
-      task_terminated_manual_close_required: {
-        zh: '任务已结束，需手动平仓',
-        en: 'Task terminated, manual close required'
-      }
+    if (KNOWN_REASON_KEYS.has(key)) {
+      return t(`logs.reasons.${key}`)
     }
-    return reasonI18nMap[key]?.[lang] || key
+    return key
   }
 
   const isTerminationEvent = (eventCode: string) => TERMINATION_EVENT_CODES.has(eventCode)
 
+  // 保留对后端中文描述的识别兜底
   const isFollowTradeTerminationLog = (item: TaskLogItem) => {
     const title = asText(item?.title, '')
     if (title === '结束跟单') return true
@@ -139,8 +150,9 @@ export function createTaskLogFormatters(locale: string) {
     payload: Record<string, unknown>,
     item: TaskLogItem
   ) => {
-    if (EVENT_CODE_TERMINATION_REASON[eventCode]) {
-      return EVENT_CODE_TERMINATION_REASON[eventCode]
+    const mappedKey = EVENT_CODE_TERMINATION_REASON_KEY[eventCode]
+    if (mappedKey) {
+      return t(`logs.reasons.${mappedKey}`)
     }
     const reasonKey = asText(payload['reason'], asText(item?.reason, ''))
     if (reasonKey) {
@@ -155,9 +167,9 @@ export function createTaskLogFormatters(locale: string) {
     eventCode: string,
     payload: Record<string, unknown>,
     item: TaskLogItem
-  ) => `结束原因：${resolveTerminationReason(eventCode, payload, item)}`
+  ) => t('logs.desc.terminationReason', { reason: resolveTerminationReason(eventCode, payload, item) })
 
-  const formatTradeTerminationDescription = () => '当前已有持仓不会平仓，后续请手动平仓'
+  const formatTradeTerminationDescription = () => t('logs.desc.tradeTermination')
 
   const formatLogTitle = (item: TaskLogItem) => {
     const payload = (item.log_payload || {}) as Record<string, unknown>
@@ -165,23 +177,47 @@ export function createTaskLogFormatters(locale: string) {
     const payloadUniqueName = asText(payload['unique_name'], asText(item?.unique_name, ''))
 
     if (isTerminationEvent(eventCode)) {
-      return '结束跟单'
+      return t('logs.titles.followEnded')
     }
 
-    const titleMap: Record<string, string> = {
-      trader_position_changed: (() => {
-        const signal = asText(payload['signal_type'], '').toLowerCase()
-        if (signal === 'open') return payloadUniqueName ? `交易员${payloadUniqueName}开仓` : '交易员开仓'
-        if (signal === 'add') return payloadUniqueName ? `交易员${payloadUniqueName}加仓` : '交易员加仓'
-        if (signal === 'reduce') return payloadUniqueName ? `交易员${payloadUniqueName}减仓` : '交易员减仓'
-        if (signal === 'close') return payloadUniqueName ? `交易员${payloadUniqueName}平仓` : '交易员平仓'
-        return payloadUniqueName ? `交易员${payloadUniqueName}仓位变更` : '交易员仓位变更'
-      })(),
-      signal_rejected_precision_too_small: '信号被拦截',
-      target_volume_rounded_to_zero: '交易失败',
-      task_command_publish_failed: '交易指令投递失败'
+    if (eventCode === 'trader_position_changed') {
+      const signal = asText(payload['signal_type'], '').toLowerCase()
+      if (signal === 'open') {
+        return payloadUniqueName
+          ? t('logs.titles.traderOpen', { name: payloadUniqueName })
+          : t('logs.titles.traderOpenNoName')
+      }
+      if (signal === 'add') {
+        return payloadUniqueName
+          ? t('logs.titles.traderAdd', { name: payloadUniqueName })
+          : t('logs.titles.traderAddNoName')
+      }
+      if (signal === 'reduce') {
+        return payloadUniqueName
+          ? t('logs.titles.traderReduce', { name: payloadUniqueName })
+          : t('logs.titles.traderReduceNoName')
+      }
+      if (signal === 'close') {
+        return payloadUniqueName
+          ? t('logs.titles.traderClose', { name: payloadUniqueName })
+          : t('logs.titles.traderCloseNoName')
+      }
+      return payloadUniqueName
+        ? t('logs.titles.traderChange', { name: payloadUniqueName })
+        : t('logs.titles.traderChangeNoName')
     }
-    return titleMap[eventCode] || asText(item?.title, '日志')
+
+    if (eventCode === 'signal_rejected_precision_too_small') {
+      return t('logs.titles.signalRejected')
+    }
+    if (eventCode === 'target_volume_rounded_to_zero') {
+      return t('logs.titles.tradeFailed')
+    }
+    if (eventCode === 'task_command_publish_failed') {
+      return t('logs.titles.commandPublishFailed')
+    }
+
+    return asText(item?.title, t('logs.titles.fallback'))
   }
 
   const formatLogDescription = (item: TaskLogItem) => {
@@ -195,7 +231,7 @@ export function createTaskLogFormatters(locale: string) {
         payloadSize > 0
     )
     if (!hasStructured) {
-      return asText(item?.description, asText(item?.title, '暂无详情'))
+      return asText(item?.description, asText(item?.title, t('logs.desc.noDetail')))
     }
 
     const eventCode = asText(item?.event_code, payloadEventCode)
@@ -220,27 +256,47 @@ export function createTaskLogFormatters(locale: string) {
           const uplRatio = hasUplRatio ? ctx.asNumberText(rawUplRatio) : '-'
           const rawOpenConditionMet = ctx.payload['open_condition_met']
           const openConditionMet = hasUplRatio ? Boolean(rawOpenConditionMet) : true
-          return `交易量：${tradeVolume}
-持仓量：${positionVolume}
-当前收益率：${uplRatio}
-是否满足开仓条件：${openConditionMet ? '是' : '否'}`
+          return t('logs.desc.positionOpen', {
+            tradeVolume,
+            positionVolume,
+            uplRatio,
+            openConditionMet: openConditionMet ? t('params.values.yes') : t('params.values.no')
+          })
         }
         if (signal === 'add' || signal === 'reduce' || signal === 'close') {
-          return `交易量：${tradeVolume}
-持仓量：${positionVolume}`
+          return t('logs.desc.positionDelta', {
+            tradeVolume,
+            positionVolume
+          })
         }
-        return `交易员仓位变更：${ctx.payloadInstId} ${ctx.payloadPosSide}，信号：${ctx.payloadSignalType}。`
+        return t('logs.desc.positionChangedGeneric', {
+          instId: ctx.payloadInstId,
+          posSide: ctx.payloadPosSide,
+          signalType: ctx.payloadSignalType
+        })
       },
       signal_rejected_precision_too_small: (ctx) =>
-        `信号被拦截：${ctx.payloadInstId} ${ctx.payloadPosSide}，信号：${ctx.payloadSignalType}。原因：交易精度限制导致数量过低。`,
+        t('logs.desc.signalRejected', {
+          instId: ctx.payloadInstId,
+          posSide: ctx.payloadPosSide,
+          signalType: ctx.payloadSignalType
+        }),
       target_volume_rounded_to_zero: (ctx) =>
-        `交易失败：${ctx.payloadInstId} ${ctx.payloadPosSide}，信号：${ctx.payloadSignalType}。原因：交易精度限制导致数量过低（交易员仓位量：${ctx.asNumberText(
-          ctx.payload['trader_position_size']
-        )}）。`,
+        t('logs.desc.tradeFailed', {
+          instId: ctx.payloadInstId,
+          posSide: ctx.payloadPosSide,
+          signalType: ctx.payloadSignalType,
+          traderPositionSize: ctx.asNumberText(ctx.payload['trader_position_size'])
+        }),
       task_command_publish_failed: (ctx) =>
-        `交易指令投递失败：${ctx.payloadInstId} ${ctx.payloadPosSide}，信号：${ctx.payloadSignalType}，交易员仓位量：${ctx.asNumberText(
-          ctx.payload['trader_position_size']
-        )}，stream_error=${ctx.asText(ctx.payload['publish_error'], '-')}，legacy_error=${ctx.asText(ctx.payload['legacy_error'], '-')}。`
+        t('logs.desc.commandPublishFailed', {
+          instId: ctx.payloadInstId,
+          posSide: ctx.payloadPosSide,
+          signalType: ctx.payloadSignalType,
+          traderPositionSize: ctx.asNumberText(ctx.payload['trader_position_size']),
+          streamError: ctx.asText(ctx.payload['publish_error'], '-'),
+          legacyError: ctx.asText(ctx.payload['legacy_error'], '-')
+        })
     }
     const formatter = formatters[eventCode]
     if (formatter) {
@@ -256,7 +312,7 @@ export function createTaskLogFormatters(locale: string) {
       })
     }
 
-    return asText(item?.description, asText(item?.title, '暂无详情'))
+    return asText(item?.description, asText(item?.title, t('logs.desc.noDetail')))
   }
 
   const formatLogTitleMeta = (item: TaskLogItem) => {
@@ -274,15 +330,15 @@ export function createTaskLogFormatters(locale: string) {
     const side = asText(payload['pos_side'], asText(item?.pos_side, '')).toUpperCase()
     const signal = asText(payload['signal_type'], asText(item?.signal_type, '')).toLowerCase()
     const actionMap: Record<string, string> = {
-      open: '开仓',
-      add: '加仓',
-      reduce: '减仓',
-      close: '平仓'
+      open: 'open',
+      add: 'add',
+      reduce: 'reduce',
+      close: 'close'
     }
     return {
       main: instId,
       sideTag: side,
-      actionTag: actionMap[signal] || '变更'
+      actionTag: actionMap[signal] || 'change'
     }
   }
 
@@ -299,7 +355,7 @@ export function createTaskLogFormatters(locale: string) {
     const eventCode = asText(item?.event_code, asText(payload['event_code'], ''))
     if (isTerminationEvent(eventCode) || isFollowTradeTerminationLog(item)) {
       return {
-        instId: '结束跟单',
+        instId: t('logs.titles.followEnded'),
         side: '',
         resultTag: ''
       }
@@ -307,7 +363,7 @@ export function createTaskLogFormatters(locale: string) {
     return {
       instId: asText(payload['inst_id'], asText(item?.inst_id, '-')),
       side: asText(payload['pos_side'], asText(item?.pos_side, '')).toUpperCase(),
-      resultTag: isTradeFailedLog(item) ? '失败' : '成功'
+      resultTag: isTradeFailedLog(item) ? 'failed' : 'success'
     }
   }
 
@@ -315,7 +371,7 @@ export function createTaskLogFormatters(locale: string) {
     const warning = payload['leverage_warning']
     if (!warning || typeof warning !== 'object') return ''
     const reason = asText((warning as Record<string, unknown>)['reason'], '')
-    return reason ? `\n杠杆调整错误：${reason}` : ''
+    return reason ? t('logs.desc.leverageWarning', { reason }) : ''
   }
 
   const formatTradeLogDescription = (item: TaskLogItem) => {
@@ -330,9 +386,11 @@ export function createTaskLogFormatters(locale: string) {
     if (isTradeFailedLog(item)) {
       const rawReason = asText(payload['reason'], asText(item?.reason, asText(item?.description, '-')))
       const reason = localizeReason(rawReason)
-      return `交易所：${exchange}\n交易量：${volume}\n失败原因：${reason}${leverageWarningLine}`
+      return (
+        t('logs.desc.tradeFailedFull', { exchange, volume, reason }) + leverageWarningLine
+      )
     }
-    return `交易所：${exchange}\n交易量：${volume}${leverageWarningLine}`
+    return t('logs.desc.tradeSuccess', { exchange, volume }) + leverageWarningLine
   }
 
   return {

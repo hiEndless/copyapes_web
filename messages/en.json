@@ -2405,5 +2405,192 @@
         }
       }
     }
+  },
+  "DashboardTaskDetail": {
+    "page": {
+      "title": "Task Detail"
+    },
+    "params": {
+      "labels": {
+        "platform": "Platform",
+        "trader": "Trader",
+        "createdAt": "Created At",
+        "reverse": "Reverse Copy",
+        "api": "API",
+        "roleType": "Trader Type",
+        "followMode": "Copy Mode",
+        "multiple": "Smart Multiple",
+        "investment": "Investment",
+        "benchMark": "Benchmark Capital",
+        "leverage": "Leverage",
+        "marginMode": "Margin Mode",
+        "firstOrder": "First Order",
+        "tp": "Take Profit",
+        "sl": "Stop Loss",
+        "intervalOrder": "Range Order (New Open)",
+        "posStrategy": "Long/Short Strategy",
+        "vol24h": "24h Volume",
+        "balanceMonitor": "Leader Capital",
+        "whitelist": "Whitelist",
+        "blacklist": "Blacklist",
+        "status": "Status"
+      },
+      "values": {
+        "yes": "Yes",
+        "no": "No",
+        "unknown": "Unknown",
+        "followTrader": "Follow trader",
+        "notSet": "Not set",
+        "fixedRatio": "Fixed ratio",
+        "longOnly": "Long only",
+        "shortOnly": "Short only",
+        "uplRatioFollow": "Copy when PnL ratio < {ratio}%",
+        "vol24hTop": "Only top {num} by 24h volume",
+        "balanceBelow": "Skip if below {value}U",
+        "percent": "{value}%"
+      },
+      "platforms": {
+        "1": "OKX",
+        "2": "Binance",
+        "3": "BiCoin",
+        "4": "Hot Traders",
+        "5": "API",
+        "6": "API",
+        "7": "Binance",
+        "8": "OKX",
+        "9": "NOF1",
+        "10": "HyperLiquid",
+        "unknown": "Unknown"
+      },
+      "roleTypes": {
+        "okxContract": "Futures lead",
+        "okxProfile": "Profile",
+        "okxCookieProject": "Copy project",
+        "binancePublic": "Public lead",
+        "binanceHidden": "Hidden lead",
+        "binanceSmart": "Smart money",
+        "bicoinOps": "Operations",
+        "bicoinPosition": "Futures positions",
+        "aiModel": "AI Model",
+        "wallet": "Wallet address",
+        "unknown": "Unknown"
+      },
+      "firstOrder": {
+        "newOnly": "New opens only",
+        "copyCurrent": "Copy current positions",
+        "copyLossOnly": "Copy losing positions only"
+      },
+      "marginMode": {
+        "follow": "Follow trader",
+        "cross": "Cross",
+        "isolated": "Isolated"
+      },
+      "status": {
+        "running": "Running",
+        "stopped": "Stopped"
+      },
+      "terminate": {
+        "button": "Stop Copy",
+        "title": "Confirm stop copy?",
+        "desc": "Stopping the task will not close positions. Please close any open positions manually later.",
+        "cancel": "Cancel",
+        "confirm": "Confirm Stop"
+      }
+    },
+    "positions": {
+      "snapshot": "Snapshot {time}",
+      "positionCount": "{count} positions",
+      "openRatio": "Open ratio {ratio}%",
+      "snapshotMissing": "Snapshot missing",
+      "calibrate": "Manual calibrate",
+      "calibrateSoon": "Manual calibrate · Coming soon",
+      "refresh": "Refresh",
+      "refreshPositions": "Refresh positions",
+      "simulatedWarning": "Leader positions are simulated from operation logs and may differ from actual holdings",
+      "followOnly": "Follow ledger only",
+      "empty": "No positions",
+      "emptyAbnormal": "No abnormal positions",
+      "symbol": "Contract",
+      "leader": "Trader",
+      "follow": "This task",
+      "side": {
+        "long": "Long",
+        "short": "Short"
+      },
+      "mgn": {
+        "cross": "Cross",
+        "isolated": "Isolated"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "trader": "Trader Logs",
+        "follower": "Copy Logs"
+      },
+      "spiderTitle": "Trader Trade Logs",
+      "tradeTitle": "CopyApe Copy Logs",
+      "empty": "No data",
+      "reverseBadge": "Reverse",
+      "actions": {
+        "open": "Open",
+        "add": "Add",
+        "reduce": "Reduce",
+        "close": "Close",
+        "change": "Change"
+      },
+      "results": {
+        "success": "Success",
+        "failed": "Failed",
+        "info": "Info"
+      },
+      "titles": {
+        "followEnded": "Copy Ended",
+        "traderOpen": "Trader {name} opened",
+        "traderOpenNoName": "Trader opened",
+        "traderAdd": "Trader {name} added",
+        "traderAddNoName": "Trader added",
+        "traderReduce": "Trader {name} reduced",
+        "traderReduceNoName": "Trader reduced",
+        "traderClose": "Trader {name} closed",
+        "traderCloseNoName": "Trader closed",
+        "traderChange": "Trader {name} position changed",
+        "traderChangeNoName": "Trader position changed",
+        "signalRejected": "Signal Rejected",
+        "tradeFailed": "Trade Failed",
+        "commandPublishFailed": "Command Publish Failed",
+        "fallback": "Log"
+      },
+      "desc": {
+        "terminationReason": "End reason: {reason}",
+        "tradeTermination": "Existing positions will not be closed; please close manually later",
+        "noDetail": "No details",
+        "positionOpen": "Volume: {tradeVolume}\nPosition: {positionVolume}\nPnL ratio: {uplRatio}\nOpen condition met: {openConditionMet}",
+        "positionDelta": "Volume: {tradeVolume}\nPosition: {positionVolume}",
+        "positionChangedGeneric": "Position changed: {instId} {posSide}, signal: {signalType}.",
+        "signalRejected": "Signal rejected: {instId} {posSide}, signal: {signalType}. Reason: quantity too small after precision rounding.",
+        "tradeFailed": "Trade failed: {instId} {posSide}, signal: {signalType}. Reason: quantity too small after precision rounding (leader size: {traderPositionSize}).",
+        "commandPublishFailed": "Command publish failed: {instId} {posSide}, signal: {signalType}, leader size: {traderPositionSize}, stream_error={streamError}, legacy_error={legacyError}.",
+        "tradeSuccess": "Exchange: {exchange}\nVolume: {volume}",
+        "tradeFailedFull": "Exchange: {exchange}\nVolume: {volume}\nFailure reason: {reason}",
+        "leverageWarning": "\nLeverage adjust error: {reason}"
+      },
+      "reasons": {
+        "target_volume_rounded_to_zero": "Order quantity is too small after precision rounding",
+        "leader_positions_hidden_or_closed": "Trader copy project closed or positions hidden",
+        "cookie_auth_expired": "Cookie authentication expired",
+        "token_expired_auto_close": "IP and token expired, task auto-terminated",
+        "crawler_auto_stop_fetch_failure": "Crawler auto-stopped due to consecutive fetch failures",
+        "manual_stop": "Manually stopped by user",
+        "task_terminated_manual_close_required": "Task terminated, manual close required",
+        "task_follow_terminated_manual_close_required": "Task terminated, manual close required"
+      }
+    },
+    "toast": {
+      "fetchFailed": "Failed to fetch task",
+      "loadFailed": "Load failed",
+      "terminateStarted": "Stop copy request submitted",
+      "terminateFailed": "Stop request failed",
+      "terminateRetry": "Stop request failed, please retry"
+    }
   }
 }

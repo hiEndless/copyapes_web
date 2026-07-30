@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -23,6 +25,8 @@ type TaskParametersCardProps = {
 }
 
 export function TaskParametersCard({ parameterList, isRunning, onTerminate }: TaskParametersCardProps) {
+  const t = useTranslations('DashboardTaskDetail')
+
   return (
     <Card className='overflow-hidden border py-0! shadow-sm'>
       <div className='bg-border grid grid-cols-1 gap-[1px] md:grid-cols-4'>
@@ -46,7 +50,7 @@ export function TaskParametersCard({ parameterList, isRunning, onTerminate }: Ta
 
         <div className='dark:bg-background flex items-stretch bg-white md:col-span-4'>
           <div className='bg-muted/50 flex w-24 shrink-0 items-center border-r p-4'>
-            <span className='text-muted-foreground text-xs'>任务状态</span>
+            <span className='text-muted-foreground text-xs'>{t('params.labels.status')}</span>
           </div>
           <div className='flex flex-1 items-center gap-4 p-4'>
             <div className='flex items-center gap-1.5'>
@@ -60,24 +64,26 @@ export function TaskParametersCard({ parameterList, isRunning, onTerminate }: Ta
                   <span className='bg-muted-foreground relative inline-flex h-2.5 w-2.5 rounded-full'></span>
                 </span>
               )}
-              <span className='ml-1 text-sm font-medium'>{isRunning ? 'Running' : 'Stop'}</span>
+              <span className='ml-1 text-sm font-medium'>
+                {isRunning ? t('params.status.running') : t('params.status.stopped')}
+              </span>
             </div>
             {isRunning && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button variant='destructive' size='sm' className='h-7 bg-red-500 text-xs hover:bg-red-600'>
-                    终止跟单
+                    {t('params.terminate.button')}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>确认终止跟单？</AlertDialogTitle>
-                    <AlertDialogDescription>终止任务不会进行平仓，当前如有持仓，后续请自行平仓。</AlertDialogDescription>
+                    <AlertDialogTitle>{t('params.terminate.title')}</AlertDialogTitle>
+                    <AlertDialogDescription>{t('params.terminate.desc')}</AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>取消</AlertDialogCancel>
+                    <AlertDialogCancel>{t('params.terminate.cancel')}</AlertDialogCancel>
                     <AlertDialogAction onClick={onTerminate} className='bg-red-500 text-white hover:bg-red-600'>
-                      确认终止
+                      {t('params.terminate.confirm')}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>

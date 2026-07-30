@@ -2405,5 +2405,192 @@
         }
       }
     }
+  },
+  "DashboardTaskDetail": {
+    "page": {
+      "title": "작업 상세"
+    },
+    "params": {
+      "labels": {
+        "platform": "카피 플랫폼",
+        "trader": "트레이더",
+        "createdAt": "생성 시간",
+        "reverse": "역방향 카피",
+        "api": "API",
+        "roleType": "트레이더 유형",
+        "followMode": "카피 모드",
+        "multiple": "스마트 배수",
+        "investment": "투자금",
+        "benchMark": "기준 자금",
+        "leverage": "레버리지",
+        "marginMode": "마진 모드",
+        "firstOrder": "첫 주문",
+        "tp": "단건 익절",
+        "sl": "단건 손절",
+        "intervalOrder": "구간 주문(신규)",
+        "posStrategy": "롱/숏 전략",
+        "vol24h": "24h 거래량",
+        "balanceMonitor": "리드 원금",
+        "whitelist": "화이트리스트",
+        "blacklist": "블랙리스트",
+        "status": "작업 상태"
+      },
+      "values": {
+        "yes": "예",
+        "no": "아니오",
+        "unknown": "알 수 없음",
+        "followTrader": "트레이더 따름",
+        "notSet": "미설정",
+        "fixedRatio": "고정 비율",
+        "longOnly": "롱만",
+        "shortOnly": "숏만",
+        "uplRatioFollow": "수익률 {ratio}% 미만일 때 카피",
+        "vol24hTop": "24h 거래량 상위 {num}개만",
+        "balanceBelow": "{value}U 미만이면 카피 안 함",
+        "percent": "{value}%"
+      },
+      "platforms": {
+        "1": "OKX",
+        "2": "Binance",
+        "3": "BiCoin",
+        "4": "인기 트레이더",
+        "5": "API",
+        "6": "API",
+        "7": "Binance",
+        "8": "OKX",
+        "9": "NOF1",
+        "10": "HyperLiquid",
+        "unknown": "알 수 없음"
+      },
+      "roleTypes": {
+        "okxContract": "선물 리드",
+        "okxProfile": "프로필",
+        "okxCookieProject": "카피 프로젝트",
+        "binancePublic": "공개 리드",
+        "binanceHidden": "비공개 리드",
+        "binanceSmart": "스마트 머니",
+        "bicoinOps": "조작 기록",
+        "bicoinPosition": "선물 포지션",
+        "aiModel": "AI 모델",
+        "wallet": "지갑 주소",
+        "unknown": "알 수 없음"
+      },
+      "firstOrder": {
+        "newOnly": "신규 진입만 복사",
+        "copyCurrent": "현재 포지션 복사",
+        "copyLossOnly": "손실 포지션만 복사"
+      },
+      "marginMode": {
+        "follow": "트레이더 따름",
+        "cross": "크로스",
+        "isolated": "격리"
+      },
+      "status": {
+        "running": "진행 중",
+        "stopped": "종료됨"
+      },
+      "terminate": {
+        "button": "카피 종료",
+        "title": "카피를 종료할까요?",
+        "desc": "종료해도 포지션은 청산되지 않습니다. 보유 포지션은 이후 직접 청산하세요.",
+        "cancel": "취소",
+        "confirm": "종료 확인"
+      }
+    },
+    "positions": {
+      "snapshot": "스냅샷 {time}",
+      "positionCount": "{count}개 포지션",
+      "openRatio": "진입 비율 {ratio}%",
+      "snapshotMissing": "스냅샷 없음",
+      "calibrate": "수동 보정",
+      "calibrateSoon": "수동 보정 · 곧 제공",
+      "refresh": "새로고침",
+      "refreshPositions": "포지션 새로고침",
+      "simulatedWarning": "트레이더 포지션은 조작 기록으로 시뮬레이션되어 실제와 다를 수 있습니다",
+      "followOnly": "카피 장부에만 존재",
+      "empty": "포지션 없음",
+      "emptyAbnormal": "이상 포지션 없음",
+      "symbol": "계약",
+      "leader": "트레이더",
+      "follow": "현재 작업",
+      "side": {
+        "long": "롱",
+        "short": "숏"
+      },
+      "mgn": {
+        "cross": "크로스",
+        "isolated": "격리"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "trader": "거래 기록",
+        "follower": "카피 기록"
+      },
+      "spiderTitle": "트레이더 거래 기록",
+      "tradeTitle": "CopyApe 카피 기록",
+      "empty": "데이터 없음",
+      "reverseBadge": "역방향",
+      "actions": {
+        "open": "진입",
+        "add": "추가",
+        "reduce": "감소",
+        "close": "청산",
+        "change": "변경"
+      },
+      "results": {
+        "success": "성공",
+        "failed": "실패",
+        "info": "안내"
+      },
+      "titles": {
+        "followEnded": "카피 종료",
+        "traderOpen": "트레이더 {name} 진입",
+        "traderOpenNoName": "트레이더 진입",
+        "traderAdd": "트레이더 {name} 추가",
+        "traderAddNoName": "트레이더 추가",
+        "traderReduce": "트레이더 {name} 감소",
+        "traderReduceNoName": "트레이더 감소",
+        "traderClose": "트레이더 {name} 청산",
+        "traderCloseNoName": "트레이더 청산",
+        "traderChange": "트레이더 {name} 포지션 변경",
+        "traderChangeNoName": "트레이더 포지션 변경",
+        "signalRejected": "신호 차단",
+        "tradeFailed": "거래 실패",
+        "commandPublishFailed": "주문 전달 실패",
+        "fallback": "로그"
+      },
+      "desc": {
+        "terminationReason": "종료 사유: {reason}",
+        "tradeTermination": "기존 포지션은 청산되지 않습니다. 이후 수동 청산하세요",
+        "noDetail": "상세 없음",
+        "positionOpen": "거래량: {tradeVolume}\n포지션: {positionVolume}\n현재 수익률: {uplRatio}\n진입 조건 충족: {openConditionMet}",
+        "positionDelta": "거래량: {tradeVolume}\n포지션: {positionVolume}",
+        "positionChangedGeneric": "포지션 변경: {instId} {posSide}, 신호: {signalType}.",
+        "signalRejected": "신호 차단: {instId} {posSide}, 신호: {signalType}. 사유: 거래 정밀도 제한으로 수량이 너무 작음.",
+        "tradeFailed": "거래 실패: {instId} {posSide}, 신호: {signalType}. 사유: 거래 정밀도 제한으로 수량이 너무 작음(트레이더 포지션: {traderPositionSize}).",
+        "commandPublishFailed": "주문 전달 실패: {instId} {posSide}, 신호: {signalType}, 트레이더 포지션: {traderPositionSize}, stream_error={streamError}, legacy_error={legacyError}.",
+        "tradeSuccess": "거래소: {exchange}\n거래량: {volume}",
+        "tradeFailedFull": "거래소: {exchange}\n거래량: {volume}\n실패 사유: {reason}",
+        "leverageWarning": "\n레버리지 조정 오류: {reason}"
+      },
+      "reasons": {
+        "target_volume_rounded_to_zero": "거래 정밀도 제한으로 수량이 너무 작아 주문 불가",
+        "leader_positions_hidden_or_closed": "트레이더가 리드 프로젝트를 닫았거나 포지션을 숨김",
+        "cookie_auth_expired": "Cookie 만료. 다시 가져온 후 카피하세요",
+        "token_expired_auto_close": "IP와 TOKEN 만료로 작업 자동 종료",
+        "crawler_auto_stop_fetch_failure": "크롤러 자동 중지(연속 수집 실패)",
+        "manual_stop": "사용자 수동 종료",
+        "task_terminated_manual_close_required": "작업 종료. 수동 청산 필요",
+        "task_follow_terminated_manual_close_required": "작업 종료. 수동 청산 필요"
+      }
+    },
+    "toast": {
+      "fetchFailed": "작업 조회 실패",
+      "loadFailed": "로드 실패",
+      "terminateStarted": "카피 종료 요청을 보냈습니다",
+      "terminateFailed": "종료 요청 실패",
+      "terminateRetry": "종료 요청 실패, 다시 시도하세요"
+    }
   }
 }

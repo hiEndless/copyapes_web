@@ -1,6 +1,8 @@
 import { getSideTagClass } from './task-log-formatters'
 import type { TaskPositionItem } from './types'
 
+type TranslateFn = (key: string, values?: Record<string, string | number | Date>) => string
+
 export function normalizePosSideTag(posSide?: string, side?: string) {
   const normalized = String(posSide || '').toLowerCase()
   if (normalized === 'long' || normalized === 'short') {
@@ -14,14 +16,11 @@ export function normalizePosSideTag(posSide?: string, side?: string) {
   return String(posSide || side || '').toUpperCase()
 }
 
-export function formatPosSideLabel(posSide?: string, side?: string, locale = 'zh') {
+export function formatPosSideLabel(posSide?: string, side?: string, t?: TranslateFn) {
   const tag = normalizePosSideTag(posSide, side)
-  const isZh = locale.toLowerCase().startsWith('zh')
 
-  if (isZh) {
-    if (tag === 'LONG') return '多'
-    if (tag === 'SHORT') return '空'
-  }
+  if (tag === 'LONG') return t ? t('positions.side.long') : 'LONG'
+  if (tag === 'SHORT') return t ? t('positions.side.short') : 'SHORT'
 
   return tag || '-'
 }
@@ -39,18 +38,12 @@ export function normalizeMgnModeTag(mgnMode?: string) {
   return text
 }
 
-export function formatMgnModeLabel(mgnMode?: string, locale = 'zh') {
+export function formatMgnModeLabel(mgnMode?: string, t?: TranslateFn) {
   const tag = normalizeMgnModeTag(mgnMode)
   if (!tag) return ''
 
-  const isZh = locale.toLowerCase().startsWith('zh')
-  if (isZh) {
-    if (tag === 'cross') return '全仓'
-    if (tag === 'isolated') return '逐仓'
-  } else {
-    if (tag === 'cross') return 'Cross'
-    if (tag === 'isolated') return 'Isolated'
-  }
+  if (tag === 'cross') return t ? t('positions.mgn.cross') : 'cross'
+  if (tag === 'isolated') return t ? t('positions.mgn.isolated') : 'isolated'
 
   return tag
 }

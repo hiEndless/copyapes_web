@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { ArrowLeft } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 
@@ -20,6 +21,7 @@ import { useTaskDetail } from '../_hooks/use-task-detail'
 
 export default function TaskDetailPage({ params }: { params: { id?: string; locale?: string } | Promise<{ id?: string; locale?: string }> }) {
   const router = useRouter()
+  const t = useTranslations('DashboardTaskDetail')
 
   const unwrappedParams = React.use(params instanceof Promise ? params : Promise.resolve(params))
   const taskId = String(unwrappedParams?.id || (params as { id?: string })?.id || '')
@@ -27,7 +29,7 @@ export default function TaskDetailPage({ params }: { params: { id?: string; loca
 
   const { task, spiderData, tradeData, handleTerminateTask } = useTaskDetail(taskId)
 
-  const parameterList = React.useMemo(() => (task ? buildTaskParameterList(task) : []), [task])
+  const parameterList = React.useMemo(() => (task ? buildTaskParameterList(task, t) : []), [task, t])
   const isRunning = task?.status === 1
   const isReverseFollow = String(task?.posSide_set) === '2'
   const showPositionSummary = shouldShowTaskPositionSummary(task)
@@ -39,7 +41,7 @@ export default function TaskDetailPage({ params }: { params: { id?: string; loca
         <Button variant='outline' size='icon' onClick={() => router.back()} className='h-8 w-8 rounded-full'>
           <ArrowLeft className='h-4 w-4' />
         </Button>
-        <h2 className='text-lg font-semibold tracking-tight'>任务详情</h2>
+        <h2 className='text-lg font-semibold tracking-tight'>{t('page.title')}</h2>
       </div>
 
       <TaskParametersCard
@@ -60,7 +62,6 @@ export default function TaskDetailPage({ params }: { params: { id?: string; loca
       <TaskLogSections
         spiderData={spiderData}
         tradeData={tradeData}
-        locale={locale}
         isReverseFollow={isReverseFollow}
       />
     </div>

@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
 
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -17,12 +18,12 @@ import {
 
 type TradeLogPanelProps = {
   items: TaskLogItem[]
-  locale: string
   isReverseFollow: boolean
 }
 
-export function TradeLogPanel({ items, locale, isReverseFollow }: TradeLogPanelProps) {
-  const formatters = React.useMemo(() => createTaskLogFormatters(locale), [locale])
+export function TradeLogPanel({ items, isReverseFollow }: TradeLogPanelProps) {
+  const t = useTranslations('DashboardTaskDetail')
+  const formatters = React.useMemo(() => createTaskLogFormatters(t), [t])
 
   return (
     <Card className='border bg-[#1e1e1e] text-white shadow-sm'>
@@ -32,10 +33,10 @@ export function TradeLogPanel({ items, locale, isReverseFollow }: TradeLogPanelP
             <Image src='/site_logo/logo-small.png' alt='Logo' width={32} height={32} />
           </div>
           <h2 className='flex items-center gap-2 text-lg font-bold'>
-            跟单猿跟单记录
+            {t('logs.tradeTitle')}
             {isReverseFollow && (
               <Badge variant='destructive' className='h-5 rounded-sm bg-red-500 px-1.5 text-[10px] hover:bg-red-600'>
-                反向跟单
+                {t('logs.reverseBadge')}
               </Badge>
             )}
           </h2>
@@ -59,7 +60,9 @@ export function TradeLogPanel({ items, locale, isReverseFollow }: TradeLogPanelP
                         <span className={getSideTagClass(titleMeta.side)}>{titleMeta.side}</span>
                       ) : null}
                       {titleMeta.resultTag ? (
-                        <span className={getResultTagClass(titleMeta.resultTag)}>{titleMeta.resultTag}</span>
+                        <span className={getResultTagClass(titleMeta.resultTag)}>
+                          {t(`logs.results.${titleMeta.resultTag}`)}
+                        </span>
                       ) : null}
                     </p>
                     <p className='text-xs text-zinc-400'>{item.date}</p>
@@ -71,7 +74,7 @@ export function TradeLogPanel({ items, locale, isReverseFollow }: TradeLogPanelP
               )
             })
           ) : (
-            <div className='pl-6 text-sm text-zinc-400'>暂无数据</div>
+            <div className='pl-6 text-sm text-zinc-400'>{t('logs.empty')}</div>
           )}
         </div>
       </CardContent>

@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { toast } from 'sonner'
+import { useTranslations } from 'next-intl'
 
 import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 import { getTaskDetail, getTraderDetail, stopTask } from '@/api/task'
@@ -11,6 +12,7 @@ import { settingsApi } from '@/api/settings'
 import type { TaskLogItem } from '../_lib/types'
 
 export function useTaskDetail(taskId: string) {
+  const t = useTranslations('DashboardTaskDetail')
   const router = useRouter()
   const routerRef = React.useRef(router)
   routerRef.current = router
@@ -56,7 +58,7 @@ export function useTaskDetail(taskId: string) {
           sessionStorage.setItem('current_task', JSON.stringify(taskRes.data))
         }
       } else {
-        toast.error(String(taskRes.detail || taskRes.message || '获取任务失败'))
+        toast.error(String(taskRes.detail || taskRes.message || t('toast.fetchFailed')))
         routerRef.current.push('/dashboard/task_list' as never)
       }
 
@@ -66,11 +68,11 @@ export function useTaskDetail(taskId: string) {
       }
     } catch (err) {
       console.error(err)
-      toast.error('加载失败')
+      toast.error(t('toast.loadFailed'))
     } finally {
       setLoading(false)
     }
-  }, [taskId])
+  }, [taskId, t])
 
   React.useEffect(() => {
     if (taskId) {
@@ -85,7 +87,7 @@ export function useTaskDetail(taskId: string) {
       const res = await stopTask(taskId)
 
       if (res.code === 0) {
-        toast.success('已发起终止跟单请求')
+        toast.success(t('toast.terminateStarted'))
         loadTaskData()
 
         try {
@@ -99,13 +101,13 @@ export function useTaskDetail(taskId: string) {
           console.error('Failed to fetch entitlement profile after terminating task:', err)
         }
       } else {
-        toast.error(String(res.detail || res.message || '终止请求失败'))
+        toast.error(String(res.detail || res.message || t('toast.terminateFailed')))
       }
     } catch (error) {
       console.error('终止请求失败:', error)
-      toast.error('终止请求失败，请重试')
+      toast.error(t('toast.terminateRetry'))
     }
-  }, [taskId, loadTaskData])
+  }, [taskId, loadTaskData, t])
 
   return {
     task,

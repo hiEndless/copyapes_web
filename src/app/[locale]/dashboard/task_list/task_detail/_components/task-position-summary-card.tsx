@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { ChevronDown, Info, Layers3, RefreshCw, SlidersHorizontal } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -33,7 +34,6 @@ type TaskPositionSummaryCardProps = {
 
 type PositionTableProps = {
   positions: TaskPositionItem[]
-  locale: string
   showLeaderColumn?: boolean
   emptyText?: string
 }
@@ -70,12 +70,13 @@ function EmptyState({ text }: { text: string }) {
 
 function PositionTable({
   positions,
-  locale,
   showLeaderColumn = true,
-  emptyText = '暂无持仓'
+  emptyText
 }: PositionTableProps) {
+  const t = useTranslations('DashboardTaskDetail')
+
   if (positions.length === 0) {
-    return <EmptyState text={emptyText} />
+    return <EmptyState text={emptyText || t('positions.empty')} />
   }
 
   return (
@@ -83,28 +84,30 @@ function PositionTable({
       <Table>
         <TableHeader>
           <TableRow className='bg-muted/30 hover:bg-muted/30'>
-            <TableHead className='h-9 px-4 text-xs font-medium text-muted-foreground'>合约</TableHead>
+            <TableHead className='h-9 px-4 text-xs font-medium text-muted-foreground'>
+              {t('positions.symbol')}
+            </TableHead>
             {showLeaderColumn ? (
               <TableHead className='h-9 px-4 text-right'>
                 <span className='inline-flex items-center justify-end gap-1.5 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-600 dark:text-blue-400'>
                   <span className='h-1.5 w-1.5 rounded-full bg-blue-500' />
-                  交易员
+                  {t('positions.leader')}
                 </span>
               </TableHead>
             ) : null}
             <TableHead className='h-9 px-4 text-right'>
               <span className='inline-flex items-center justify-end gap-1.5 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400'>
                 <span className='h-1.5 w-1.5 rounded-full bg-emerald-500' />
-                当前任务跟单
+                {t('positions.follow')}
               </span>
             </TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {positions.map((item, index) => {
-            const sideLabel = formatPosSideLabel(item.posSide, item.side, locale)
+            const sideLabel = formatPosSideLabel(item.posSide, item.side, t)
             const sideTagClass = getPositionSideTagClass(item.posSide, item.side)
-            const mgnModeLabel = formatMgnModeLabel(item.mgnMode, locale)
+            const mgnModeLabel = formatMgnModeLabel(item.mgnMode, t)
             const symbolLabel = formatPositionSymbol(item)
 
             return (
@@ -152,6 +155,7 @@ export function TaskPositionSummaryCard({
   task,
   showSimulatedWarning = false
 }: TaskPositionSummaryCardProps) {
+  const t = useTranslations('DashboardTaskDetail')
   const { summary, loading, refreshing, refresh } = useTaskPositionSummary({ taskId })
   const [followOnlyOpen, setFollowOnlyOpen] = React.useState(false)
   const followRatioPreview = React.useMemo(() => buildFollowRatioFromTask(task), [task])
@@ -164,9 +168,9 @@ export function TaskPositionSummaryCard({
     <section className='space-y-2'>
       <div className='flex items-center justify-between gap-3 px-1'>
         <div className='text-muted-foreground flex min-w-0 flex-wrap items-center gap-2 text-xs'>
-          <span className='truncate'>快照 {snapshotTime || '-'}</span>
+          <span className='truncate'>{t('positions.snapshot', { time: snapshotTime || '-' })}</span>
           {!loading && positions.length > 0 ? (
-            <span className='text-foreground/70'>· {positions.length} 个仓位</span>
+            <span className='text-foreground/70'>· {t('positions.positionCount', { count: positions.length })}</span>
           ) : null}
           {followRatioPreview?.ready ? (
             <Tooltip>
@@ -177,7 +181,7 @@ export function TaskPositionSummaryCard({
                     followRatioPreview.lowRatioWarning && 'text-amber-600 dark:text-amber-400'
                   )}
                 >
-                  · 开仓比例 {followRatioPreview.ratioPercent.toFixed(2)}%
+                  · {t('positions.openRatio', { ratio: followRatioPreview.ratioPercent.toFixed(2) })}
                 </span>
               </TooltipTrigger>
               <TooltipContent className='max-w-xs'>{followRatioPreview.formula}</TooltipContent>
@@ -188,7 +192,7 @@ export function TaskPositionSummaryCard({
               variant='outline'
               className='h-5 border-amber-300/80 px-1.5 text-[10px] text-amber-700 dark:border-amber-700 dark:text-amber-300'
             >
-              快照缺失
+              {t('positions.snapshotMissing')}
             </Badge>
           ) : null}
         </div>
@@ -203,13 +207,13 @@ export function TaskPositionSummaryCard({
                     size='icon'
                     disabled
                     className='text-muted-foreground h-7 w-7'
-                    aria-label='手动校准'
+                    aria-label={t('positions.calibrate')}
                   >
                     <SlidersHorizontal className='h-3.5 w-3.5' />
                   </Button>
                 </span>
               </TooltipTrigger>
-              <TooltipContent>手动校准 · 即将上线</TooltipContent>
+              <TooltipContent>{t('positions.calibrateSoon')}</TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -219,12 +223,12 @@ export function TaskPositionSummaryCard({
                   className='h-7 w-7'
                   onClick={refresh}
                   disabled={loading || refreshing}
-                  aria-label='刷新'
+                  aria-label={t('positions.refresh')}
                 >
                   <RefreshCw className={cn('h-3.5 w-3.5', refreshing && 'animate-spin')} />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>刷新仓位</TooltipContent>
+              <TooltipContent>{t('positions.refreshPositions')}</TooltipContent>
             </Tooltip>
           </div>
         </TooltipProvider>
@@ -233,7 +237,7 @@ export function TaskPositionSummaryCard({
       {showSimulatedWarning ? (
         <div className='flex items-start gap-2 rounded-lg border border-blue-200/70 bg-blue-50/70 px-3 py-2 text-xs leading-relaxed text-blue-800 dark:border-blue-900/40 dark:bg-blue-950/25 dark:text-blue-200'>
           <Info className='mt-0.5 h-3.5 w-3.5 shrink-0' />
-          <span>交易员持仓根据操作记录模拟建仓，与实际持仓可能存在出入</span>
+          <span>{t('positions.simulatedWarning')}</span>
         </div>
       ) : null}
 
@@ -241,7 +245,7 @@ export function TaskPositionSummaryCard({
         <PositionSkeleton />
       ) : (
         <>
-          <PositionTable positions={positions} locale={locale} />
+          <PositionTable positions={positions} />
 
           {followOnlyPositions.length > 0 ? (
             <Collapsible open={followOnlyOpen} onOpenChange={setFollowOnlyOpen} className='pt-1'>
@@ -251,7 +255,7 @@ export function TaskPositionSummaryCard({
                   className='flex w-full items-center justify-between rounded-lg border border-amber-200/80 bg-amber-50/80 px-3 py-2 text-left text-xs font-medium text-amber-800 transition-colors hover:bg-amber-100/80 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200 dark:hover:bg-amber-950/50'
                 >
                   <span className='flex items-center gap-2'>
-                    仅跟单账本存在
+                    {t('positions.followOnly')}
                     <Badge
                       variant='secondary'
                       className='h-4 bg-amber-200/80 px-1.5 text-[10px] text-amber-900 dark:bg-amber-900/60 dark:text-amber-100'
@@ -265,9 +269,8 @@ export function TaskPositionSummaryCard({
               <CollapsibleContent className='mt-2'>
                 <PositionTable
                   positions={followOnlyPositions}
-                  locale={locale}
                   showLeaderColumn={false}
-                  emptyText='暂无异常仓位'
+                  emptyText={t('positions.emptyAbnormal')}
                 />
               </CollapsibleContent>
             </Collapsible>

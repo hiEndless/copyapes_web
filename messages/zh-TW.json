@@ -2407,5 +2407,192 @@
         }
       }
     }
+  },
+  "DashboardTaskDetail": {
+    "page": {
+      "title": "任務詳情"
+    },
+    "params": {
+      "labels": {
+        "platform": "跟單平台",
+        "trader": "跟單對象",
+        "createdAt": "建立時間",
+        "reverse": "反向跟單",
+        "api": "API",
+        "roleType": "交易員類型",
+        "followMode": "跟單模式",
+        "multiple": "智慧倍數",
+        "investment": "投資額",
+        "benchMark": "對標資金",
+        "leverage": "槓桿設定",
+        "marginMode": "保證金模式",
+        "firstOrder": "首單交易",
+        "tp": "單筆止盈",
+        "sl": "單筆止損",
+        "intervalOrder": "區間委託(新開倉)",
+        "posStrategy": "多空策略",
+        "vol24h": "24h成交量",
+        "balanceMonitor": "帶單本金",
+        "whitelist": "白名單策略",
+        "blacklist": "黑名單策略",
+        "status": "任務狀態"
+      },
+      "values": {
+        "yes": "是",
+        "no": "否",
+        "unknown": "未知",
+        "followTrader": "跟隨交易員",
+        "notSet": "未設定",
+        "fixedRatio": "固定比例",
+        "longOnly": "只開多單",
+        "shortOnly": "只開空單",
+        "uplRatioFollow": "收益率小於{ratio}%時跟單",
+        "vol24hTop": "只跟排行前{num}的幣種",
+        "balanceBelow": "低於{value}U不跟單",
+        "percent": "{value}%"
+      },
+      "platforms": {
+        "1": "OKX",
+        "2": "Binance",
+        "3": "幣coin",
+        "4": "熱門交易員",
+        "5": "API",
+        "6": "API",
+        "7": "Binance",
+        "8": "OKX",
+        "9": "NOF1",
+        "10": "HyperLiquid",
+        "unknown": "未知"
+      },
+      "roleTypes": {
+        "okxContract": "合約帶單",
+        "okxProfile": "個人概況",
+        "okxCookieProject": "跟單專案",
+        "binancePublic": "公開帶單",
+        "binanceHidden": "隱藏帶單",
+        "binanceSmart": "聰明錢",
+        "bicoinOps": "操作記錄",
+        "bicoinPosition": "合約倉位",
+        "aiModel": "AI模型",
+        "wallet": "錢包地址",
+        "unknown": "未知"
+      },
+      "firstOrder": {
+        "newOnly": "僅複製新開倉",
+        "copyCurrent": "複製當前持倉",
+        "copyLossOnly": "僅複製當前虧損倉位"
+      },
+      "marginMode": {
+        "follow": "跟隨交易員",
+        "cross": "全倉",
+        "isolated": "逐倉"
+      },
+      "status": {
+        "running": "進行中",
+        "stopped": "已結束"
+      },
+      "terminate": {
+        "button": "終止跟單",
+        "title": "確認終止跟單？",
+        "desc": "終止任務不會進行平倉，當前如有持倉，後續請自行平倉。",
+        "cancel": "取消",
+        "confirm": "確認終止"
+      }
+    },
+    "positions": {
+      "snapshot": "快照 {time}",
+      "positionCount": "{count} 個倉位",
+      "openRatio": "開倉比例 {ratio}%",
+      "snapshotMissing": "快照缺失",
+      "calibrate": "手動校準",
+      "calibrateSoon": "手動校準 · 即將上線",
+      "refresh": "重新整理",
+      "refreshPositions": "重新整理倉位",
+      "simulatedWarning": "交易員持倉根據操作記錄模擬建倉，與實際持倉可能存在出入",
+      "followOnly": "僅跟單帳本存在",
+      "empty": "暫無持倉",
+      "emptyAbnormal": "暫無異常倉位",
+      "symbol": "合約",
+      "leader": "交易員",
+      "follow": "當前任務跟單",
+      "side": {
+        "long": "多",
+        "short": "空"
+      },
+      "mgn": {
+        "cross": "全倉",
+        "isolated": "逐倉"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "trader": "交易記錄",
+        "follower": "跟單記錄"
+      },
+      "spiderTitle": "交易員交易記錄",
+      "tradeTitle": "跟單猿跟單記錄",
+      "empty": "暫無資料",
+      "reverseBadge": "反向跟單",
+      "actions": {
+        "open": "開倉",
+        "add": "加倉",
+        "reduce": "減倉",
+        "close": "平倉",
+        "change": "變更"
+      },
+      "results": {
+        "success": "成功",
+        "failed": "失敗",
+        "info": "提示"
+      },
+      "titles": {
+        "followEnded": "結束跟單",
+        "traderOpen": "交易員{name}開倉",
+        "traderOpenNoName": "交易員開倉",
+        "traderAdd": "交易員{name}加倉",
+        "traderAddNoName": "交易員加倉",
+        "traderReduce": "交易員{name}減倉",
+        "traderReduceNoName": "交易員減倉",
+        "traderClose": "交易員{name}平倉",
+        "traderCloseNoName": "交易員平倉",
+        "traderChange": "交易員{name}倉位變更",
+        "traderChangeNoName": "交易員倉位變更",
+        "signalRejected": "信號被攔截",
+        "tradeFailed": "交易失敗",
+        "commandPublishFailed": "交易指令投遞失敗",
+        "fallback": "日誌"
+      },
+      "desc": {
+        "terminationReason": "結束原因：{reason}",
+        "tradeTermination": "當前已有持倉不會平倉，後續請手動平倉",
+        "noDetail": "暫無詳情",
+        "positionOpen": "交易量：{tradeVolume}\n持倉量：{positionVolume}\n當前收益率：{uplRatio}\n是否滿足開倉條件：{openConditionMet}",
+        "positionDelta": "交易量：{tradeVolume}\n持倉量：{positionVolume}",
+        "positionChangedGeneric": "交易員倉位變更：{instId} {posSide}，信號：{signalType}。",
+        "signalRejected": "信號被攔截：{instId} {posSide}，信號：{signalType}。原因：交易精度限制導致數量過低。",
+        "tradeFailed": "交易失敗：{instId} {posSide}，信號：{signalType}。原因：交易精度限制導致數量過低（交易員倉位量：{traderPositionSize}）。",
+        "commandPublishFailed": "交易指令投遞失敗：{instId} {posSide}，信號：{signalType}，交易員倉位量：{traderPositionSize}，stream_error={streamError}，legacy_error={legacyError}。",
+        "tradeSuccess": "交易所：{exchange}\n交易量：{volume}",
+        "tradeFailedFull": "交易所：{exchange}\n交易量：{volume}\n失敗原因：{reason}",
+        "leverageWarning": "\n槓桿調整錯誤：{reason}"
+      },
+      "reasons": {
+        "target_volume_rounded_to_zero": "由於幣種交易精度限制，交易量過低，無法下單",
+        "leader_positions_hidden_or_closed": "交易員已關閉帶單專案或隱藏了倉位",
+        "cookie_auth_expired": "Cookie已過期，請重新取得後再跟單",
+        "token_expired_auto_close": "IP和TOKEN過期，任務自動終止",
+        "crawler_auto_stop_fetch_failure": "爬蟲自動停機（連續抓取失敗）",
+        "manual_stop": "使用者手動終止",
+        "task_terminated_manual_close_required": "任務已結束，需手動平倉",
+        "task_follow_terminated_manual_close_required": "任務已結束，需手動平倉"
+      }
+    },
+    "toast": {
+      "fetchFailed": "取得任務失敗",
+      "loadFailed": "載入失敗",
+      "terminateStarted": "已發起終止跟單請求",
+      "terminateFailed": "終止請求失敗",
+      "terminateRetry": "終止請求失敗，請重試"
+    }
   }
 }

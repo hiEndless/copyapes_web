@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { Activity } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Card, CardContent } from '@/components/ui/card'
 
@@ -16,11 +17,11 @@ import {
 
 type SpiderLogPanelProps = {
   items: TaskLogItem[]
-  locale: string
 }
 
-export function SpiderLogPanel({ items, locale }: SpiderLogPanelProps) {
-  const formatters = React.useMemo(() => createTaskLogFormatters(locale), [locale])
+export function SpiderLogPanel({ items }: SpiderLogPanelProps) {
+  const t = useTranslations('DashboardTaskDetail')
+  const formatters = React.useMemo(() => createTaskLogFormatters(t), [t])
 
   return (
     <Card className='border shadow-sm dark:bg-[#1e1e1e] dark:text-white'>
@@ -29,7 +30,7 @@ export function SpiderLogPanel({ items, locale }: SpiderLogPanelProps) {
           <div className='bg-muted dark:bg-muted/20 flex h-8 w-8 items-center justify-center rounded-full'>
             <Activity className='h-4 w-4 dark:text-white' />
           </div>
-          <h2 className='text-lg font-bold'>交易员交易记录</h2>
+          <h2 className='text-lg font-bold'>{t('logs.spiderTitle')}</h2>
         </div>
 
         <div className='border-muted relative ml-3 space-y-8 border-l-2 pb-4 dark:border-zinc-700'>
@@ -50,7 +51,9 @@ export function SpiderLogPanel({ items, locale }: SpiderLogPanelProps) {
                         <span className={getSideTagClass(titleMeta.sideTag)}>{titleMeta.sideTag}</span>
                       ) : null}
                       {titleMeta.actionTag ? (
-                        <span className={getActionTagClass(titleMeta.actionTag)}>{titleMeta.actionTag}</span>
+                        <span className={getActionTagClass(titleMeta.actionTag)}>
+                          {t(`logs.actions.${titleMeta.actionTag}`)}
+                        </span>
                       ) : null}
                     </p>
                     <p className='text-muted-foreground text-xs dark:text-zinc-400'>{item.date}</p>
@@ -62,7 +65,7 @@ export function SpiderLogPanel({ items, locale }: SpiderLogPanelProps) {
               )
             })
           ) : (
-            <div className='pl-6 text-sm text-muted-foreground'>暂无数据</div>
+            <div className='pl-6 text-sm text-muted-foreground'>{t('logs.empty')}</div>
           )}
         </div>
       </CardContent>

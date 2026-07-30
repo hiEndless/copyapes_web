@@ -2405,5 +2405,192 @@
         }
       }
     }
+  },
+  "DashboardTaskDetail": {
+    "page": {
+      "title": "タスク詳細"
+    },
+    "params": {
+      "labels": {
+        "platform": "コピー元",
+        "trader": "トレーダー",
+        "createdAt": "作成日時",
+        "reverse": "逆コピー",
+        "api": "API",
+        "roleType": "トレーダー種別",
+        "followMode": "コピー方式",
+        "multiple": "スマート倍率",
+        "investment": "投資額",
+        "benchMark": "基準資金",
+        "leverage": "レバレッジ",
+        "marginMode": "証拠金モード",
+        "firstOrder": "初回注文",
+        "tp": "単発利確",
+        "sl": "単発損切",
+        "intervalOrder": "レンジ注文（新規建）",
+        "posStrategy": "ロング/ショート戦略",
+        "vol24h": "24h出来高",
+        "balanceMonitor": "リード資金",
+        "whitelist": "ホワイトリスト",
+        "blacklist": "ブラックリスト",
+        "status": "タスク状態"
+      },
+      "values": {
+        "yes": "はい",
+        "no": "いいえ",
+        "unknown": "不明",
+        "followTrader": "トレーダーに従う",
+        "notSet": "未設定",
+        "fixedRatio": "固定比率",
+        "longOnly": "ロングのみ",
+        "shortOnly": "ショートのみ",
+        "uplRatioFollow": "損益率が{ratio}%未満のときコピー",
+        "vol24hTop": "24h出来高上位{num}銘柄のみ",
+        "balanceBelow": "{value}U未満はコピーしない",
+        "percent": "{value}%"
+      },
+      "platforms": {
+        "1": "OKX",
+        "2": "Binance",
+        "3": "BiCoin",
+        "4": "人気トレーダー",
+        "5": "API",
+        "6": "API",
+        "7": "Binance",
+        "8": "OKX",
+        "9": "NOF1",
+        "10": "HyperLiquid",
+        "unknown": "不明"
+      },
+      "roleTypes": {
+        "okxContract": "先物リード",
+        "okxProfile": "プロフィール",
+        "okxCookieProject": "コピー案件",
+        "binancePublic": "公開リード",
+        "binanceHidden": "非公開リード",
+        "binanceSmart": "スマートマネー",
+        "bicoinOps": "操作履歴",
+        "bicoinPosition": "先物建玉",
+        "aiModel": "AIモデル",
+        "wallet": "ウォレットアドレス",
+        "unknown": "不明"
+      },
+      "firstOrder": {
+        "newOnly": "新規建のみコピー",
+        "copyCurrent": "現在建玉をコピー",
+        "copyLossOnly": "損失建玉のみコピー"
+      },
+      "marginMode": {
+        "follow": "トレーダーに従う",
+        "cross": "クロス",
+        "isolated": "アイソレート"
+      },
+      "status": {
+        "running": "実行中",
+        "stopped": "終了"
+      },
+      "terminate": {
+        "button": "コピー停止",
+        "title": "コピーを停止しますか？",
+        "desc": "停止しても決済は行いません。建玉がある場合は後で手動決済してください。",
+        "cancel": "キャンセル",
+        "confirm": "停止する"
+      }
+    },
+    "positions": {
+      "snapshot": "スナップショット {time}",
+      "positionCount": "{count} 建玉",
+      "openRatio": "建玉比率 {ratio}%",
+      "snapshotMissing": "スナップショットなし",
+      "calibrate": "手動校正",
+      "calibrateSoon": "手動校正 · 近日公開",
+      "refresh": "更新",
+      "refreshPositions": "建玉を更新",
+      "simulatedWarning": "トレーダー建玉は操作履歴からシミュレートしており、実建玉と異なる場合があります",
+      "followOnly": "コピー台帳のみ存在",
+      "empty": "建玉なし",
+      "emptyAbnormal": "異常建玉なし",
+      "symbol": "契約",
+      "leader": "トレーダー",
+      "follow": "このタスク",
+      "side": {
+        "long": "ロング",
+        "short": "ショート"
+      },
+      "mgn": {
+        "cross": "クロス",
+        "isolated": "アイソレート"
+      }
+    },
+    "logs": {
+      "tabs": {
+        "trader": "取引記録",
+        "follower": "コピー記録"
+      },
+      "spiderTitle": "トレーダー取引記録",
+      "tradeTitle": "CopyApe コピー記録",
+      "empty": "データなし",
+      "reverseBadge": "逆コピー",
+      "actions": {
+        "open": "建玉",
+        "add": "追加",
+        "reduce": "削減",
+        "close": "決済",
+        "change": "変更"
+      },
+      "results": {
+        "success": "成功",
+        "failed": "失敗",
+        "info": "情報"
+      },
+      "titles": {
+        "followEnded": "コピー終了",
+        "traderOpen": "トレーダー{name}が建玉",
+        "traderOpenNoName": "トレーダーが建玉",
+        "traderAdd": "トレーダー{name}が追加",
+        "traderAddNoName": "トレーダーが追加",
+        "traderReduce": "トレーダー{name}が削減",
+        "traderReduceNoName": "トレーダーが削減",
+        "traderClose": "トレーダー{name}が決済",
+        "traderCloseNoName": "トレーダーが決済",
+        "traderChange": "トレーダー{name}の建玉変更",
+        "traderChangeNoName": "トレーダー建玉変更",
+        "signalRejected": "シグナル拒否",
+        "tradeFailed": "取引失敗",
+        "commandPublishFailed": "注文配信失敗",
+        "fallback": "ログ"
+      },
+      "desc": {
+        "terminationReason": "終了理由：{reason}",
+        "tradeTermination": "既存建玉は決済されません。後で手動決済してください",
+        "noDetail": "詳細なし",
+        "positionOpen": "取引量：{tradeVolume}\n建玉量：{positionVolume}\n現在損益率：{uplRatio}\n建玉条件充足：{openConditionMet}",
+        "positionDelta": "取引量：{tradeVolume}\n建玉量：{positionVolume}",
+        "positionChangedGeneric": "建玉変更：{instId} {posSide}、シグナル：{signalType}。",
+        "signalRejected": "シグナル拒否：{instId} {posSide}、シグナル：{signalType}。理由：精度制限で数量が過小。",
+        "tradeFailed": "取引失敗：{instId} {posSide}、シグナル：{signalType}。理由：精度制限で数量が過小（トレーダー建玉量：{traderPositionSize}）。",
+        "commandPublishFailed": "注文配信失敗：{instId} {posSide}、シグナル：{signalType}、トレーダー建玉量：{traderPositionSize}、stream_error={streamError}、legacy_error={legacyError}。",
+        "tradeSuccess": "取引所：{exchange}\n取引量：{volume}",
+        "tradeFailedFull": "取引所：{exchange}\n取引量：{volume}\n失敗理由：{reason}",
+        "leverageWarning": "\nレバレッジ調整エラー：{reason}"
+      },
+      "reasons": {
+        "target_volume_rounded_to_zero": "取引精度制限により数量が過小で注文不可",
+        "leader_positions_hidden_or_closed": "トレーダーがリード案件を閉じた、または建玉を非表示にした",
+        "cookie_auth_expired": "Cookieの期限切れ。再取得後にコピーしてください",
+        "token_expired_auto_close": "IPとTOKEN期限切れによりタスク自動終了",
+        "crawler_auto_stop_fetch_failure": "クローラー自動停止（連続取得失敗）",
+        "manual_stop": "ユーザーによる手動停止",
+        "task_terminated_manual_close_required": "タスク終了。手動決済が必要",
+        "task_follow_terminated_manual_close_required": "タスク終了。手動決済が必要"
+      }
+    },
+    "toast": {
+      "fetchFailed": "タスク取得に失敗",
+      "loadFailed": "読み込み失敗",
+      "terminateStarted": "コピー停止リクエストを送信しました",
+      "terminateFailed": "停止リクエスト失敗",
+      "terminateRetry": "停止リクエスト失敗。再試行してください"
+    }
   }
 }
