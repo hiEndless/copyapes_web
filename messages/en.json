@@ -979,5 +979,197 @@
       "done": "Done",
       "gotIt": "Got it"
     }
+  },
+  "DashboardHome": {
+    "noticeTitle": "Announcements",
+    "exchangeTitle": "Partner exchanges",
+    "exchangeDesc": "Register via the links to enjoy a <rate>20%</rate> trading fee rebate. Contact support for half-price VIP.",
+    "redeemTitle": "Redeem code",
+    "redeemDesc": "Enter your redeem code to claim benefits",
+    "redeemPlaceholder": "Enter redeem code",
+    "redeemSubmit": "Redeem",
+    "redeemSubmitting": "Redeeming...",
+    "redeemNeedCode": "Please enter a redeem code",
+    "redeemSuccess": "Redeemed successfully!",
+    "disclaimerTitle": "Disclaimer",
+    "disclaimerBody": "CopyApes (\"the Software\") is a third-party assistant and cannot fully replace manual trading or monitoring. It is not an exchange, does not custody assets, and cannot transfer funds from your account. Using the Software requires exchange APIs; by using copy trading you authorize the Software to place futures orders on your exchange account via API with the parameters you configure. We strive to keep the service available, but we are not liable for outages caused by force majeure (e.g. network attacks, exchange API changes) or for failed trades due to your parameter settings. Using the copy-trading service means you acknowledge the above.",
+    "sponsorTitle": "Sponsors",
+    "sponsorSlot": "Sponsor slot — contact support"
+  },
+  "DashboardApi": {
+    "page": {
+      "title": "API Management",
+      "subtitle": "Add and manage studio trader and copy-trading APIs",
+      "ipNotice": "After long inactivity, the IP whitelist may change. Re-authorize IPs on the exchange before continuing. Click Add API to see the latest whitelist.",
+      "assetLimitExceeded": "Total API funds {amount} USDT exceed your asset limit. Upgrade your plan or transfer excess funds out of the futures account.",
+      "listTitle": "Exchange API list",
+      "listDesc": "Configure exchange API keys to sync lead signals or run auto copy trading. (Auto refresh every 10 minutes)",
+      "fetchFailed": "Failed to load API list"
+    },
+    "editLabel": {
+      "title": "Edit API label",
+      "description": "Set an easier-to-recognize name for this exchange API.",
+      "label": "Label name",
+      "placeholder": "e.g. My main account",
+      "empty": "Label name is required",
+      "success": "Updated",
+      "failed": "Update failed",
+      "failedRetry": "Update failed. Please try again.",
+      "save": "Save",
+      "saving": "Saving..."
+    },
+    "common": {
+      "close": "Close",
+      "cancel": "Cancel",
+      "recommended": "Recommended",
+      "unknown": "Unknown"
+    },
+    "addButton": {
+      "label": "Add API",
+      "toasts": {
+        "labelRequired": "Please enter a label name",
+        "addSuccess": "API added successfully"
+      }
+    },
+    "risk": {
+      "title": "API Key Security & Risk Disclosure",
+      "stepHint": "Step {current} of {total} · {count} items · Scroll to read all",
+      "items": {
+        "withdraw": {
+          "title": "Withdraw permission must be disabled",
+          "p1": "On your exchange's API management page, <bold>only enable Read + Futures Trading</bold>. Never enable Withdraw or Transfer.",
+          "p2": "This is the foundational security safeguard. Without withdraw permission on the key, <bold>unauthorized fund transfers are physically and technically impossible</bold>.",
+          "p3": "Where to find API settings: Binance → profile (top right) → API Management; OKX → account settings (top left) → API; Bitget → profile (top left) → API Keys; Gate → profile (top left) → API; WEEX → Account Settings → API Management"
+        },
+        "encryption": {
+          "title": "API Secret stored with AES-256-CBC encryption",
+          "p1": "Your API Secret / Passphrase is encrypted with <bold>AES-256-CBC symmetric encryption</bold> before being stored. Encryption keys are kept separately in GCP Secret Manager — never in code repos, logs, or backups.",
+          "p2": "Even if the database were fully exported, attackers would only see ciphertext — <bold>the Secret cannot be recovered without the key</bold>. Platform staff, ops, and engineers <bold>cannot view your Secret in plain text</bold>."
+        },
+        "engine": {
+          "title": "Copy engine only calls trading APIs — never touches principal",
+          "p1": "Our API-to-API copy engine only calls: <bold>place order / cancel order / query positions / query balance / set leverage</bold>.",
+          "p2": "It <bold>will never call</bold> withdraw, transfer, API Key management, or other fund-related APIs.",
+          "p3": "Strict permission isolation ensures only trade instructions are executed. The system cannot bypass exchange permission controls — withdraw and transfer APIs are never invoked."
+        },
+        "control": {
+          "title": "You have full control — revoke anytime",
+          "p1": "You can delete this API Key on the <bold>exchange</bold> at any time (no action needed on our platform). Once deleted, copy trading stops immediately and all active copy tasks halt.",
+          "p2": "You can also edit the label on this page, or delete the API account here to unbind instantly."
+        },
+        "contractRisk": {
+          "title": "Understand futures trading risks",
+          "p1": "Futures trading is a <bold>high-risk derivative product</bold> with the following risks:",
+          "bullets": {
+            "liquidation": "<bold>Liquidation risk</bold>: volatile markets may wipe out all margin",
+            "latency": "<bold>Latency risk</bold>: copy flow goes signal monitoring → system processing → exchange order — seconds of delay are possible",
+            "strategy": "<bold>Strategy risk</bold>: past trader performance does not guarantee future results",
+            "system": "<bold>System risk</bold>: network or exchange outages may cause missed signals",
+            "human": "<bold>Human risk</bold>: traders may misjudge, trade emotionally, or hold losing positions"
+          },
+          "p2": "<bold>All profits and losses are your responsibility.</bold>"
+        },
+        "allocation": {
+          "title": "Keep copy allocation under 50% of account",
+          "p1": "Copy trading uses margin in your account. Volatile markets or trader anomalies may tie up excessive margin. Recommendations:",
+          "bullets": {
+            "first": "<bold>First copy</bold>: allocate only 10%–20% of account funds; observe for 1 week",
+            "stable": "<bold>After stability</bold>: gradually increase to within 50% of account",
+            "reserve": "<bold>Keep buffer</bold>: always maintain 50%+ free margin to avoid liquidation"
+          }
+        },
+        "privacy": {
+          "title": "Data privacy",
+          "p1": "We <bold>will not</bold> sell or share your API Key, positions, or P&L data with any third party. Data is used only for copy execution, risk control, and P&L statistics.",
+          "p2": "Your copy trading data on this platform is <bold>visible only to you</bold>. Platform staff will not access your personal data without your authorization."
+        }
+      },
+      "agree": "I have read and agree to the above terms",
+      "scrollFirst": "· Scroll to the bottom first",
+      "next": "Next: Enter API Key →"
+    },
+    "bind": {
+      "title": "Connect API Key",
+      "stepHint": "Step {current} of {total}",
+      "formGuide": "Field guide",
+      "back": "← Back to security notice",
+      "securityBadges": {
+        "encryption": "AES-256 encrypted",
+        "noWithdraw": "Futures trading only, no withdraw",
+        "secretHidden": "Secret never shown"
+      },
+      "supportedExchanges": "Supported exchanges",
+      "fields": {
+        "exchange": "Exchange *",
+        "exchangePlaceholder": "Select exchange",
+        "label": "Label name *",
+        "labelPlaceholder": "e.g. Main account",
+        "permissionType": "API permission type",
+        "readOnly": "Read-only (signal)",
+        "trade": "Trade (copy)",
+        "apiKey": "API Key *",
+        "apiKeyPlaceholder": "Enter API Key",
+        "apiSecret": "API Secret *",
+        "apiSecretPlaceholder": "Enter API Secret",
+        "passphrase": "Passphrase * ({exchangeRequired})",
+        "passphrasePlaceholder": "Enter Passphrase",
+        "exchangeRequired": "{exchange} required"
+      },
+      "ipWhitelist": {
+        "title": "IP whitelist",
+        "copyAll": "Copy all (comma-separated)",
+        "copyAllTitle": "Copy all IPs (comma-separated for OKX — paste directly into exchange whitelist field)",
+        "instruction1": "Add all IPs below to your exchange API Key's Trusted IP list — all are required:",
+        "instruction2": "Add all IPs above to your exchange API Key IP whitelist — all are required.",
+        "readOnlyNote": "Do not bind IP whitelist for read-only APIs; trade APIs must bind IP whitelist.",
+        "changeWarning": "IPs may change. Watch system announcements and update your whitelist promptly."
+      },
+      "submit": "Confirm & Connect",
+      "submitting": "Connecting...",
+      "toasts": {
+        "copySuccess": "Copied to clipboard",
+        "copyFailed": "Copy failed"
+      }
+    },
+    "table": {
+      "columns": {
+        "label": "API Label",
+        "uid": "UID",
+        "balance": "USDT Balance",
+        "createdAt": "Created",
+        "permission": "Permission",
+        "actions": "Actions"
+      },
+      "permission": {
+        "readOnly": "Read-only (signal)",
+        "trade": "Trade (copy)"
+      },
+      "editLabelAria": "Edit label",
+      "empty": "No exchange APIs yet. Click the button in the top-right to add one.",
+      "pagination": {
+        "summary": "Showing {from} to {to} of {total} entries",
+        "previous": "Previous",
+        "next": "Next"
+      },
+      "actions": {
+        "refreshBalance": "Refresh balance",
+        "refreshBalanceAria": "Refresh balance",
+        "delete": "Delete API",
+        "deleteAria": "Delete API"
+      },
+      "deleteDialog": {
+        "title": "Delete this API?",
+        "description": "Active tasks linked to this API may fail. This action cannot be undone.",
+        "confirm": "Delete"
+      },
+      "toasts": {
+        "balanceUpdated": "Balance updated",
+        "balanceUpdateFailed": "Failed to refresh balance",
+        "balanceUpdateRetry": "Failed to refresh balance. Please try again.",
+        "deleteSuccess": "API deleted",
+        "deleteFailed": "Failed to delete API",
+        "deleteRetry": "Delete failed. Please try again."
+      }
+    }
   }
 }

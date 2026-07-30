@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { PlusIcon } from 'lucide-react'
 
@@ -28,6 +29,7 @@ const INITIAL_FORM_DATA: ApiFormData = {
 }
 
 export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
+  const t = useTranslations('DashboardApi')
   const [open, setOpen] = useState(false)
   const [step, setStep] = useState<1 | 2>(1)
   const [loading, setLoading] = useState(false)
@@ -73,7 +75,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
     e.preventDefault()
 
     if (!formData.api_label.trim()) {
-      toast.error('请填写备注名称')
+      toast.error(t('addButton.toasts.labelRequired'))
       return
     }
 
@@ -110,7 +112,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
         return
       }
 
-      toast.success('添加成功')
+      toast.success(t('addButton.toasts.addSuccess'))
       setOpen(false)
       resetDialog()
       onSuccess?.()
@@ -126,7 +128,7 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
       <DialogTrigger asChild>
         <Button size='sm' className='gap-1.5' {...tourAnchor(TOUR_ANCHORS.apiAddButton)}>
           <PlusIcon className='size-4' />
-          添加 API
+          {t('addButton.label')}
         </Button>
       </DialogTrigger>
       <DialogContent

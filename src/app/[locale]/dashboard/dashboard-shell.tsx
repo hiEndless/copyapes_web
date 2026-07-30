@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 
 import { useTheme } from 'next-themes'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -374,6 +374,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
 
 const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const t = useTranslations('DashboardShell')
+  const locale = useLocale()
   const [mounted, setMounted] = useState(false)
   const { resolvedTheme, setTheme } = useTheme()
   const topLoader = useTopLoader()
@@ -540,7 +541,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                   target='_blank'
                 >
                   <img
-                    src='/images/copyapes-chrome-zh.png'
+                    src={locale === 'zh' ? '/images/copyapes-chrome-zh.png' : '/images/copyapes-chrome-en.png'}
                     alt={t('extensionAlt')}
                     className='w-full'
                   />

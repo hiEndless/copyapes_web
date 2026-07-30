@@ -981,5 +981,197 @@
       "done": "完成",
       "gotIt": "知道了"
     }
+  },
+  "DashboardHome": {
+    "noticeTitle": "公告栏",
+    "exchangeTitle": "合作交易所",
+    "exchangeDesc": "点击注册享受 <rate>20%</rate> 交易手续费返佣。联系客服，还可享受半价 VIP 优惠。",
+    "redeemTitle": "兑换码核销",
+    "redeemDesc": "请输入您的兑换码进行核销",
+    "redeemPlaceholder": "请输入兑换码",
+    "redeemSubmit": "核销确认",
+    "redeemSubmitting": "核销中...",
+    "redeemNeedCode": "请输入兑换码",
+    "redeemSuccess": "兑换成功！",
+    "disclaimerTitle": "免责申明",
+    "disclaimerBody": "跟单猿（以下称为\"本软件\"）为第三方辅助工具，不能完全替代手动交易和人工盯盘。本软件不是交易所，不做任何数字货币承兑，不触碰任何用户的资产，无法对用户的账户进行转账操作。使用本软件，需要提供交易所 API，使用跟单功能，默认授权本软件可以通过 API 对您的交易所账户进行合约交易，采用的交易参数为您设置的任务参数。本软件会尽力保证服务的正常使用，因外部不可抗力因素，如网络攻击、交易所接口发生变更等，导致本软件无法提供正常服务，或因用户的交易参数设置导致无法进行交易，本软件不承担任何责任。使用本软件提供的跟单服务，默认知晓以上信息。",
+    "sponsorTitle": "赞助商广告",
+    "sponsorSlot": "赞助商广告位，请联系客服"
+  },
+  "DashboardApi": {
+    "page": {
+      "title": "API 管理",
+      "subtitle": "添加和管理工作室交易员与跟单 API",
+      "ipNotice": "长期未登录使用，IP 白名单可能发生变化，需要重新在交易所授权 IP 白名单后才能继续使用。点击添加 API 按钮，查看最新 IP 白名单。",
+      "assetLimitExceeded": "累计 API 资金 {amount} USDT，已超过最大资金上限，请付费提升账号权限或者将多余资金划转出合约交易账户。",
+      "listTitle": "交易所 API 列表",
+      "listDesc": "配置你的交易所 API 密钥，用于同步带单信号或执行自动跟单。（自动更新周期：10分钟）",
+      "fetchFailed": "获取 API 列表失败"
+    },
+    "editLabel": {
+      "title": "修改 API 标签",
+      "description": "为该交易所 API 设置一个更容易识别的名称。",
+      "label": "标签名称",
+      "placeholder": "例如: 我的主力账户",
+      "empty": "标签名称不能为空",
+      "success": "修改成功",
+      "failed": "修改失败",
+      "failedRetry": "修改失败，请重试",
+      "save": "保存",
+      "saving": "保存中..."
+    },
+    "common": {
+      "close": "关闭",
+      "cancel": "取消",
+      "recommended": "推荐",
+      "unknown": "未知"
+    },
+    "addButton": {
+      "label": "添加 API",
+      "toasts": {
+        "labelRequired": "请填写备注名称",
+        "addSuccess": "添加成功"
+      }
+    },
+    "risk": {
+      "title": "API Key 安全须知与风险声明",
+      "stepHint": "第 {current} 步 / 共 {total} 步 · {count} 条 · 请滚动阅读全部",
+      "items": {
+        "withdraw": {
+          "title": "必须关闭「提现 (Withdraw)」权限",
+          "p1": "请在交易所的 API 管理页面，<bold>只勾选「读取」+「合约交易」</bold>，千万不要勾选「提现」或「划转/转账」。",
+          "p2": "这是最底层的安全保障。由于 Key 本身不具备提现能力，从物理和机制层面<bold>彻底杜绝了资金被非法转移的可能</bold>。",
+          "p3": "各大所 API 管理位置：Binance → 右上角头像 → API 管理；OKX → 左上角账户设置 → API；Bitget → 左上角头像 → API 密钥；Gate → 左上角头像 → API；WEEX → 账户设置 → API 管理"
+        },
+        "encryption": {
+          "title": "API Secret 以 AES-256-CBC 加密存储",
+          "p1": "您提交的 API Secret / Passphrase 在存入数据库之前，会用 <bold>AES-256-CBC 对称加密算法</bold> 加密。加密密钥独立存储在 GCP Secret Manager，不写入任何代码仓库、日志或备份。",
+          "p2": "这意味着：即使数据库被全量导出，攻击者只能看到加密后的密文，<bold>无密钥无法还原 Secret 明文</bold>。平台员工、运维、开发都<bold>无法查看您的 Secret 明文</bold>。"
+        },
+        "engine": {
+          "title": "跟单引擎仅调用交易类 API，永不触碰本金",
+          "p1": "本平台的跟单引擎只会调用以下 API：<bold>下单 / 撤单 / 查询持仓 / 查询余额 / 设置杠杆</bold>。",
+          "p2": "<bold>永远不会调用</bold>：提现（withdraw）、资金划转（transfer）、API Key 管理等资金相关 API。",
+          "p3": "系统通过严格的权限隔离机制，仅拦截并执行交易指令。不仅永远不会调用提现、划转等敏感 API，在系统架构上也<bold>无法绕过交易所的权限体系</bold>。"
+        },
+        "control": {
+          "title": "您对 API Key 有 100% 的控制权，随时可撤销",
+          "p1": "您可在任意时刻，在<bold>交易所</bold>的 API 管理页删除此 API Key（不需要经过本平台）。删除后本平台立即失去跟单能力，所有跟单任务自动停止。",
+          "p2": "您也可在本页面编辑标签，或删除当前 API 账户一键解绑。"
+        },
+        "contractRisk": {
+          "title": "请理解合约交易风险",
+          "p1": "合约交易是<bold>高风险金融衍生品</bold>，存在以下风险：",
+          "bullets": {
+            "liquidation": "<bold>爆仓风险</bold>：剧烈行情下可能损失全部保证金",
+            "latency": "<bold>延迟风险</bold>：跟单经信号监控 → 系统处理 → 交易所下单，存在秒级延迟",
+            "strategy": "<bold>策略风险</bold>：交易员过往业绩不代表未来表现",
+            "system": "<bold>系统风险</bold>：极端情况下网络、交易所故障可能导致信号漏跟",
+            "human": "<bold>人为风险</bold>：交易员可能出现判断失误、情绪化交易或扛单行为"
+          },
+          "p2": "<bold>盈亏由您自行承担</bold>。"
+        },
+        "allocation": {
+          "title": "建议跟单金额不超过账户 50%",
+          "p1": "跟单使用的是您账户里的保证金，剧烈行情或交易员异常可能导致保证金占用过高。建议：",
+          "bullets": {
+            "first": "<bold>首次跟单</bold>：只分配账户 10%~20% 资金，观察 1 周",
+            "stable": "<bold>稳定后</bold>：逐步提高至账户 50% 以内",
+            "reserve": "<bold>保留余量</bold>：始终保留 50%+ 空闲保证金，防强平"
+          }
+        },
+        "privacy": {
+          "title": "关于数据隐私",
+          "p1": "本平台<bold>不会</bold>将您的 API Key、持仓、盈亏数据出售或分享给任何第三方。数据仅用于跟单执行、风控、盈亏统计。",
+          "p2": "您在本平台的跟单数据<bold>仅您本人可见</bold>，平台员工未经您授权不访问您的个人数据。"
+        }
+      },
+      "agree": "我已阅读并同意上述条款",
+      "scrollFirst": "· 请先滚动至底部",
+      "next": "下一步：填写 API Key →"
+    },
+    "bind": {
+      "title": "绑定 API Key",
+      "stepHint": "第 {current} 步 / 共 {total} 步",
+      "formGuide": "填写说明",
+      "back": "← 返回安全说明",
+      "securityBadges": {
+        "encryption": "AES-256 加密存储",
+        "noWithdraw": "仅合约交易，不可提现",
+        "secretHidden": "Secret 永不展示"
+      },
+      "supportedExchanges": "已支持以下交易所",
+      "fields": {
+        "exchange": "交易所 *",
+        "exchangePlaceholder": "选择交易所",
+        "label": "备注名称 *",
+        "labelPlaceholder": "如：主账户",
+        "permissionType": "API 权限类型",
+        "readOnly": "只读 (信号)",
+        "trade": "交易 (跟单)",
+        "apiKey": "API Key *",
+        "apiKeyPlaceholder": "输入 API Key",
+        "apiSecret": "API Secret *",
+        "apiSecretPlaceholder": "输入 API Secret",
+        "passphrase": "Passphrase * ({exchangeRequired})",
+        "passphrasePlaceholder": "输入 Passphrase",
+        "exchangeRequired": "{exchange} 必填"
+      },
+      "ipWhitelist": {
+        "title": "IP 白名单",
+        "copyAll": "复制全部（半角逗号）",
+        "copyAllTitle": "复制全部 IP（OKX 用半角逗号分隔，可直接粘贴到交易所白名单输入框）",
+        "instruction1": "把以下 IP 全部添加到交易所 API Key 的「受信任 IP」列表，缺一不可：",
+        "instruction2": "请将以上 IP 全部添加到交易所 API Key 的 IP 白名单，缺一不可。",
+        "readOnlyNote": "只读权限的 API 不要绑定 IP 白名单；交易权限的 API 必须绑定。",
+        "changeWarning": "IP 可能会发生变化，请关注系统公告，及时更新 IP 白名单。"
+      },
+      "submit": "确认绑定",
+      "submitting": "正在绑定...",
+      "toasts": {
+        "copySuccess": "已复制到剪贴板",
+        "copyFailed": "复制失败"
+      }
+    },
+    "table": {
+      "columns": {
+        "label": "API 标签",
+        "uid": "UID",
+        "balance": "USDT 余额",
+        "createdAt": "创建时间",
+        "permission": "权限",
+        "actions": "操作"
+      },
+      "permission": {
+        "readOnly": "只读 (信号)",
+        "trade": "交易 (跟单)"
+      },
+      "editLabelAria": "修改标签",
+      "empty": "暂无交易所 API，请点击右上角按钮添加",
+      "pagination": {
+        "summary": "显示 {from} 到 {to} 条，共 {total} 条数据",
+        "previous": "上一页",
+        "next": "下一页"
+      },
+      "actions": {
+        "refreshBalance": "更新余额",
+        "refreshBalanceAria": "更新余额",
+        "delete": "删除 API",
+        "deleteAria": "删除API"
+      },
+      "deleteDialog": {
+        "title": "确认删除此 API？",
+        "description": "删除后，所有关联该 API 的进行中任务可能会失败。此操作无法撤销。",
+        "confirm": "确认删除"
+      },
+      "toasts": {
+        "balanceUpdated": "余额已更新",
+        "balanceUpdateFailed": "更新余额失败",
+        "balanceUpdateRetry": "更新余额失败，请重试",
+        "deleteSuccess": "删除 API 成功",
+        "deleteFailed": "删除 API 失败",
+        "deleteRetry": "删除失败，请重试"
+      }
+    }
   }
 }

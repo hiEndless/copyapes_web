@@ -23,6 +23,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { deleteApi, refreshApiBalance } from '@/api/apiadd'
@@ -73,18 +74,21 @@ const PLATFORM_MAP: Record<string, { name: string; logo: string }> = {
   htx: { name: 'HTX', logo: '/exchanges/htx.svg' }
 }
 
+type Translator = ReturnType<typeof useTranslations>
+
 const getColumns = (
+  t: Translator,
   onEditLabel: (item: ApiItem) => void,
   onRefresh?: () => void
 ): ColumnDef<ApiItem>[] => [
   {
-    header: 'API 标签',
+    header: t('table.columns.label'),
     accessorKey: 'api_name',
     cell: ({ row }) => {
       const platformKey = row.original.platform?.toLowerCase() || ''
 
       const platformInfo = PLATFORM_MAP[platformKey] || {
-        name: platformKey.toUpperCase() || '未知',
+        name: platformKey.toUpperCase() || t('common.unknown'),
         logo: '/exchanges/default.png'
       }
 
@@ -108,7 +112,7 @@ const getColumns = (
             size='icon'
             className='text-muted-foreground hover:text-foreground h-6 w-6'
             onClick={() => onEditLabel(row.original)}
-            aria-label='修改标签'
+            aria-label={t('table.editLabelAria')}
           >
             <SquarePen className='h-2 w-2' />
           </Button>
@@ -117,12 +121,12 @@ const getColumns = (
     }
   },
   {
-    header: 'UID',
+    header: t('table.columns.uid'),
     accessorKey: 'uid',
     cell: ({ row }) => <span className='font-mono text-xs'>{row.getValue('uid') || '-'}</span>
   },
   {
-    header: 'USDT 余额',
+    header: t('table.columns.balance'),
     accessorKey: 'usdt',
     cell: ({ row }) => {
       const val = row.getValue('usdt')
@@ -131,7 +135,7 @@ const getColumns = (
     }
   },
   {
-    header: '创建时间',
+    header: t('table.columns.createdAt'),
     accessorKey: 'create_datetime',
     cell: ({ row }) => {
       const dateStr = row.getValue('create_datetime') as string
@@ -141,7 +145,7 @@ const getColumns = (
     }
   },
   {
-    header: '权限',
+    header: t('table.columns.permission'),
     accessorKey: 'is_readonly',
     cell: ({ row }) => {
       const isReadOnly = row.getValue('is_readonly') as boolean
@@ -150,14 +154,14 @@ const getColumns = (
         <span
           className={cn('text-xs font-medium', isReadOnly ? 'text-green-600 dark:text-green-400' : 'text-foreground')}
         >
-          {isReadOnly ? '只读 (信号)' : '交易 (跟单)'}
+          {isReadOnly ? t('table.permission.readOnly') : t('table.permission.trade')}
         </span>
       )
     }
   },
   {
     id: 'actions',
-    header: () => '操作',
+    header: () => t('table.columns.actions'),
     cell: function Cell({ row }) {
       const [balanceBusy, setBalanceBusy] = useState(false)
 
@@ -167,14 +171,14 @@ const getColumns = (
           const res = await refreshApiBalance(row.original.id)
 
           if (res.code === 0) {
-            toast.success('余额已更新')
+            toast.success(t('table.toasts.balanceUpdated'))
             onRefresh?.()
           } else {
-            toast.error(res.error || '更新余额失败')
+            toast.error(res.error || t('table.toasts.balanceUpdateFailed'))
           }
         } catch (error) {
           console.error('更新余额失败:', error)
-          toast.error('更新余额失败，请重试')
+          toast.error(t('table.toasts.balanceUpdateRetry'))
         } finally {
           setBalanceBusy(false)
         }
@@ -185,7 +189,7 @@ const getColumns = (
           const res = await deleteApi(row.original.id)
 
           if (res.code === 0) {
-            toast.success('删除 API 成功')
+            toast.success(t('table.toasts.deleteSuccess'))
             onRefresh?.()
             
             // 刷新全局权益信息，同步剩余 API 额度
@@ -200,11 +204,11 @@ const getColumns = (
               console.error('Failed to fetch entitlement profile after deleting API:', err)
             }
           } else {
-            toast.error(res.error || '删除 API 失败')
+            toast.error(res.error || t('table.toasts.deleteFailed'))
           }
         } catch (error) {
           console.error('删除失败:', error)
-          toast.error('删除失败，请重试')
+          toast.error(t('table.toasts.deleteRetry'))
         }
       }
 
@@ -216,7 +220,7 @@ const getColumns = (
                 <Button
                   variant='ghost'
                   size='icon'
-                  aria-label='更新余额'
+                  aria-label={t('table.actions.refreshBalanceAria')}
                   disabled={balanceBusy}
                   onClick={handleRefreshBalance}
                 >
@@ -224,7 +228,7 @@ const getColumns = (
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                <p>更新余额</p>
+                <p>{t('table.actions.refreshBalance')}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -233,27 +237,27 @@ const getColumns = (
               <Tooltip>
                 <AlertDialogTrigger asChild>
                   <TooltipTrigger asChild>
-                    <Button variant='ghost' size='icon' aria-label='删除API'>
+                    <Button variant='ghost' size='icon' aria-label={t('table.actions.deleteAria')}>
                       <Trash2Icon className='text-destructive size-4.5' />
                     </Button>
                   </TooltipTrigger>
                 </AlertDialogTrigger>
                 <TooltipContent>
-                  <p>删除 API</p>
+                  <p>{t('table.actions.delete')}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
             <AlertDialogContent>
               <AlertDialogHeader>
-                <AlertDialogTitle>确认删除此 API？</AlertDialogTitle>
+                <AlertDialogTitle>{t('table.deleteDialog.title')}</AlertDialogTitle>
                 <AlertDialogDescription>
-                  删除后，所有关联该 API 的进行中任务可能会失败。此操作无法撤销。
+                  {t('table.deleteDialog.description')}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
-                <AlertDialogCancel>取消</AlertDialogCancel>
+                <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
                 <AlertDialogAction onClick={handleDelete} className='bg-red-500 text-white hover:bg-red-600'>
-                  确认删除
+                  {t('table.deleteDialog.confirm')}
                 </AlertDialogAction>
               </AlertDialogFooter>
             </AlertDialogContent>
@@ -266,6 +270,7 @@ const getColumns = (
 ]
 
 const ApiDatatable = ({ data, onRefresh }: { data: ApiItem[]; onRefresh?: () => void }) => {
+  const t = useTranslations('DashboardApi')
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const [editLabelOpen, setEditLabelOpen] = useState(false)
@@ -276,7 +281,7 @@ const ApiDatatable = ({ data, onRefresh }: { data: ApiItem[]; onRefresh?: () => 
     setEditLabelOpen(true)
   }
 
-  const columns = useMemo(() => getColumns(handleEditLabel, onRefresh), [onRefresh])
+  const columns = useMemo(() => getColumns(t, handleEditLabel, onRefresh), [t, onRefresh])
 
   const pageSize = 10
 
@@ -361,7 +366,7 @@ const ApiDatatable = ({ data, onRefresh }: { data: ApiItem[]; onRefresh?: () => 
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className='text-muted-foreground h-32 text-center'>
-                  暂无交易所 API，请点击右上角按钮添加
+                  {t('table.empty')}
                 </TableCell>
               </TableRow>
             )}
@@ -371,19 +376,18 @@ const ApiDatatable = ({ data, onRefresh }: { data: ApiItem[]; onRefresh?: () => 
 
       <div className='flex items-center justify-between gap-3 px-6 py-4 max-sm:flex-col md:max-lg:flex-col'>
         <p className='text-muted-foreground text-sm whitespace-nowrap' aria-live='polite'>
-          显示{' '}
-          <span>
-            {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1} 到{' '}
-            {Math.min(
+          {t('table.pagination.summary', {
+            from: table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1,
+            to: Math.min(
               Math.max(
                 table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
                   table.getState().pagination.pageSize,
                 0
               ),
               table.getRowCount()
-            )}
-          </span>{' '}
-          条，共 <span>{table.getRowCount().toString()}</span> 条数据
+            ),
+            total: table.getRowCount()
+          })}
         </p>
 
         <div>
@@ -398,7 +402,7 @@ const ApiDatatable = ({ data, onRefresh }: { data: ApiItem[]; onRefresh?: () => 
                   aria-label='Go to previous page'
                 >
                   <ChevronLeftIcon aria-hidden='true' />
-                  上一页
+                  {t('table.pagination.previous')}
                 </Button>
               </PaginationItem>
 
@@ -439,7 +443,7 @@ const ApiDatatable = ({ data, onRefresh }: { data: ApiItem[]; onRefresh?: () => 
                   disabled={!table.getCanNextPage()}
                   aria-label='Go to next page'
                 >
-                  下一页
+                  {t('table.pagination.next')}
                   <ChevronRightIcon aria-hidden='true' />
                 </Button>
               </PaginationItem>

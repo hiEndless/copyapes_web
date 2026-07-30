@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Loader2Icon } from 'lucide-react'
 
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { updateApiName } from '@/api/apiadd'
@@ -29,6 +30,7 @@ interface ApiEditLabelDialogProps {
 }
 
 export function ApiEditLabelDialog({ open, onOpenChange, item, onSuccess }: ApiEditLabelDialogProps) {
+  const t = useTranslations('DashboardApi')
   const [loading, setLoading] = useState(false)
   const [label, setLabel] = useState('')
 
@@ -47,7 +49,7 @@ export function ApiEditLabelDialog({ open, onOpenChange, item, onSuccess }: ApiE
     if (!item) return
 
     if (!label.trim()) {
-      toast.error('标签名称不能为空')
+      toast.error(t('editLabel.empty'))
       return
     }
 
@@ -57,15 +59,15 @@ export function ApiEditLabelDialog({ open, onOpenChange, item, onSuccess }: ApiE
       const res = await updateApiName({ api_id: item.id, api_name: label.trim() })
 
       if (res.code === 0) {
-        toast.success('修改成功')
+        toast.success(t('editLabel.success'))
         handleClose()
         onSuccess?.()
       } else {
-        toast.error(res.error || '修改失败')
+        toast.error(res.error || t('editLabel.failed'))
       }
     } catch (error) {
       console.error('修改失败:', error)
-      toast.error('修改失败，请重试')
+      toast.error(t('editLabel.failedRetry'))
     } finally {
       setLoading(false)
     }
@@ -81,16 +83,16 @@ export function ApiEditLabelDialog({ open, onOpenChange, item, onSuccess }: ApiE
     >
       <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
-          <DialogTitle>修改 API 标签</DialogTitle>
-          <DialogDescription>为该交易所 API 设置一个更容易识别的名称。</DialogDescription>
+          <DialogTitle>{t('editLabel.title')}</DialogTitle>
+          <DialogDescription>{t('editLabel.description')}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className='space-y-4 pt-2'>
           <div className='space-y-2'>
-            <Label htmlFor='edit_api_label'>标签名称</Label>
+            <Label htmlFor='edit_api_label'>{t('editLabel.label')}</Label>
             <Input
               id='edit_api_label'
-              placeholder='例如: 我的主力账户'
+              placeholder={t('editLabel.placeholder')}
               required
               value={label}
               onChange={e => setLabel(e.target.value)}
@@ -99,11 +101,11 @@ export function ApiEditLabelDialog({ open, onOpenChange, item, onSuccess }: ApiE
 
           <DialogFooter className='pt-2'>
             <Button type='button' variant='outline' onClick={handleClose} disabled={loading}>
-              取消
+              {t('common.cancel')}
             </Button>
             <Button type='submit' disabled={loading || label.trim() === ''}>
               {loading && <Loader2Icon className='mr-2 size-4 animate-spin' />}
-              {loading ? '保存中...' : '保存'}
+              {loading ? t('editLabel.saving') : t('editLabel.save')}
             </Button>
           </DialogFooter>
         </form>

@@ -4,6 +4,7 @@ import type { ComponentType, CSSProperties } from 'react'
 import { useEffect, useState } from 'react'
 
 import { useTheme } from 'next-themes'
+import { useTranslations } from 'next-intl'
 
 import {
   Check,
@@ -139,12 +140,6 @@ const FIELD_LABEL = 'text-muted-foreground mb-1.5 block text-[12px] font-semibol
 const FIELD_INPUT =
   'border-0 bg-muted text-foreground h-11 rounded-md px-4 text-[13px] shadow-none focus-visible:ring-ring/50'
 
-function getPassphraseLabel(exchange: string) {
-  const ex = EXCHANGES.find((item) => item.value === exchange)
-
-  return ex ? `${ex.label} 必填` : `${exchange.toUpperCase()} 必填`
-}
-
 export function ApiBindFormStep({
   formData,
   ipWhitelist,
@@ -153,8 +148,10 @@ export function ApiBindFormStep({
   onChange,
   onSubmit
 }: ApiBindFormStepProps) {
+  const t = useTranslations('DashboardApi')
   const { startTourById } = useTour()
   const selectedExchange = EXCHANGES.find((ex) => ex.value === formData.exchange)
+  const passphraseExchangeLabel = selectedExchange ? selectedExchange.label : formData.exchange.toUpperCase()
 
   const ipList = [
     ...new Set(
@@ -168,9 +165,9 @@ export function ApiBindFormStep({
   const copyIpWhitelist = async () => {
     try {
       await navigator.clipboard.writeText(ipWhitelist)
-      toast.success('已复制到剪贴板')
+      toast.success(t('bind.toasts.copySuccess'))
     } catch {
-      toast.error('复制失败')
+      toast.error(t('bind.toasts.copyFailed'))
     }
   }
 
@@ -179,9 +176,9 @@ export function ApiBindFormStep({
       <DialogHeader className='border-border flex shrink-0 flex-row items-start justify-between gap-2 space-y-0 border-b px-6 py-5 text-left'>
         <div>
           <DialogTitle className='text-[22px] leading-tight font-semibold tracking-tight'>
-            绑定 API Key
+            {t('bind.title')}
           </DialogTitle>
-          <p className='text-muted-foreground mt-1 text-xs font-medium'>第 2 步 / 共 2 步</p>
+          <p className='text-muted-foreground mt-1 text-xs font-medium'>{t('bind.stepHint', { current: 2, total: 2 })}</p>
         </div>
         <div className='flex shrink-0 items-center gap-1'>
           <Button
@@ -192,7 +189,7 @@ export function ApiBindFormStep({
             onClick={() => startTourById(TOUR_IDS.apiFormGuide)}
           >
             <CircleHelpIcon className='size-4' />
-            填写说明
+            {t('bind.formGuide')}
           </Button>
           <DialogClose asChild>
             <Button
@@ -200,7 +197,7 @@ export function ApiBindFormStep({
               variant='ghost'
               size='icon'
               className='size-8 shrink-0'
-              aria-label='关闭'
+              aria-label={t('common.close')}
             >
               <X className='size-4' />
             </Button>
@@ -217,19 +214,19 @@ export function ApiBindFormStep({
           onClick={onBack}
           className='text-muted-foreground hover:text-foreground text-xs font-semibold transition-colors'
         >
-          ← 返回安全说明
+          {t('bind.back')}
         </button>
 
         <div className='bg-muted/40 mt-2 space-y-3 rounded-lg px-4 py-3.5'>
           <div className='grid grid-cols-3 gap-2'>
-            <SecurityBadge icon={ShieldCheck} label='AES-256 加密存储' />
-            <SecurityBadge icon={Lock} label='仅合约交易，不可提现' />
-            <SecurityBadge icon={EyeOff} label='Secret 永不展示' />
+            <SecurityBadge icon={ShieldCheck} label={t('bind.securityBadges.encryption')} />
+            <SecurityBadge icon={Lock} label={t('bind.securityBadges.noWithdraw')} />
+            <SecurityBadge icon={EyeOff} label={t('bind.securityBadges.secretHidden')} />
           </div>
 
           <div className='shadow-[inset_0_1px_0_0_rgba(14,15,12,0.06)] pt-2.5'>
             <p className='text-muted-foreground mb-2.5 text-center text-[10px] font-medium'>
-              已支持以下交易所
+              {t('bind.supportedExchanges')}
             </p>
             <div className='grid grid-cols-3 items-center justify-items-center gap-x-2 gap-y-3'>
               {EXCHANGES_LOGOS.map((ex) => (
@@ -244,7 +241,7 @@ export function ApiBindFormStep({
         <div className='grid gap-3 md:grid-cols-2'>
           <div {...tourAnchor(TOUR_ANCHORS.apiFormExchange)}>
             <label htmlFor='exchange' className={FIELD_LABEL}>
-              交易所 *
+              {t('bind.fields.exchange')}
             </label>
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
@@ -261,10 +258,10 @@ export function ApiBindFormStep({
                         className='size-3.5 object-contain'
                       />
                     )}
-                    <span className='truncate'>{selectedExchange?.label ?? '选择交易所'}</span>
+                    <span className='truncate'>{selectedExchange?.label ?? t('bind.fields.exchangePlaceholder')}</span>
                     {formData.exchange === 'okx' && (
                       <span className='bg-primary/10 text-primary shrink-0 rounded px-1.5 py-px text-[9px] font-semibold tracking-wide'>
-                        推荐
+                        {t('common.recommended')}
                       </span>
                     )}
                   </span>
@@ -287,7 +284,7 @@ export function ApiBindFormStep({
                       <span>{ex.label}</span>
                       {ex.value === 'okx' && (
                         <span className='bg-primary/10 text-primary rounded px-1.5 py-px text-[9px] font-semibold'>
-                          推荐
+                          {t('common.recommended')}
                         </span>
                       )}
                     </div>
@@ -302,11 +299,11 @@ export function ApiBindFormStep({
 
           <div {...tourAnchor(TOUR_ANCHORS.apiFormLabel)}>
             <label htmlFor='api_label' className={FIELD_LABEL}>
-              备注名称 *
+              {t('bind.fields.label')}
             </label>
             <Input
               id='api_label'
-              placeholder='如：主账户'
+              placeholder={t('bind.fields.labelPlaceholder')}
               required
               value={formData.api_label}
               onChange={(e) => onChange('api_label', e.target.value)}
@@ -316,32 +313,32 @@ export function ApiBindFormStep({
         </div>
 
         <div {...tourAnchor(TOUR_ANCHORS.apiFormPermission)}>
-          <p className={FIELD_LABEL}>API 权限类型</p>
+          <p className={FIELD_LABEL}>{t('bind.fields.permissionType')}</p>
           <div className='flex items-center gap-6'>
             <label className='flex cursor-pointer items-center gap-2'>
               <Checkbox
                 checked={formData.is_read_only}
                 onCheckedChange={() => onChange('is_read_only', true)}
               />
-              <span className='text-[13px] font-medium'>只读 (信号)</span>
+              <span className='text-[13px] font-medium'>{t('bind.fields.readOnly')}</span>
             </label>
             <label className='flex cursor-pointer items-center gap-2'>
               <Checkbox
                 checked={!formData.is_read_only}
                 onCheckedChange={() => onChange('is_read_only', false)}
               />
-              <span className='text-[13px] font-medium'>交易 (跟单)</span>
+              <span className='text-[13px] font-medium'>{t('bind.fields.trade')}</span>
             </label>
           </div>
         </div>
 
         <div {...tourAnchor(TOUR_ANCHORS.apiFormKey)}>
           <label htmlFor='api_key' className={FIELD_LABEL}>
-            API Key *
+            {t('bind.fields.apiKey')}
           </label>
           <Input
             id='api_key'
-            placeholder='输入 API Key'
+            placeholder={t('bind.fields.apiKeyPlaceholder')}
             required
             value={formData.api_key}
             onChange={(e) => onChange('api_key', e.target.value)}
@@ -351,12 +348,12 @@ export function ApiBindFormStep({
 
         <div {...tourAnchor(TOUR_ANCHORS.apiFormSecret)}>
           <label htmlFor='api_secret' className={FIELD_LABEL}>
-            API Secret *
+            {t('bind.fields.apiSecret')}
           </label>
           <Input
             id='api_secret'
             type='password'
-            placeholder='输入 API Secret'
+            placeholder={t('bind.fields.apiSecretPlaceholder')}
             required
             value={formData.api_secret}
             onChange={(e) => onChange('api_secret', e.target.value)}
@@ -367,12 +364,14 @@ export function ApiBindFormStep({
         {['okx', 'bitget', 'weex'].includes(formData.exchange) && (
           <div>
             <label htmlFor='api_passphrase' className={FIELD_LABEL}>
-              Passphrase * ({getPassphraseLabel(formData.exchange)})
+              {t('bind.fields.passphrase', {
+                exchangeRequired: t('bind.fields.exchangeRequired', { exchange: passphraseExchangeLabel })
+              })}
             </label>
             <Input
               id='api_passphrase'
               type='password'
-              placeholder='输入 Passphrase'
+              placeholder={t('bind.fields.passphrasePlaceholder')}
               required
               value={formData.api_passphrase}
               onChange={(e) => onChange('api_passphrase', e.target.value)}
@@ -390,20 +389,20 @@ export function ApiBindFormStep({
               <div className='flex flex-wrap items-center justify-between gap-2'>
                 <strong className='text-foreground inline-flex items-center gap-1.5 text-[13px] font-semibold'>
                   <Globe className='size-3.5' strokeWidth={2.5} />
-                  IP 白名单
+                  {t('bind.ipWhitelist.title')}
                 </strong>
                 <button
                   type='button'
                   onClick={copyIpWhitelist}
-                  title='复制全部 IP（OKX 用半角逗号分隔，可直接粘贴到交易所白名单输入框）'
+                  title={t('bind.ipWhitelist.copyAllTitle')}
                   className='bg-background border-border hover:bg-muted/50 inline-flex items-center gap-1 rounded-md border px-2.5 py-1 text-[11px] font-semibold transition-colors'
                 >
                   <Copy className='size-3' strokeWidth={2.5} />
-                  复制全部（半角逗号）
+                  {t('bind.ipWhitelist.copyAll')}
                 </button>
               </div>
               <p className='text-muted-foreground mt-1 text-xs font-medium'>
-                把以下 IP 全部添加到交易所 API Key 的「受信任 IP」列表，缺一不可：
+                {t('bind.ipWhitelist.instruction1')}
               </p>
               <div className='mt-2 flex flex-wrap gap-1.5'>
                 {ipList.map((ip) => (
@@ -416,13 +415,13 @@ export function ApiBindFormStep({
                 ))}
               </div>
               <p className='text-muted-foreground/80 mt-2 text-[11px] font-medium'>
-                请将以上 IP 全部添加到交易所 API Key 的 IP 白名单，缺一不可。
+                {t('bind.ipWhitelist.instruction2')}
               </p>
               <p className='text-muted-foreground mt-2 text-[11px] font-medium'>
-                只读权限的 API 不要绑定 IP 白名单；交易权限的 API 必须绑定。
+                {t('bind.ipWhitelist.readOnlyNote')}
               </p>
               <p className='mt-2 text-[11px] leading-relaxed font-medium text-amber-600 dark:text-amber-500'>
-                IP 可能会发生变化，请关注系统公告，及时更新 IP 白名单。
+                {t('bind.ipWhitelist.changeWarning')}
               </p>
             </div>
           </div>
@@ -435,7 +434,7 @@ export function ApiBindFormStep({
             className='h-11 flex-1 text-[13px] font-semibold'
           >
             {loading && <Loader2Icon className='mr-2 size-4 animate-spin' />}
-            {loading ? '正在绑定...' : '确认绑定'}
+            {loading ? t('bind.submitting') : t('bind.submit')}
           </Button>
           <DialogClose asChild>
             <Button
@@ -443,7 +442,7 @@ export function ApiBindFormStep({
               variant='secondary'
               className='h-11 px-5 text-[13px] font-semibold'
             >
-              取消
+              {t('common.cancel')}
             </Button>
           </DialogClose>
         </div>
