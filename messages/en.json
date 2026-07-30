@@ -1930,5 +1930,480 @@
       "noInviteCode": "No invite code yet",
       "linkCopied": "Invite link copied"
     }
+  },
+  "DashboardExchangeTask": {
+    "hero": {
+      "title": "Exchange self-select copy trading",
+      "subtitle": "If you can see the positions, you can copy them! Copying original exchange signals is the most stable and fastest."
+    },
+    "card": {
+      "title": "Create an exchange copy task",
+      "description": "Configure your copy trading parameters to start monitoring and mirroring the target trader's strategy."
+    },
+    "form": {
+      "selectExchange": "Select target exchange",
+      "traderLabel": "Trader profile link or ID",
+      "traderInputPlaceholder": "Enter profile link or UID / lead trading ID",
+      "traderInputPlaceholderNoExchange": "Select an exchange first, then enter the link or ID",
+      "parse": "Parse",
+      "uniqueNameLabel": "Trader (UID or lead trading ID)",
+      "traderTypeLabel": "Trader type",
+      "traderTypePlaceholder": "Select trader type",
+      "invalidTraderUrl": "Invalid link or ID format",
+      "selectExchangeFirst": "Please select an exchange first",
+      "submit": "Create copy task"
+    },
+    "delayTips": {
+      "okx": {
+        "title": "OKX delay notice:",
+        "notice": "This delay is set by the exchange itself, not caused by the copy trading tool!",
+        "publicLabel": "Copy public lead trading:",
+        "publicDesc": "5-minute delay on opening, no delay on adding, reducing, or closing",
+        "personalLabel": "Copy personal trading:",
+        "personalDesc": "Recommended! 0 delay!"
+      },
+      "binance": {
+        "title": "Binance delay notice:",
+        "notice": "This delay is set by the exchange itself, not caused by the copy trading tool!",
+        "publicLabel": "Copy public live trading:",
+        "publicDesc": "Recommended! 0 delay!",
+        "hiddenLabel": "Copy hidden live trading:",
+        "hiddenDesc": "2-minute delay on opening, adding, reducing, and closing"
+      }
+    },
+    "traderType": {
+      "okx": {
+        "contract": "Futures lead trading",
+        "personal": "Personal overview"
+      },
+      "binance": {
+        "public": "Public lead trading",
+        "hidden": "Hidden lead trading"
+      }
+    },
+    "errors": {
+      "invalidUrl": "Invalid link or ID format",
+      "selectExchangeFirst": "Please select an exchange first"
+    }
+  },
+  "DashboardBicoinTask": {
+    "hero": {
+      "subtitle": "If you can see a trader's operation records or positions, you can copy them! Note: the platform may temporarily suspend free accounts — simply re-register if that happens."
+    },
+    "card": {
+      "title": "Create a BiCoin copy task",
+      "description": "Link your BiCoin account and select a target trader"
+    },
+    "tip": {
+      "title": "BiCoin platform limitation notice:",
+      "line1": "Due to BiCoin platform factors, copy trading delay may be uncontrollable during sharp market moves. Please keep an eye on your own positions.",
+      "line2": "BiCoin data is cached, so absolute second-level delay isn't possible. Copying operation records is slightly faster than copying contract positions, while contract position copying is more stable. If a trader's operation records include spot trades or a buy/sell mode, copying isn't supported — contact support for help."
+    },
+    "account": {
+      "label": "Link BiCoin account",
+      "phoneLabel": "Phone number",
+      "phonePlaceholder": "Enter phone number",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter password",
+      "save": "Confirm & save",
+      "edit": "Edit"
+    },
+    "search": {
+      "label": "Select trader",
+      "placeholder": "Enter trader nickname",
+      "noSlogan": "No bio yet"
+    },
+    "traderSource": {
+      "label": "Copy data source",
+      "placeholder": "Select copy data source",
+      "operationRecord": "Operation records",
+      "contractPosition": "Contract positions"
+    },
+    "submit": "Create copy task",
+    "toast": {
+      "saveSuccess": "BiCoin account saved successfully",
+      "saveFailed": "Save failed",
+      "requestFailed": "Request failed",
+      "searchEmpty": "No matching traders found",
+      "searchFailed": "Search failed"
+    }
+  },
+  "DashboardHyperTask": {
+    "hero": {
+      "subtitle": "A next-generation decentralized exchange focused on on-chain perpetual contracts. Many whales, insiders, and large orders trade on Hyperliquid — find their wallet addresses and you can copy them."
+    },
+    "actions": {
+      "goExchange": "Go to exchange",
+      "queryData": "View data"
+    },
+    "card": {
+      "title": "Create a Hyperliquid copy task",
+      "description": "Just enter the target trader's wallet address to start copying"
+    },
+    "form": {
+      "walletLabel": "Target trader's wallet address",
+      "walletPlaceholder": "e.g. 0x1234567890abcdef...",
+      "submit": "Create copy task"
+    }
+  },
+  "DashboardApiTask": {
+    "hero": {
+      "title": "API copy trading",
+      "subtitle": "Submit your exchange API (read-only) as a lead signal, and use the copy API to copy trade with 0 delay! You can also search other users' public APIs to copy.",
+      "contactSupport": "Contact support for studio edition details"
+    },
+    "card": {
+      "title": "Create an API copy task",
+      "description": "Choose your own API account, or search other users' public APIs to copy."
+    },
+    "tabs": {
+      "myApi": "My API signals",
+      "searchApi": "Discover API signals"
+    },
+    "list": {
+      "loading": "Loading...",
+      "demoBadge": "Demo",
+      "creatorLabel": "Creator:",
+      "ownerLabel": "Owner:",
+      "balanceLabel": "Balance:",
+      "follow": "Start copying",
+      "unsupported": "Platform not supported yet",
+      "myEmpty": "No read-only API signals yet",
+      "meFallback": "Me",
+      "anonymousFallback": "Anonymous user"
+    },
+    "search": {
+      "placeholder": "Search by API name or keyword...",
+      "button": "Search",
+      "hint": "Enter a keyword and click search to discover other users' APIs",
+      "empty": "No related API information found"
+    }
+  },
+  "DashboardCookieTask": {
+    "hero": {
+      "title": "Cookie copy trading",
+      "subtitle": "For traders whose real-time position changes are only visible after logging into the exchange, using the exchange's Cookie enables 0-delay copy trading.",
+      "getCookie": "Get exchange Cookie"
+    },
+    "card": {
+      "title": "Create an exchange copy task",
+      "description": "Configure your copy trading parameters to start monitoring and mirroring the target trader's strategy."
+    },
+    "form": {
+      "selectExchange": "Select target exchange",
+      "traderLabel": "Trader profile link or ID",
+      "traderInputPlaceholder": "Enter profile link or UID / lead trading ID",
+      "traderInputPlaceholderNoExchange": "Select an exchange first, then enter the link or ID",
+      "parse": "Parse",
+      "uniqueNameLabel": "Trader (UID or lead trading ID)",
+      "traderTypeLabel": "Trader type",
+      "traderTypePlaceholder": "Select trader type",
+      "invalidTraderUrl": "Invalid link or ID format",
+      "selectExchangeFirst": "Please select an exchange first",
+      "submit": "Create copy task"
+    },
+    "traderType": {
+      "okx": {
+        "contract": "Futures lead trading",
+        "project": "Lead trading project"
+      },
+      "binance": {
+        "project": "Lead trading project",
+        "smartMoney": "Smart money"
+      }
+    },
+    "cookie": {
+      "myTab": "My Cookies",
+      "searchTab": "Discover Cookies",
+      "statusLabel": "Status:",
+      "statusActive": "Active",
+      "statusExpired": "Expired",
+      "creatorLabel": "Creator:",
+      "myEmpty": "No Cookie found for {exchange}. Please add one first",
+      "exchangeOkx": "OKX",
+      "exchangeBinance": "Binance",
+      "searchPlaceholder": "Search by Cookie name or keyword...",
+      "search": "Search",
+      "searchHint": "Enter a keyword and click search to discover other users' Cookie signals",
+      "searchEmpty": "No related Cookie signals found",
+      "anonymousFallback": "Anonymous user"
+    },
+    "errors": {
+      "invalidUrl": "Invalid link or ID format",
+      "selectExchangeFirst": "Please select an exchange first"
+    }
+  },
+  "DashboardCopyTaskConfig": {
+    "sheet": {
+      "titleWithName": "Copy Trade Setup - {name}",
+      "description": "Configure detailed copy trading parameters",
+      "guide": "Setup guide"
+    },
+    "notify": {
+      "statusLabel": "Notification status:",
+      "checking": "Checking...",
+      "configured": "Configured",
+      "notConfigured": "Not configured (task creation blocked)",
+      "goConfig": "Configure now"
+    },
+    "tabs": {
+      "basic": "Basic settings",
+      "advanced": "Advanced settings"
+    },
+    "apiSelect": {
+      "label": "Choose your copy trading API",
+      "empty": "No API available yet, please add a trading API first",
+      "goAdd": "Add now",
+      "fallbackName": "API {id}",
+      "unselected": "Not selected"
+    },
+    "label": {
+      "label": "Task remark (optional)",
+      "placeholder": "Defaults to trader ID when left blank"
+    },
+    "followMode": {
+      "label": "Copy mode",
+      "fixedRatio": "Fixed ratio",
+      "tooltip": "Copy ratio = investment amount / benchmark principal × multiplier. The investment amount is only used to calculate the copy ratio, not the actual capital cap."
+    },
+    "multiple": {
+      "title": "Multiplier mode (optional)",
+      "tooltip": "Multiplies the base copy ratio by this factor. For example, if a position of 10 USDT would normally be opened, setting the multiplier to 2 makes the actual position 20 USDT. Only suitable for traders who frequently trade small amounts with high leverage, to avoid missed copies caused by too-small position sizes.",
+      "label": "Multiplier (default 1)",
+      "placeholder": "e.g. 0.5, 1.5",
+      "warning": "Do not use this feature if the trader frequently trades at full position size!"
+    },
+    "benchMark": {
+      "label": "Trader's benchmark principal (USDT)",
+      "placeholder": ">100",
+      "autoFetch": "Auto fetch",
+      "keepHint": "If this API account still has open positions, keep the original task principal and avoid refetching, as it may change the copy ratio and leave a residual position after closing."
+    },
+    "investment": {
+      "label": "Investment amount (USDT)",
+      "placeholder": ">100"
+    },
+    "ratioPreview": {
+      "title": "Copy ratio preview",
+      "multipleOffHint": "Multiplier mode is off, multiplier is treated as 1",
+      "lowRatioWarning": "The current ratio is below 10%, which may cause the position size to be too small to open; it will be closed at the exchange's minimum trade size.",
+      "emptyHint": "Enter capital and investment to preview the copy ratio calculation",
+      "investmentInvalid": "Investment must be greater than 0",
+      "benchMarkInvalid": "Trader capital must be greater than 0",
+      "multipleInvalid": "Multiplier must be greater than 0"
+    },
+    "leverage": {
+      "label": "Leverage mode",
+      "follow": "Follow trader",
+      "custom": "Custom leverage",
+      "customTooltip": "Exchanges apply risk controls to new accounts, so it may not always be possible to match the trader's high leverage. Adjusting leverage does not affect the actual trade size, only the margin used. This fixes your own leverage for copy trading and no longer follows the trader's leverage changes.",
+      "valueLabel": "Leverage value",
+      "valuePlaceholder": "Integer from 1 to 75 (10-20 recommended, as some coins don't support high leverage)"
+    },
+    "marginMode": {
+      "label": "Margin mode",
+      "follow": "Follow trader",
+      "cross": "Cross margin",
+      "isolated": "Isolated margin",
+      "hint": "Choosing cross or isolated margin will override the trader's original margin mode."
+    },
+    "openType": {
+      "label": "Order entry mode",
+      "market": "Current market price",
+      "interval": "Range order",
+      "intervalTooltip": "Only opens a position when the trader's ROI falls within the set range, avoiding blindly chasing entries at highs or lows and effectively controlling first-order slippage and entry risk. Regardless of how many times the trader has added to the position before, the entire position will be copied proportionally at once when the condition is met. Range limit entry only applies to the trader's new positions, not to additions.",
+      "rangeLabel": "Trader ROI range (%)",
+      "rangePlaceholder": "e.g. 5",
+      "rangeHint": "Opens a position when the trader's ROI is below 5%"
+    },
+    "firstOrder": {
+      "label": "First order settings",
+      "newOnly": "Copy new positions only",
+      "copyCurrent": "Copy current positions",
+      "copyLossOnly": "Copy current losing positions only"
+    },
+    "advanced": {
+      "reverse": "Reverse copy",
+      "fastMode": "Fast copy mode",
+      "tradeTrigger": {
+        "title": "Trade take-profit / stop-loss",
+        "tpLabel": "Take-profit percentage",
+        "slLabel": "Stop-loss percentage",
+        "placeholder": "20"
+      },
+      "posStrategy": {
+        "title": "Long/short strategy",
+        "long": "Long positions only",
+        "short": "Short positions only"
+      },
+      "vol24h": {
+        "title": "24h leaderboard copy",
+        "rankLabel": "Leaderboard rank",
+        "placeholder": "e.g. 20 (top 20 only)"
+      },
+      "balanceMonitor": {
+        "title": "Trader principal monitoring",
+        "valueLabel": "Minimum principal amount",
+        "placeholder": "e.g. 2000"
+      },
+      "whiteList": {
+        "title": "Coin whitelist",
+        "inputLabel": "Enter coins allowed for copying",
+        "placeholder": "e.g. BTC"
+      },
+      "blackList": {
+        "title": "Coin blacklist",
+        "inputLabel": "Enter coins excluded from copying",
+        "placeholder": "e.g. DOGE"
+      }
+    },
+    "tagInput": {
+      "hint": " (press Enter to add, use commas for bulk entries)"
+    },
+    "summary": {
+      "collapse": "Collapse",
+      "viewDetail": "View details",
+      "confirmTitle": "Confirm configuration",
+      "modify": "Edit",
+      "brief": "Copy {ratio} · {lever} · {risk}",
+      "leverFollow": "Leverage: follow trader",
+      "riskCount": "{count} item(s) need attention",
+      "noRisk": "No risk items",
+      "labels": {
+        "trader": "Trader",
+        "api": "Copy API",
+        "taskLabel": "Task remark",
+        "followMode": "Copy mode",
+        "benchMark": "Benchmark principal",
+        "investment": "Investment amount",
+        "ratio": "Copy ratio",
+        "leverage": "Leverage",
+        "marginMode": "Margin mode",
+        "openType": "Order entry mode",
+        "firstOrder": "First order settings",
+        "multiple": "Multiplier",
+        "reverse": "Reverse copy",
+        "fastMode": "Fast copy mode",
+        "tradeTrigger": "Take-profit / stop-loss",
+        "posStrategy": "Long/short strategy",
+        "vol24h": "24h leaderboard",
+        "balanceMonitor": "Principal monitoring",
+        "whiteList": "Coin whitelist",
+        "blackList": "Coin blacklist"
+      },
+      "values": {
+        "notFilled": "Not filled",
+        "usdt": "{value} USDT",
+        "fixedRatio": "Fixed ratio",
+        "customLeverage": "Custom {leverage}x",
+        "followLeader": "Follow trader",
+        "marginCross": "Cross margin",
+        "marginIsolated": "Isolated margin",
+        "intervalOrder": "Range order (ROI ≤ {ratio}%)",
+        "marketPrice": "Current market price",
+        "copyCurrent": "Copy current positions",
+        "copyLossOnly": "Copy current losing positions only",
+        "copyNewOnly": "Copy new positions only",
+        "multipleTimes": "{value}x",
+        "enabled": "Enabled",
+        "tpSl": "TP {tp}% / SL {sl}%",
+        "followShort": "Short only",
+        "followLong": "Long only",
+        "topN": "Top {n} only",
+        "minAmount": "Min {value} USDT",
+        "waitingInput": "Awaiting principal and investment amount",
+        "dash": "—"
+      }
+    },
+    "protocolAgree": {
+      "prefix": "I have read and agree to the ",
+      "linkText": "Copy Trading Agreement"
+    },
+    "footer": {
+      "cancel": "Cancel",
+      "submitting": "Submitting...",
+      "submit": "Start copy trading"
+    },
+    "toast": {
+      "tagInBlacklist": "Tag \"{tag}\" is already in the blacklist and cannot be added to the whitelist",
+      "tagInWhitelist": "Tag \"{tag}\" is already in the whitelist and cannot be added to the blacklist",
+      "fetchSuccess": "Fetched successfully",
+      "fetchBenchmarkFailed": "Failed to fetch estimated principal",
+      "agreeProtocolFirst": "Please read and agree to the Copy Trading Agreement first",
+      "reviewConfigFirst": "Please review the configuration summary, then click Start copy trading again",
+      "notifyRequired": "Please configure at least one notification channel first",
+      "createSuccess": "Created successfully"
+    },
+    "protocol": {
+      "title": "Copy Trading Agreement",
+      "intro": "Welcome to the CopyApes crypto copy trading platform (\"the Platform\"). Before using the services provided by the Platform, please read and understand this Agreement carefully. This Agreement is a legal agreement between you (\"User\") and CopyApes (\"the Platform\") regarding the use of the Platform's services.",
+      "sections": {
+        "s1": {
+          "title": "1. Service Description",
+          "items": [
+            "Platform positioning: The Platform provides crypto copy trading technology services, allowing users to replicate the trading strategies of selected traders (\"copy trading\") through the Platform. The Platform only provides technical support and trading data interfaces; users may choose which traders to copy.",
+            "Technical support: The Platform acts solely as a technology provider, responsible for supplying users with real-time copy trading data and trade execution interfaces that synchronize the trader's actions to the user's trading account. Users must select their own copy targets and make investment decisions based on their own judgment.",
+            "Not financial advice: The Platform does not provide any financial advice, investment advice, or trader recommendation service. The Platform's technical services should not be considered a recommendation or guarantee of any trading strategy or investment opportunity. All actions are based on the user's own choices, and the Platform bears no responsibility for any investment decisions or market changes."
+          ]
+        },
+        "s2": {
+          "title": "2. Profits and Losses Are Your Own Responsibility",
+          "items": [
+            "Risk of profit and loss: The User understands and agrees that the cryptocurrency market carries a high degree of risk, including but not limited to market volatility, technical issues, and operational errors. All trading profits and losses incurred while using the Platform's services are borne solely by the User. The Platform is not responsible for any losses, including but not limited to losses caused by market price fluctuations, delays, failed order execution, or technical failures.",
+            "No platform liability: If the User incurs any profit or loss while using the Platform's copy trading service for any reason, the Platform assumes no legal liability. The Platform does not guarantee the success rate or profitability of copy trading operations; the User should make investment decisions based on their own risk tolerance."
+          ]
+        },
+        "s3": {
+          "title": "3. Platform Rights and Responsibilities",
+          "items": [
+            "Platform services: The Platform reserves the right to modify, suspend, or terminate part or all of its services at any time based on actual circumstances. The Platform will make every effort to ensure continuity and stability of service, but is not responsible for service interruptions or failures caused by network issues, equipment failures, or other force majeure factors.",
+            "Technical assurance: The Platform is committed to providing users with stable and fast copy trading technical support, but does not guarantee that all orders during copy trading operations will be executed successfully. The Platform is not responsible for order failures or unexpected execution results caused by data delays, price fluctuations, network latency, or similar factors.",
+            "Account security: Users are responsible for keeping their account information secure, including but not limited to account passwords and API keys. If a user discovers a security issue with their account, they should notify the Platform immediately for handling. The Platform is not responsible for any losses arising from account security issues."
+          ]
+        },
+        "s4": {
+          "title": "4. User Rights and Obligations",
+          "items": [
+            "Account management: Users are responsible for maintaining the security of their own accounts and must not disclose account information to others. The Platform is not responsible for losses caused by account information being leaked, lost, or stolen.",
+            "Legal compliance: Users must comply with the laws and regulations of their country or region while using the Platform, and ensure their trading activities are legal and compliant. Users must not use the Platform to engage in any illegal activity, including but not limited to money laundering, fraud, or market manipulation.",
+            "Risk acceptance: Users must fully understand and accept all potential risks when using the Platform's services. The Platform recommends that users fully understand a trader's operating strategy, market trends, and potential risks before copy trading, and make investment decisions cautiously."
+          ]
+        },
+        "s5": {
+          "title": "5. Privacy Protection",
+          "items": [
+            "User information: The Platform will take appropriate technical measures to protect the security of users' personal information in accordance with legal and regulatory requirements. Unless the user consents or the law requires it, the Platform will not disclose users' personal information to third parties.",
+            "Data usage: The User agrees that the Platform may collect and use data related to the Platform's services, such as trading records and operation logs, to improve service quality and user experience. All collected data will be handled strictly in accordance with the Privacy Policy."
+          ]
+        },
+        "s6": {
+          "title": "6. Disclaimer",
+          "items": [
+            "Force majeure: The Platform is not liable for service interruptions or failures to perform caused by force majeure events (such as natural disasters, war, technical failures, or network issues).",
+            "Market risk: The cryptocurrency market fluctuates dramatically, and an investor's profit and loss are closely related to market trends. The Platform is not responsible for market risk and does not provide any guarantee of investment returns or losses."
+          ]
+        },
+        "s7": {
+          "title": "7. Amendment and Termination of the Agreement",
+          "items": [
+            "Agreement amendment: The Platform reserves the right to modify this Agreement at any time based on changes in laws and regulations or operational needs, and will notify users via website announcements or other means. Continued use of the Platform's services by the User is deemed acceptance of the new terms of the Agreement.",
+            "Agreement termination: Users may stop using the Platform's services at any time. The Platform also reserves the right to terminate a user's account and access rights if the user violates this Agreement or applicable laws and regulations."
+          ]
+        },
+        "s8": {
+          "title": "8. Dispute Resolution",
+          "items": [
+            "Dispute resolution: The formation, execution, and interpretation of this Agreement are governed by the laws of the People's Republic of China. In the event of a dispute, the Platform and the User shall resolve it through friendly negotiation; if negotiation fails, either party may file a lawsuit with a people's court having jurisdiction over the Platform's location."
+          ]
+        },
+        "s9": {
+          "title": "9. Other Terms",
+          "items": [
+            "Entire agreement: This Agreement constitutes the entire agreement between the Platform and the User regarding the Platform's services. Any oral or written agreements shall be superseded by this Agreement.",
+            "Severability: If any provision of this Agreement is deemed invalid or unenforceable, the remaining provisions shall remain in full effect."
+          ]
+        }
+      }
+    }
   }
 }

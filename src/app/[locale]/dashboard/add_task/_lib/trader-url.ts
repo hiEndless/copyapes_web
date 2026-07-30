@@ -1,13 +1,5 @@
 export type ExchangePlatform = 'okx' | 'binance'
 
-export const TRADER_INPUT_PLACEHOLDER: Record<ExchangePlatform, string> = {
-  okx: '输入主页链接或 UID / 带单项目 ID',
-  binance: '输入主页链接或 UID / 带单项目 ID',
-}
-
-export const INVALID_TRADER_URL = '无效的链接或 ID 格式'
-export const SELECT_EXCHANGE_FIRST = '请先选择交易所'
-
 const TRADER_ID_PATTERN = /^[A-Za-z0-9_-]+$/
 
 function extractSegmentAfter(segments: string[], key: string): string | null {
@@ -77,6 +69,6 @@ export function parseTraderUrl(input: string, targetExchange: ExchangePlatform):
   return parseDirectTraderId(trimmed)
 }
 
-export function isInvalidUniqueName(uniqueName: string): boolean {
-  return !uniqueName || uniqueName === INVALID_TRADER_URL || uniqueName === SELECT_EXCHANGE_FIRST
+export function isInvalidUniqueName(uniqueName: string, invalidMarkers: readonly string[] = []): boolean {
+  return !uniqueName || invalidMarkers.includes(uniqueName)
 }

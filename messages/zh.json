@@ -1932,5 +1932,480 @@
       "noInviteCode": "暂无邀请码",
       "linkCopied": "邀请链接已复制"
     }
+  },
+  "DashboardExchangeTask": {
+    "hero": {
+      "title": "交易所自选跟单",
+      "subtitle": "只要可以看到交易持仓就可以进行跟单！跟单原版交易所信号最稳定，速度最快！"
+    },
+    "card": {
+      "title": "创建交易所跟单任务",
+      "description": "配置您的跟单参数，以开始监听并复制目标交易员的策略。"
+    },
+    "form": {
+      "selectExchange": "选择目标交易所",
+      "traderLabel": "交易员主页链接或 ID",
+      "traderInputPlaceholder": "输入主页链接或 UID / 带单项目 ID",
+      "traderInputPlaceholderNoExchange": "请先选择交易所，再输入链接或 ID",
+      "parse": "解析",
+      "uniqueNameLabel": "交易员 （ UID 或 带单项目 ID）",
+      "traderTypeLabel": "交易员类型",
+      "traderTypePlaceholder": "请选择交易员类型",
+      "invalidTraderUrl": "无效的链接或 ID 格式",
+      "selectExchangeFirst": "请先选择交易所",
+      "submit": "创建跟单"
+    },
+    "delayTips": {
+      "okx": {
+        "title": "欧易交易所延迟提示：",
+        "notice": "此延迟为交易所官方设置，非跟单工具所导致！",
+        "publicLabel": "跟单公开带单：",
+        "publicDesc": "开仓5分钟延迟，加仓、减仓、平仓无延迟",
+        "personalLabel": "跟单个人交易：",
+        "personalDesc": "推荐！0延迟！"
+      },
+      "binance": {
+        "title": "币安交易所延迟提示：",
+        "notice": "此延迟为交易所官方设置，非跟单工具所导致！",
+        "publicLabel": "跟单公开实盘：",
+        "publicDesc": "推荐！0延迟！",
+        "hiddenLabel": "跟单隐藏实盘：",
+        "hiddenDesc": "开仓、加仓、减仓、平仓均有2分钟延迟"
+      }
+    },
+    "traderType": {
+      "okx": {
+        "contract": "合约带单",
+        "personal": "个人概况"
+      },
+      "binance": {
+        "public": "公开带单",
+        "hidden": "隐藏带单"
+      }
+    },
+    "errors": {
+      "invalidUrl": "无效的链接或 ID 格式",
+      "selectExchangeFirst": "请先选择交易所"
+    }
+  },
+  "DashboardBicoinTask": {
+    "hero": {
+      "subtitle": "只要可以看到交易员操作记录或交易持仓就可以进行跟单！注意平台可能会对免费用户进行短时间封号，及时重新注册即可。"
+    },
+    "card": {
+      "title": "创建币Coin跟单任务",
+      "description": "关联您的币Coin账号并选择目标交易员"
+    },
+    "tip": {
+      "title": "币Coin平台限制提示：",
+      "line1": "因币coin平台自身因素，在行情波动剧烈时跟单延迟将不可控，用户需时常留意自身仓位。",
+      "line2": "币coin的数据有缓存，所以不能做到绝对的秒级延迟。操作记录的跟单速度略快于合约仓位跟单，合约仓位的跟单稳定性高于操作记录跟单。如果交易员的操作记录中有现货交易，或者为买卖模式，则无法跟单，可联系客服处理。"
+    },
+    "account": {
+      "label": "关联币coin账号",
+      "phoneLabel": "手机号",
+      "phonePlaceholder": "请输入手机号",
+      "passwordLabel": "密码",
+      "passwordPlaceholder": "请输入密码",
+      "save": "确认保存",
+      "edit": "修改"
+    },
+    "search": {
+      "label": "选择交易员",
+      "placeholder": "输入交易员昵称",
+      "noSlogan": "暂无签名"
+    },
+    "traderSource": {
+      "label": "跟单数据源",
+      "placeholder": "选择跟单数据源",
+      "operationRecord": "操作记录",
+      "contractPosition": "合约仓位"
+    },
+    "submit": "创建跟单",
+    "toast": {
+      "saveSuccess": "币coin账号保存成功",
+      "saveFailed": "保存失败",
+      "requestFailed": "请求失败",
+      "searchEmpty": "未找到相关交易员",
+      "searchFailed": "搜索失败"
+    }
+  },
+  "DashboardHyperTask": {
+    "hero": {
+      "subtitle": "新一代的去中心化交易所，主打链上永续合约。有很多巨鲸、内幕哥、超大单在HyperLiquid上进行交易，只要你能找到这些账户的钱包地址，你就可以跟着巨鲸、内幕哥、超大单进行交易。"
+    },
+    "actions": {
+      "goExchange": "前往交易所",
+      "queryData": "查询数据"
+    },
+    "card": {
+      "title": "创建 Hyperliquid 跟单任务",
+      "description": "只需输入目标交易员的钱包地址即可开始跟单"
+    },
+    "form": {
+      "walletLabel": "目标交易员钱包地址",
+      "walletPlaceholder": "例如: 0x1234567890abcdef...",
+      "submit": "创建跟单"
+    }
+  },
+  "DashboardApiTask": {
+    "hero": {
+      "title": "API 跟单",
+      "subtitle": "提交您的交易所 API （只读权限）作为带单信号，可以使用跟单 API 进行跟单，0延迟！同时也可以搜索平台其他用户的 API 进行跟单。",
+      "contactSupport": "工作室版本可联系客服了解详情"
+    },
+    "card": {
+      "title": "创建 API 跟单任务",
+      "description": "选择您自己的 API 账号，或者搜索其他用户的公开 API 进行跟单。"
+    },
+    "tabs": {
+      "myApi": "我的 API 信号",
+      "searchApi": "发现 API 信号"
+    },
+    "list": {
+      "loading": "加载中...",
+      "demoBadge": "模拟盘",
+      "creatorLabel": "创建者:",
+      "ownerLabel": "拥有者:",
+      "balanceLabel": "余额:",
+      "follow": "发起跟单",
+      "unsupported": "暂不支持该平台",
+      "myEmpty": "暂无只读 API 信号",
+      "meFallback": "我",
+      "anonymousFallback": "匿名用户"
+    },
+    "search": {
+      "placeholder": "输入 API 名称或关键词搜索...",
+      "button": "搜索",
+      "hint": "请输入关键词并点击搜索，发现平台其他用户的 API",
+      "empty": "未找到相关 API 信息"
+    }
+  },
+  "DashboardCookieTask": {
+    "hero": {
+      "title": "Cookie 跟单",
+      "subtitle": "针对需要在交易所进行跟单后才能看到实时仓位变化的交易员，以及需要登录交易所账号才能看到持仓信息的交易员，使用交易所的 Cookie 可以实现0延迟跟单。",
+      "getCookie": "获取交易所 Cookie"
+    },
+    "card": {
+      "title": "创建交易所跟单任务",
+      "description": "配置您的跟单参数，以开始监听并复制目标交易员的策略。"
+    },
+    "form": {
+      "selectExchange": "选择目标交易所",
+      "traderLabel": "交易员主页链接或 ID",
+      "traderInputPlaceholder": "输入主页链接或 UID / 带单项目 ID",
+      "traderInputPlaceholderNoExchange": "请先选择交易所，再输入链接或 ID",
+      "parse": "解析",
+      "uniqueNameLabel": "交易员 （ UID 或 带单项目 ID）",
+      "traderTypeLabel": "交易员类型",
+      "traderTypePlaceholder": "请选择交易员类型",
+      "invalidTraderUrl": "无效的链接或 ID 格式",
+      "selectExchangeFirst": "请先选择交易所",
+      "submit": "创建跟单"
+    },
+    "traderType": {
+      "okx": {
+        "contract": "合约带单",
+        "project": "跟单项目"
+      },
+      "binance": {
+        "project": "带单项目",
+        "smartMoney": "聪明钱"
+      }
+    },
+    "cookie": {
+      "myTab": "我的 Cookie",
+      "searchTab": "发现 Cookie",
+      "statusLabel": "状态:",
+      "statusActive": "有效",
+      "statusExpired": "已失效",
+      "creatorLabel": "创建者:",
+      "myEmpty": "未找到您在 {exchange} 的 Cookie，请先前往添加",
+      "exchangeOkx": "欧易",
+      "exchangeBinance": "币安",
+      "searchPlaceholder": "输入 Cookie 名称或关键词搜索...",
+      "search": "搜索",
+      "searchHint": "请输入关键词并点击搜索，发现平台其他用户的 Cookie 信号",
+      "searchEmpty": "未找到相关 Cookie 信号",
+      "anonymousFallback": "匿名用户"
+    },
+    "errors": {
+      "invalidUrl": "无效的链接或 ID 格式",
+      "selectExchangeFirst": "请先选择交易所"
+    }
+  },
+  "DashboardCopyTaskConfig": {
+    "sheet": {
+      "titleWithName": "跟单配置 - {name}",
+      "description": "配置详细的跟单参数",
+      "guide": "配置说明"
+    },
+    "notify": {
+      "statusLabel": "消息通知配置状态：",
+      "checking": "检测中...",
+      "configured": "已配置",
+      "notConfigured": "未配置（不可创建任务）",
+      "goConfig": "去配置"
+    },
+    "tabs": {
+      "basic": "基础设置",
+      "advanced": "高级设置"
+    },
+    "apiSelect": {
+      "label": "选择你的跟单 API",
+      "empty": "暂无可用跟单 API，请先添加交易 API",
+      "goAdd": "去添加",
+      "fallbackName": "API {id}",
+      "unselected": "未选择"
+    },
+    "label": {
+      "label": "任务备注标签（可选）",
+      "placeholder": "不填时默认显示交易员ID"
+    },
+    "followMode": {
+      "label": "跟单模式",
+      "fixedRatio": "固定比例",
+      "tooltip": "跟单比例 = 跟单投资额 / 对标交易员本金 × 倍数。跟单投资额只用于计算交易比例，不代表实际使用资金上限。"
+    },
+    "multiple": {
+      "title": "倍投模式 (可选)",
+      "tooltip": "在基础的跟单比例上，额外再乘以此倍数。例如：如果原本按比例应开仓 10 USDT，设置倍投为 2 后，实际开仓将变为 20 USDT。只适用于经常小金额高杠杆交易的交易员，避免因为交易员开仓量过低，导致无法跟单。",
+      "label": "加倍倍数 (默认为1)",
+      "placeholder": "eg. 0.5、1.5",
+      "warning": "如果跟单的交易员经常满仓交易，请不要使用此功能！"
+    },
+    "benchMark": {
+      "label": "交易员本金对标 (USDT)",
+      "placeholder": ">100",
+      "autoFetch": "自动获取",
+      "keepHint": "若该 API 账户仍有持仓，请保留原任务本金，勿重新获取，以免跟单比例变化，平仓后可能留有底仓。"
+    },
+    "investment": {
+      "label": "投资额 (USDT)",
+      "placeholder": ">100"
+    },
+    "ratioPreview": {
+      "title": "跟单比例预览",
+      "multipleOffHint": "倍投模式未开启，倍数按 1 计算",
+      "lowRatioWarning": "当前比例低于 10%，可能出现开仓量过低，导致无法开仓的情况；平仓时将按交易所最低交易量执行。",
+      "emptyHint": "填写本金与投资额后，将在此显示跟单比例计算过程",
+      "investmentInvalid": "投资额必须大于 0",
+      "benchMarkInvalid": "交易员本金必须大于 0",
+      "multipleInvalid": "倍投倍数必须大于 0"
+    },
+    "leverage": {
+      "label": "杠杆模式",
+      "follow": "跟随交易员",
+      "custom": "自定义杠杆",
+      "customTooltip": "交易所对新账号有风控保护，有时候无法跟随交易员开同样的高杠杆。调整杠杆不会影响实际的交易量，只会影响保证金占用。固定使用您自己设置的杠杆倍数进行跟单，不跟随交易员的杠杆变化。",
+      "valueLabel": "杠杆数值",
+      "valuePlaceholder": "1至75整数（建议10到20，以免有的币种不支持高杠杆）"
+    },
+    "marginMode": {
+      "label": "保证金模式",
+      "follow": "跟随交易员",
+      "cross": "全仓",
+      "isolated": "逐仓",
+      "hint": "选择全仓或逐仓后，会覆盖交易员原始保证金模式。"
+    },
+    "openType": {
+      "label": "开仓模式",
+      "market": "当前市价",
+      "interval": "区间委托",
+      "intervalTooltip": "当交易员收益率在设定区间内时才会开仓，避免在高位或低位盲目追单，有效控制首单滑点和建仓风险。不论交易员在此之前补仓多少次，当条件达成时会一次性一起按比例复制总仓位。区间限价开仓只在交易员新开仓时生效，加仓时不生效。",
+      "rangeLabel": "交易员收益区间 (%)",
+      "rangePlaceholder": "eg. 5",
+      "rangeHint": "交易员收益率小于5%时开仓"
+    },
+    "firstOrder": {
+      "label": "首单交易设置",
+      "newOnly": "仅复制新开仓",
+      "copyCurrent": "复制当前持仓",
+      "copyLossOnly": "仅复制当前亏损仓位"
+    },
+    "advanced": {
+      "reverse": "反向跟单",
+      "fastMode": "极速跟单",
+      "tradeTrigger": {
+        "title": "交易止盈止损",
+        "tpLabel": "止盈百分比",
+        "slLabel": "止损百分比",
+        "placeholder": "20"
+      },
+      "posStrategy": {
+        "title": "多空开仓策略",
+        "long": "只跟多单",
+        "short": "只跟空单"
+      },
+      "vol24h": {
+        "title": "24h排行榜跟单",
+        "rankLabel": "榜单排名",
+        "placeholder": "eg. 20（只跟前20）"
+      },
+      "balanceMonitor": {
+        "title": "交易员本金监控",
+        "valueLabel": "最低本金金额",
+        "placeholder": "eg. 2000"
+      },
+      "whiteList": {
+        "title": "跟单币种白名单",
+        "inputLabel": "输入允许跟单的币种",
+        "placeholder": "eg. BTC"
+      },
+      "blackList": {
+        "title": "跟单币种黑名单",
+        "inputLabel": "输入禁止跟单的币种",
+        "placeholder": "eg. DOGE"
+      }
+    },
+    "tagInput": {
+      "hint": " (按回车添加，批量添加时请用英文逗号分隔)"
+    },
+    "summary": {
+      "collapse": "收起",
+      "viewDetail": "查看详情",
+      "confirmTitle": "配置确认",
+      "modify": "修改",
+      "brief": "跟单 {ratio} · {lever} · {risk}",
+      "leverFollow": "杠杆跟随",
+      "riskCount": "{count} 项需关注",
+      "noRisk": "无风险项",
+      "labels": {
+        "trader": "跟单交易员",
+        "api": "跟单 API",
+        "taskLabel": "任务备注",
+        "followMode": "跟单模式",
+        "benchMark": "对标本金",
+        "investment": "投资额",
+        "ratio": "跟单比例",
+        "leverage": "杠杆",
+        "marginMode": "保证金模式",
+        "openType": "开仓模式",
+        "firstOrder": "首单设置",
+        "multiple": "倍投倍数",
+        "reverse": "反向跟单",
+        "fastMode": "极速跟单",
+        "tradeTrigger": "交易止盈止损",
+        "posStrategy": "多空策略",
+        "vol24h": "24h 排行榜",
+        "balanceMonitor": "本金监控",
+        "whiteList": "币种白名单",
+        "blackList": "币种黑名单"
+      },
+      "values": {
+        "notFilled": "未填写",
+        "usdt": "{value} USDT",
+        "fixedRatio": "固定比例",
+        "customLeverage": "自定义 {leverage}x",
+        "followLeader": "跟随交易员",
+        "marginCross": "全仓",
+        "marginIsolated": "逐仓",
+        "intervalOrder": "区间委托（收益率 ≤ {ratio}%）",
+        "marketPrice": "当前市价",
+        "copyCurrent": "复制当前持仓",
+        "copyLossOnly": "仅复制当前亏损仓位",
+        "copyNewOnly": "仅复制新开仓",
+        "multipleTimes": "{value} 倍",
+        "enabled": "已开启",
+        "tpSl": "止盈 {tp}% / 止损 {sl}%",
+        "followShort": "只跟空单",
+        "followLong": "只跟多单",
+        "topN": "仅跟前 {n} 名",
+        "minAmount": "最低 {value} USDT",
+        "waitingInput": "待填写本金与投资额",
+        "dash": "—"
+      }
+    },
+    "protocolAgree": {
+      "prefix": "我已阅读并同意",
+      "linkText": "《跟单交易协议》"
+    },
+    "footer": {
+      "cancel": "取消",
+      "submitting": "提交中...",
+      "submit": "立即跟单"
+    },
+    "toast": {
+      "tagInBlacklist": "标签 \"{tag}\" 已存在于黑名单中，不能添加到白名单",
+      "tagInWhitelist": "标签 \"{tag}\" 已存在于白名单中，不能添加到黑名单",
+      "fetchSuccess": "获取成功",
+      "fetchBenchmarkFailed": "获取预估本金失败",
+      "agreeProtocolFirst": "请先阅读并同意跟单交易协议",
+      "reviewConfigFirst": "请核对配置清单后再次点击立即跟单",
+      "notifyRequired": "请先至少配置一种消息通知方式",
+      "createSuccess": "创建成功"
+    },
+    "protocol": {
+      "title": "跟单交易协议",
+      "intro": "欢迎使用跟单猿数字货币跟单平台（以下简称“本平台”）。在您使用本平台提供的服务前，请仔细阅读并理解本协议。本协议是您（以下简称“用户”）与跟单猿（以下简称“平台”）之间就使用平台服务所达成的法律协议。",
+      "sections": {
+        "s1": {
+          "title": "一、服务说明",
+          "items": [
+            "平台定位：本平台提供数字货币跟单技术服务，允许用户通过本平台复制选定交易员的交易策略（以下简称“跟单”）。平台仅提供技术支持和交易数据接口，用户可以选择跟单交易员进行交易操作。",
+            "技术支持：本平台仅作为技术提供者，负责为用户提供实时跟单数据和交易执行接口，帮助用户将交易员的操作同步至用户的交易账户。用户需自行选择跟单对象，并根据自身判断进行投资决策。",
+            "非金融建议：本平台不提供任何金融建议、投资建议或推荐交易员服务，平台的技术服务不应视为对某个交易策略或投资机会的推荐或保证。所有操作均基于用户自主选择，平台不对任何投资决策和市场变化承担责任。"
+          ]
+        },
+        "s2": {
+          "title": "二、盈亏自负",
+          "items": [
+            "盈亏风险：用户理解并同意，数字货币市场具有高度的风险性，包括但不限于市场波动、技术问题、操作失误等，用户在使用本平台服务时，其所有的交易盈亏均由用户自行承担。平台不对用户的任何损失负责，包括但不限于因市场价格波动、延迟、订单未能执行或技术故障等原因导致的亏损。",
+            "平台不担责：用户在使用本平台跟单服务过程中，如因任何原因导致盈亏损失，平台不承担任何法律责任。平台不保证跟单操作的成功率或盈利性，用户应根据自己的风险承受能力做出投资决策。"
+          ]
+        },
+        "s3": {
+          "title": "三、平台的权利与责任",
+          "items": [
+            "平台服务：本平台有权根据实际情况随时修改、暂停或终止部分或全部服务。平台将尽最大努力保证服务的持续性和稳定性，但不对因网络、设备或其他不可抗力因素导致的服务中断或故障负责。",
+            "技术保障：平台承诺为用户提供稳定、快捷的跟单技术支持服务，但不保证跟单操作过程中的所有订单都能够成功执行。平台不对因数据延迟、价格波动、网络延迟等因素导致的订单失败或未按预期执行承担责任。",
+            "账户安全：用户有责任保持账户信息的安全，包括但不限于账户密码、API密钥等。如果用户发现账户存在安全问题，应立即通知平台进行处理。平台不对因账户安全问题引发的任何损失负责。"
+          ]
+        },
+        "s4": {
+          "title": "四、用户的权利与义务",
+          "items": [
+            "账户管理：用户有责任维护自己账户的安全，不得将账户信息泄露给他人，平台不对因账户泄露、丢失或被盗用导致的损失负责。",
+            "合法合规：用户在使用本平台时应遵守所在国家或地区的法律法规，确保其交易活动合法合规。用户不得利用本平台从事任何违法行为，包括但不限于洗钱、欺诈、操控市场等。",
+            "风险承担：用户在使用平台服务时应充分理解并承担所有潜在的风险。平台建议用户在进行跟单前，充分了解交易员的操作策略、市场走势及可能的风险，谨慎进行投资决策。"
+          ]
+        },
+        "s5": {
+          "title": "五、隐私保护",
+          "items": [
+            "用户信息：平台将根据法律法规的要求，采取适当的技术措施保护用户的个人信息安全。除非用户同意或法律要求，平台不会将用户的个人信息泄露给第三方。",
+            "数据使用：用户同意平台可以收集和使用与平台服务相关的数据，如交易记录、操作日志等，以改进服务质量和用户体验，但所有收集的数据将严格按照隐私政策处理。"
+          ]
+        },
+        "s6": {
+          "title": "六、免责条款",
+          "items": [
+            "不可抗力：平台对因不可抗力事件（如自然灾害、战争、技术故障、网络问题等）导致的服务中断或无法履行的情形不承担责任。",
+            "市场风险：数字货币市场波动剧烈，投资者的盈亏与市场走势密切相关。平台不对市场风险负责，也不为用户的投资收益或损失提供任何保证。"
+          ]
+        },
+        "s7": {
+          "title": "七、协议的变更与终止",
+          "items": [
+            "协议变更：平台有权根据法律法规的变化或运营需要随时修改本协议，并通过网站公告或其他方式通知用户。用户继续使用平台服务即视为同意新的协议条款。",
+            "协议终止：用户可以随时停止使用本平台服务，本平台也有权在用户违反本协议或法律法规的情况下终止其账户和使用权限。"
+          ]
+        },
+        "s8": {
+          "title": "八、争议解决",
+          "items": [
+            "争议解决：本协议的订立、执行和解释均适用中华人民共和国法律。如发生争议，平台与用户应通过友好协商解决；协商不成时，可提交平台所在地有管辖权的人民法院诉讼解决。"
+          ]
+        },
+        "s9": {
+          "title": "九、其他条款",
+          "items": [
+            "完整协议：本协议构成平台与用户之间关于本平台服务的完整协议，所有口头或书面的约定均以本协议为准。",
+            "独立条款：如果本协议的某一条款被认为无效或不可执行，其他条款仍然有效。"
+          ]
+        }
+      }
+    }
   }
 }

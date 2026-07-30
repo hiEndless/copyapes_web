@@ -1932,5 +1932,480 @@
       "noInviteCode": "暫無邀請碼",
       "linkCopied": "邀請連結已複製"
     }
+  },
+  "DashboardExchangeTask": {
+    "hero": {
+      "title": "交易所自選跟單",
+      "subtitle": "只要可以看到交易持倉就可以進行跟單！跟單原版交易所訊號最穩定，速度最快！"
+    },
+    "card": {
+      "title": "建立交易所跟單任務",
+      "description": "設定您的跟單參數，以開始監聽並複製目標交易員的策略。"
+    },
+    "form": {
+      "selectExchange": "選擇目標交易所",
+      "traderLabel": "交易員主頁連結或 ID",
+      "traderInputPlaceholder": "輸入主頁連結或 UID / 帶單項目 ID",
+      "traderInputPlaceholderNoExchange": "請先選擇交易所，再輸入連結或 ID",
+      "parse": "解析",
+      "uniqueNameLabel": "交易員 （ UID 或 帶單項目 ID）",
+      "traderTypeLabel": "交易員類型",
+      "traderTypePlaceholder": "請選擇交易員類型",
+      "invalidTraderUrl": "無效的連結或 ID 格式",
+      "selectExchangeFirst": "請先選擇交易所",
+      "submit": "建立跟單"
+    },
+    "delayTips": {
+      "okx": {
+        "title": "歐易交易所延遲提示：",
+        "notice": "此延遲為交易所官方設定，非跟單工具所導致！",
+        "publicLabel": "跟單公開帶單：",
+        "publicDesc": "開倉5分鐘延遲，加倉、減倉、平倉無延遲",
+        "personalLabel": "跟單個人交易：",
+        "personalDesc": "推薦！0延遲！"
+      },
+      "binance": {
+        "title": "幣安交易所延遲提示：",
+        "notice": "此延遲為交易所官方設定，非跟單工具所導致！",
+        "publicLabel": "跟單公開實盤：",
+        "publicDesc": "推薦！0延遲！",
+        "hiddenLabel": "跟單隱藏實盤：",
+        "hiddenDesc": "開倉、加倉、減倉、平倉均有2分鐘延遲"
+      }
+    },
+    "traderType": {
+      "okx": {
+        "contract": "合約帶單",
+        "personal": "個人概況"
+      },
+      "binance": {
+        "public": "公開帶單",
+        "hidden": "隱藏帶單"
+      }
+    },
+    "errors": {
+      "invalidUrl": "無效的連結或 ID 格式",
+      "selectExchangeFirst": "請先選擇交易所"
+    }
+  },
+  "DashboardBicoinTask": {
+    "hero": {
+      "subtitle": "只要可以看到交易員操作記錄或交易持倉就可以進行跟單！注意平台可能會對免費使用者進行短時間封號，重新註冊即可。"
+    },
+    "card": {
+      "title": "建立幣Coin跟單任務",
+      "description": "關聯您的幣Coin帳號並選擇目標交易員"
+    },
+    "tip": {
+      "title": "幣Coin平台限制提示：",
+      "line1": "因幣coin平台自身因素，在行情劇烈波動時跟單延遲將不可控，使用者需時常留意自身倉位。",
+      "line2": "幣coin的資料有快取，所以無法做到絕對的秒級延遲。操作記錄的跟單速度略快於合約倉位跟單，合約倉位的跟單穩定性高於操作記錄跟單。如果交易員的操作記錄中有現貨交易，或為買賣模式，則無法跟單，可聯繫客服處理。"
+    },
+    "account": {
+      "label": "關聯幣coin帳號",
+      "phoneLabel": "手機號",
+      "phonePlaceholder": "請輸入手機號",
+      "passwordLabel": "密碼",
+      "passwordPlaceholder": "請輸入密碼",
+      "save": "確認儲存",
+      "edit": "修改"
+    },
+    "search": {
+      "label": "選擇交易員",
+      "placeholder": "輸入交易員暱稱",
+      "noSlogan": "暫無簽名"
+    },
+    "traderSource": {
+      "label": "跟單資料來源",
+      "placeholder": "選擇跟單資料來源",
+      "operationRecord": "操作記錄",
+      "contractPosition": "合約倉位"
+    },
+    "submit": "建立跟單",
+    "toast": {
+      "saveSuccess": "幣coin帳號儲存成功",
+      "saveFailed": "儲存失敗",
+      "requestFailed": "請求失敗",
+      "searchEmpty": "未找到相關交易員",
+      "searchFailed": "搜尋失敗"
+    }
+  },
+  "DashboardHyperTask": {
+    "hero": {
+      "subtitle": "新一代的去中心化交易所，主打鏈上永續合約。有很多巨鯨、內幕哥、超大單在HyperLiquid上進行交易，只要你能找到這些帳戶的錢包地址，你就可以跟著巨鯨、內幕哥、超大單進行交易。"
+    },
+    "actions": {
+      "goExchange": "前往交易所",
+      "queryData": "查詢資料"
+    },
+    "card": {
+      "title": "建立 Hyperliquid 跟單任務",
+      "description": "只需輸入目標交易員的錢包地址即可開始跟單"
+    },
+    "form": {
+      "walletLabel": "目標交易員錢包地址",
+      "walletPlaceholder": "例如: 0x1234567890abcdef...",
+      "submit": "建立跟單"
+    }
+  },
+  "DashboardApiTask": {
+    "hero": {
+      "title": "API 跟單",
+      "subtitle": "提交您的交易所 API （唯讀權限）作為帶單訊號，可以使用跟單 API 進行跟單，0延遲！同時也可以搜尋平台其他使用者的 API 進行跟單。",
+      "contactSupport": "工作室版本可聯繫客服了解詳情"
+    },
+    "card": {
+      "title": "建立 API 跟單任務",
+      "description": "選擇您自己的 API 帳號，或者搜尋其他使用者的公開 API 進行跟單。"
+    },
+    "tabs": {
+      "myApi": "我的 API 訊號",
+      "searchApi": "發現 API 訊號"
+    },
+    "list": {
+      "loading": "載入中...",
+      "demoBadge": "模擬盤",
+      "creatorLabel": "建立者:",
+      "ownerLabel": "擁有者:",
+      "balanceLabel": "餘額:",
+      "follow": "發起跟單",
+      "unsupported": "暫不支援該平台",
+      "myEmpty": "暫無唯讀 API 訊號",
+      "meFallback": "我",
+      "anonymousFallback": "匿名使用者"
+    },
+    "search": {
+      "placeholder": "輸入 API 名稱或關鍵字搜尋...",
+      "button": "搜尋",
+      "hint": "請輸入關鍵字並點擊搜尋，發現平台其他使用者的 API",
+      "empty": "未找到相關 API 資訊"
+    }
+  },
+  "DashboardCookieTask": {
+    "hero": {
+      "title": "Cookie 跟單",
+      "subtitle": "針對需要在交易所進行跟單後才能看到即時倉位變化的交易員，以及需要登入交易所帳號才能看到持倉資訊的交易員，使用交易所的 Cookie 可以實現0延遲跟單。",
+      "getCookie": "取得交易所 Cookie"
+    },
+    "card": {
+      "title": "建立交易所跟單任務",
+      "description": "設定您的跟單參數，以開始監聽並複製目標交易員的策略。"
+    },
+    "form": {
+      "selectExchange": "選擇目標交易所",
+      "traderLabel": "交易員主頁連結或 ID",
+      "traderInputPlaceholder": "輸入主頁連結或 UID / 帶單項目 ID",
+      "traderInputPlaceholderNoExchange": "請先選擇交易所，再輸入連結或 ID",
+      "parse": "解析",
+      "uniqueNameLabel": "交易員 （ UID 或 帶單項目 ID）",
+      "traderTypeLabel": "交易員類型",
+      "traderTypePlaceholder": "請選擇交易員類型",
+      "invalidTraderUrl": "無效的連結或 ID 格式",
+      "selectExchangeFirst": "請先選擇交易所",
+      "submit": "建立跟單"
+    },
+    "traderType": {
+      "okx": {
+        "contract": "合約帶單",
+        "project": "跟單項目"
+      },
+      "binance": {
+        "project": "帶單項目",
+        "smartMoney": "聰明錢"
+      }
+    },
+    "cookie": {
+      "myTab": "我的 Cookie",
+      "searchTab": "發現 Cookie",
+      "statusLabel": "狀態:",
+      "statusActive": "有效",
+      "statusExpired": "已失效",
+      "creatorLabel": "建立者:",
+      "myEmpty": "未找到您在 {exchange} 的 Cookie，請先前往新增",
+      "exchangeOkx": "歐易",
+      "exchangeBinance": "幣安",
+      "searchPlaceholder": "輸入 Cookie 名稱或關鍵字搜尋...",
+      "search": "搜尋",
+      "searchHint": "請輸入關鍵字並點擊搜尋，發現平台其他使用者的 Cookie 訊號",
+      "searchEmpty": "未找到相關 Cookie 訊號",
+      "anonymousFallback": "匿名用戶"
+    },
+    "errors": {
+      "invalidUrl": "無效的連結或 ID 格式",
+      "selectExchangeFirst": "請先選擇交易所"
+    }
+  },
+  "DashboardCopyTaskConfig": {
+    "sheet": {
+      "titleWithName": "跟單配置 - {name}",
+      "description": "配置詳細的跟單參數",
+      "guide": "配置說明"
+    },
+    "notify": {
+      "statusLabel": "訊息通知配置狀態：",
+      "checking": "檢測中...",
+      "configured": "已配置",
+      "notConfigured": "未配置（不可建立任務）",
+      "goConfig": "去配置"
+    },
+    "tabs": {
+      "basic": "基礎設定",
+      "advanced": "進階設定"
+    },
+    "apiSelect": {
+      "label": "選擇你的跟單 API",
+      "empty": "暫無可用跟單 API，請先新增交易 API",
+      "goAdd": "去新增",
+      "fallbackName": "API {id}",
+      "unselected": "未選擇"
+    },
+    "label": {
+      "label": "任務備註標籤（可選）",
+      "placeholder": "不填時預設顯示交易員ID"
+    },
+    "followMode": {
+      "label": "跟單模式",
+      "fixedRatio": "固定比例",
+      "tooltip": "跟單比例 = 跟單投資額 / 對標交易員本金 × 倍數。跟單投資額只用於計算交易比例，不代表實際使用資金上限。"
+    },
+    "multiple": {
+      "title": "倍投模式 (可選)",
+      "tooltip": "在基礎的跟單比例上，額外再乘以此倍數。例如：如果原本按比例應開倉 10 USDT，設定倍投為 2 後，實際開倉將變為 20 USDT。只適用於經常小金額高槓桿交易的交易員，避免因為交易員開倉量過低，導致無法跟單。",
+      "label": "加倍倍數 (預設為1)",
+      "placeholder": "例如 0.5、1.5",
+      "warning": "如果跟單的交易員經常滿倉交易，請不要使用此功能！"
+    },
+    "benchMark": {
+      "label": "交易員本金對標 (USDT)",
+      "placeholder": ">100",
+      "autoFetch": "自動取得",
+      "keepHint": "若該 API 帳戶仍有持倉，請保留原任務本金，勿重新取得，以免跟單比例變化，平倉後可能留有底倉。"
+    },
+    "investment": {
+      "label": "投資額 (USDT)",
+      "placeholder": ">100"
+    },
+    "ratioPreview": {
+      "title": "跟單比例預覽",
+      "multipleOffHint": "倍投模式未開啟，倍數按 1 計算",
+      "lowRatioWarning": "目前比例低於 10%，可能出現開倉量過低，導致無法開倉的情況；平倉時將按交易所最低交易量執行。",
+      "emptyHint": "填寫本金與投資額後，將在此顯示跟單比例計算過程",
+      "investmentInvalid": "投資額必須大於 0",
+      "benchMarkInvalid": "交易員本金必須大於 0",
+      "multipleInvalid": "倍投倍數必須大於 0"
+    },
+    "leverage": {
+      "label": "槓桿模式",
+      "follow": "跟隨交易員",
+      "custom": "自訂槓桿",
+      "customTooltip": "交易所對新帳號有風控保護，有時候無法跟隨交易員開同樣的高槓桿。調整槓桿不會影響實際的交易量，只會影響保證金占用。固定使用您自己設定的槓桿倍數進行跟單，不跟隨交易員的槓桿變化。",
+      "valueLabel": "槓桿數值",
+      "valuePlaceholder": "1至75整數（建議10到20，以免有的幣種不支援高槓桿）"
+    },
+    "marginMode": {
+      "label": "保證金模式",
+      "follow": "跟隨交易員",
+      "cross": "全倉",
+      "isolated": "逐倉",
+      "hint": "選擇全倉或逐倉後，會覆蓋交易員原始保證金模式。"
+    },
+    "openType": {
+      "label": "開倉模式",
+      "market": "目前市價",
+      "interval": "區間委託",
+      "intervalTooltip": "當交易員收益率在設定區間內時才會開倉，避免在高位或低位盲目追單，有效控制首單滑點和建倉風險。不論交易員在此之前補倉多少次，當條件達成時會一次性一起按比例複製總倉位。區間限價開倉只在交易員新開倉時生效，加倉時不生效。",
+      "rangeLabel": "交易員收益區間 (%)",
+      "rangePlaceholder": "例如 5",
+      "rangeHint": "交易員收益率小於5%時開倉"
+    },
+    "firstOrder": {
+      "label": "首單交易設定",
+      "newOnly": "僅複製新開倉",
+      "copyCurrent": "複製目前持倉",
+      "copyLossOnly": "僅複製目前虧損倉位"
+    },
+    "advanced": {
+      "reverse": "反向跟單",
+      "fastMode": "極速跟單",
+      "tradeTrigger": {
+        "title": "交易止盈止損",
+        "tpLabel": "止盈百分比",
+        "slLabel": "止損百分比",
+        "placeholder": "20"
+      },
+      "posStrategy": {
+        "title": "多空開倉策略",
+        "long": "只跟多單",
+        "short": "只跟空單"
+      },
+      "vol24h": {
+        "title": "24h排行榜跟單",
+        "rankLabel": "榜單排名",
+        "placeholder": "例如 20（只跟前20）"
+      },
+      "balanceMonitor": {
+        "title": "交易員本金監控",
+        "valueLabel": "最低本金金額",
+        "placeholder": "例如 2000"
+      },
+      "whiteList": {
+        "title": "跟單幣種白名單",
+        "inputLabel": "輸入允許跟單的幣種",
+        "placeholder": "例如 BTC"
+      },
+      "blackList": {
+        "title": "跟單幣種黑名單",
+        "inputLabel": "輸入禁止跟單的幣種",
+        "placeholder": "例如 DOGE"
+      }
+    },
+    "tagInput": {
+      "hint": " (按 Enter 新增，批次新增時請用半形逗號分隔)"
+    },
+    "summary": {
+      "collapse": "收合",
+      "viewDetail": "查看詳情",
+      "confirmTitle": "配置確認",
+      "modify": "修改",
+      "brief": "跟單 {ratio} · {lever} · {risk}",
+      "leverFollow": "槓桿跟隨",
+      "riskCount": "{count} 項需留意",
+      "noRisk": "無風險項",
+      "labels": {
+        "trader": "跟單交易員",
+        "api": "跟單 API",
+        "taskLabel": "任務備註",
+        "followMode": "跟單模式",
+        "benchMark": "對標本金",
+        "investment": "投資額",
+        "ratio": "跟單比例",
+        "leverage": "槓桿",
+        "marginMode": "保證金模式",
+        "openType": "開倉模式",
+        "firstOrder": "首單設定",
+        "multiple": "倍投倍數",
+        "reverse": "反向跟單",
+        "fastMode": "極速跟單",
+        "tradeTrigger": "交易止盈止損",
+        "posStrategy": "多空策略",
+        "vol24h": "24h 排行榜",
+        "balanceMonitor": "本金監控",
+        "whiteList": "幣種白名單",
+        "blackList": "幣種黑名單"
+      },
+      "values": {
+        "notFilled": "未填寫",
+        "usdt": "{value} USDT",
+        "fixedRatio": "固定比例",
+        "customLeverage": "自訂 {leverage}x",
+        "followLeader": "跟隨交易員",
+        "marginCross": "全倉",
+        "marginIsolated": "逐倉",
+        "intervalOrder": "區間委託（收益率 ≤ {ratio}%）",
+        "marketPrice": "目前市價",
+        "copyCurrent": "複製目前持倉",
+        "copyLossOnly": "僅複製目前虧損倉位",
+        "copyNewOnly": "僅複製新開倉",
+        "multipleTimes": "{value} 倍",
+        "enabled": "已開啟",
+        "tpSl": "止盈 {tp}% / 止損 {sl}%",
+        "followShort": "只跟空單",
+        "followLong": "只跟多單",
+        "topN": "僅跟前 {n} 名",
+        "minAmount": "最低 {value} USDT",
+        "waitingInput": "待填寫本金與投資額",
+        "dash": "—"
+      }
+    },
+    "protocolAgree": {
+      "prefix": "我已閱讀並同意",
+      "linkText": "《跟單交易協議》"
+    },
+    "footer": {
+      "cancel": "取消",
+      "submitting": "提交中...",
+      "submit": "立即跟單"
+    },
+    "toast": {
+      "tagInBlacklist": "標籤 \"{tag}\" 已存在於黑名單中，不能新增到白名單",
+      "tagInWhitelist": "標籤 \"{tag}\" 已存在於白名單中，不能新增到黑名單",
+      "fetchSuccess": "取得成功",
+      "fetchBenchmarkFailed": "取得預估本金失敗",
+      "agreeProtocolFirst": "請先閱讀並同意跟單交易協議",
+      "reviewConfigFirst": "請核對配置清單後再次點擊立即跟單",
+      "notifyRequired": "請先至少配置一種訊息通知方式",
+      "createSuccess": "建立成功"
+    },
+    "protocol": {
+      "title": "跟單交易協議",
+      "intro": "歡迎使用跟單猿數位貨幣跟單平台（以下簡稱「本平台」）。在您使用本平台提供的服務前，請仔細閱讀並理解本協議。本協議是您（以下簡稱「使用者」）與跟單猿（以下簡稱「平台」）之間就使用平台服務所達成的法律協議。",
+      "sections": {
+        "s1": {
+          "title": "一、服務說明",
+          "items": [
+            "平台定位：本平台提供數位貨幣跟單技術服務，允許使用者透過本平台複製選定交易員的交易策略（以下簡稱「跟單」）。平台僅提供技術支援和交易數據介面，使用者可以選擇跟單交易員進行交易操作。",
+            "技術支援：本平台僅作為技術提供者，負責為使用者提供即時跟單數據和交易執行介面，協助使用者將交易員的操作同步至使用者的交易帳戶。使用者需自行選擇跟單對象，並根據自身判斷進行投資決策。",
+            "非金融建議：本平台不提供任何金融建議、投資建議或推薦交易員服務，平台的技術服務不應視為對某個交易策略或投資機會的推薦或保證。所有操作均基於使用者自主選擇，平台不對任何投資決策和市場變化承擔責任。"
+          ]
+        },
+        "s2": {
+          "title": "二、盈虧自負",
+          "items": [
+            "盈虧風險：使用者理解並同意，數位貨幣市場具有高度的風險性，包括但不限於市場波動、技術問題、操作失誤等，使用者在使用本平台服務時，其所有的交易盈虧均由使用者自行承擔。平台不對使用者的任何損失負責，包括但不限於因市場價格波動、延遲、訂單未能執行或技術故障等原因導致的虧損。",
+            "平台不擔責：使用者在使用本平台跟單服務過程中，如因任何原因導致盈虧損失，平台不承擔任何法律責任。平台不保證跟單操作的成功率或獲利性，使用者應根據自己的風險承受能力做出投資決策。"
+          ]
+        },
+        "s3": {
+          "title": "三、平台的權利與責任",
+          "items": [
+            "平台服務：本平台有權根據實際情況隨時修改、暫停或終止部分或全部服務。平台將盡最大努力保證服務的持續性和穩定性，但不對因網路、設備或其他不可抗力因素導致的服務中斷或故障負責。",
+            "技術保障：平台承諾為使用者提供穩定、快捷的跟單技術支援服務，但不保證跟單操作過程中的所有訂單都能夠成功執行。平台不對因數據延遲、價格波動、網路延遲等因素導致的訂單失敗或未按預期執行承擔責任。",
+            "帳戶安全：使用者有責任保持帳戶資訊的安全，包括但不限於帳戶密碼、API金鑰等。如果使用者發現帳戶存在安全問題，應立即通知平台進行處理。平台不對因帳戶安全問題引發的任何損失負責。"
+          ]
+        },
+        "s4": {
+          "title": "四、使用者的權利與義務",
+          "items": [
+            "帳戶管理：使用者有責任維護自己帳戶的安全，不得將帳戶資訊洩露給他人，平台不對因帳戶洩露、遺失或被盜用導致的損失負責。",
+            "合法合規：使用者在使用本平台時應遵守所在國家或地區的法律法規，確保其交易活動合法合規。使用者不得利用本平台從事任何違法行為，包括但不限於洗錢、詐欺、操縱市場等。",
+            "風險承擔：使用者在使用平台服務時應充分理解並承擔所有潛在的風險。平台建議使用者在進行跟單前，充分了解交易員的操作策略、市場走勢及可能的風險，謹慎進行投資決策。"
+          ]
+        },
+        "s5": {
+          "title": "五、隱私保護",
+          "items": [
+            "使用者資訊：平台將根據法律法規的要求，採取適當的技術措施保護使用者的個人資訊安全。除非使用者同意或法律要求，平台不會將使用者的個人資訊洩露給第三方。",
+            "數據使用：使用者同意平台可以收集和使用與平台服務相關的數據，如交易記錄、操作日誌等，以改善服務品質和使用者體驗，但所有收集的數據將嚴格按照隱私政策處理。"
+          ]
+        },
+        "s6": {
+          "title": "六、免責條款",
+          "items": [
+            "不可抗力：平台對因不可抗力事件（如自然災害、戰爭、技術故障、網路問題等）導致的服務中斷或無法履行的情形不承擔責任。",
+            "市場風險：數位貨幣市場波動劇烈，投資者的盈虧與市場走勢密切相關。平台不對市場風險負責，也不為使用者的投資收益或損失提供任何保證。"
+          ]
+        },
+        "s7": {
+          "title": "七、協議的變更與終止",
+          "items": [
+            "協議變更：平台有權根據法律法規的變化或營運需要隨時修改本協議，並透過網站公告或其他方式通知使用者。使用者繼續使用平台服務即視為同意新的協議條款。",
+            "協議終止：使用者可以隨時停止使用本平台服務，本平台也有權在使用者違反本協議或法律法規的情況下終止其帳戶和使用權限。"
+          ]
+        },
+        "s8": {
+          "title": "八、爭議解決",
+          "items": [
+            "爭議解決：本協議的訂立、執行和解釋均適用中華人民共和國法律。如發生爭議，平台與使用者應透過友好協商解決；協商不成時，可提交平台所在地有管轄權的人民法院訴訟解決。"
+          ]
+        },
+        "s9": {
+          "title": "九、其他條款",
+          "items": [
+            "完整協議：本協議構成平台與使用者之間關於本平台服務的完整協議，所有口頭或書面的約定均以本協議為準。",
+            "獨立條款：如果本協議的某一條款被認為無效或不可執行，其他條款仍然有效。"
+          ]
+        }
+      }
+    }
   }
 }

@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 
 import { Search, Unplug } from 'lucide-react'
 import { motion } from 'motion/react'
+import { useTranslations } from 'next-intl'
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -26,20 +27,8 @@ type ApiTrader = {
   isDemo?: boolean
 }
 
-// 移除模拟的“我的 API”数据
-// const MY_APIS: ApiTrader[] = [
-//   { id: 'my-1', name: '我的币安主账户', balance: 12500.5, platform: 'binance' },
-//   { id: 'my-2', name: 'OKX高频策略专用', balance: 3420.0, platform: 'okx' }
-// ]
-
-const featureActions = [
-  {
-    title: '工作室版本可联系客服了解详情',
-    href: '#'
-  }
-]
-
 export default function ApiTaskPage() {
+  const t = useTranslations('DashboardApiTask')
   const [selectedTrader, setSelectedTrader] = useState<ApiTrader | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState<ApiTrader[] | null>(null)
@@ -73,7 +62,7 @@ export default function ApiTaskPage() {
           return {
             id: String(c.id), // 注意：如果是自己的API，通常使用 id 或者 api_id
             name: c.name || c.api_name,
-            owner: c.username || '我',
+            owner: c.username || t('list.meFallback'),
             balance: c.usdt || 0,
             platform,
             isDemo: String(c.flag) === '1'
@@ -113,7 +102,7 @@ export default function ApiTaskPage() {
           return {
             id: String(c.api_id),
             name: c.api_name,
-            owner: c.username || '匿名用户',
+            owner: c.username || t('list.anonymousFallback'),
             balance: c.usdt || 0,
             platform,
             isDemo: String(c.flag) === '1'
@@ -145,24 +134,18 @@ export default function ApiTaskPage() {
             <CardContent className='flex gap-6 px-6 max-sm:flex-col max-sm:gap-2 max-sm:text-center sm:px-10'>
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
                 <h2 className='flex items-center gap-2 text-xl font-bold tracking-tighter text-white max-sm:mx-auto max-sm:justify-center sm:text-xl md:text-xl'>
-                  <Unplug className='h-6 w-6' /> API 跟单
+                  <Unplug className='h-6 w-6' /> {t('hero.title')}
                 </h2>
-                <p className='mb-3 text-sm text-white/70'>
-                  提交您的交易所 API （只读权限）作为带单信号，可以使用跟单 API
-                  进行跟单，0延迟！同时也可以搜索平台其他用户的 API 进行跟单。
-                </p>
+                <p className='mb-3 text-sm text-white/70'>{t('hero.subtitle')}</p>
                 <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'>
-                  {featureActions.map(action => (
-                    <a
-                      key={action.title}
-                      href={action.href}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className='flex h-8 items-center justify-center rounded-md bg-white px-3 text-xs font-medium text-black/90 sm:h-9 sm:text-sm'
-                    >
-                      {action.title}
-                    </a>
-                  ))}
+                  <a
+                    href='#'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='flex h-8 items-center justify-center rounded-md bg-white px-3 text-xs font-medium text-black/90 sm:h-9 sm:text-sm'
+                  >
+                    {t('hero.contactSupport')}
+                  </a>
                 </div>
               </div>
               <div className='flex items-center justify-center pb-6 sm:my-auto sm:min-w-56 sm:pb-0'>
@@ -227,22 +210,20 @@ export default function ApiTaskPage() {
         <MotionPreset fade blur slide={{ direction: 'down' }} delay={0.8} transition={{ duration: 0.5 }}>
           <Card>
             <CardHeader>
-              <CardTitle>创建 API 跟单任务</CardTitle>
-              <CardDescription>选择您自己的 API 账号，或者搜索其他用户的公开 API 进行跟单。</CardDescription>
+              <CardTitle>{t('card.title')}</CardTitle>
+              <CardDescription>{t('card.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <Tabs defaultValue='my-api' className='w-full'>
                 <TabsList className='mb-6 grid w-full grid-cols-2' {...tourAnchor(TOUR_ANCHORS.apiTaskTabs)}>
-                  <TabsTrigger value='my-api'>我的 API 信号</TabsTrigger>
-                  <TabsTrigger value='search-api'>发现 API 信号</TabsTrigger>
+                  <TabsTrigger value='my-api'>{t('tabs.myApi')}</TabsTrigger>
+                  <TabsTrigger value='search-api'>{t('tabs.searchApi')}</TabsTrigger>
                 </TabsList>
 
                 {/* 1. 我的 API 列表 */}
                 <TabsContent value='my-api' className='space-y-4' {...tourAnchor(TOUR_ANCHORS.apiTaskMyList)}>
                   {isLoadingMyApis ? (
-                    <div className='text-muted-foreground py-8 text-center text-sm'>
-                      加载中...
-                    </div>
+                    <div className='text-muted-foreground py-8 text-center text-sm'>{t('list.loading')}</div>
                   ) : myApis.length > 0 ? (
                     <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
                       {myApis.map(api => (
@@ -266,17 +247,17 @@ export default function ApiTaskPage() {
                                     variant='secondary'
                                     className='shrink-0 rounded-sm border-none bg-amber-500/10 text-[10px] text-amber-600 dark:text-amber-400'
                                   >
-                                    模拟盘
+                                    {t('list.demoBadge')}
                                   </Badge>
                                 )}
                               </div>
                               {api.owner && (
                                 <p className='text-muted-foreground mt-1 text-xs'>
-                                  创建者: <span className='text-foreground'>{api.owner}</span>
+                                  {t('list.creatorLabel')} <span className='text-foreground'>{api.owner}</span>
                                 </p>
                               )}
                               <p className='text-muted-foreground mt-1 text-xs'>
-                                余额:{' '}
+                                {t('list.balanceLabel')}{' '}
                                 <span className='text-foreground font-medium'>
                                   ${api.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                 </span>
@@ -286,15 +267,13 @@ export default function ApiTaskPage() {
                           {/* <Button className='w-full' disabled={api.platform !== 'okx' && api.platform !== 'binance'} onClick={() => handleCopy(api)}> */}
                           <Button className='w-full' disabled={api.platform !== 'okx'} onClick={() => handleCopy(api)}>
                             {/* {api.platform !== 'okx' && api.platform !== 'binance' ? '暂不支持该平台' : '发起跟单'} */}
-                            {api.platform !== 'okx' ? '暂不支持该平台' : '发起跟单'}
+                            {api.platform !== 'okx' ? t('list.unsupported') : t('list.follow')}
                           </Button>
                         </Card>
                       ))}
                     </div>
                   ) : (
-                    <div className='text-muted-foreground py-8 text-center text-sm'>
-                      暂无只读 API 信号
-                    </div>
+                    <div className='text-muted-foreground py-8 text-center text-sm'>{t('list.myEmpty')}</div>
                   )}
                 </TabsContent>
 
@@ -305,20 +284,20 @@ export default function ApiTaskPage() {
                       <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
                       <Input
                         type='text'
-                        placeholder='输入 API 名称或关键词搜索...'
+                        placeholder={t('search.placeholder')}
                         className='pl-9'
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleSearch()}
                       />
                     </div>
-                    <Button onClick={handleSearch}>搜索</Button>
+                    <Button onClick={handleSearch}>{t('search.button')}</Button>
                   </div>
 
                   <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
                     {searchResults === null ? (
                       <div className='text-muted-foreground col-span-1 py-8 text-center text-sm sm:col-span-2'>
-                        请输入关键词并点击搜索，发现平台其他用户的 API
+                        {t('search.hint')}
                       </div>
                     ) : searchResults.length > 0 ? (
                       searchResults.map(api => (
@@ -342,17 +321,17 @@ export default function ApiTaskPage() {
                                     variant='secondary'
                                     className='shrink-0 rounded-sm border-none bg-amber-500/10 text-[10px] text-amber-600 dark:text-amber-400'
                                   >
-                                    模拟盘
+                                    {t('list.demoBadge')}
                                   </Badge>
                                 )}
                               </div>
                               {api.owner && (
                                 <p className='text-muted-foreground mt-1 text-xs'>
-                                  拥有者: <span className='text-foreground'>{api.owner}</span>
+                                  {t('list.ownerLabel')} <span className='text-foreground'>{api.owner}</span>
                                 </p>
                               )}
                               <p className='text-muted-foreground mt-1 text-xs'>
-                                余额:{' '}
+                                {t('list.balanceLabel')}{' '}
                                 <span className='text-foreground font-medium'>
                                   ${api.balance.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                                 </span>
@@ -360,13 +339,13 @@ export default function ApiTaskPage() {
                             </div>
                           </div>
                           <Button className='w-full' disabled={api.platform !== 'okx'} onClick={() => handleCopy(api)}>
-                            {api.platform !== 'okx' ? '暂不支持该平台' : '发起跟单'}
+                            {api.platform !== 'okx' ? t('list.unsupported') : t('list.follow')}
                           </Button>
                         </Card>
                       ))
                     ) : (
                       <div className='text-muted-foreground col-span-1 py-8 text-center text-sm sm:col-span-2'>
-                        未找到相关 API 信息
+                        {t('search.empty')}
                       </div>
                     )}
                   </div>

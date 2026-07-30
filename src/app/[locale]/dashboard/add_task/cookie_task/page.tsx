@@ -5,6 +5,7 @@ import * as React from 'react'
 import { Cookie, Search } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
+import { useTranslations } from 'next-intl'
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -15,13 +16,7 @@ import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
-import {
-  INVALID_TRADER_URL,
-  SELECT_EXCHANGE_FIRST,
-  TRADER_INPUT_PLACEHOLDER,
-  isInvalidUniqueName,
-  parseTraderUrl,
-} from '../_lib/trader-url'
+import { isInvalidUniqueName, parseTraderUrl } from '../_lib/trader-url'
 
 import { getCookies, searchCookie } from '@/api/cookie'
 import { cn } from '@/lib/utils'
@@ -34,14 +29,8 @@ type CookieTrader = {
   platform: 'okx' | 'binance' | 'bitget' | 'gate'
 }
 
-const featureActions = [
-  {
-    title: '获取交易所 Cookie',
-    href: '/dashboard/cookie'
-  }
-]
-
 export default function CookieTaskPage() {
+  const t = useTranslations('DashboardCookieTask')
   const [myCookies, setMyCookies] = React.useState<CookieTrader[]>([])
   const [exchange, setExchange] = React.useState<'okx' | 'binance' | ''>('okx')
   const [traderUrl, setTraderUrl] = React.useState('')
@@ -90,7 +79,7 @@ export default function CookieTaskPage() {
         const results: CookieTrader[] = res.data.map((c: any) => ({
           id: String(c.curl_id),
           name: c.curl_name,
-          owner: c.username || '匿名用户',
+          owner: c.username || t('cookie.anonymousFallback'),
           status: c.available ? 'active' : 'expired',
           platform: String(c.exchange) === '1' ? 'okx' : 'binance'
         }))
@@ -123,6 +112,9 @@ export default function CookieTaskPage() {
     }
   }, [exchange, myCookies])
 
+  const invalidTraderUrlText = t('errors.invalidUrl')
+  const selectExchangeFirstText = t('errors.selectExchangeFirst')
+
   // 解析交易员主页链接获取 uniqueName
   const handleParseUrl = () => {
     if (!traderUrl.trim()) {
@@ -132,14 +124,14 @@ export default function CookieTaskPage() {
     }
 
     if (!exchange) {
-      setUniqueName(SELECT_EXCHANGE_FIRST)
+      setUniqueName(selectExchangeFirstText)
 
       return
     }
 
     const parsed = parseTraderUrl(traderUrl, exchange)
 
-    setUniqueName(parsed ?? INVALID_TRADER_URL)
+    setUniqueName(parsed ?? invalidTraderUrlText)
   }
 
   const handleExchangeChange = (value: 'okx' | 'binance') => {
@@ -160,23 +152,17 @@ export default function CookieTaskPage() {
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
                 <h2 className='flex items-center gap-2 text-xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-xl md:text-xl'>
                   <Cookie className='h-6 w-6' />
-                  Cookie 跟单
+                  {t('hero.title')}
                 </h2>
-                <p className='mb-3 text-sm text-white/70'>
-                  针对需要在交易所进行跟单后才能看到实时仓位变化的交易员，以及需要登录交易所账号才能看到持仓信息的交易员，使用交易所的
-                  Cookie 可以实现0延迟跟单。
-                </p>
+                <p className='mb-3 text-sm text-white/70'>{t('hero.subtitle')}</p>
                 <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'>
-                  {featureActions.map(action => (
-                    <a
-                      key={action.title}
-                      href={action.href}
-                      rel='noopener noreferrer'
-                      className='flex h-8 items-center justify-center rounded-md bg-white px-3 text-xs font-medium text-black/90 sm:h-9 sm:text-sm'
-                    >
-                      {action.title}
-                    </a>
-                  ))}
+                  <a
+                    href='/dashboard/cookie'
+                    rel='noopener noreferrer'
+                    className='flex h-8 items-center justify-center rounded-md bg-white px-3 text-xs font-medium text-black/90 sm:h-9 sm:text-sm'
+                  >
+                    {t('hero.getCookie')}
+                  </a>
                 </div>
               </div>
               <div className='flex items-center justify-center pb-6 sm:my-auto sm:min-w-56 sm:pb-0'>
@@ -241,13 +227,13 @@ export default function CookieTaskPage() {
         <MotionPreset fade blur slide={{ direction: 'down' }} delay={0.8} transition={{ duration: 0.5 }}>
           <Card>
             <CardHeader>
-              <CardTitle>创建交易所跟单任务</CardTitle>
-              <CardDescription>配置您的跟单参数，以开始监听并复制目标交易员的策略。</CardDescription>
+              <CardTitle>{t('card.title')}</CardTitle>
+              <CardDescription>{t('card.description')}</CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
               {/* 0. 选择目标交易所 */}
               <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.cookieTaskExchange)}>
-                <Label>选择目标交易所</Label>
+                <Label>{t('form.selectExchange')}</Label>
                 <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                   <button
                     type='button'
@@ -323,8 +309,8 @@ export default function CookieTaskPage() {
               {/* 1. 选择目标交易所的 Cookie */}
               <Tabs defaultValue='my-cookie' className='w-full pt-4' {...tourAnchor(TOUR_ANCHORS.cookieTaskSource)}>
                 <TabsList className='mb-6 grid w-full grid-cols-2'>
-                  <TabsTrigger value='my-cookie'>我的 Cookie</TabsTrigger>
-                  <TabsTrigger value='search-cookie'>发现 Cookie</TabsTrigger>
+                  <TabsTrigger value='my-cookie'>{t('cookie.myTab')}</TabsTrigger>
+                  <TabsTrigger value='search-cookie'>{t('cookie.searchTab')}</TabsTrigger>
                 </TabsList>
 
                 {/* 1. 我的 Cookie */}
@@ -358,14 +344,14 @@ export default function CookieTaskPage() {
                             <div className='flex-1 overflow-hidden'>
                               <h3 className='truncate text-sm font-semibold'>{cookie.name}</h3>
                               <p className='text-muted-foreground mt-1 text-xs'>
-                                状态:{' '}
+                                {t('cookie.statusLabel')}{' '}
                                 <span
                                   className={cn(
                                     'font-medium',
                                     cookie.status === 'active' ? 'text-green-500' : 'text-destructive'
                                   )}
                                 >
-                                  {cookie.status === 'active' ? '有效' : '已失效'}
+                                  {cookie.status === 'active' ? t('cookie.statusActive') : t('cookie.statusExpired')}
                                 </span>
                               </p>
                             </div>
@@ -375,8 +361,14 @@ export default function CookieTaskPage() {
                     </div>
                   ) : (
                     <div className='text-muted-foreground py-8 text-center text-sm border border-dashed rounded-xl'>
-                      未找到您在 {exchange === 'okx' ? '欧易' : exchange === 'binance' ? '币安' : exchange} 的
-                      Cookie，请先前往添加
+                      {t('cookie.myEmpty', {
+                        exchange:
+                          exchange === 'okx'
+                            ? t('cookie.exchangeOkx')
+                            : exchange === 'binance'
+                              ? t('cookie.exchangeBinance')
+                              : exchange
+                      })}
                     </div>
                   )}
                 </TabsContent>
@@ -388,20 +380,20 @@ export default function CookieTaskPage() {
                       <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
                       <Input
                         type='text'
-                        placeholder='输入 Cookie 名称或关键词搜索...'
+                        placeholder={t('cookie.searchPlaceholder')}
                         className='pl-9'
                         value={searchQuery}
                         onChange={e => setSearchQuery(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && handleSearch()}
                       />
                     </div>
-                    <Button onClick={handleSearch}>搜索</Button>
+                    <Button onClick={handleSearch}>{t('cookie.search')}</Button>
                   </div>
 
                   <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
                     {searchResults === null ? (
                       <div className='text-muted-foreground col-span-1 py-8 text-center text-sm sm:col-span-2'>
-                        请输入关键词并点击搜索，发现平台其他用户的 Cookie 信号
+                        {t('cookie.searchHint')}
                       </div>
                     ) : searchResults.length > 0 ? (
                       searchResults.map(cookie => (
@@ -430,18 +422,18 @@ export default function CookieTaskPage() {
                               <h3 className='truncate text-sm font-semibold'>{cookie.name}</h3>
                               {cookie.owner && (
                                 <p className='text-muted-foreground mt-1 text-xs'>
-                                  创建者: <span className='text-foreground'>{cookie.owner}</span>
+                                  {t('cookie.creatorLabel')} <span className='text-foreground'>{cookie.owner}</span>
                                 </p>
                               )}
                               <p className='text-muted-foreground mt-1 text-xs'>
-                                状态:{' '}
+                                {t('cookie.statusLabel')}{' '}
                                 <span
                                   className={cn(
                                     'font-medium',
                                     cookie.status === 'active' ? 'text-green-500' : 'text-destructive'
                                   )}
                                 >
-                                  {cookie.status === 'active' ? '有效' : '已失效'}
+                                  {cookie.status === 'active' ? t('cookie.statusActive') : t('cookie.statusExpired')}
                                 </span>
                               </p>
                             </div>
@@ -450,7 +442,7 @@ export default function CookieTaskPage() {
                       ))
                     ) : (
                       <div className='text-muted-foreground col-span-1 py-8 text-center text-sm sm:col-span-2'>
-                        未找到相关 Cookie 信号
+                        {t('cookie.searchEmpty')}
                       </div>
                     )}
                   </div>
@@ -461,12 +453,12 @@ export default function CookieTaskPage() {
               <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskTrader)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
-                  交易员主页链接或 ID
+                  {t('form.traderLabel')}
                 </Label>
                 <div className='flex gap-2'>
                   <Input
                     placeholder={
-                      exchange ? TRADER_INPUT_PLACEHOLDER[exchange] : '请先选择交易所，再输入链接或 ID'
+                      exchange ? t('form.traderInputPlaceholder') : t('form.traderInputPlaceholderNoExchange')
                     }
                     value={traderUrl}
                     onChange={e => setTraderUrl(e.target.value)}
@@ -476,7 +468,7 @@ export default function CookieTaskPage() {
                     className='dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80 dark:border-border dark:border'
                     variant='secondary'
                   >
-                    解析
+                    {t('form.parse')}
                   </Button>
                 </div>
               </div>
@@ -486,7 +478,7 @@ export default function CookieTaskPage() {
                 <div className='space-y-2'>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
-                    交易员 （ UID 或 带单项目 ID）
+                    {t('form.uniqueNameLabel')}
                   </Label>
                   <Input value={uniqueName} readOnly className='bg-muted' />
                 </div>
@@ -497,22 +489,22 @@ export default function CookieTaskPage() {
                 <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskType)}>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
-                    交易员类型
+                    {t('form.traderTypeLabel')}
                   </Label>
                   <Select onValueChange={setTraderType} value={traderType}>
                     <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='请选择交易员类型' />
+                      <SelectValue placeholder={t('form.traderTypePlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
                       {exchange === 'okx' ? (
                         <>
-                          <SelectItem value='1'>合约带单</SelectItem>
-                          <SelectItem value='2'>跟单项目</SelectItem>
+                          <SelectItem value='1'>{t('traderType.okx.contract')}</SelectItem>
+                          <SelectItem value='2'>{t('traderType.okx.project')}</SelectItem>
                         </>
                       ) : (
                         <>
-                          <SelectItem value='1'>带单项目</SelectItem>
-                          <SelectItem value='3'>聪明钱</SelectItem>
+                          <SelectItem value='1'>{t('traderType.binance.project')}</SelectItem>
+                          <SelectItem value='3'>{t('traderType.binance.smartMoney')}</SelectItem>
                         </>
                       )}
                     </SelectContent>
@@ -522,10 +514,15 @@ export default function CookieTaskPage() {
             </CardContent>
             <CardFooter className='flex justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskSubmit)}>
               <Button
-                disabled={!exchange || isInvalidUniqueName(uniqueName) || !traderType || !selectedTrader}
+                disabled={
+                  !exchange ||
+                  isInvalidUniqueName(uniqueName, [invalidTraderUrlText, selectExchangeFirstText]) ||
+                  !traderType ||
+                  !selectedTrader
+                }
                 onClick={() => setIsConfigOpen(true)}
               >
-                创建跟单
+                {t('form.submit')}
               </Button>
             </CardFooter>
           </Card>

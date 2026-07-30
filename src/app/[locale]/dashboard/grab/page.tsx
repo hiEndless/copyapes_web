@@ -17,12 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { GrabTaskConfigSheet } from './_components/grab-task-config-sheet'
-import {
-  INVALID_TRADER_URL,
-  SELECT_EXCHANGE_FIRST,
-  isInvalidUniqueName,
-  parseTraderUrl,
-} from '../add_task/_lib/trader-url'
+import { isInvalidUniqueName, parseTraderUrl } from '../add_task/_lib/trader-url'
 import { getGrabTaskList, stopGrabTask } from '@/api/task'
 import { getCookies } from '@/api/cookie'
 
@@ -148,6 +143,9 @@ export default function GrabPage() {
     }
   }, [currentMyCookie])
 
+  const invalidTraderUrlText = t('form.invalidTraderUrl')
+  const selectExchangeFirstText = t('form.selectExchangeFirst')
+
   // 解析交易员主页链接获取 uniqueName
   const handleParseUrl = () => {
     if (!traderUrl.trim()) {
@@ -157,22 +155,15 @@ export default function GrabPage() {
     }
 
     if (!exchange) {
-      setUniqueName(SELECT_EXCHANGE_FIRST)
+      setUniqueName(selectExchangeFirstText)
 
       return
     }
 
     const parsed = parseTraderUrl(traderUrl, exchange)
 
-    setUniqueName(parsed ?? INVALID_TRADER_URL)
+    setUniqueName(parsed ?? invalidTraderUrlText)
   }
-
-  const displayUniqueName =
-    uniqueName === INVALID_TRADER_URL
-      ? t('form.invalidTraderUrl')
-      : uniqueName === SELECT_EXCHANGE_FIRST
-        ? t('form.selectExchangeFirst')
-        : uniqueName
 
   const exchangeDisplayName =
     exchange === 'okx'
@@ -536,7 +527,7 @@ export default function GrabPage() {
                     <span className='text-destructive'>*</span>
                     {t('form.traderIdLabel')}
                   </Label>
-                  <Input value={displayUniqueName} readOnly className='bg-muted' />
+                  <Input value={uniqueName} readOnly className='bg-muted' />
                 </div>
               )}
             </CardContent>
@@ -544,7 +535,7 @@ export default function GrabPage() {
               <Button
                 disabled={
                   !exchange ||
-                  isInvalidUniqueName(uniqueName) ||
+                  isInvalidUniqueName(uniqueName, [invalidTraderUrlText, selectExchangeFirstText]) ||
                   !selectedTrader ||
                   selectedTrader.status !== 'active'
                 }

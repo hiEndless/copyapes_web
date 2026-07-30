@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { CircleHelp } from 'lucide-react'
@@ -114,6 +115,7 @@ function normalizeCoinSymbolList(values: unknown): string[] {
 }
 
 type ConfigSummaryItem = {
+  key: string
   label: string
   value: string
   tone?: 'normal' | 'risk' | 'warning'
@@ -121,6 +123,7 @@ type ConfigSummaryItem = {
 }
 
 function buildConfigSummary(params: {
+  t: ReturnType<typeof useTranslations>
   traderName?: string
   traderId: string | null
   apiName: string
@@ -157,67 +160,96 @@ function buildConfigSummary(params: {
   }
   followRatioPreview: ReturnType<typeof buildFollowRatioPreview> | null
 }): ConfigSummaryItem[] {
-  const { traderName, traderId, apiName, formData, toggles, followRatioPreview } = params
+  const { t, traderName, traderId, apiName, formData, toggles, followRatioPreview } = params
+
+  const dash = t('summary.values.dash')
 
   const marginModeLabel =
-    formData.margin_mode_set === 1 ? '全仓' : formData.margin_mode_set === 2 ? '逐仓' : '跟随交易员'
+    formData.margin_mode_set === 1
+      ? t('summary.values.marginCross')
+      : formData.margin_mode_set === 2
+        ? t('summary.values.marginIsolated')
+        : t('summary.values.followLeader')
 
   const firstOrderLabel =
     formData.first_order_set === 2
-      ? '复制当前持仓'
+      ? t('summary.values.copyCurrent')
       : formData.first_order_set === 3
-        ? '仅复制当前亏损仓位'
-        : '仅复制新开仓'
+        ? t('summary.values.copyLossOnly')
+        : t('summary.values.copyNewOnly')
 
   const ratioValue =
     followRatioPreview?.ready === true
-      ? followRatioPreview.formula.split(' = ').pop() || '—'
-      : '待填写本金与投资额'
+      ? followRatioPreview.formula.split(' = ').pop() || dash
+      : t('summary.values.waitingInput')
 
   const items: ConfigSummaryItem[] = [
-    { label: '跟单交易员', value: traderName || traderId || '—' },
-    { label: '跟单 API', value: apiName, tab: 'basic' }
+    { key: 'trader', label: t('summary.labels.trader'), value: traderName || traderId || dash },
+    { key: 'api', label: t('summary.labels.api'), value: apiName, tab: 'basic' }
   ]
 
   if (formData.label.trim()) {
-    items.push({ label: '任务备注', value: formData.label.trim(), tab: 'basic' })
+    items.push({ key: 'taskLabel', label: t('summary.labels.taskLabel'), value: formData.label.trim(), tab: 'basic' })
   }
 
   if (formData.follow_type === '2') {
-    items.push({ label: '跟单模式', value: '固定比例', tab: 'basic' })
+    items.push({
+      key: 'followMode',
+      label: t('summary.labels.followMode'),
+      value: t('summary.values.fixedRatio'),
+      tab: 'basic'
+    })
   }
 
   items.push(
-    { label: '对标本金', value: formData.benchMark ? `${formData.benchMark} USDT` : '未填写', tab: 'basic' },
-    { label: '投资额', value: formData.investment ? `${formData.investment} USDT` : '未填写', tab: 'basic' },
     {
-      label: '跟单比例',
+      key: 'benchMark',
+      label: t('summary.labels.benchMark'),
+      value: formData.benchMark ? t('summary.values.usdt', { value: formData.benchMark }) : t('summary.values.notFilled'),
+      tab: 'basic'
+    },
+    {
+      key: 'investment',
+      label: t('summary.labels.investment'),
+      value: formData.investment ? t('summary.values.usdt', { value: formData.investment }) : t('summary.values.notFilled'),
+      tab: 'basic'
+    },
+    {
+      key: 'ratio',
+      label: t('summary.labels.ratio'),
       value: ratioValue,
       tone: followRatioPreview?.ready === true && followRatioPreview.lowRatioWarning ? 'warning' : 'normal',
       tab: 'basic'
     },
     {
-      label: '杠杆',
-      value: formData.lever_set === 2 ? `自定义 ${formData.leverage || '—'}x` : '跟随交易员',
+      key: 'leverage',
+      label: t('summary.labels.leverage'),
+      value:
+        formData.lever_set === 2
+          ? t('summary.values.customLeverage', { leverage: formData.leverage || dash })
+          : t('summary.values.followLeader'),
       tone: formData.lever_set === 2 ? 'risk' : 'normal',
       tab: 'basic'
     },
     {
-      label: '保证金模式',
+      key: 'marginMode',
+      label: t('summary.labels.marginMode'),
       value: marginModeLabel,
       tone: formData.margin_mode_set !== 0 ? 'risk' : 'normal',
       tab: 'basic'
     },
     {
-      label: '开仓模式',
+      key: 'openType',
+      label: t('summary.labels.openType'),
       value:
         formData.first_open_type === 2
-          ? `区间委托（收益率 ≤ ${formData.uplRatio || '—'}%）`
-          : '当前市价',
+          ? t('summary.values.intervalOrder', { ratio: formData.uplRatio || dash })
+          : t('summary.values.marketPrice'),
       tab: 'basic'
     },
     {
-      label: '首单设置',
+      key: 'firstOrder',
+      label: t('summary.labels.firstOrder'),
       value: firstOrderLabel,
       tone: formData.first_order_set !== 1 ? 'risk' : 'normal',
       tab: 'basic'
@@ -226,65 +258,78 @@ function buildConfigSummary(params: {
 
   if (toggles.multiple_visible) {
     items.push({
-      label: '倍投倍数',
-      value: `${toggles.multiple || '1'} 倍`,
+      key: 'multiple',
+      label: t('summary.labels.multiple'),
+      value: t('summary.values.multipleTimes', { value: toggles.multiple || '1' }),
       tone: 'risk',
       tab: 'basic'
     })
   }
 
   if (toggles.posSide_set_visible) {
-    items.push({ label: '反向跟单', value: '已开启', tone: 'risk', tab: 'advanced' })
+    items.push({
+      key: 'reverse',
+      label: t('summary.labels.reverse'),
+      value: t('summary.values.enabled'),
+      tone: 'risk',
+      tab: 'advanced'
+    })
   }
 
   if (toggles.fast_mode_visible) {
-    items.push({ label: '极速跟单', value: '已开启', tab: 'advanced' })
+    items.push({ key: 'fastMode', label: t('summary.labels.fastMode'), value: t('summary.values.enabled'), tab: 'advanced' })
   }
 
   if (toggles.trade_trigger_visible) {
     items.push({
-      label: '交易止盈止损',
-      value: `止盈 ${toggles.tp_trigger_px || '0'}% / 止损 ${toggles.sl_trigger_px || '0'}%`,
+      key: 'tradeTrigger',
+      label: t('summary.labels.tradeTrigger'),
+      value: t('summary.values.tpSl', { tp: toggles.tp_trigger_px || '0', sl: toggles.sl_trigger_px || '0' }),
       tab: 'advanced'
     })
   }
 
   if (toggles.pos_visible) {
     items.push({
-      label: '多空策略',
-      value: toggles.pos_value === 'short' ? '只跟空单' : '只跟多单',
+      key: 'posStrategy',
+      label: t('summary.labels.posStrategy'),
+      value: toggles.pos_value === 'short' ? t('summary.values.followShort') : t('summary.values.followLong'),
       tab: 'advanced'
     })
   }
 
   if (toggles.vol24h_visible) {
     items.push({
-      label: '24h 排行榜',
-      value: `仅跟前 ${toggles.vol24h_num || '—'} 名`,
+      key: 'vol24h',
+      label: t('summary.labels.vol24h'),
+      value: t('summary.values.topN', { n: toggles.vol24h_num || dash }),
       tab: 'advanced'
     })
   }
 
   if (toggles.balance_monitor_visible) {
     items.push({
-      label: '本金监控',
-      value: `最低 ${toggles.balance_monitor_value || '—'} USDT`,
+      key: 'balanceMonitor',
+      label: t('summary.labels.balanceMonitor'),
+      value: t('summary.values.minAmount', { value: toggles.balance_monitor_value || dash }),
       tab: 'advanced'
     })
   }
 
   if (toggles.white_list_visible && toggles.white_list.length > 0) {
     items.push({
-      label: '币种白名单',
-      value: toggles.white_list.join('、'),
+      key: 'whiteList',
+      label: t('summary.labels.whiteList'),
+      value: toggles.white_list.join(', '),
       tab: 'advanced'
     })
   }
 
   if (toggles.black_list_visible && toggles.black_list.length > 0) {
     items.push({
-      label: '币种黑名单',
-      value: toggles.black_list.join('、'),
+      key: 'blackList',
+      label: t('summary.labels.blackList'),
+      value: toggles.black_list.join(', '),
       tab: 'advanced'
     })
   }
@@ -292,23 +337,28 @@ function buildConfigSummary(params: {
   return items
 }
 
-function buildConfigSummaryBrief(items: ConfigSummaryItem[]): string {
-  const ratioItem = items.find(item => item.label === '跟单比例')
-  const leverItem = items.find(item => item.label === '杠杆')
-  const ratio = ratioItem?.value || '—'
-  const leverShort = leverItem?.value.includes('自定义') ? leverItem.value : '杠杆跟随'
+function buildConfigSummaryBrief(items: ConfigSummaryItem[], t: ReturnType<typeof useTranslations>): string {
+  const ratioItem = items.find(item => item.key === 'ratio')
+  const leverItem = items.find(item => item.key === 'leverage')
+  const ratio = ratioItem?.value || t('summary.values.dash')
+  const leverShort =
+    leverItem && leverItem.value !== t('summary.values.followLeader')
+      ? leverItem.value
+      : t('summary.leverFollow')
   const riskCount = items.filter(item => item.tone === 'risk' || item.tone === 'warning').length
-  const riskText = riskCount > 0 ? `${riskCount} 项需关注` : '无风险项'
+  const riskText = riskCount > 0 ? t('summary.riskCount', { count: riskCount }) : t('summary.noRisk')
 
-  return `跟单 ${ratio} · ${leverShort} · ${riskText}`
+  return t('summary.brief', { ratio, lever: leverShort, risk: riskText })
 }
 
 function ConfigSummaryDetailList({
   items,
-  onJumpToItem
+  onJumpToItem,
+  modifyLabel
 }: {
   items: ConfigSummaryItem[]
   onJumpToItem: (tab?: 'basic' | 'advanced') => void
+  modifyLabel: string
 }) {
   return (
     <div className='space-y-2'>
@@ -333,7 +383,7 @@ function ConfigSummaryDetailList({
                 className='text-primary shrink-0 hover:underline'
                 onClick={() => onJumpToItem(item.tab)}
               >
-                修改
+                {modifyLabel}
               </button>
             ) : null}
           </div>
@@ -417,7 +467,7 @@ function TagInput({
         onChange={e => setInputValue(e.target.value)}
         onKeyDown={handleKeyDown}
         onBlur={commitInput}
-        placeholder={placeholder + ' (按回车添加，批量添加时请用英文逗号分隔)'}
+        placeholder={placeholder}
       />
     </div>
   )
@@ -450,6 +500,7 @@ export function CopyTaskConfigSheet({
   initialTaskData,
   onSuccess
 }: CopyTaskConfigSheetProps) {
+  const t = useTranslations('DashboardCopyTaskConfig')
   const router = useRouter()
   const { startTourById } = useTour()
   const [isLoading, setIsLoading] = useState(false)
@@ -587,7 +638,7 @@ export function CopyTaskConfigSheet({
     const normalizedTags = normalizeCoinSymbolList(tags)
     const filteredTags = normalizedTags.filter(tag => {
       if (toggles.black_list.includes(tag)) {
-        toast.error(`标签 "${tag}" 已存在于黑名单中，不能添加到白名单`)
+        toast.error(t('toast.tagInBlacklist', { tag }))
         return false
       }
       return true
@@ -599,7 +650,7 @@ export function CopyTaskConfigSheet({
     const normalizedTags = normalizeCoinSymbolList(tags)
     const filteredTags = normalizedTags.filter(tag => {
       if (toggles.white_list.includes(tag)) {
-        toast.error(`标签 "${tag}" 已存在于白名单中，不能添加到黑名单`)
+        toast.error(t('toast.tagInWhitelist', { tag }))
         return false
       }
       return true
@@ -620,9 +671,9 @@ export function CopyTaskConfigSheet({
 
     if (res.code === 0) {
       updateForm('benchMark', String(res.data))
-      if (!isAuto) toast.success(res.msg || '获取成功')
+      if (!isAuto) toast.success(res.msg || t('toast.fetchSuccess'))
     } else {
-      if (!isAuto) toast.error(res.msg || '获取预估本金失败')
+      if (!isAuto) toast.error(res.msg || t('toast.fetchBenchmarkFailed'))
     }
   }
 
@@ -711,14 +762,24 @@ export function CopyTaskConfigSheet({
           formData.investment,
           formData.benchMark,
           toggles.multiple_visible,
-          toggles.multiple
+          toggles.multiple,
+          t('summary.labels.ratio'),
+          {
+            empty: t('ratioPreview.emptyHint'),
+            investmentInvalid: t('ratioPreview.investmentInvalid'),
+            benchMarkInvalid: t('ratioPreview.benchMarkInvalid'),
+            multipleInvalid: t('ratioPreview.multipleInvalid')
+          }
         )
       : null
 
   const selectedApi = apiOptions.find(api => String(api.id) === formData.api_id)
-  const selectedApiName = selectedApi?.api_name || (formData.api_id ? `API ${formData.api_id}` : '未选择')
+  const selectedApiName =
+    selectedApi?.api_name ||
+    (formData.api_id ? t('apiSelect.fallbackName', { id: formData.api_id }) : t('apiSelect.unselected'))
 
   const configSummaryItems = buildConfigSummary({
+    t,
     traderName,
     traderId,
     apiName: selectedApiName,
@@ -727,7 +788,7 @@ export function CopyTaskConfigSheet({
     followRatioPreview
   })
 
-  const configSummaryBrief = buildConfigSummaryBrief(configSummaryItems)
+  const configSummaryBrief = buildConfigSummaryBrief(configSummaryItems, t)
 
   const jumpToSummaryItem = (tab?: 'basic' | 'advanced') => {
     if (tab) {
@@ -738,14 +799,14 @@ export function CopyTaskConfigSheet({
 
   const handleSubmit = async () => {
     if (!agreedToProtocol) {
-      toast.error('请先阅读并同意跟单交易协议')
+      toast.error(t('toast.agreeProtocolFirst'))
       return
     }
 
     if (!summaryViewed) {
       setSummaryDetailOpen(true)
       setSummaryViewed(true)
-      toast.error('请核对配置清单后再次点击立即跟单')
+      toast.error(t('toast.reviewConfigFirst'))
 
       return
     }
@@ -755,7 +816,7 @@ export function CopyTaskConfigSheet({
     try {
       const hasNotification = await hasAnyNotificationConfigured()
       if (!hasNotification) {
-        toast.error('请先至少配置一种消息通知方式')
+        toast.error(t('toast.notifyRequired'))
         onClose()
         router.push('/dashboard/notifications')
         return
@@ -801,7 +862,7 @@ export function CopyTaskConfigSheet({
       const res = await addTask(payload)
 
       if (res.code === 0) {
-        toast.success('创建成功')
+        toast.success(res.msg || t('toast.createSuccess'))
 
         // 刷新全局权益信息，同步剩余跟单任务额度
         try {
@@ -887,9 +948,9 @@ export function CopyTaskConfigSheet({
           <div className='flex items-start justify-between gap-2 pr-6'>
             <div className='min-w-0'>
               <SheetTitle>
-                跟单配置 - <span>{traderName || traderId}</span>
+                {t('sheet.titleWithName', { name: traderName || traderId || '' })}
               </SheetTitle>
-              <SheetDescription>配置详细的跟单参数</SheetDescription>
+              <SheetDescription>{t('sheet.description')}</SheetDescription>
             </div>
             <Button
               type='button'
@@ -899,7 +960,7 @@ export function CopyTaskConfigSheet({
               onClick={() => startTourById(TOUR_IDS.taskConfigGuide)}
             >
               <CircleHelp className='size-4' />
-              配置说明
+              {t('sheet.guide')}
             </Button>
           </div>
         </SheetHeader>
@@ -907,13 +968,13 @@ export function CopyTaskConfigSheet({
         <div className='px-6 pb-1' {...tourAnchor(TOUR_ANCHORS.taskNotifyStatus)}>
           <div className='bg-muted/40 flex items-center justify-between rounded-md border px-3 py-2 text-xs'>
             <div className='flex items-center gap-2'>
-              <span className='text-muted-foreground'>消息通知配置状态：</span>
+              <span className='text-muted-foreground'>{t('notify.statusLabel')}</span>
               {notificationStatus.loading ? (
-                <span className='text-muted-foreground'>检测中...</span>
+                <span className='text-muted-foreground'>{t('notify.checking')}</span>
               ) : notificationStatus.configured ? (
-                <span className='font-medium text-green-600'>已配置</span>
+                <span className='font-medium text-green-600'>{t('notify.configured')}</span>
               ) : (
-                <span className='font-medium text-red-600'>未配置（不可创建任务）</span>
+                <span className='font-medium text-red-600'>{t('notify.notConfigured')}</span>
               )}
             </div>
             <button
@@ -924,7 +985,7 @@ export function CopyTaskConfigSheet({
                 router.push('/dashboard/notifications')
               }}
             >
-              去配置
+              {t('notify.goConfig')}
             </button>
           </div>
         </div>
@@ -934,8 +995,8 @@ export function CopyTaskConfigSheet({
         <Tabs value={activeTab} onValueChange={setActiveTab} className='flex h-full flex-1 flex-col overflow-hidden'>
           <div className='px-6'>
             <TabsList className='grid w-full grid-cols-2'>
-              <TabsTrigger value='basic'>基础设置</TabsTrigger>
-              <TabsTrigger value='advanced'>高级设置</TabsTrigger>
+              <TabsTrigger value='basic'>{t('tabs.basic')}</TabsTrigger>
+              <TabsTrigger value='advanced'>{t('tabs.advanced')}</TabsTrigger>
             </TabsList>
           </div>
 
@@ -943,10 +1004,10 @@ export function CopyTaskConfigSheet({
             <TabsContent value='basic' className='mt-0 space-y-6'>
               {/* 选择跟单 API */}
               <div {...tourAnchor(TOUR_ANCHORS.taskApiSelect)}>
-                <div className='mb-2 text-sm font-medium'>选择你的跟单 API</div>
+                <div className='mb-2 text-sm font-medium'>{t('apiSelect.label')}</div>
                 {apiOptions.length === 0 ? (
                   <div className='bg-muted/40 flex items-center justify-between rounded-md border px-3 py-2 text-xs'>
-                    <span className='text-muted-foreground'>暂无可用跟单 API，请先添加交易 API</span>
+                    <span className='text-muted-foreground'>{t('apiSelect.empty')}</span>
                     <button
                       type='button'
                       className='text-primary hover:underline'
@@ -955,7 +1016,7 @@ export function CopyTaskConfigSheet({
                         router.push('/dashboard/api')
                       }}
                     >
-                      去添加
+                      {t('apiSelect.goAdd')}
                     </button>
                   </div>
                 ) : (
@@ -981,7 +1042,7 @@ export function CopyTaskConfigSheet({
                             <span
                               className={`text-xs font-medium ${active ? 'text-primary-foreground' : 'text-foreground'}`}
                             >
-                              {api.api_name || `API ${api.id}`}
+                              {api.api_name || t('apiSelect.fallbackName', { id: api.id })}
                             </span>
                           </div>
                         </button>
@@ -992,18 +1053,18 @@ export function CopyTaskConfigSheet({
               </div>
 
               <div className='space-y-2'>
-                <label className='mb-2 block text-sm font-medium'>任务备注标签（可选）</label>
+                <label className='mb-2 block text-sm font-medium'>{t('label.label')}</label>
                 <Input
                   value={formData.label}
                   onChange={e => updateForm('label', e.target.value)}
                   maxLength={64}
-                  placeholder='不填时默认显示交易员ID'
+                  placeholder={t('label.placeholder')}
                 />
               </div>
 
               {/* 跟单模式 */}
               <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.taskFollowMode)}>
-                <label className='mb-2 block text-sm font-medium'>跟单模式</label>
+                <label className='mb-2 block text-sm font-medium'>{t('followMode.label')}</label>
                 <div className='flex items-center gap-4'>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
@@ -1013,17 +1074,14 @@ export function CopyTaskConfigSheet({
                       }}
                     />
                     <div className='flex items-center gap-1'>
-                      <span className='text-sm'>固定比例</span>
+                      <span className='text-sm'>{t('followMode.fixedRatio')}</span>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <CircleHelp className='text-muted-foreground h-4 w-4' />
                           </TooltipTrigger>
                           <TooltipContent className='max-w-[240px]'>
-                            <p>
-                              跟单比例 = 跟单投资额 / 对标交易员本金 ×
-                              倍数。跟单投资额只用于计算交易比例，不代表实际使用资金上限。
-                            </p>
+                            <p>{t('followMode.tooltip')}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -1037,18 +1095,14 @@ export function CopyTaskConfigSheet({
                 <div className='bg-muted/20 rounded-md border p-3'>
                   <div className='flex items-center justify-between'>
                     <div className='flex items-center gap-1'>
-                      <div className='text-sm font-medium'>倍投模式 (可选)</div>
+                      <div className='text-sm font-medium'>{t('multiple.title')}</div>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <CircleHelp className='text-muted-foreground h-4 w-4' />
                           </TooltipTrigger>
                           <TooltipContent className='max-w-[240px]'>
-                            <p>
-                              在基础的跟单比例上，额外再乘以此倍数。例如：如果原本按比例应开仓 10 USDT，设置倍投为 2
-                              后，实际开仓将变为 20
-                              USDT。只适用于经常小金额高杠杆交易的交易员，避免因为交易员开仓量过低，导致无法跟单。
-                            </p>
+                            <p>{t('multiple.tooltip')}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -1060,18 +1114,16 @@ export function CopyTaskConfigSheet({
                   </div>
                   {toggles.multiple_visible && (
                     <div className='animate-in fade-in mt-4 space-y-2'>
-                      <label className='mb-2 block text-sm font-medium'>加倍倍数 (默认为1)</label>
+                      <label className='mb-2 block text-sm font-medium'>{t('multiple.label')}</label>
                       <Input
                         type='number'
                         min='0.01'
                         step='0.1'
                         value={toggles.multiple}
                         onChange={e => updateToggle('multiple', e.target.value)}
-                        placeholder='eg. 0.5、1.5'
+                        placeholder={t('multiple.placeholder')}
                       />
-                      <p className='mt-1 text-xs font-medium text-red-500'>
-                        如果跟单的交易员经常满仓交易，请不要使用此功能！
-                      </p>
+                      <p className='mt-1 text-xs font-medium text-red-500'>{t('multiple.warning')}</p>
                     </div>
                   )}
                 </div>
@@ -1080,31 +1132,31 @@ export function CopyTaskConfigSheet({
               {/* 本金与投资额 */}
               <div className='space-y-4'>
                 <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.taskBenchmark)}>
-                  <label className='mb-2 block text-sm font-medium'>交易员本金对标 (USDT)</label>
+                  <label className='mb-2 block text-sm font-medium'>{t('benchMark.label')}</label>
                   <div className='flex gap-2'>
                     <Input
                       value={formData.benchMark}
                       onChange={e => updateForm('benchMark', e.target.value)}
-                      placeholder='>100'
+                      placeholder={t('benchMark.placeholder')}
                     />
                     <Button variant='secondary' className='px-3' onClick={() => fetchBenchMark()}>
-                      自动获取
+                      {t('benchMark.autoFetch')}
                     </Button>
                   </div>
                   {initialTaskData && (
                     <div className='rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-relaxed text-amber-800 dark:border-amber-800/50 dark:bg-amber-950/30 dark:text-amber-200'>
-                      若该 API 账户仍有持仓，请保留原任务本金，勿重新获取，以免跟单比例变化，平仓后可能留有底仓。
+                      {t('benchMark.keepHint')}
                     </div>
                   )}
                 </div>
 
                 {formData.follow_type === '2' && (
                   <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.taskInvestment)}>
-                    <label className='mb-2 block text-sm font-medium'>投资额 (USDT)</label>
+                    <label className='mb-2 block text-sm font-medium'>{t('investment.label')}</label>
                     <Input
                       value={formData.investment}
                       onChange={e => updateForm('investment', e.target.value)}
-                      placeholder='>100'
+                      placeholder={t('investment.placeholder')}
                     />
                   </div>
                 )}
@@ -1116,15 +1168,13 @@ export function CopyTaskConfigSheet({
                   >
                     {followRatioPreview.ready ? (
                       <>
-                        <div className='text-muted-foreground mb-1'>跟单比例预览</div>
+                        <div className='text-muted-foreground mb-1'>{t('ratioPreview.title')}</div>
                         <div className='text-foreground font-medium'>{followRatioPreview.formula}</div>
                         {!toggles.multiple_visible && (
-                          <div className='text-muted-foreground mt-1'>倍投模式未开启，倍数按 1 计算</div>
+                          <div className='text-muted-foreground mt-1'>{t('ratioPreview.multipleOffHint')}</div>
                         )}
                         {followRatioPreview.lowRatioWarning && (
-                          <div className='mt-2 font-medium text-amber-600'>
-                            当前比例低于 10%，可能出现开仓量过低，导致无法开仓的情况；平仓时将按交易所最低交易量执行。
-                          </div>
+                          <div className='mt-2 font-medium text-amber-600'>{t('ratioPreview.lowRatioWarning')}</div>
                         )}
                       </>
                     ) : (
@@ -1136,7 +1186,7 @@ export function CopyTaskConfigSheet({
 
               {/* 杠杆模式 */}
               <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.taskLeverage)}>
-                <label className='mb-2 block text-sm font-medium'>杠杆模式</label>
+                <label className='mb-2 block text-sm font-medium'>{t('leverage.label')}</label>
                 <div className='flex items-center gap-4'>
                   {!hideFollowLeverage && (
                     <label className='flex cursor-pointer items-center gap-2'>
@@ -1146,7 +1196,7 @@ export function CopyTaskConfigSheet({
                           if (checked) updateForm('lever_set', 1)
                         }}
                       />
-                      <span className='text-sm'>跟随交易员</span>
+                      <span className='text-sm'>{t('leverage.follow')}</span>
                     </label>
                   )}
                   <label className='flex cursor-pointer items-center gap-2'>
@@ -1157,16 +1207,14 @@ export function CopyTaskConfigSheet({
                       }}
                     />
                     <div className='flex items-center gap-1'>
-                      <span className='text-sm'>自定义杠杆</span>
+                      <span className='text-sm'>{t('leverage.custom')}</span>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <CircleHelp className='text-muted-foreground h-4 w-4' />
                           </TooltipTrigger>
                           <TooltipContent className='max-w-[240px]'>
-                            <p>
-                              交易所对新账号有风控保护，有时候无法跟随交易员开同样的高杠杆。调整杠杆不会影响实际的交易量，只会影响保证金占用。固定使用您自己设置的杠杆倍数进行跟单，不跟随交易员的杠杆变化。
-                            </p>
+                            <p>{t('leverage.customTooltip')}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -1177,21 +1225,21 @@ export function CopyTaskConfigSheet({
 
               {formData.lever_set === 2 && (
                 <div className='animate-in fade-in space-y-2'>
-                  <label className='mb-2 block text-sm font-medium'>杠杆数值</label>
+                  <label className='mb-2 block text-sm font-medium'>{t('leverage.valueLabel')}</label>
                   <Input
                     type='number'
                     min='1'
                     max='75'
                     value={formData.leverage}
                     onChange={e => updateForm('leverage', e.target.value)}
-                    placeholder='1至75整数（建议10到20，以免有的币种不支持高杠杆）'
+                    placeholder={t('leverage.valuePlaceholder')}
                   />
                 </div>
               )}
 
               {/* 保证金模式 */}
               <div className='space-y-2'>
-                <label className='mb-2 block text-sm font-medium'>保证金模式</label>
+                <label className='mb-2 block text-sm font-medium'>{t('marginMode.label')}</label>
                 <div className='flex flex-wrap gap-3'>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
@@ -1200,7 +1248,7 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('margin_mode_set', 0)
                       }}
                     />
-                    <span className='text-sm'>跟随交易员</span>
+                    <span className='text-sm'>{t('marginMode.follow')}</span>
                   </label>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
@@ -1209,7 +1257,7 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('margin_mode_set', 1)
                       }}
                     />
-                    <span className='text-sm'>全仓</span>
+                    <span className='text-sm'>{t('marginMode.cross')}</span>
                   </label>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
@@ -1218,15 +1266,15 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('margin_mode_set', 2)
                       }}
                     />
-                    <span className='text-sm'>逐仓</span>
+                    <span className='text-sm'>{t('marginMode.isolated')}</span>
                   </label>
                 </div>
-                <p className='text-muted-foreground text-xs'>选择全仓或逐仓后，会覆盖交易员原始保证金模式。</p>
+                <p className='text-muted-foreground text-xs'>{t('marginMode.hint')}</p>
               </div>
 
               {/* 开仓模式 */}
               <div className='space-y-2'>
-                <label className='mb-2 block text-sm font-medium'>开仓模式</label>
+                <label className='mb-2 block text-sm font-medium'>{t('openType.label')}</label>
                 <div className='flex items-center gap-4'>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
@@ -1235,7 +1283,7 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('first_open_type', 1)
                       }}
                     />
-                    <span className='text-sm'>当前市价</span>
+                    <span className='text-sm'>{t('openType.market')}</span>
                   </label>
                   <label
                     className={`flex items-center gap-2 ${disableIntervalOpen ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
@@ -1248,16 +1296,14 @@ export function CopyTaskConfigSheet({
                       }}
                     />
                     <div className='flex items-center gap-1'>
-                      <span className='text-sm'>区间委托</span>
+                      <span className='text-sm'>{t('openType.interval')}</span>
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <CircleHelp className='text-muted-foreground h-4 w-4' />
                           </TooltipTrigger>
                           <TooltipContent className='max-w-[240px]'>
-                            <p>
-                              当交易员收益率在设定区间内时才会开仓，避免在高位或低位盲目追单，有效控制首单滑点和建仓风险。不论交易员在此之前补仓多少次，当条件达成时会一次性一起按比例复制总仓位。区间限价开仓只在交易员新开仓时生效，加仓时不生效。
-                            </p>
+                            <p>{t('openType.intervalTooltip')}</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
@@ -1268,19 +1314,19 @@ export function CopyTaskConfigSheet({
 
               {formData.first_open_type === 2 && (
                 <div className='animate-in fade-in space-y-2'>
-                  <label className='mb-2 block text-sm font-medium'>交易员收益区间 (%)</label>
+                  <label className='mb-2 block text-sm font-medium'>{t('openType.rangeLabel')}</label>
                   <Input
                     value={formData.uplRatio}
                     onChange={e => updateForm('uplRatio', e.target.value)}
-                    placeholder='eg. 5'
+                    placeholder={t('openType.rangePlaceholder')}
                   />
-                  <p className='text-muted-foreground text-xs'>交易员收益率小于5%时开仓</p>
+                  <p className='text-muted-foreground text-xs'>{t('openType.rangeHint')}</p>
                 </div>
               )}
 
               {/* 首单交易设置 */}
               <div className='space-y-2'>
-                <label className='mb-2 block text-sm font-medium'>首单交易设置</label>
+                <label className='mb-2 block text-sm font-medium'>{t('firstOrder.label')}</label>
                 <div className='flex flex-col gap-2'>
                   <label className='flex cursor-pointer items-center gap-2'>
                     <Checkbox
@@ -1289,7 +1335,7 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('first_order_set', 1)
                       }}
                     />
-                    <span className='text-sm'>仅复制新开仓</span>
+                    <span className='text-sm'>{t('firstOrder.newOnly')}</span>
                   </label>
                   <label
                     className={`flex items-center gap-2 ${!allCopyApi ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
@@ -1301,7 +1347,7 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('first_order_set', 2)
                       }}
                     />
-                    <span className='text-sm'>复制当前持仓</span>
+                    <span className='text-sm'>{t('firstOrder.copyCurrent')}</span>
                   </label>
                   <label
                     className={`flex items-center gap-2 ${!allCopyApi ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
@@ -1313,7 +1359,7 @@ export function CopyTaskConfigSheet({
                         if (checked) updateForm('first_order_set', 3)
                       }}
                     />
-                    <span className='text-sm'>仅复制当前亏损仓位</span>
+                    <span className='text-sm'>{t('firstOrder.copyLossOnly')}</span>
                   </label>
                 </div>
               </div>
@@ -1321,7 +1367,7 @@ export function CopyTaskConfigSheet({
 
             <TabsContent value='advanced' className='mt-0 space-y-4'>
               <div className='flex items-center justify-between rounded-md border p-3'>
-                <div className='text-sm font-medium'>反向跟单</div>
+                <div className='text-sm font-medium'>{t('advanced.reverse')}</div>
                 <Switch
                   checked={toggles.posSide_set_visible}
                   onCheckedChange={(v: boolean) => updateToggle('posSide_set_visible', v)}
@@ -1329,7 +1375,7 @@ export function CopyTaskConfigSheet({
               </div>
 
               <div className='flex items-center justify-between rounded-md border p-3'>
-                <div className='text-sm font-medium'>极速跟单</div>
+                <div className='text-sm font-medium'>{t('advanced.fastMode')}</div>
                 <Switch
                   checked={toggles.fast_mode_visible}
                   onCheckedChange={(v: boolean) => updateToggle('fast_mode_visible', v)}
@@ -1338,7 +1384,7 @@ export function CopyTaskConfigSheet({
 
               <div className='rounded-md border p-3'>
                 <div className='flex items-center justify-between'>
-                  <div className='text-sm font-medium'>交易止盈止损</div>
+                  <div className='text-sm font-medium'>{t('advanced.tradeTrigger.title')}</div>
                   <Switch
                     checked={toggles.trade_trigger_visible}
                     onCheckedChange={(v: boolean) => updateToggle('trade_trigger_visible', v)}
@@ -1347,19 +1393,19 @@ export function CopyTaskConfigSheet({
                 {toggles.trade_trigger_visible && (
                   <div className='animate-in fade-in mt-4 grid grid-cols-2 gap-4'>
                     <div className='space-y-2'>
-                      <label className='text-sm font-medium'>止盈百分比</label>
+                      <label className='text-sm font-medium'>{t('advanced.tradeTrigger.tpLabel')}</label>
                       <Input
                         value={toggles.tp_trigger_px}
                         onChange={e => updateToggle('tp_trigger_px', e.target.value)}
-                        placeholder='20'
+                        placeholder={t('advanced.tradeTrigger.placeholder')}
                       />
                     </div>
                     <div className='space-y-2'>
-                      <label className='text-sm font-medium'>止损百分比</label>
+                      <label className='text-sm font-medium'>{t('advanced.tradeTrigger.slLabel')}</label>
                       <Input
                         value={toggles.sl_trigger_px}
                         onChange={e => updateToggle('sl_trigger_px', e.target.value)}
-                        placeholder='20'
+                        placeholder={t('advanced.tradeTrigger.placeholder')}
                       />
                     </div>
                   </div>
@@ -1368,7 +1414,7 @@ export function CopyTaskConfigSheet({
 
               <div className='rounded-md border p-3'>
                 <div className='flex items-center justify-between'>
-                  <div className='text-sm font-medium'>多空开仓策略</div>
+                  <div className='text-sm font-medium'>{t('advanced.posStrategy.title')}</div>
                   <Switch
                     checked={toggles.pos_visible}
                     onCheckedChange={(v: boolean) => updateToggle('pos_visible', v)}
@@ -1383,7 +1429,7 @@ export function CopyTaskConfigSheet({
                           if (checked) updateToggle('pos_value', 'long')
                         }}
                       />
-                      <span className='text-sm'>只跟多单</span>
+                      <span className='text-sm'>{t('advanced.posStrategy.long')}</span>
                     </label>
                     <label className='flex cursor-pointer items-center gap-2'>
                       <Checkbox
@@ -1392,7 +1438,7 @@ export function CopyTaskConfigSheet({
                           if (checked) updateToggle('pos_value', 'short')
                         }}
                       />
-                      <span className='text-sm'>只跟空单</span>
+                      <span className='text-sm'>{t('advanced.posStrategy.short')}</span>
                     </label>
                   </div>
                 )}
@@ -1400,7 +1446,7 @@ export function CopyTaskConfigSheet({
 
               <div className='rounded-md border p-3'>
                 <div className='flex items-center justify-between'>
-                  <div className='text-sm font-medium'>24h排行榜跟单</div>
+                  <div className='text-sm font-medium'>{t('advanced.vol24h.title')}</div>
                   <Switch
                     checked={toggles.vol24h_visible}
                     onCheckedChange={(v: boolean) => updateToggle('vol24h_visible', v)}
@@ -1408,11 +1454,11 @@ export function CopyTaskConfigSheet({
                 </div>
                 {toggles.vol24h_visible && (
                   <div className='animate-in fade-in mt-4 space-y-2'>
-                    <label className='text-sm font-medium'>榜单排名</label>
+                    <label className='text-sm font-medium'>{t('advanced.vol24h.rankLabel')}</label>
                     <Input
                       value={toggles.vol24h_num}
                       onChange={e => updateToggle('vol24h_num', e.target.value)}
-                      placeholder='eg. 20（只跟前20）'
+                      placeholder={t('advanced.vol24h.placeholder')}
                     />
                   </div>
                 )}
@@ -1420,7 +1466,7 @@ export function CopyTaskConfigSheet({
 
               <div className='rounded-md border p-3'>
                 <div className='flex items-center justify-between'>
-                  <div className='text-sm font-medium'>交易员本金监控</div>
+                  <div className='text-sm font-medium'>{t('advanced.balanceMonitor.title')}</div>
                   <Switch
                     checked={toggles.balance_monitor_visible}
                     onCheckedChange={(v: boolean) => updateToggle('balance_monitor_visible', v)}
@@ -1428,11 +1474,11 @@ export function CopyTaskConfigSheet({
                 </div>
                 {toggles.balance_monitor_visible && (
                   <div className='animate-in fade-in mt-4 space-y-2'>
-                    <label className='text-sm font-medium'>最低本金金额</label>
+                    <label className='text-sm font-medium'>{t('advanced.balanceMonitor.valueLabel')}</label>
                     <Input
                       value={toggles.balance_monitor_value}
                       onChange={e => updateToggle('balance_monitor_value', e.target.value)}
-                      placeholder='eg. 2000'
+                      placeholder={t('advanced.balanceMonitor.placeholder')}
                     />
                   </div>
                 )}
@@ -1440,7 +1486,7 @@ export function CopyTaskConfigSheet({
 
               <div className='rounded-md border p-3'>
                 <div className='flex items-center justify-between'>
-                  <div className='text-sm font-medium'>跟单币种白名单</div>
+                  <div className='text-sm font-medium'>{t('advanced.whiteList.title')}</div>
                   <Switch
                     checked={toggles.white_list_visible}
                     onCheckedChange={(v: boolean) => updateToggle('white_list_visible', v)}
@@ -1448,11 +1494,11 @@ export function CopyTaskConfigSheet({
                 </div>
                 {toggles.white_list_visible && (
                   <div className='animate-in fade-in mt-4 space-y-2'>
-                    <label className='text-sm font-medium'>输入允许跟单的币种</label>
+                    <label className='text-sm font-medium'>{t('advanced.whiteList.inputLabel')}</label>
                     <TagInput
                       tags={toggles.white_list}
                       onChange={handleWhiteListChange}
-                      placeholder='eg. BTC'
+                      placeholder={`${t('advanced.whiteList.placeholder')}${t('tagInput.hint')}`}
                     />
                   </div>
                 )}
@@ -1460,7 +1506,7 @@ export function CopyTaskConfigSheet({
 
               <div className='rounded-md border p-3'>
                 <div className='flex items-center justify-between'>
-                  <div className='text-sm font-medium'>跟单币种黑名单</div>
+                  <div className='text-sm font-medium'>{t('advanced.blackList.title')}</div>
                   <Switch
                     checked={toggles.black_list_visible}
                     onCheckedChange={(val: boolean) => updateToggle('black_list_visible', val)}
@@ -1468,11 +1514,11 @@ export function CopyTaskConfigSheet({
                 </div>
                 {toggles.black_list_visible && (
                   <div className='animate-in fade-in mt-4 space-y-2'>
-                    <label className='text-sm font-medium'>输入禁止跟单的币种</label>
+                    <label className='text-sm font-medium'>{t('advanced.blackList.inputLabel')}</label>
                     <TagInput
                       tags={toggles.black_list}
                       onChange={handleBlackListChange}
-                      placeholder='eg. DOGE'
+                      placeholder={`${t('advanced.blackList.placeholder')}${t('tagInput.hint')}`}
                     />
                   </div>
                 )}
@@ -1495,13 +1541,17 @@ export function CopyTaskConfigSheet({
                   setSummaryDetailOpen(prev => !prev)
                 }}
               >
-                {summaryDetailOpen ? '收起' : '查看详情'}
+                {summaryDetailOpen ? t('summary.collapse') : t('summary.viewDetail')}
               </button>
             </div>
             {summaryDetailOpen && (
               <div className='bg-background absolute right-0 bottom-full left-0 z-50 mb-2 max-h-72 overflow-y-auto rounded-md border px-3 py-3 shadow-lg'>
-                <div className='mb-2 text-sm font-medium'>配置确认</div>
-                <ConfigSummaryDetailList items={configSummaryItems} onJumpToItem={jumpToSummaryItem} />
+                <div className='mb-2 text-sm font-medium'>{t('summary.confirmTitle')}</div>
+                <ConfigSummaryDetailList
+                  items={configSummaryItems}
+                  onJumpToItem={jumpToSummaryItem}
+                  modifyLabel={t('summary.modify')}
+                />
               </div>
             )}
           </div>
@@ -1513,7 +1563,7 @@ export function CopyTaskConfigSheet({
               className='mt-0.5'
             />
             <span className='text-muted-foreground text-sm leading-snug'>
-              我已阅读并同意
+              {t('protocolAgree.prefix')}
               <button
                 type='button'
                 className='text-primary hover:underline'
@@ -1523,13 +1573,13 @@ export function CopyTaskConfigSheet({
                   setProtocolDialogOpen(true)
                 }}
               >
-                《跟单交易协议》
+                {t('protocolAgree.linkText')}
               </button>
             </span>
           </label>
           <div className='flex w-full justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.taskSubmit)}>
             <Button variant='outline' onClick={onClose} disabled={isLoading}>
-              取消
+              {t('footer.cancel')}
             </Button>
             <Button
               onClick={handleSubmit}
@@ -1541,7 +1591,7 @@ export function CopyTaskConfigSheet({
                 (formData.lever_set === 2 && !formData.leverage)
               }
             >
-              {isLoading ? '提交中...' : '立即跟单'}
+              {isLoading ? t('footer.submitting') : t('footer.submit')}
             </Button>
           </div>
         </SheetFooter>

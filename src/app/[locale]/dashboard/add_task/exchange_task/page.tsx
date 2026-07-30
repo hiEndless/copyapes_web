@@ -5,6 +5,7 @@ import * as React from 'react'
 import { Info, UserCheck } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
+import { useTranslations } from 'next-intl'
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -14,22 +15,20 @@ import { Button } from '@/components/ui/button'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { CopyTaskConfigSheet } from '../_components/copy-task-config-sheet'
-import {
-  INVALID_TRADER_URL,
-  SELECT_EXCHANGE_FIRST,
-  TRADER_INPUT_PLACEHOLDER,
-  isInvalidUniqueName,
-  parseTraderUrl,
-} from '../_lib/trader-url'
+import { isInvalidUniqueName, parseTraderUrl } from '../_lib/trader-url'
 
 import { cn } from '@/lib/utils'
 
 export default function ExchangeTaskPage() {
+  const t = useTranslations('DashboardExchangeTask')
   const [exchange, setExchange] = React.useState<'okx' | 'binance' | ''>('okx')
   const [traderUrl, setTraderUrl] = React.useState('')
   const [uniqueName, setUniqueName] = React.useState('')
   const [traderType, setTraderType] = React.useState('')
   const [isConfigOpen, setIsConfigOpen] = React.useState(false)
+
+  const invalidTraderUrlText = t('errors.invalidUrl')
+  const selectExchangeFirstText = t('errors.selectExchangeFirst')
 
   const handleParseUrl = () => {
     if (!traderUrl.trim()) {
@@ -39,14 +38,14 @@ export default function ExchangeTaskPage() {
     }
 
     if (!exchange) {
-      setUniqueName(SELECT_EXCHANGE_FIRST)
+      setUniqueName(selectExchangeFirstText)
 
       return
     }
 
     const parsed = parseTraderUrl(traderUrl, exchange)
 
-    setUniqueName(parsed ?? INVALID_TRADER_URL)
+    setUniqueName(parsed ?? invalidTraderUrlText)
   }
 
   const handleExchangeChange = (value: 'okx' | 'binance') => {
@@ -67,11 +66,9 @@ export default function ExchangeTaskPage() {
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
                 <h2 className='flex items-center gap-2 text-xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-xl md:text-xl'>
                   <UserCheck className='h-6 w-6' />
-                  交易所自选跟单
+                  {t('hero.title')}
                 </h2>
-                <p className='mb-3 text-sm text-white/70'>
-                  只要可以看到交易持仓就可以进行跟单！跟单原版交易所信号最稳定，速度最快！
-                </p>
+                <p className='mb-3 text-sm text-white/70'>{t('hero.subtitle')}</p>
               </div>
               <div className='flex items-center justify-center pb-6 sm:my-auto sm:min-w-56 sm:pb-0'>
                 {/* Logo 云布局：移动端一行四列，大屏两行两列错位 */}
@@ -135,13 +132,13 @@ export default function ExchangeTaskPage() {
         <MotionPreset fade blur slide={{ direction: 'down' }} delay={0.8} transition={{ duration: 0.5 }}>
           <Card>
             <CardHeader>
-              <CardTitle>创建交易所跟单任务</CardTitle>
-              <CardDescription>配置您的跟单参数，以开始监听并复制目标交易员的策略。</CardDescription>
+              <CardTitle>{t('card.title')}</CardTitle>
+              <CardDescription>{t('card.description')}</CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
               {/* 1. 选择目标交易所 */}
               <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.exchangeTaskExchange)}>
-                <Label>选择目标交易所</Label>
+                <Label>{t('form.selectExchange')}</Label>
                 <div className='grid grid-cols-2 gap-3 sm:gap-4'>
                   <button
                     type='button'
@@ -195,16 +192,18 @@ export default function ExchangeTaskPage() {
                 <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
                   <Info className='mt-0.5 h-4 w-4 shrink-0' />
                   <div className='flex flex-col gap-1'>
-                    <p className='font-semibold'>欧易交易所延迟提示：</p>
+                    <p className='font-semibold'>{t('delayTips.okx.title')}</p>
                     <p className='mb-2 text-xs text-blue-700/80 dark:text-blue-300/80'>
-                      此延迟为交易所官方设置，非跟单工具所导致！
+                      {t('delayTips.okx.notice')}
                     </p>
                     <ul className='mt-1 list-inside list-disc space-y-1 text-xs'>
                       <li>
-                        <strong>跟单公开带单：</strong>开仓5分钟延迟，加仓、减仓、平仓无延迟
+                        <strong>{t('delayTips.okx.publicLabel')}</strong>
+                        {t('delayTips.okx.publicDesc')}
                       </li>
                       <li>
-                        <strong>跟单个人交易：</strong>推荐！0延迟！
+                        <strong>{t('delayTips.okx.personalLabel')}</strong>
+                        {t('delayTips.okx.personalDesc')}
                       </li>
                     </ul>
                   </div>
@@ -214,16 +213,18 @@ export default function ExchangeTaskPage() {
                 <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
                   <Info className='mt-0.5 h-4 w-4 shrink-0' />
                   <div className='flex flex-col gap-1'>
-                    <p className='font-semibold'>币安交易所延迟提示：</p>
+                    <p className='font-semibold'>{t('delayTips.binance.title')}</p>
                     <p className='mb-2 text-xs text-blue-700/80 dark:text-blue-300/80'>
-                      此延迟为交易所官方设置，非跟单工具所导致！
+                      {t('delayTips.binance.notice')}
                     </p>
                     <ul className='mt-1 list-inside list-disc space-y-1 text-xs'>
                       <li>
-                        <strong>跟单公开实盘：</strong>推荐！0延迟！
+                        <strong>{t('delayTips.binance.publicLabel')}</strong>
+                        {t('delayTips.binance.publicDesc')}
                       </li>
                       <li>
-                        <strong>跟单隐藏实盘：</strong>开仓、加仓、减仓、平仓均有2分钟延迟
+                        <strong>{t('delayTips.binance.hiddenLabel')}</strong>
+                        {t('delayTips.binance.hiddenDesc')}
                       </li>
                     </ul>
                   </div>
@@ -234,13 +235,11 @@ export default function ExchangeTaskPage() {
               <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.exchangeTaskTrader)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
-                  交易员主页链接或 ID
+                  {t('form.traderLabel')}
                 </Label>
                 <div className='flex gap-2'>
                   <Input
-                    placeholder={
-                      exchange ? TRADER_INPUT_PLACEHOLDER[exchange] : '请先选择交易所，再输入链接或 ID'
-                    }
+                    placeholder={exchange ? t('form.traderInputPlaceholder') : t('form.traderInputPlaceholderNoExchange')}
                     value={traderUrl}
                     onChange={e => setTraderUrl(e.target.value)}
                   />
@@ -249,7 +248,7 @@ export default function ExchangeTaskPage() {
                     className='dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80 dark:border-border dark:border'
                     variant='secondary'
                   >
-                    解析
+                    {t('form.parse')}
                   </Button>
                 </div>
               </div>
@@ -259,7 +258,7 @@ export default function ExchangeTaskPage() {
                 <div className='space-y-2'>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
-                    交易员 （ UID 或 带单项目 ID）
+                    {t('form.uniqueNameLabel')}
                   </Label>
                   <Input value={uniqueName} readOnly className='bg-muted' />
                 </div>
@@ -270,22 +269,22 @@ export default function ExchangeTaskPage() {
                 <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.exchangeTaskType)}>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
-                    交易员类型
+                    {t('form.traderTypeLabel')}
                   </Label>
                   <Select onValueChange={setTraderType} value={traderType}>
                     <SelectTrigger className='w-full'>
-                      <SelectValue placeholder='请选择交易员类型' />
+                      <SelectValue placeholder={t('form.traderTypePlaceholder')} />
                     </SelectTrigger>
                     <SelectContent>
                       {exchange === 'okx' ? (
                         <>
-                          <SelectItem value='1'>合约带单</SelectItem>
-                          <SelectItem value='2'>个人概况</SelectItem>
+                          <SelectItem value='1'>{t('traderType.okx.contract')}</SelectItem>
+                          <SelectItem value='2'>{t('traderType.okx.personal')}</SelectItem>
                         </>
                       ) : (
                         <>
-                          <SelectItem value='1'>公开带单</SelectItem>
-                          <SelectItem value='2'>隐藏带单</SelectItem>
+                          <SelectItem value='1'>{t('traderType.binance.public')}</SelectItem>
+                          <SelectItem value='2'>{t('traderType.binance.hidden')}</SelectItem>
                         </>
                       )}
                     </SelectContent>
@@ -295,10 +294,14 @@ export default function ExchangeTaskPage() {
             </CardContent>
             <CardFooter className='flex justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.exchangeTaskSubmit)}>
               <Button
-                disabled={!exchange || isInvalidUniqueName(uniqueName) || !traderType}
+                disabled={
+                  !exchange ||
+                  isInvalidUniqueName(uniqueName, [invalidTraderUrlText, selectExchangeFirstText]) ||
+                  !traderType
+                }
                 onClick={() => setIsConfigOpen(true)}
               >
-                创建跟单
+                {t('form.submit')}
               </Button>
             </CardFooter>
           </Card>

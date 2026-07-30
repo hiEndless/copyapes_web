@@ -17,18 +17,29 @@ export function isDefaultFollowMultiple(value: unknown) {
   return num === 1
 }
 
+export type FollowRatioPreviewHints = {
+  empty?: string
+  investmentInvalid?: string
+  benchMarkInvalid?: string
+  multipleInvalid?: string
+}
+
 export function buildFollowRatioPreview(
   investmentRaw: string,
   benchMarkRaw: string,
   multipleVisible: boolean,
   multipleRaw: string,
-  label = '跟单比例'
+  label = '跟单比例',
+  hints?: FollowRatioPreviewHints
 ): FollowRatioPreview {
   const investmentText = investmentRaw.trim()
   const benchMarkText = benchMarkRaw.trim()
 
   if (!investmentText || !benchMarkText) {
-    return { ready: false, hint: '填写本金与投资额后，将在此显示跟单比例计算过程' }
+    return {
+      ready: false,
+      hint: hints?.empty || '填写本金与投资额后，将在此显示跟单比例计算过程'
+    }
   }
 
   const investment = Number(investmentText)
@@ -36,13 +47,13 @@ export function buildFollowRatioPreview(
   const multiple = multipleVisible ? Number(multipleRaw) : 1
 
   if (!Number.isFinite(investment) || investment <= 0) {
-    return { ready: false, hint: '投资额必须大于 0' }
+    return { ready: false, hint: hints?.investmentInvalid || '投资额必须大于 0' }
   }
   if (!Number.isFinite(benchMark) || benchMark <= 0) {
-    return { ready: false, hint: '交易员本金必须大于 0' }
+    return { ready: false, hint: hints?.benchMarkInvalid || '交易员本金必须大于 0' }
   }
   if (!Number.isFinite(multiple) || multiple <= 0) {
-    return { ready: false, hint: '倍投倍数必须大于 0' }
+    return { ready: false, hint: hints?.multipleInvalid || '倍投倍数必须大于 0' }
   }
 
   const ratioPercent = (investment / benchMark) * multiple * 100

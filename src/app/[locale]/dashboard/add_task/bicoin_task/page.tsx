@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { Info, Search, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { toast } from 'sonner'
 
@@ -60,7 +61,7 @@ const downloadPlatforms = [
           data-v-10649737=''
           fillRule='evenodd'
           clipRule='evenodd'
-          d='M18.447 4.10581C18.684 4.22446 18.8642 4.43234 18.948 4.68379C19.0319 4.93524 19.0124 5.20968 18.894 5.44681L17.72 7.79681C19.0421 8.71754 20.1219 9.94444 20.8671 11.3728C21.6124 12.8012 22.0011 14.3887 22 15.9998V16.9998C22 17.5302 21.7893 18.0389 21.4142 18.414C21.0391 18.7891 20.5304 18.9998 20 18.9998H4C3.46957 18.9998 2.96086 18.7891 2.58579 18.414C2.21072 18.0389 2 17.5302 2 16.9998V15.9998C1.99876 14.3885 2.38736 12.8008 3.13264 11.3723C3.87792 9.9437 4.95776 8.71664 6.28 7.79581L5.106 5.44681C5.04244 5.32893 5.0032 5.19949 4.99061 5.06616C4.97802 4.93283 4.99234 4.79833 5.03273 4.67064C5.07311 4.54295 5.13873 4.42467 5.22569 4.32282C5.31265 4.22098 5.41919 4.13763 5.53897 4.07774C5.65875 4.01785 5.78935 3.98263 5.923 3.97417C6.05666 3.9657 6.19065 3.98418 6.31703 4.02848C6.44341 4.07279 6.55961 4.14204 6.65872 4.2321C6.75783 4.32217 6.83784 4.43123 6.894 4.55281L8.028 6.81981C9.28181 6.27714 10.6338 5.99803 12 5.99981C13.411 5.99981 14.755 6.29181 15.972 6.81981L17.106 4.55281C17.2247 4.3158 17.4325 4.13558 17.684 4.05177C17.9354 3.96795 18.2099 3.98739 18.447 4.10581ZM7.5 11.9998C7.10218 11.9998 6.72065 12.1578 6.43934 12.4391C6.15804 12.7205 6 13.102 6 13.4998C6 13.8976 6.15804 14.2792 6.43934 14.5605C6.72065 14.8418 7.10218 14.9998 7.5 14.9998C7.89783 14.9998 8.27936 14.8418 8.56066 14.5605C8.84197 14.2792 9 13.8976 9 13.4998C9 13.102 8.84197 12.7205 8.56066 12.4391C8.27936 12.1578 7.89783 11.9998 7.5 11.9998ZM16.5 11.9998C16.1022 11.9998 15.7206 12.1578 15.4393 12.4391C15.158 12.7205 15 13.102 15 13.4998C15 13.8976 15.158 14.2792 15.4393 14.5605C15.7206 14.8418 16.1022 14.9998 16.5 14.9998C16.8978 14.9998 17.2794 14.8418 17.5607 14.5605C17.842 14.2792 18 13.8976 18 13.4998C18 13.102 17.842 12.7205 17.5607 12.4391C17.2794 12.1578 16.8978 11.9998 16.5 11.9998Z'
+          d='M18.447 4.10581C18.684 4.22446 18.8642 4.43234 18.948 4.68379C19.0319 4.93524 19.0124 5.20968 18.894 5.44681L17.72 7.79681C19.0421 8.71754 20.1219 9.94444 20.8671 11.3728C21.6124 12.8012 22.0011 14.3887 22 15.9998V16.9998C22 17.5302 21.7893 18.0389 21.4142 18.414C21.0391 18.7891 20.5304 18.9998 20 18.9998H4C3.46957 18.9998 2.96086 18.7891 2.58579 18.414C2.21072 18.0389 2 17.5302 2 16.9998C1.99876 14.3885 2.38736 12.8008 3.13264 11.3723C3.87792 9.9437 4.95776 8.71664 6.28 7.79581L5.106 5.44681C5.04244 5.32893 5.0032 5.19949 4.99061 5.06616C4.97802 4.93283 4.99234 4.79833 5.03273 4.67064C5.07311 4.54295 5.13873 4.42467 5.22569 4.32282C5.31265 4.22098 5.41919 4.13763 5.53897 4.07774C5.65875 4.01785 5.78935 3.98263 5.923 3.97417C6.05666 3.9657 6.19065 3.98418 6.31703 4.02848C6.44341 4.07279 6.55961 4.14204 6.65872 4.2321C6.75783 4.32217 6.83784 4.43123 6.894 4.55281L8.028 6.81981C9.28181 6.27714 10.6338 5.99803 12 5.99981C13.411 5.99981 14.755 6.29181 15.972 6.81981L17.106 4.55281C17.2247 4.3158 17.4325 4.13558 17.684 4.05177C17.9354 3.96795 18.2099 3.98739 18.447 4.10581ZM7.5 11.9998C7.10218 11.9998 6.72065 12.1578 6.43934 12.4391C6.15804 12.7205 6 13.102 6 13.4998C6 13.8976 6.15804 14.2792 6.43934 14.5605C6.72065 14.8418 7.10218 14.9998 7.5 14.9998C7.89783 14.9998 8.27936 14.8418 8.56066 14.5605C8.84197 14.2792 9 13.8976 9 13.4998C9 13.102 8.84197 12.7205 8.56066 12.4391C8.27936 12.1578 7.89783 11.9998 7.5 11.9998ZM16.5 11.9998C16.1022 11.9998 15.7206 12.1578 15.4393 12.4391C15.158 12.7205 15 13.102 15 13.4998C15 13.8976 15.158 14.2792 15.4393 14.5605C15.7206 14.8418 16.1022 14.9998 16.5 14.9998C16.8978 14.9998 17.2794 14.8418 17.5607 14.5605C17.842 14.2792 18 13.8976 18 13.4998C18 13.102 17.842 12.7205 17.5607 12.4391C17.2794 12.1578 16.8978 11.9998 16.5 11.9998Z'
           fill='black'
         ></path>
       </svg>
@@ -72,6 +73,7 @@ const downloadPlatforms = [
 ]
 
 export default function BicoinTaskPage() {
+  const t = useTranslations('DashboardBicoinTask')
   const [phone, setPhone] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [isAccountSaved, setIsAccountSaved] = React.useState(false)
@@ -96,14 +98,14 @@ export default function BicoinTaskPage() {
           const res = await updateBicoinInfo({ phone, password })
 
           if (res.code === 0) {
-            toast.success('币coin账号保存成功')
+            toast.success(res.msg || t('toast.saveSuccess'))
             setIsAccountSaved(true)
           } else {
-            toast.error(res.error || '保存失败')
+            toast.error(res.msg || res.error || t('toast.saveFailed'))
           }
         } catch (error) {
           console.error(error)
-          toast.error('请求失败')
+          toast.error(t('toast.requestFailed'))
         } finally {
           setIsSaving(false)
         }
@@ -121,12 +123,12 @@ export default function BicoinTaskPage() {
       if (res.code === 0 && Array.isArray(res.data)) {
         setSearchResults(res.data)
       } else {
-        toast.error(res.error || '未找到相关交易员')
+        toast.error(res.msg || res.error || t('toast.searchEmpty'))
         setSearchResults([])
       }
     } catch (error) {
       console.error(error)
-      toast.error('搜索失败')
+      toast.error(t('toast.searchFailed'))
       setSearchResults([])
     } finally {
       setIsSearching(false)
@@ -157,9 +159,7 @@ export default function BicoinTaskPage() {
             <CardContent className='flex gap-6 px-6 max-sm:flex-col max-sm:gap-2 max-sm:text-center sm:px-10'>
               <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
                 <img src='/exchanges/bicoin/logo-bicoin.png' alt='bicoin logo' className='h-5 w-auto max-sm:mx-auto' />
-                <p className='mb-3 text-sm text-white/70'>
-                  只要可以看到交易员操作记录或交易持仓就可以进行跟单！注意平台可能会对免费用户进行短时间封号，及时重新注册即可。
-                </p>
+                <p className='mb-3 text-sm text-white/70'>{t('hero.subtitle')}</p>
                 <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'>
                   {downloadPlatforms.map(platform => (
                     <a
@@ -200,21 +200,17 @@ export default function BicoinTaskPage() {
         <MotionPreset fade blur slide={{ direction: 'down' }} delay={0.8} transition={{ duration: 0.5 }}>
           <Card>
             <CardHeader>
-              <CardTitle>创建币Coin跟单任务</CardTitle>
-              <CardDescription>关联您的币Coin账号并选择目标交易员</CardDescription>
+              <CardTitle>{t('card.title')}</CardTitle>
+              <CardDescription>{t('card.description')}</CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
               {/* 延迟提示信息 */}
               <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
                 <Info className='mt-0.5 h-4 w-4 shrink-0' />
                 <div className='flex flex-col gap-1'>
-                  <p className='font-semibold'>币Coin平台限制提示：</p>
-                  <p className='mb-2 text-xs'>
-                    因币coin平台自身因素，在行情波动剧烈时跟单延迟将不可控，用户需时常留意自身仓位。
-                  </p>
-                  <p className='text-xs'>
-                    币coin的数据有缓存，所以不能做到绝对的秒级延迟。操作记录的跟单速度略快于合约仓位跟单，合约仓位的跟单稳定性高于操作记录跟单。如果交易员的操作记录中有现货交易，或者为买卖模式，则无法跟单，可联系客服处理。
-                  </p>
+                  <p className='font-semibold'>{t('tip.title')}</p>
+                  <p className='mb-2 text-xs'>{t('tip.line1')}</p>
+                  <p className='text-xs'>{t('tip.line2')}</p>
                 </div>
               </div>
 
@@ -222,24 +218,26 @@ export default function BicoinTaskPage() {
               <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.bicoinTaskAccount)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
-                  关联币coin账号
+                  {t('account.label')}
                 </Label>
                 <div className='flex flex-col items-end gap-3 sm:flex-row'>
                   <div className='flex w-full flex-col gap-3 sm:flex-1 sm:flex-row'>
                     <div className='flex-1 space-y-1'>
-                      <Label className='text-muted-foreground hidden text-xs sm:block'>手机号</Label>
+                      <Label className='text-muted-foreground hidden text-xs sm:block'>{t('account.phoneLabel')}</Label>
                       <Input
-                        placeholder='请输入手机号'
+                        placeholder={t('account.phonePlaceholder')}
                         value={phone}
                         onChange={e => setPhone(e.target.value)}
                         disabled={isAccountSaved}
                       />
                     </div>
                     <div className='flex-1 space-y-1'>
-                      <Label className='text-muted-foreground hidden text-xs sm:block'>密码</Label>
+                      <Label className='text-muted-foreground hidden text-xs sm:block'>
+                        {t('account.passwordLabel')}
+                      </Label>
                       <Input
                         type='password'
-                        placeholder='请输入密码'
+                        placeholder={t('account.passwordPlaceholder')}
                         value={password}
                         onChange={e => setPassword(e.target.value)}
                         disabled={isAccountSaved}
@@ -253,7 +251,7 @@ export default function BicoinTaskPage() {
                     className='w-full sm:w-auto'
                   >
                     {isSaving && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-                    {isAccountSaved ? '修改' : '确认保存'}
+                    {isAccountSaved ? t('account.edit') : t('account.save')}
                   </Button>
                 </div>
               </div>
@@ -262,11 +260,11 @@ export default function BicoinTaskPage() {
               <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.bicoinTaskSearch)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
-                  选择交易员
+                  {t('search.label')}
                 </Label>
                 <div className='flex gap-2'>
                   <Input
-                    placeholder='输入交易员昵称'
+                    placeholder={t('search.placeholder')}
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleSearch()}
@@ -300,7 +298,7 @@ export default function BicoinTaskPage() {
                           <div className='flex flex-col gap-0.5 overflow-hidden'>
                             <h6 className='truncate text-[13px] font-medium sm:text-sm'>{trader.leaderName}</h6>
                             <p className='text-muted-foreground hidden truncate text-[11px] sm:block'>
-                              {trader.slogen || '暂无签名'}
+                              {trader.slogen || t('search.noSlogan')}
                             </p>
                             <div className='flex items-center gap-2 sm:hidden'>
                               <p className='text-muted-foreground flex items-center text-[10px]'>
@@ -375,15 +373,15 @@ export default function BicoinTaskPage() {
                 <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.bicoinTaskSource)}>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
-                    跟单数据源
+                    {t('traderSource.label')}
                   </Label>
                   <Select value={traderType} onValueChange={setTraderType}>
                     <SelectTrigger>
-                      <SelectValue placeholder='选择跟单数据源' />
+                      <SelectValue placeholder={t('traderSource.placeholder')} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value='1'>操作记录</SelectItem>
-                      <SelectItem value='2'>合约仓位</SelectItem>
+                      <SelectItem value='1'>{t('traderSource.operationRecord')}</SelectItem>
+                      <SelectItem value='2'>{t('traderSource.contractPosition')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -394,7 +392,7 @@ export default function BicoinTaskPage() {
                 disabled={!isAccountSaved || !selectedTrader || !traderType}
                 onClick={() => setIsConfigOpen(true)}
               >
-                创建跟单
+                {t('submit')}
               </Button>
             </CardFooter>
           </Card>
