@@ -1,6 +1,7 @@
 'use client'
 
 import { BanIcon, EyeIcon, Flame, LockIcon, Unplug } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -22,38 +23,40 @@ import { CopyTaskConfigSheet } from '../../add_task/_components/copy-task-config
 import type { GroupedByTraderItem, StudioTaskItem } from './types'
 import { ellipsisMiddle, resolveInvestment } from './utils'
 
-const PLATFORM_MAP: Record<number, { name: string; logo: string | React.ReactNode }> = {
+type TranslateFn = {
+  (key: string, values?: Record<string, string | number | Date>): string
+}
+
+const getPlatformMap = (t: TranslateFn): Record<number, { name: string; logo: string | React.ReactNode }> => ({
   1: { name: 'OKX', logo: '/exchanges/okx.png' },
   2: { name: 'Binance', logo: '/exchanges/binance.png' },
-  3: { name: '币coin', logo: '/exchanges/bicoin.png' },
-  4: { name: '热门', logo: <Flame className='text-orange-500 h-full w-full' /> },
+  3: { name: t('platforms.3'), logo: '/exchanges/bicoin.png' },
+  4: { name: t('platforms.4'), logo: <Flame className='text-orange-500 h-full w-full' /> },
   5: { name: 'Binance API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
   6: { name: 'OKX API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
   7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
   8: { name: 'OKX Cookie', logo: '/exchanges/okx.png' },
-  9: { name: 'NOF1 / AI模型', logo: '/exchanges/default.png' },
+  9: { name: t('platforms.9'), logo: '/exchanges/default.png' },
   10: { name: 'Hyperliquid', logo: '/exchanges/hlq_logo.png' }
-}
+})
 
-const getRoleTypeLabel = (platform: number, roleType?: number | string) => {
+const getRoleTypeLabel = (t: TranslateFn, platform: number, roleType?: number | string) => {
   if (!roleType) return null
   const rt = String(roleType)
 
   if (platform === 1) {
-    if (rt === '1') return '合约带单'
-    if (rt === '2') return '个人概况'
+    if (rt === '1') return t('roleType.okxContract')
+    if (rt === '2') return t('roleType.okxProfile')
   } else if (platform === 8) {
-    if (rt === '1') return '合约带单'
-    if (rt === '2') return '跟单项目'
+    if (rt === '1') return t('roleType.okxContract')
+    if (rt === '2') return t('roleType.okxCookieProject')
   } else if (platform === 2 || platform === 5 || platform === 7) {
-    // Binance 系列
-    if (rt === '1') return '公开带单'
-    if (rt === '2') return '隐藏带单'
-    if (rt === '3') return '聪明钱'
+    if (rt === '1') return t('roleType.binancePublic')
+    if (rt === '2') return t('roleType.binanceHidden')
+    if (rt === '3') return t('roleType.binanceSmart')
   } else if (platform === 3) {
-    // 币coin
-    if (rt === '1') return '操作记录'
-    if (rt === '2') return '合约仓位'
+    if (rt === '1') return t('roleType.bicoinOps')
+    if (rt === '2') return t('roleType.bicoinPosition')
   }
 
   return null
@@ -80,6 +83,9 @@ export function StudioTaskGridView({
   onTerminateTask,
   onCreateSuccess
 }: StudioTaskGridViewProps) {
+  const t = useTranslations('DashboardStudioTasks')
+  const platformMap = getPlatformMap(t)
+
   const renderUniqueName = (value: string, className = '') => (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -92,11 +98,11 @@ export function StudioTaskGridView({
   return (
     <div className='grid grid-cols-1 gap-4 xl:grid-cols-3'>
       {groupedByTrader.map(group => {
-        const roleTypeLabel = getRoleTypeLabel(group.leadTask.trader_platform, group.leadTask.role_type)
+        const roleTypeLabel = getRoleTypeLabel(t, group.leadTask.trader_platform, group.leadTask.role_type)
         const traderId = group.leadTask.uniqueName || group.traderKey
 
-        const platformInfo = PLATFORM_MAP[group.leadTask.trader_platform] || {
-          name: '未知',
+        const platformInfo = platformMap[group.leadTask.trader_platform] || {
+          name: t('platforms.unknown'),
           logo: '/exchanges/default.png'
         }
 
@@ -123,13 +129,13 @@ export function StudioTaskGridView({
                     )}
                   </div>
                   <div className='text-muted-foreground mt-1 flex max-w-[190px] items-center gap-1 text-[11px]'>
-                    <span>交易员 ID:</span>
+                    <span>{t('table.traderId')}</span>
                     {renderUniqueName(traderId, 'cursor-default')}
                   </div>
                 </div>
               </div>
               <Button size='sm' onClick={() => onStartCreate(group.traderKey)} className='h-8 gap-1 text-xs'>
-                跟单
+                {t('table.follow')}
               </Button>
             </div>
 
@@ -137,10 +143,10 @@ export function StudioTaskGridView({
             <Table>
               <TableHeader>
                 <TableRow className='border-0'>
-                  <TableHead className='h-8 px-1 text-[11px] text-muted-foreground'>任务ID</TableHead>
+                  <TableHead className='h-8 px-1 text-[11px] text-muted-foreground'>{t('table.taskId')}</TableHead>
                   <TableHead className='h-8 px-1 text-[11px] text-muted-foreground'>API</TableHead>
-                  <TableHead className='h-8 px-1 text-[11px] text-muted-foreground'>投资额</TableHead>
-                  <TableHead className='h-8 w-[88px] px-1 text-right text-[11px] text-muted-foreground'>操作</TableHead>
+                  <TableHead className='h-8 px-1 text-[11px] text-muted-foreground'>{t('table.invest')}</TableHead>
+                  <TableHead className='h-8 w-[88px] px-1 text-right text-[11px] text-muted-foreground'>{t('table.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -166,7 +172,7 @@ export function StudioTaskGridView({
                               <EyeIcon className='h-4.5 w-4.5 text-blue-600' />
                             </Button>
                           </TooltipTrigger>
-                          <TooltipContent>查看详情</TooltipContent>
+                          <TooltipContent>{t('table.view')}</TooltipContent>
                         </Tooltip>
                         <AlertDialog>
                           <Tooltip>
@@ -177,22 +183,20 @@ export function StudioTaskGridView({
                                 </Button>
                               </TooltipTrigger>
                             </AlertDialogTrigger>
-                            <TooltipContent>终止跟单</TooltipContent>
+                            <TooltipContent>{t('table.stop')}</TooltipContent>
                           </Tooltip>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>确认终止跟单？</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                终止任务不会进行平仓，当前如有持仓，后续请自行平仓。
-                              </AlertDialogDescription>
+                              <AlertDialogTitle>{t('table.stopTitle')}</AlertDialogTitle>
+                              <AlertDialogDescription>{t('table.stopDesc')}</AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
-                              <AlertDialogCancel>取消</AlertDialogCancel>
+                              <AlertDialogCancel>{t('table.cancel')}</AlertDialogCancel>
                               <AlertDialogAction
                                 onClick={() => onTerminateTask(task.id)}
                                 className='bg-red-500 text-white hover:bg-red-600'
                               >
-                                确认终止
+                                {t('table.confirmStop')}
                               </AlertDialogAction>
                             </AlertDialogFooter>
                           </AlertDialogContent>
@@ -221,7 +225,7 @@ export function StudioTaskGridView({
             <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/45 backdrop-blur-sm'>
               <div className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1 text-xs font-medium text-foreground shadow-sm'>
                 <LockIcon className='h-3.5 w-3.5' />
-                工作室 VIP 专享
+                {t('page.studioVipOnly')}
               </div>
             </div>
           )}

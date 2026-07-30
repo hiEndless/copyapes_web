@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { KeyRoundIcon, LockIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import type { EntitlementProfileResponse } from '@/api/settings'
 import { Badge } from '@/components/ui/badge'
@@ -12,7 +13,16 @@ import { cn } from '@/lib/utils'
 
 import { ExchangeLogo } from './exchange-logo'
 import { formatUsdtBalance } from './format-balance'
-import type { TradingApiMock } from './types'
+import { UNKNOWN_EXCHANGE_SENTINEL } from './map-api-to-trading-api'
+import type { QuantityUnitLabel, TradingApiMock } from './types'
+
+function formatQuantityUnit(unit: QuantityUnitLabel, t: ReturnType<typeof useTranslations<'DashboardAddPositions'>>) {
+  return unit === 'contract' ? t('page.unitContract') : t('page.unitCoin')
+}
+
+function formatExchangeName(name: string, t: ReturnType<typeof useTranslations<'DashboardAddPositions'>>) {
+  return name === UNKNOWN_EXCHANGE_SENTINEL ? t('page.unknownExchange') : name
+}
 
 type ApiKeyPickerProps = {
   apis: TradingApiMock[]
@@ -21,6 +31,7 @@ type ApiKeyPickerProps = {
 }
 
 export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) {
+  const t = useTranslations('DashboardAddPositions')
   const [isStudioVip, setIsStudioVip] = React.useState(false)
 
   React.useEffect(() => {
@@ -59,9 +70,9 @@ export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) 
             <KeyRoundIcon className='size-3.5' />
           </div>
           <div className='min-w-0 space-y-0.5'>
-            <CardTitle className='text-sm font-semibold tracking-tight'>选择交易 API</CardTitle>
+            <CardTitle className='text-sm font-semibold tracking-tight'>{t('picker.title')}</CardTitle>
             <CardDescription className='text-muted-foreground text-[11px] leading-snug'>
-              选择 API 后在右侧开仓
+              {t('picker.desc')}
             </CardDescription>
           </div>
         </div>
@@ -85,7 +96,12 @@ export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) 
                   )}
                 >
                   <div className='flex items-center gap-2.5'>
-                    <ExchangeLogo src={api.logoSrc} alt={api.exchangeName} size={36} className='rounded-lg' />
+                    <ExchangeLogo
+                      src={api.logoSrc}
+                      alt={formatExchangeName(api.exchangeName, t)}
+                      size={36}
+                      className='rounded-lg'
+                    />
                     <div className='min-w-0 flex-1 space-y-0.5'>
                       <div className='flex flex-wrap items-center gap-1'>
                         <span className='truncate text-[13px] font-semibold tracking-tight'>{api.label}</span>
@@ -96,7 +112,7 @@ export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) 
                             selected ? 'border-primary/20 bg-primary/10 text-primary' : 'font-normal'
                           )}
                         >
-                          {api.exchangeName}
+                          {formatExchangeName(api.exchangeName, t)}
                         </Badge>
                       </div>
                       <div className='text-muted-foreground flex flex-wrap items-baseline gap-x-1.5 text-[11px] leading-tight'>
@@ -105,7 +121,7 @@ export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) 
                           <span className='text-muted-foreground ml-0.5 font-normal'>USDT</span>
                         </span>
                         <span className='text-border'>·</span>
-                        <span>单位 {api.quantityUnit}</span>
+                        <span>{t('picker.unit', { unit: formatQuantityUnit(api.quantityUnit, t) })}</span>
                       </div>
                     </div>
                   </div>
@@ -119,7 +135,7 @@ export function ApiKeyPicker({ apis, selectedId, onSelect }: ApiKeyPickerProps) 
           <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/45 backdrop-blur-sm'>
             <div className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1 text-xs font-medium text-foreground shadow-sm'>
               <LockIcon className='h-3.5 w-3.5' />
-              工作室 VIP 专享
+              {t('page.studioVipOnly')}
             </div>
           </div>
         ) : null}

@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import { CheckIcon, ChevronsUpDownIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -28,9 +29,11 @@ export function SymbolCombobox({
   value,
   onChange,
   disabled,
-  placeholder = '选择或搜索交易对',
+  placeholder,
 }: SymbolComboboxProps) {
+  const t = useTranslations('DashboardAddPositions')
   const [open, setOpen] = React.useState(false)
+  const resolvedPlaceholder = placeholder ?? t('symbolBox.placeholder')
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -43,7 +46,7 @@ export function SymbolCombobox({
           className='h-9 w-full justify-between rounded-lg border-border/80 text-[13px] font-normal shadow-sm'
         >
           <span className={cn('truncate', !value && 'text-muted-foreground')}>
-            {value || placeholder}
+            {value || resolvedPlaceholder}
           </span>
           <ChevronsUpDownIcon className='ml-2 size-4 shrink-0 opacity-50' />
         </Button>
@@ -53,9 +56,9 @@ export function SymbolCombobox({
         align='start'
       >
         <Command>
-          <CommandInput placeholder='搜索交易对...' />
+          <CommandInput placeholder={t('symbolBox.search')} />
           <CommandList>
-            <CommandEmpty>无匹配交易对</CommandEmpty>
+            <CommandEmpty>{t('symbolBox.empty')}</CommandEmpty>
             <CommandGroup>
               {symbols.map(sym => (
                 <CommandItem

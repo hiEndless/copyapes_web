@@ -1,4 +1,4 @@
-export type QuantityUnitLabel = '张' | '个'
+export type QuantityUnitLabel = 'contract' | 'coin'
 
 export type PositionMarginMode = 'cross' | 'isolated'
 

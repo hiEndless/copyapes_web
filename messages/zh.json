@@ -1708,5 +1708,229 @@
       "invalidAddress": "地址无效",
       "loadMoreFailed": "加载更多失败，请稍后重试"
     }
+  },
+  "DashboardStudioTasks": {
+    "page": {
+      "title": "跟单任务管理",
+      "subtitle": "按交易员或按 API 聚合查看和管理跟单任务",
+      "empty": "暂无进行中的跟单任务",
+      "unnamedApi": "未命名 API",
+      "fetchFailed": "获取任务列表失败",
+      "gridView": "卡片视图",
+      "tableView": "列表视图",
+      "studioVipOnly": "工作室 VIP 专享"
+    },
+    "toast": {
+      "stopSuccess": "终止跟单成功",
+      "stopFailed": "终止跟单失败",
+      "stopRequestFailed": "终止请求失败，请重试"
+    },
+    "table": {
+      "taskId": "任务ID",
+      "trader": "交易员",
+      "invest": "投资额",
+      "createdAt": "创建时间",
+      "actions": "操作",
+      "traderId": "交易员 ID:",
+      "follow": "跟单",
+      "runningCount": "共 {count} 个进行中任务",
+      "view": "查看详情",
+      "stop": "终止跟单",
+      "stopTitle": "确认终止跟单？",
+      "stopDesc": "终止任务不会进行平仓，当前如有持仓，后续请自行平仓。",
+      "cancel": "取消",
+      "confirmStop": "确认终止"
+    },
+    "platforms": {
+      "3": "币coin",
+      "4": "热门",
+      "9": "NOF1 / AI模型",
+      "unknown": "未知"
+    },
+    "roleType": {
+      "okxContract": "合约带单",
+      "okxProfile": "个人概况",
+      "okxCookieProject": "跟单项目",
+      "binancePublic": "公开带单",
+      "binanceHidden": "隐藏带单",
+      "binanceSmart": "聪明钱",
+      "bicoinOps": "操作记录",
+      "bicoinPosition": "合约仓位"
+    },
+    "utils": {
+      "unknownExchange": "未知"
+    }
+  },
+  "DashboardPositions": {
+    "page": {
+      "title": "当前持仓",
+      "subtitle": "当前工作室下所有交易 API 的实时持仓信息",
+      "refresh": "刷新",
+      "empty": "当前没有交易 API 或无法获取持仓信息",
+      "studioVipOnly": "工作室 VIP 专享",
+      "balance": "资金: {amount} USDT",
+      "fetchError": "获取失败: {error}",
+      "flat": "当前空仓",
+      "long": "多",
+      "short": "空"
+    },
+    "fields": {
+      "side": "方向",
+      "size": "仓位",
+      "entry": "开仓价",
+      "mark": "标记",
+      "markPrice": "标记价",
+      "pnl": "收益",
+      "pnlRate": "收益率",
+      "time": "时间",
+      "openTime": "开仓时间",
+      "symbol": "交易对",
+      "actions": "操作",
+      "closeAll": "全平"
+    },
+    "toast": {
+      "refreshOk": "刷新成功",
+      "loadApiFailed": "加载 API 列表失败",
+      "loadPosFailed": "加载持仓失败",
+      "loadPosRetry": "加载持仓失败，请稍后重试",
+      "closeFailed": "全平请求失败",
+      "closeRetry": "全平请求失败，请稍后重试",
+      "closeSubmitted": "{api} 的 {symbol} 仓位已提交全平请求"
+    },
+    "dialog": {
+      "title": "确认平仓",
+      "desc": "确定要全平 {api} 的 {symbol} 仓位吗？此操作将发送市价全平请求到交易所。",
+      "cancel": "取消",
+      "confirm": "确认平仓",
+      "closing": "平仓中..."
+    }
+  },
+  "DashboardAddPositions": {
+    "page": {
+      "title": "手动补仓",
+      "subtitle": "选择交易 API 手动添加仓位（列表来自账户已绑定的交易 API）。",
+      "refreshApi": "刷新 API",
+      "studioVipOnly": "工作室 VIP 专享",
+      "loadingApis": "加载 API 列表…",
+      "loadApiFailedTitle": "无法加载 API",
+      "retry": "重试",
+      "noEligibleApi": "暂无可用于手动补仓的 API（需非只读的「交易 / 跟单」权限）。请前往「API 管理」添加或调整权限。",
+      "paramsTitle": "开仓参数",
+      "loading": "加载中…",
+      "noApi": "无可选 API",
+      "selectApiHint": "在左侧选择一个 API 后开始配置",
+      "balance": "余额",
+      "unit": "单位 {unit}",
+      "symbol": "交易对",
+      "selectApiFirst": "请先选择 API",
+      "loadingSymbols": "加载交易对…",
+      "pickSymbol": "选择或搜索交易对",
+      "leverage": "杠杆",
+      "noSymbols": "该交易所未返回可用交易对。",
+      "marginMode": "仓位模式",
+      "cross": "全仓",
+      "isolated": "逐仓",
+      "side": "开仓方向",
+      "long": "多",
+      "short": "空",
+      "qty": "开仓量",
+      "qtyPlaceholder": "数量，{unit}",
+      "open": "开仓",
+      "unknownExchange": "未知",
+      "unitContract": "张",
+      "unitCoin": "个"
+    },
+    "picker": {
+      "title": "选择交易 API",
+      "desc": "选择 API 后在右侧开仓",
+      "unit": "单位 {unit}"
+    },
+    "symbolBox": {
+      "placeholder": "选择或搜索交易对",
+      "search": "搜索交易对...",
+      "empty": "无匹配交易对"
+    },
+    "errors": {
+      "needApi": "请先选择 API",
+      "needSymbol": "请选择交易对",
+      "needQty": "请输入有效的开仓量（{unit}）",
+      "needLeverage": "请输入 1–125 的整数杠杆",
+      "invalidApi": "API 参数无效",
+      "invalidQty": "开仓量无效",
+      "fetchApis": "获取 API 列表失败",
+      "fetchSymbols": "获取交易对失败",
+      "openFailed": "开仓失败"
+    },
+    "toast": {
+      "openSubmitted": "开仓请求已提交"
+    },
+    "confirm": {
+      "title": "确认开仓",
+      "lead": "核对开仓参数：交易对、杠杆、仓位模式、方向与数量",
+      "hint": "请核对以下参数，确认后将提交开仓请求",
+      "summaryAria": "开仓参数摘要",
+      "balance": "账户余额",
+      "symbol": "交易对",
+      "leverage": "杠杆",
+      "marginMode": "仓位模式",
+      "side": "方向",
+      "qty": "开仓量",
+      "empty": "无有效参数",
+      "cancel": "取消",
+      "confirm": "确认开仓",
+      "submitting": "提交中…"
+    }
+  },
+  "DashboardInvite": {
+    "page": {
+      "title": "邀请奖励",
+      "subtitle": "邀请好友注册，解锁额外额度与销售分成"
+    },
+    "codeCard": {
+      "title": "邀请码与任务奖励",
+      "desc": "邀请码展示与邀请奖励进度总览",
+      "myCode": "我的邀请码",
+      "empty": "暂无",
+      "copyLink": "复制邀请链接",
+      "codeHint": "邀请好友注册使用，可逐步解锁额外 API 授权、跟单任务额度和账户资金上限奖励（仅适用于免费用户）。",
+      "effectiveInvites": "有效邀请",
+      "totalRegistrations": "累计注册",
+      "peopleUnit": "人",
+      "nextStage": "下一阶段",
+      "inviteMore": "再邀请 {count} 人",
+      "allUnlocked": "全部奖励已解锁"
+    },
+    "progress": {
+      "title": "任务进度",
+      "hint": "关键节点奖励将按有效邀请人数逐步解锁（仅适用于免费用户）",
+      "peopleCount": "{count} 人",
+      "unlocked": "已解锁",
+      "inProgress": "进行中",
+      "pending": "待完成",
+      "milestoneTitle": "有效邀请 {count} 人",
+      "reward3": "API 授权资格 +1，跟单任务额度 +1",
+      "reward5": "账户资金上限提升 500U",
+      "reward10": "API 授权资格 +1，跟单任务额度 +1，账户资金上限提升 1000U"
+    },
+    "commission": {
+      "title": "销售分成",
+      "desc": "邀请用户付费后可累计合作收益",
+      "totalRevenue": "累计分成收益 (USDT)",
+      "vipNotice": "开通 年费VIP 或 年费工作室VIP 即可成为正式代理合作伙伴，进行收益提现。",
+      "benefitsTitle": "代理合作伙伴权益",
+      "benefit1": "邀请好友付费可获得高达 <pct>40%</pct>~<pct>70%</pct> 的高额返佣",
+      "benefit2": "支持二级代理返佣体系，建立您的推广网络",
+      "benefit3": "独立专属的代理后台，全方位数据分析与管理",
+      "benefit4": "可自定义邀请码，方便推广和管理",
+      "benefit5": "支持交易所返佣绑定验证，可以限制受邀人仅能添加使用返佣 API 进行跟单交易",
+      "benefit6": "绑定返佣的客户自动享受5折购买 VIP 服务",
+      "benefit7": "提现秒到账，支持 USDT (TRC20/ERC20) 等网络",
+      "upgradeCta": "立即升级开通代理"
+    },
+    "toast": {
+      "nothingToCopy": "暂无可复制的内容",
+      "noInviteCode": "暂无邀请码",
+      "linkCopied": "邀请链接已复制"
+    }
   }
 }

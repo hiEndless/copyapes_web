@@ -9,6 +9,10 @@ const EXCHANGE_LABEL: Record<string, string> = {
   htx: 'HTX'
 }
 
+type TranslateFn = {
+  (key: string, values?: Record<string, string | number | Date>): string
+}
+
 export const mapApiPlatformToExchangeKey = (platform: number | string | undefined) => {
   const p = String(platform ?? '').trim()
   if (p === '1') return 'okx'
@@ -24,9 +28,9 @@ export const mapApiPlatformToExchangeKey = (platform: number | string | undefine
   return lower || 'unknown'
 }
 
-export const getExchangeLabel = (platform: number | string | undefined) => {
+export const getExchangeLabel = (platform: number | string | undefined, t: TranslateFn) => {
   const key = mapApiPlatformToExchangeKey(platform)
-  return EXCHANGE_LABEL[key] ?? (key === 'unknown' ? '未知' : key.toUpperCase())
+  return EXCHANGE_LABEL[key] ?? (key === 'unknown' ? t('utils.unknownExchange') : key.toUpperCase())
 }
 
 export const resolveInvestment = (task: StudioTaskItem) => {

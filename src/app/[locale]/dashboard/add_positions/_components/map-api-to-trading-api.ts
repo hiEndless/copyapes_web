@@ -33,13 +33,16 @@ export function mapPlatformToExchangeKey(platform: number | string): string {
   return lower || 'okx'
 }
 
-/** 开仓量单位：币安 / Bitget 为个数，OKX / Gate 为张数 */
+/** Display sites translate via `page.unknownExchange`. */
+export const UNKNOWN_EXCHANGE_SENTINEL = '__unknown_exchange__'
+
+/** 开仓量单位：币安 / Bitget 为 coin，OKX / Gate 为 contract */
 export function getOpenQuantityUnit(exchangeKey: string): QuantityUnitLabel {
   const k = exchangeKey.toLowerCase()
-  if (k === 'binance' || k === 'bitget' || k === 'weex') return '个'
-  if (k === 'okx' || k === 'gate' || k === 'htx') return '张'
+  if (k === 'binance' || k === 'bitget' || k === 'weex') return 'coin'
+  if (k === 'okx' || k === 'gate' || k === 'htx') return 'contract'
 
-  return '个'
+  return 'coin'
 }
 
 function isReadonlyApiRow(row: ApiAddListRow): boolean {
@@ -56,7 +59,7 @@ export function mapApiAddListRowToTradingApi(row: ApiAddListRow): TradingApiMock
 
   const exchangeKey = mapPlatformToExchangeKey(row.platform)
   const meta = EXCHANGE_META[exchangeKey] ?? {
-    name: exchangeKey ? exchangeKey.toUpperCase() : '未知',
+    name: exchangeKey ? exchangeKey.toUpperCase() : UNKNOWN_EXCHANGE_SENTINEL,
     logo: '/exchanges/okx.png',
   }
 

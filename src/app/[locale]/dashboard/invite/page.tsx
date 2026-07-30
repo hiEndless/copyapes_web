@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { CheckCircle2, Copy, Gift, Info, Loader2, Users, Wallet } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { agentApi } from '@/api/agent'
 import type { AgentSummaryResponse } from '@/api/agent'
 
 export default function InvitePage() {
+  const t = useTranslations('DashboardInvite')
   const [loading, setLoading] = useState(true)
   const [summary, setSummary] = useState<AgentSummaryResponse | null>(null)
   const [inviteCode, setInviteCode] = useState('')
@@ -51,7 +53,7 @@ export default function InvitePage() {
 
   const copyToClipboard = async (text: string, message: string) => {
     if (!text) {
-      toast.error('暂无可复制的内容')
+      toast.error(t('toast.nothingToCopy'))
 
       return
     }
@@ -62,20 +64,20 @@ export default function InvitePage() {
 
   const handleCopyInviteLink = async () => {
     if (!inviteCode) {
-      toast.error('暂无邀请码')
+      toast.error(t('toast.noInviteCode'))
 
       return
     }
 
     const inviteLink = `${window.location.origin}/register?invite_code=${inviteCode}`
 
-    await copyToClipboard(inviteLink, '邀请链接已复制')
+    await copyToClipboard(inviteLink, t('toast.linkCopied'))
   }
 
   const milestones = [
-    { count: 3, reward: 'API 授权资格 +1，跟单任务额度 +1' },
-    { count: 5, reward: '账户资金上限提升 500U' },
-    { count: 10, reward: 'API 授权资格 +1，跟单任务额度 +1，账户资金上限提升 1000U' }
+    { count: 3, reward: t('progress.reward3') },
+    { count: 5, reward: t('progress.reward5') },
+    { count: 10, reward: t('progress.reward10') }
   ]
 
   const effectiveCount = summary?.effective_invited_users || 0
@@ -91,6 +93,8 @@ export default function InvitePage() {
     return 100
   })()
 
+  const peopleUnit = t('codeCard.peopleUnit')
+
   return (
     <div className='flex h-full flex-col gap-4 overflow-y-auto p-3 lg:p-5'>
       {loading ? (
@@ -100,8 +104,8 @@ export default function InvitePage() {
       ) : (
         <>
           <div className='flex flex-col gap-1' {...tourAnchor(TOUR_ANCHORS.inviteHeader)}>
-            <h2 className='text-xl font-semibold tracking-tight'>邀请奖励</h2>
-            <p className='text-xs text-muted-foreground'>邀请好友注册，解锁额外额度与销售分成</p>
+            <h2 className='text-xl font-semibold tracking-tight'>{t('page.title')}</h2>
+            <p className='text-xs text-muted-foreground'>{t('page.subtitle')}</p>
           </div>
 
           <div className='grid gap-4 md:grid-cols-12'>
@@ -110,9 +114,9 @@ export default function InvitePage() {
               <CardHeader className='space-y-2 pb-3'>
                 <CardTitle className='flex items-center gap-2 text-base font-semibold'>
                   <Gift className='h-4 w-4 text-primary' />
-                  邀请码与任务奖励
+                  {t('codeCard.title')}
                 </CardTitle>
-                <CardDescription className='text-xs'>邀请码展示与邀请奖励进度总览</CardDescription>
+                <CardDescription className='text-xs'>{t('codeCard.desc')}</CardDescription>
               </CardHeader>
               <CardContent className='space-y-5'>
                 <div
@@ -123,11 +127,11 @@ export default function InvitePage() {
                     <div className='absolute -right-6 top-0 h-16 w-16 rounded-full bg-primary/10 blur-2xl' />
                     <div className='relative space-y-2'>
                       <div className='text-[11px] font-medium uppercase tracking-[0.18em] text-muted-foreground'>
-                        我的邀请码
+                        {t('codeCard.myCode')}
                       </div>
                       <div className='flex items-center gap-2'>
                         <div className='rounded-lg border border-primary/15 bg-background/80 px-3 py-2 text-base font-semibold tracking-[0.3em] text-sm shadow-sm'>
-                          {inviteCode || '暂无'}
+                          {inviteCode || t('codeCard.empty')}
                         </div>
                         <Button
                           variant='ghost'
@@ -136,39 +140,45 @@ export default function InvitePage() {
                           onClick={handleCopyInviteLink}
                           disabled={!inviteCode}
                         >
-                          <span className='sr-only'>复制邀请链接</span>
+                          <span className='sr-only'>{t('codeCard.copyLink')}</span>
                           <Copy className='h-3.5 w-3.5' />
                         </Button>
                       </div>
                       <p className='text-xs leading-5 text-muted-foreground'>
-                        邀请好友注册使用，可逐步解锁额外 API 授权、跟单任务额度和账户资金上限奖励（仅适用于免费用户）。
+                        {t('codeCard.codeHint')}
                       </p>
                     </div>
                   </div>
 
                   <div className='grid grid-cols-2 gap-2'>
                     <div className='rounded-xl border bg-muted/30 px-3 py-3'>
-                      <div className='text-[11px] text-muted-foreground'>有效邀请</div>
+                      <div className='text-[11px] text-muted-foreground'>{t('codeCard.effectiveInvites')}</div>
                       <div className='mt-1 flex items-end gap-1'>
                         <span className='text-lg font-semibold'>{effectiveCount}</span>
-                        <span className='pb-0.5 text-[11px] text-muted-foreground'>人</span>
+                        {peopleUnit ? (
+                          <span className='pb-0.5 text-[11px] text-muted-foreground'>{peopleUnit}</span>
+                        ) : null}
                       </div>
                     </div>
                     <div className='rounded-xl border bg-muted/30 px-3 py-3'>
-                      <div className='text-[11px] text-muted-foreground'>累计注册</div>
+                      <div className='text-[11px] text-muted-foreground'>{t('codeCard.totalRegistrations')}</div>
                       <div className='mt-1 flex items-end gap-1'>
                         <span className='text-lg font-semibold'>{summary?.invited_users || 0}</span>
-                        <span className='pb-0.5 text-[11px] text-muted-foreground'>人</span>
+                        {peopleUnit ? (
+                          <span className='pb-0.5 text-[11px] text-muted-foreground'>{peopleUnit}</span>
+                        ) : null}
                       </div>
                     </div>
                     <div className='col-span-2 rounded-xl border border-dashed bg-background px-3 py-3'>
                       <div className='flex items-center justify-between gap-3'>
                         <div className='flex items-center gap-2 text-[11px] text-muted-foreground'>
                           <Users className='h-3.5 w-3.5 text-primary' />
-                          下一阶段
+                          {t('codeCard.nextStage')}
                         </div>
                         <div className='text-[11px] font-medium text-foreground'>
-                          {nextMilestone ? `再邀请 ${nextMilestone.count - effectiveCount} 人` : '全部奖励已解锁'}
+                          {nextMilestone
+                            ? t('codeCard.inviteMore', { count: nextMilestone.count - effectiveCount })
+                            : t('codeCard.allUnlocked')}
                         </div>
                       </div>
                     </div>
@@ -178,9 +188,9 @@ export default function InvitePage() {
                 <div className='space-y-3 rounded-xl border bg-muted/[0.18] p-4' {...tourAnchor(TOUR_ANCHORS.inviteProgress)}>
                   <div className='flex items-center justify-between gap-3'>
                     <div>
-                      <div className='text-xs font-medium text-foreground'>任务进度</div>
+                      <div className='text-xs font-medium text-foreground'>{t('progress.title')}</div>
                       <div className='mt-1 text-[11px] text-muted-foreground'>
-                        关键节点奖励将按有效邀请人数逐步解锁（仅适用于免费用户）
+                        {t('progress.hint')}
                       </div>
                     </div>
                     <div className='rounded-full border border-primary/15 bg-primary/[0.08] px-2.5 py-1 text-[11px] font-medium text-primary'>
@@ -232,7 +242,9 @@ export default function InvitePage() {
                             isCurrentNext ? 'bg-primary/[0.06]' : ''
                           }`}
                         >
-                          <div className='text-sm font-semibold text-foreground'>{item.count} 人</div>
+                          <div className='text-sm font-semibold text-foreground'>
+                            {t('progress.peopleCount', { count: item.count })}
+                          </div>
                           <div
                             className={`mt-1 text-[11px] ${
                               isCompleted
@@ -242,7 +254,11 @@ export default function InvitePage() {
                                   : 'text-muted-foreground'
                             }`}
                           >
-                            {isCompleted ? '已解锁' : isCurrentNext ? '进行中' : '待完成'}
+                            {isCompleted
+                              ? t('progress.unlocked')
+                              : isCurrentNext
+                                ? t('progress.inProgress')
+                                : t('progress.pending')}
                           </div>
                         </div>
                       )
@@ -266,7 +282,9 @@ export default function InvitePage() {
                           <CheckCircle2 className='h-3 w-3' />
                         </div>
                         <div className='min-w-0'>
-                          <div className='text-xs font-medium text-foreground'>有效邀请 {item.count} 人</div>
+                          <div className='text-xs font-medium text-foreground'>
+                            {t('progress.milestoneTitle', { count: item.count })}
+                          </div>
                           <div className='mt-0.5 text-[11px] leading-5 text-muted-foreground'>{item.reward}</div>
                         </div>
                       </div>
@@ -282,13 +300,13 @@ export default function InvitePage() {
               <CardHeader className='space-y-2 pb-3'>
                 <CardTitle className='flex items-center gap-2 text-base font-semibold'>
                   <Wallet className='h-4 w-4 text-primary' />
-                  销售分成
+                  {t('commission.title')}
                 </CardTitle>
-                <CardDescription className='text-xs'>邀请用户付费后可累计合作收益</CardDescription>
+                <CardDescription className='text-xs'>{t('commission.desc')}</CardDescription>
               </CardHeader>
               <CardContent className='space-y-4'>
                 <div className='flex flex-col items-center justify-center rounded-xl border border-primary/10 bg-primary/5 py-6'>
-                  <div className='text-[11px] font-medium text-muted-foreground'>累计分成收益 (USDT)</div>
+                  <div className='text-[11px] font-medium text-muted-foreground'>{t('commission.totalRevenue')}</div>
                   <div className='mt-2 text-3xl font-semibold tracking-tight text-primary'>
                     {summary?.total_share_amount?.toFixed(2) || '0.00'}
                   </div>
@@ -297,63 +315,46 @@ export default function InvitePage() {
                 <div className="bg-muted/30 rounded-lg border border-dashed px-4 py-3">
                   <Info className='h-3.5 w-3.5 text-primary inline-block mr-2 text-primary/70 box-content' />
                   <span className="text-muted-foreground text-xs leading-relaxed">
-                    开通 年费VIP 或 年费工作室VIP 即可成为正式代理合作伙伴，进行收益提现。
+                    {t('commission.vipNotice')}
                   </span>
                 </div>
 
                 <div className='space-y-3 pt-1'>
-                  <h4 className='text-sm font-semibold'>代理合作伙伴权益</h4>
+                  <h4 className='text-sm font-semibold'>{t('commission.benefitsTitle')}</h4>
                   <ul className='space-y-2.5'>
                     <li className='flex items-start gap-2'>
                       <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
                         <CheckCircle2 className='h-3 w-3' />
                       </div>
                       <span className='text-xs leading-5 text-muted-foreground'>
-                        邀请好友付费可获得高达 <strong className='text-foreground'>40%</strong>~<strong className='text-foreground'>70%</strong> 的高额返佣
+                        {t.rich('commission.benefit1', {
+                          pct: chunks => <strong className='text-foreground'>{chunks}</strong>
+                        })}
                       </span>
                     </li>
-                    <li className='flex items-start gap-2'>
-                      <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
-                        <CheckCircle2 className='h-3 w-3' />
-                      </div>
-                      <span className='text-xs leading-5 text-muted-foreground'>支持二级代理返佣体系，建立您的推广网络</span>
-                    </li>
-                    <li className='flex items-start gap-2'>
-                      <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
-                        <CheckCircle2 className='h-3 w-3' />
-                      </div>
-                      <span className='text-xs leading-5 text-muted-foreground'>独立专属的代理后台，全方位数据分析与管理</span>
-                    </li>
-                    <li className='flex items-start gap-2'>
-                      <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
-                        <CheckCircle2 className='h-3 w-3' />
-                      </div>
-                      <span className='text-xs leading-5 text-muted-foreground'>可自定义邀请码，方便推广和管理</span>
-                    </li>
-                    <li className='flex items-start gap-2'>
-                      <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
-                        <CheckCircle2 className='h-3 w-3' />
-                      </div>
-                      <span className='text-xs leading-5 text-muted-foreground'>支持交易所返佣绑定验证，可以限制受邀人仅能添加使用返佣 API 进行跟单交易</span>
-                    </li>
-                    <li className='flex items-start gap-2'>
-                      <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
-                        <CheckCircle2 className='h-3 w-3' />
-                      </div>
-                      <span className='text-xs leading-5 text-muted-foreground'>绑定返佣的客户自动享受5折购买 VIP 服务</span>
-                    </li>
-                    <li className='flex items-start gap-2'>
-                      <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
-                        <CheckCircle2 className='h-3 w-3' />
-                      </div>
-                      <span className='text-xs leading-5 text-muted-foreground'>提现秒到账，支持 USDT (TRC20/ERC20) 等网络</span>
-                    </li>
+                    {(
+                      [
+                        'commission.benefit2',
+                        'commission.benefit3',
+                        'commission.benefit4',
+                        'commission.benefit5',
+                        'commission.benefit6',
+                        'commission.benefit7'
+                      ] as const
+                    ).map(key => (
+                      <li key={key} className='flex items-start gap-2'>
+                        <div className='mt-0.5 rounded-full bg-green-500/20 p-0.5 text-green-600'>
+                          <CheckCircle2 className='h-3 w-3' />
+                        </div>
+                        <span className='text-xs leading-5 text-muted-foreground'>{t(key)}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
                 <div className='pt-2'>
                   <Button className='h-9 w-full text-sm' asChild>
-                    <a href='/dashboard/pricing'>立即升级开通代理</a>
+                    <a href='/dashboard/pricing'>{t('commission.upgradeCta')}</a>
                   </Button>
                 </div>
               </CardContent>

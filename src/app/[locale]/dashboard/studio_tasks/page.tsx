@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { LayoutGrid, List, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { getTaskList, stopTask } from '@/api/task'
@@ -19,6 +20,7 @@ import { getExchangeLabel } from './_components/utils'
 type ViewMode = 'grid' | 'table'
 
 export default function StudioTasksPage() {
+  const t = useTranslations('DashboardStudioTasks')
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [viewMode, setViewMode] = useState<ViewMode>('grid')
@@ -62,11 +64,11 @@ export default function StudioTasksPage() {
       if (res.code === 0 && Array.isArray(res.data)) {
         setTasks(res.data as StudioTaskItem[])
       } else {
-        toast.error(res.error || '获取任务列表失败')
+        toast.error(res.error || t('page.fetchFailed'))
       }
     } catch (error) {
       console.error('获取任务列表失败:', error)
-      toast.error('获取任务列表失败')
+      toast.error(t('page.fetchFailed'))
     } finally {
       setLoading(false)
     }
@@ -113,23 +115,23 @@ export default function StudioTasksPage() {
 
     return Array.from(map.entries()).map(([apiId, groupedTasks]) => ({
       apiId,
-      apiName: (groupedTasks[0]?.api_name || '').trim() || '未命名 API',
-      exchangeName: getExchangeLabel(groupedTasks[0]?.api_platform),
+      apiName: (groupedTasks[0]?.api_name || '').trim() || t('page.unnamedApi'),
+      exchangeName: getExchangeLabel(groupedTasks[0]?.api_platform, t),
       tasks: groupedTasks
     }))
-  }, [activeTasks])
+  }, [activeTasks, t])
 
   const handleTerminateTask = async (id: number) => {
     try {
       const res = await stopTask(id)
 
       if (res.code !== 0) {
-        toast.error(res.error || '终止跟单失败')
+        toast.error(res.error || t('toast.stopFailed'))
 
         return
       }
 
-      toast.success('终止跟单成功')
+      toast.success(t('toast.stopSuccess'))
       fetchTasks()
 
       try {
@@ -144,7 +146,7 @@ export default function StudioTasksPage() {
       }
     } catch (error) {
       console.error('终止请求失败:', error)
-      toast.error('终止请求失败，请重试')
+      toast.error(t('toast.stopRequestFailed'))
     }
   }
 
@@ -160,15 +162,15 @@ export default function StudioTasksPage() {
     <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
       <div className='flex items-center justify-between gap-4'>
         <div className='flex flex-col gap-2'>
-          <h2 className='text-2xl font-bold tracking-tight'>跟单任务管理</h2>
-          <p className='text-muted-foreground text-sm'>按交易员或按 API 聚合查看和管理跟单任务</p>
+          <h2 className='text-2xl font-bold tracking-tight'>{t('page.title')}</h2>
+          <p className='text-muted-foreground text-sm'>{t('page.subtitle')}</p>
         </div>
         <Tabs value={viewMode} onValueChange={v => setViewMode(v as ViewMode)}>
           <TabsList className='grid w-[120px] grid-cols-2'>
-            <TabsTrigger value='grid' title='卡片视图'>
+            <TabsTrigger value='grid' title={t('page.gridView')}>
               <LayoutGrid className='h-4 w-4' />
             </TabsTrigger>
-            <TabsTrigger value='table' title='列表视图'>
+            <TabsTrigger value='table' title={t('page.tableView')}>
               <List className='h-4 w-4' />
             </TabsTrigger>
           </TabsList>
@@ -181,7 +183,7 @@ export default function StudioTasksPage() {
         </div>
       ) : activeTasks.length === 0 ? (
         <Card className='flex min-h-[320px] items-center justify-center border-dashed text-muted-foreground'>
-          暂无进行中的跟单任务
+          {t('page.empty')}
         </Card>
       ) : viewMode === 'grid' ? (
         <StudioTaskGridView

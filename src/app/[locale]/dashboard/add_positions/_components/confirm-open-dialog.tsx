@@ -2,6 +2,8 @@
 
 import * as React from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +17,7 @@ import {
 
 import { ExchangeLogo } from './exchange-logo'
 import { formatUsdtBalance } from './format-balance'
+import { UNKNOWN_EXCHANGE_SENTINEL } from './map-api-to-trading-api'
 import type { OpenSide, PositionMarginMode, QuantityUnitLabel, TradingApiMock } from './types'
 
 export type OpenConfirmSummary = {
@@ -27,14 +30,22 @@ export type OpenConfirmSummary = {
   leverage: number
 }
 
-const marginLabel: Record<PositionMarginMode, string> = {
-  cross: '全仓',
-  isolated: '逐仓',
+const marginLabelKey: Record<PositionMarginMode, 'page.cross' | 'page.isolated'> = {
+  cross: 'page.cross',
+  isolated: 'page.isolated',
 }
 
-const sideLabel: Record<OpenSide, string> = {
-  long: '多',
-  short: '空',
+const sideLabelKey: Record<OpenSide, 'page.long' | 'page.short'> = {
+  long: 'page.long',
+  short: 'page.short',
+}
+
+function formatQuantityUnit(unit: QuantityUnitLabel, t: ReturnType<typeof useTranslations<'DashboardAddPositions'>>) {
+  return unit === 'contract' ? t('page.unitContract') : t('page.unitCoin')
+}
+
+function formatExchangeName(name: string, t: ReturnType<typeof useTranslations<'DashboardAddPositions'>>) {
+  return name === UNKNOWN_EXCHANGE_SENTINEL ? t('page.unknownExchange') : name
 }
 
 type ConfirmOpenDialogProps = {
@@ -45,6 +56,7 @@ type ConfirmOpenDialogProps = {
 }
 
 export function ConfirmOpenDialog({ open, onOpenChange, summary, onConfirm }: ConfirmOpenDialogProps) {
+  const t = useTranslations('DashboardAddPositions')
   const [submitting, setSubmitting] = React.useState(false)
 
   return (
@@ -52,39 +64,41 @@ export function ConfirmOpenDialog({ open, onOpenChange, summary, onConfirm }: Co
       <AlertDialogContent className='gap-0 overflow-hidden border-border/80 p-0 sm:max-w-md'>
         <div className='from-primary/[0.06] border-border/60 border-b bg-gradient-to-br to-transparent px-4 py-3.5'>
           <AlertDialogHeader className='space-y-1 text-left sm:text-left'>
-            <AlertDialogTitle className='text-base font-semibold tracking-tight'>确认开仓</AlertDialogTitle>
-            <AlertDialogDescription className='sr-only'>
-              核对开仓参数：交易对、杠杆、仓位模式、方向与数量
-            </AlertDialogDescription>
-            <p className='text-muted-foreground text-xs leading-normal'>
-              请核对以下参数，确认后将提交开仓请求
-            </p>
+            <AlertDialogTitle className='text-base font-semibold tracking-tight'>{t('confirm.title')}</AlertDialogTitle>
+            <AlertDialogDescription className='sr-only'>{t('confirm.lead')}</AlertDialogDescription>
+            <p className='text-muted-foreground text-xs leading-normal'>{t('confirm.hint')}</p>
           </AlertDialogHeader>
         </div>
         <div className='px-4 py-3.5'>
-          <div className='text-[13px] leading-tight' role='region' aria-label='开仓参数摘要'>
+          <div className='text-[13px] leading-tight' role='region' aria-label={t('confirm.summaryAria')}>
             {summary ? (
               <div className='bg-muted/40 border-border/60 space-y-3 rounded-lg border p-3'>
                 <div className='flex items-center gap-2.5'>
-                  <ExchangeLogo src={summary.api.logoSrc} alt={summary.api.exchangeName} size={40} />
+                  <ExchangeLogo
+                    src={summary.api.logoSrc}
+                    alt={formatExchangeName(summary.api.exchangeName, t)}
+                    size={40}
+                  />
                   <div className='min-w-0 space-y-0.5'>
                     <p className='text-foreground truncate text-[13px] font-semibold leading-tight'>{summary.api.label}</p>
-                    <p className='text-muted-foreground text-[11px] leading-tight'>{summary.api.exchangeName}</p>
+                    <p className='text-muted-foreground text-[11px] leading-tight'>
+                      {formatExchangeName(summary.api.exchangeName, t)}
+                    </p>
                   </div>
                 </div>
                 <dl className='grid grid-cols-[4.75rem_1fr] gap-x-2 gap-y-1.5 text-[11px] leading-tight'>
-                  <dt className='text-muted-foreground'>账户余额</dt>
+                  <dt className='text-muted-foreground'>{t('confirm.balance')}</dt>
                   <dd className='tabular-nums'>
                     {formatUsdtBalance(summary.api.balanceUsdt)}{' '}
                     <span className='text-muted-foreground'>USDT</span>
                   </dd>
-                  <dt className='text-muted-foreground'>交易对</dt>
+                  <dt className='text-muted-foreground'>{t('confirm.symbol')}</dt>
                   <dd className='text-foreground font-mono text-[11px] font-medium tracking-tight'>{summary.symbol}</dd>
-                  <dt className='text-muted-foreground'>杠杆</dt>
+                  <dt className='text-muted-foreground'>{t('confirm.leverage')}</dt>
                   <dd className='tabular-nums'>{summary.leverage}x</dd>
-                  <dt className='text-muted-foreground'>仓位模式</dt>
-                  <dd>{marginLabel[summary.marginMode]}</dd>
-                  <dt className='text-muted-foreground'>方向</dt>
+                  <dt className='text-muted-foreground'>{t('confirm.marginMode')}</dt>
+                  <dd>{t(marginLabelKey[summary.marginMode])}</dd>
+                  <dt className='text-muted-foreground'>{t('confirm.side')}</dt>
                   <dd
                     className={
                       summary.side === 'long'
@@ -92,22 +106,22 @@ export function ConfirmOpenDialog({ open, onOpenChange, summary, onConfirm }: Co
                         : 'font-medium text-rose-600 dark:text-rose-400'
                     }
                   >
-                    {sideLabel[summary.side]}
+                    {t(sideLabelKey[summary.side])}
                   </dd>
-                  <dt className='text-muted-foreground'>开仓量</dt>
+                  <dt className='text-muted-foreground'>{t('confirm.qty')}</dt>
                   <dd className='tabular-nums'>
                     {summary.quantity}{' '}
-                    <span className='text-muted-foreground'>{summary.quantityUnit}</span>
+                    <span className='text-muted-foreground'>{formatQuantityUnit(summary.quantityUnit, t)}</span>
                   </dd>
                 </dl>
               </div>
             ) : (
-              <p className='text-muted-foreground text-center text-xs leading-tight'>无有效参数</p>
+              <p className='text-muted-foreground text-center text-xs leading-tight'>{t('confirm.empty')}</p>
             )}
           </div>
         </div>
         <AlertDialogFooter className='border-border/60 bg-muted/20 border-t px-4 py-3 sm:justify-end'>
-          <AlertDialogCancel className='h-8 rounded-md px-3 text-xs'>取消</AlertDialogCancel>
+          <AlertDialogCancel className='h-8 rounded-md px-3 text-xs'>{t('confirm.cancel')}</AlertDialogCancel>
           <AlertDialogAction
             className='h-8 rounded-md px-3 text-xs'
             disabled={submitting || !summary}
@@ -127,7 +141,7 @@ export function ConfirmOpenDialog({ open, onOpenChange, summary, onConfirm }: Co
               }
             }}
           >
-            {submitting ? '提交中…' : '确认开仓'}
+            {submitting ? t('confirm.submitting') : t('confirm.confirm')}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,6 +1,7 @@
 'use client'
 
 import { BanIcon, EyeIcon, LockIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -35,6 +36,8 @@ export function StudioTaskTableView({
   onOpenTaskDetail,
   onTerminateTask
 }: StudioTaskTableViewProps) {
+  const t = useTranslations('DashboardStudioTasks')
+
   const renderUniqueName = (value: string, className = '') => (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -49,11 +52,11 @@ export function StudioTaskTableView({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className='w-[20%] first:pl-8'>任务ID</TableHead>
-            <TableHead className='w-[25%]'>交易员</TableHead>
-            <TableHead>投资额</TableHead>
-            <TableHead className='w-[20%]'>创建时间</TableHead>
-            <TableHead className='w-[15%] last:pr-2'>操作</TableHead>
+            <TableHead className='w-[20%] first:pl-8'>{t('table.taskId')}</TableHead>
+            <TableHead className='w-[25%]'>{t('table.trader')}</TableHead>
+            <TableHead>{t('table.invest')}</TableHead>
+            <TableHead className='w-[20%]'>{t('table.createdAt')}</TableHead>
+            <TableHead className='w-[15%] last:pr-2'>{t('table.actions')}</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -70,7 +73,9 @@ export function StudioTaskTableView({
                   <Badge variant='secondary' className='rounded-sm text-xs font-normal'>
                     {group.exchangeName}
                   </Badge>
-                  <span className='text-muted-foreground text-xs'>共 {group.tasks.length} 个进行中任务</span>
+                  <span className='text-muted-foreground text-xs'>
+                    {t('table.runningCount', { count: group.tasks.length })}
+                  </span>
                 </div>
               </TableCell>
             </TableRow>,
@@ -95,7 +100,7 @@ export function StudioTaskTableView({
                           <EyeIcon className='h-4.5 w-4.5 text-blue-600' />
                         </Button>
                       </TooltipTrigger>
-                      <TooltipContent>查看详情</TooltipContent>
+                      <TooltipContent>{t('table.view')}</TooltipContent>
                     </Tooltip>
                     <AlertDialog>
                       <Tooltip>
@@ -106,22 +111,20 @@ export function StudioTaskTableView({
                             </Button>
                           </TooltipTrigger>
                         </AlertDialogTrigger>
-                        <TooltipContent>终止跟单</TooltipContent>
+                        <TooltipContent>{t('table.stop')}</TooltipContent>
                       </Tooltip>
                       <AlertDialogContent>
                         <AlertDialogHeader>
-                          <AlertDialogTitle>确认终止跟单？</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            终止任务不会进行平仓，当前如有持仓，后续请自行平仓。
-                          </AlertDialogDescription>
+                          <AlertDialogTitle>{t('table.stopTitle')}</AlertDialogTitle>
+                          <AlertDialogDescription>{t('table.stopDesc')}</AlertDialogDescription>
                         </AlertDialogHeader>
                         <AlertDialogFooter>
-                          <AlertDialogCancel>取消</AlertDialogCancel>
+                          <AlertDialogCancel>{t('table.cancel')}</AlertDialogCancel>
                           <AlertDialogAction
                             onClick={() => onTerminateTask(task.id)}
                             className='bg-red-500 text-white hover:bg-red-600'
                           >
-                            确认终止
+                            {t('table.confirmStop')}
                           </AlertDialogAction>
                         </AlertDialogFooter>
                       </AlertDialogContent>
@@ -137,7 +140,7 @@ export function StudioTaskTableView({
         <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/45 backdrop-blur-sm'>
           <div className='inline-flex items-center gap-1.5 rounded-full border border-border/60 bg-background/85 px-3 py-1 text-xs font-medium text-foreground shadow-sm'>
             <LockIcon className='h-3.5 w-3.5' />
-            工作室 VIP 专享
+            {t('page.studioVipOnly')}
           </div>
         </div>
       )}

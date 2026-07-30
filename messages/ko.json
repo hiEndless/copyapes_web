@@ -1706,5 +1706,229 @@
       "invalidAddress": "유효하지 않은 주소",
       "loadMoreFailed": "더 불러오기 실패. 잠시 후 다시 시도하세요"
     }
+  },
+  "DashboardStudioTasks": {
+    "page": {
+      "title": "카피 작업 관리",
+      "subtitle": "트레이더 또는 API별로 카피 작업을 확인하고 관리",
+      "empty": "진행 중인 카피 작업이 없습니다",
+      "unnamedApi": "이름 없는 API",
+      "fetchFailed": "작업 목록을 불러오지 못했습니다",
+      "gridView": "카드 보기",
+      "tableView": "목록 보기",
+      "studioVipOnly": "Studio VIP 전용"
+    },
+    "toast": {
+      "stopSuccess": "카피가 중지되었습니다",
+      "stopFailed": "중지 실패",
+      "stopRequestFailed": "중지 요청 실패. 다시 시도하세요"
+    },
+    "table": {
+      "taskId": "작업 ID",
+      "trader": "트레이더",
+      "invest": "투자액",
+      "createdAt": "생성 시간",
+      "actions": "작업",
+      "traderId": "트레이더 ID:",
+      "follow": "카피",
+      "runningCount": "진행 중 {count}개",
+      "view": "상세 보기",
+      "stop": "카피 중지",
+      "stopTitle": "이 카피를 중지할까요?",
+      "stopDesc": "중지해도 포지션은 청산되지 않습니다. 보유 포지션은 직접 청산하세요.",
+      "cancel": "취소",
+      "confirmStop": "중지 확인"
+    },
+    "platforms": {
+      "3": "BiCoin",
+      "4": "인기",
+      "9": "NOF1 / AI 모델",
+      "unknown": "알 수 없음"
+    },
+    "roleType": {
+      "okxContract": "선물 리드",
+      "okxProfile": "프로필",
+      "okxCookieProject": "카피 프로젝트",
+      "binancePublic": "공개 리드",
+      "binanceHidden": "비공개 리드",
+      "binanceSmart": "스마트 머니",
+      "bicoinOps": "조작 기록",
+      "bicoinPosition": "선물 포지션"
+    },
+    "utils": {
+      "unknownExchange": "알 수 없음"
+    }
+  },
+  "DashboardPositions": {
+    "page": {
+      "title": "현재 포지션",
+      "subtitle": "스튜디오의 모든 거래 API 실시간 포지션",
+      "refresh": "새로고침",
+      "empty": "거래 API가 없거나 포지션을 가져올 수 없습니다",
+      "studioVipOnly": "Studio VIP 전용",
+      "balance": "자금: {amount} USDT",
+      "fetchError": "실패: {error}",
+      "flat": "포지션 없음",
+      "long": "롱",
+      "short": "숏"
+    },
+    "fields": {
+      "side": "방향",
+      "size": "포지션",
+      "entry": "진입가",
+      "mark": "마크",
+      "markPrice": "마크 가격",
+      "pnl": "손익",
+      "pnlRate": "수익률",
+      "time": "시간",
+      "openTime": "진입 시간",
+      "symbol": "심볼",
+      "actions": "작업",
+      "closeAll": "전체 청산"
+    },
+    "toast": {
+      "refreshOk": "새로고침됨",
+      "loadApiFailed": "API 목록 로드 실패",
+      "loadPosFailed": "포지션 로드 실패",
+      "loadPosRetry": "포지션 로드 실패. 다시 시도하세요",
+      "closeFailed": "전체 청산 요청 실패",
+      "closeRetry": "전체 청산 실패. 다시 시도하세요",
+      "closeSubmitted": "{api}의 {symbol} 포지션 전체 청산이 제출되었습니다"
+    },
+    "dialog": {
+      "title": "청산 확인",
+      "desc": "{api}의 {symbol} 포지션을 전체 청산할까요? 거래소에 시장가 전체 청산을 보냅니다.",
+      "cancel": "취소",
+      "confirm": "청산 확인",
+      "closing": "청산 중..."
+    }
+  },
+  "DashboardAddPositions": {
+    "page": {
+      "title": "수동 포지션 추가",
+      "subtitle": "거래 API를 선택해 수동으로 포지션을 추가합니다(연결된 거래 API).",
+      "refreshApi": "API 새로고침",
+      "studioVipOnly": "Studio VIP 전용",
+      "loadingApis": "API 목록 로딩…",
+      "loadApiFailedTitle": "API를 불러올 수 없음",
+      "retry": "다시 시도",
+      "noEligibleApi": "수동 추가에 사용할 API가 없습니다(읽기 전용이 아닌 거래/카피 권한 필요). API 관리에서 추가하거나 권한을 조정하세요.",
+      "paramsTitle": "진입 파라미터",
+      "loading": "로딩 중…",
+      "noApi": "선택 가능한 API 없음",
+      "selectApiHint": "왼쪽에서 API를 선택한 뒤 설정",
+      "balance": "잔액",
+      "unit": "단위 {unit}",
+      "symbol": "심볼",
+      "selectApiFirst": "먼저 API를 선택하세요",
+      "loadingSymbols": "심볼 로딩…",
+      "pickSymbol": "심볼 선택/검색",
+      "leverage": "레버리지",
+      "noSymbols": "이 거래소에서 심볼을 반환하지 않았습니다.",
+      "marginMode": "마진 모드",
+      "cross": "크로스",
+      "isolated": "격리",
+      "side": "방향",
+      "long": "롱",
+      "short": "숏",
+      "qty": "수량",
+      "qtyPlaceholder": "수량, {unit}",
+      "open": "진입",
+      "unknownExchange": "알 수 없음",
+      "unitContract": "장",
+      "unitCoin": "개"
+    },
+    "picker": {
+      "title": "거래 API 선택",
+      "desc": "API를 고른 뒤 오른쪽에서 진입",
+      "unit": "단위 {unit}"
+    },
+    "symbolBox": {
+      "placeholder": "심볼 선택/검색",
+      "search": "심볼 검색...",
+      "empty": "일치하는 심볼 없음"
+    },
+    "errors": {
+      "needApi": "먼저 API를 선택하세요",
+      "needSymbol": "심볼을 선택하세요",
+      "needQty": "유효한 수량을 입력하세요({unit})",
+      "needLeverage": "1–125 정수 레버리지를 입력하세요",
+      "invalidApi": "API 파라미터가 유효하지 않음",
+      "invalidQty": "수량이 유효하지 않음",
+      "fetchApis": "API 목록 불러오기 실패",
+      "fetchSymbols": "심볼 불러오기 실패",
+      "openFailed": "진입 실패"
+    },
+    "toast": {
+      "openSubmitted": "진입 요청이 제출되었습니다"
+    },
+    "confirm": {
+      "title": "진입 확인",
+      "lead": "심볼·레버리지·마진 모드·방향·수량을 확인",
+      "hint": "아래 파라미터를 확인한 뒤 제출합니다",
+      "summaryAria": "진입 파라미터 요약",
+      "balance": "계정 잔액",
+      "symbol": "심볼",
+      "leverage": "레버리지",
+      "marginMode": "마진 모드",
+      "side": "방향",
+      "qty": "수량",
+      "empty": "유효한 파라미터 없음",
+      "cancel": "취소",
+      "confirm": "진입 확인",
+      "submitting": "제출 중…"
+    }
+  },
+  "DashboardInvite": {
+    "page": {
+      "title": "초대 보상",
+      "subtitle": "친구를 초대하고 추가 한도와 판매 수수료를 잠금 해제하세요"
+    },
+    "codeCard": {
+      "title": "초대 코드 및 과제 보상",
+      "desc": "초대 코드와 보상 진행 현황",
+      "myCode": "내 초대 코드",
+      "empty": "없음",
+      "copyLink": "초대 링크 복사",
+      "codeHint": "친구를 초대하면 추가 API 슬롯, 카피 작업 한도, 계좌 자금 한도를 단계적으로 잠금 해제할 수 있습니다(무료 사용자만).",
+      "effectiveInvites": "유효 초대",
+      "totalRegistrations": "누적 가입",
+      "peopleUnit": "명",
+      "nextStage": "다음 단계",
+      "inviteMore": "{count}명 더 초대",
+      "allUnlocked": "모든 보상 잠금 해제됨"
+    },
+    "progress": {
+      "title": "과제 진행",
+      "hint": "마일스톤 보상은 유효 초대 수에 따라 잠금 해제됩니다(무료 사용자만)",
+      "peopleCount": "{count}명",
+      "unlocked": "잠금 해제됨",
+      "inProgress": "진행 중",
+      "pending": "대기",
+      "milestoneTitle": "유효 초대 {count}명",
+      "reward3": "API 슬롯 +1, 카피 작업 한도 +1",
+      "reward5": "계좌 자금 한도 +500U",
+      "reward10": "API 슬롯 +1, 카피 작업 한도 +1, 계좌 자금 한도 +1000U"
+    },
+    "commission": {
+      "title": "판매 수수료",
+      "desc": "초대 사용자가 결제하면 파트너 수익이 적립됩니다",
+      "totalRevenue": "누적 수수료 (USDT)",
+      "vipNotice": "연간 VIP 또는 연간 스튜디오 VIP를 개통하면 공식 파트너가 되어 수익을 출금할 수 있습니다.",
+      "benefitsTitle": "파트너 혜택",
+      "benefit1": "친구 결제로 최대 <pct>40%</pct>~<pct>70%</pct> 높은 리베이트",
+      "benefit2": "2단계 제휴 시스템으로 추천 네트워크 구축",
+      "benefit3": "전용 파트너 백오피스에서 전체 분석 및 관리",
+      "benefit4": "맞춤 초대 코드로 홍보와 관리가 편리",
+      "benefit5": "거래소 리베이트 바인딩 검증으로 초대받은 사용자를 리베이트 API 카피 거래로 제한 가능",
+      "benefit6": "리베이트 연동 고객은 VIP를 50% 할인으로 구매",
+      "benefit7": "USDT (TRC20/ERC20) 등으로 즉시 출금",
+      "upgradeCta": "지금 업그레이드하여 파트너 되기"
+    },
+    "toast": {
+      "nothingToCopy": "복사할 내용이 없습니다",
+      "noInviteCode": "초대 코드가 없습니다",
+      "linkCopied": "초대 링크가 복사되었습니다"
+    }
   }
 }

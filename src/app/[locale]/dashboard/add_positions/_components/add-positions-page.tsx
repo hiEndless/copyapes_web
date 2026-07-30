@@ -3,6 +3,7 @@
 import * as React from 'react'
 
 import { Loader2Icon, RefreshCwIcon, SlidersHorizontalIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { getApiList } from '@/api/apiadd'
@@ -18,9 +19,17 @@ import { ApiKeyPicker } from './api-key-picker'
 import { ConfirmOpenDialog, type OpenConfirmSummary } from './confirm-open-dialog'
 import { ExchangeLogo } from './exchange-logo'
 import { formatUsdtBalance } from './format-balance'
-import { listTradingApisFromApiAdd } from './map-api-to-trading-api'
+import { listTradingApisFromApiAdd, UNKNOWN_EXCHANGE_SENTINEL } from './map-api-to-trading-api'
 import { SymbolCombobox } from './symbol-combobox'
-import type { OpenSide, PositionMarginMode, TradingApiMock } from './types'
+import type { OpenSide, PositionMarginMode, QuantityUnitLabel, TradingApiMock } from './types'
+
+function formatQuantityUnit(unit: QuantityUnitLabel, t: ReturnType<typeof useTranslations<'DashboardAddPositions'>>) {
+  return unit === 'contract' ? t('page.unitContract') : t('page.unitCoin')
+}
+
+function formatExchangeName(name: string, t: ReturnType<typeof useTranslations<'DashboardAddPositions'>>) {
+  return name === UNKNOWN_EXCHANGE_SENTINEL ? t('page.unknownExchange') : name
+}
 
 function SegmentedTwo<T extends string>({
   value,
@@ -68,6 +77,7 @@ function SegmentedTwo<T extends string>({
 }
 
 export function AddPositionsPage() {
+  const t = useTranslations('DashboardAddPositions')
   const [apis, setApis] = React.useState<TradingApiMock[]>([])
   const [loading, setLoading] = React.useState(true)
   const [refreshing, setRefreshing] = React.useState(false)
@@ -100,14 +110,14 @@ export function AddPositionsPage() {
       const res = await getApiList()
 
       if (res.code !== 0 || !Array.isArray(res.data)) {
-        throw new Error(res.error || '获取 API 列表失败')
+        throw new Error(res.error || t('errors.fetchApis'))
       }
 
       const mapped = listTradingApisFromApiAdd(res.data)
 
       setApis(mapped)
     } catch (e) {
-      const message = e instanceof Error ? e.message : '获取 API 列表失败'
+      const message = e instanceof Error ? e.message : t('errors.fetchApis')
 
       setListError(message)
       setApis([])
@@ -116,7 +126,7 @@ export function AddPositionsPage() {
       setLoading(false)
       setRefreshing(false)
     }
-  }, [])
+  }, [t])
 
   React.useEffect(() => {
     void loadApis(false)
@@ -167,7 +177,7 @@ export function AddPositionsPage() {
 
         if (res.code !== 0 || !res.data || !Array.isArray(res.data.symbols)) {
           setSymbols([])
-          setSymbolsError(res.error || '获取交易对失败')
+          setSymbolsError(res.error || t('errors.fetchSymbols'))
 
           return
         }
@@ -176,7 +186,7 @@ export function AddPositionsPage() {
       } catch {
         if (!cancelled) {
           setSymbols([])
-          setSymbolsError('获取交易对失败')
+          setSymbolsError(t('errors.fetchSymbols'))
         }
       } finally {
         if (!cancelled) {
@@ -188,7 +198,7 @@ export function AddPositionsPage() {
     return () => {
       cancelled = true
     }
-  }, [selectedExchangeKey, loading])
+  }, [selectedExchangeKey, loading, t])
 
   React.useEffect(() => {
     setSymbol('')
@@ -200,21 +210,22 @@ export function AddPositionsPage() {
     setFormError(null)
 
     if (!selectedApi) {
-      setFormError('请先选择 API')
+      setFormError(t('errors.needApi'))
 
       return
     }
 
     if (!symbol) {
-      setFormError('请选择交易对')
+      setFormError(t('errors.needSymbol'))
 
       return
     }
 
     const q = quantity.trim()
+    const unitLabel = formatQuantityUnit(selectedApi.quantityUnit, t)
 
     if (!q || Number.isNaN(Number(q)) || Number(q) <= 0) {
-      setFormError(`请输入有效的开仓量（${selectedApi.quantityUnit}）`)
+      setFormError(t('errors.needQty', { unit: unitLabel }))
 
       return
     }
@@ -222,7 +233,7 @@ export function AddPositionsPage() {
     const lev = Number.parseInt(leverageInput.trim(), 10)
 
     if (!Number.isFinite(lev) || lev < 1 || lev > 125) {
-      setFormError('请输入 1–125 的整数杠杆')
+      setFormError(t('errors.needLeverage'))
 
       return
     }
@@ -243,11 +254,11 @@ export function AddPositionsPage() {
     const apiId = Number(final.api.id)
     const qty = Number(final.quantity)
     if (!Number.isFinite(apiId) || apiId <= 0) {
-      toast.error('API 参数无效')
+      toast.error(t('errors.invalidApi'))
       return
     }
     if (!Number.isFinite(qty) || qty <= 0) {
-      toast.error('开仓量无效')
+      toast.error(t('errors.invalidQty'))
       return
     }
 
@@ -260,9 +271,9 @@ export function AddPositionsPage() {
       leverage: final.leverage,
     })
     if (res.code !== 0) {
-      throw new Error(res.error || '开仓失败')
+      throw new Error(res.error || t('errors.openFailed'))
     }
-    toast.success('开仓请求已提交')
+    toast.success(t('toast.openSubmitted'))
     setPendingSummary(null)
     setQuantity('')
     setLeverageInput('10')
@@ -274,7 +285,7 @@ export function AddPositionsPage() {
         <Card className='border-border/80 text-[13px] leading-tight shadow-sm'>
           <CardContent className='flex min-h-[200px] flex-col items-center justify-center gap-2 py-10'>
             <Loader2Icon className='text-muted-foreground size-8 animate-spin' />
-            <p className='text-muted-foreground text-xs'>加载 API 列表…</p>
+            <p className='text-muted-foreground text-xs'>{t('page.loadingApis')}</p>
           </CardContent>
         </Card>
       )
@@ -284,13 +295,13 @@ export function AddPositionsPage() {
       return (
         <Card className='border-border/80 text-[13px] leading-tight shadow-sm'>
           <CardHeader className='pb-2'>
-            <CardTitle className='text-sm font-semibold'>无法加载 API</CardTitle>
+            <CardTitle className='text-sm font-semibold'>{t('page.loadApiFailedTitle')}</CardTitle>
             <CardDescription className='text-destructive text-xs leading-snug'>{listError}</CardDescription>
           </CardHeader>
           <CardContent className='pt-0'>
             <Button type='button' variant='outline' size='sm' className='h-8 text-xs' onClick={() => void loadApis(true)} disabled={refreshing}>
               <RefreshCwIcon className={cn('mr-1.5 size-3.5', refreshing && 'animate-spin')} />
-              重试
+              {t('page.retry')}
             </Button>
           </CardContent>
         </Card>
@@ -301,7 +312,7 @@ export function AddPositionsPage() {
       return (
         <Card className='border-border/80 text-[13px] leading-tight shadow-sm'>
           <CardContent className='text-muted-foreground px-4 py-8 text-center text-xs leading-relaxed'>
-            暂无可用于手动补仓的 API（需非只读的「交易 / 跟单」权限）。请前往「API 管理」添加或调整权限。
+            {t('page.noEligibleApi')}
           </CardContent>
         </Card>
       )
@@ -314,8 +325,8 @@ export function AddPositionsPage() {
     <div className='flex h-full flex-col gap-5 overflow-y-auto p-4 pb-8 text-[13px] leading-tight lg:p-6'>
       <div className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between'>
         <div className='space-y-2'>
-          <h1 className='text-2xl font-semibold tracking-tight'>手动补仓</h1>
-          <p className='text-muted-foreground text-sm'>选择交易 API 手动添加仓位（列表来自账户已绑定的交易 API）。</p>
+          <h1 className='text-2xl font-semibold tracking-tight'>{t('page.title')}</h1>
+          <p className='text-muted-foreground text-sm'>{t('page.subtitle')}</p>
         </div>
         <Button
           type='button'
@@ -326,7 +337,7 @@ export function AddPositionsPage() {
           disabled={loading || refreshing}
         >
           <RefreshCwIcon className={cn('size-3.5', refreshing && 'animate-spin')} />
-          刷新 API
+          {t('page.refreshApi')}
         </Button>
       </div>
 
@@ -338,33 +349,39 @@ export function AddPositionsPage() {
             <div className='flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between'>
               <div className='flex min-w-0 items-start gap-2.5'>
                 {selectedApi ? (
-                  <ExchangeLogo src={selectedApi.logoSrc} alt={selectedApi.exchangeName} size={40} />
+                  <ExchangeLogo
+                    src={selectedApi.logoSrc}
+                    alt={formatExchangeName(selectedApi.exchangeName, t)}
+                    size={40}
+                  />
                 ) : (
                   <div className='bg-muted text-muted-foreground flex size-10 shrink-0 items-center justify-center rounded-lg border'>
                     <SlidersHorizontalIcon className='size-4' />
                   </div>
                 )}
                 <div className='min-w-0 space-y-0.5'>
-                  <CardTitle className='text-base font-semibold tracking-tight'>开仓参数</CardTitle>
+                  <CardTitle className='text-base font-semibold tracking-tight'>{t('page.paramsTitle')}</CardTitle>
                   <CardDescription className='text-muted-foreground text-[11px] leading-snug'>
                     {selectedApi
-                      ? `${selectedApi.exchangeName} · ${selectedApi.label}`
+                      ? `${formatExchangeName(selectedApi.exchangeName, t)} · ${selectedApi.label}`
                       : loading
-                        ? '加载中…'
+                        ? t('page.loading')
                         : apis.length === 0
-                          ? '无可选 API'
-                          : '在左侧选择一个 API 后开始配置'}
+                          ? t('page.noApi')
+                          : t('page.selectApiHint')}
                   </CardDescription>
                 </div>
               </div>
               {selectedApi ? (
                 <div className='text-muted-foreground flex flex-wrap items-center gap-1.5 text-[11px] sm:justify-end'>
                   <span className='bg-background/80 rounded border px-1.5 py-0.5 tabular-nums'>
-                    余额{' '}
+                    {t('page.balance')}{' '}
                     <span className='text-foreground font-medium'>{formatUsdtBalance(selectedApi.balanceUsdt)}</span>
                     <span className='ml-0.5'>USDT</span>
                   </span>
-                  <span className='bg-background/80 rounded border px-1.5 py-0.5'>单位 {selectedApi.quantityUnit}</span>
+                  <span className='bg-background/80 rounded border px-1.5 py-0.5'>
+                    {t('page.unit', { unit: formatQuantityUnit(selectedApi.quantityUnit, t) })}
+                  </span>
                 </div>
               ) : null}
             </div>
@@ -373,7 +390,7 @@ export function AddPositionsPage() {
             <div className='space-y-1 px-4 pt-4 sm:px-5'>
               <div className='flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-3'>
                 <div className='min-w-0 flex-1 space-y-1'>
-                  <Label className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>交易对</Label>
+                  <Label className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>{t('page.symbol')}</Label>
                   <SymbolCombobox
                     symbols={symbols}
                     value={symbol}
@@ -381,10 +398,10 @@ export function AddPositionsPage() {
                     disabled={!selectedApi || symbolsLoading || loading}
                     placeholder={
                       !selectedApi
-                        ? '请先选择 API'
+                        ? t('page.selectApiFirst')
                         : symbolsLoading
-                          ? '加载交易对…'
-                          : '选择或搜索交易对'
+                          ? t('page.loadingSymbols')
+                          : t('page.pickSymbol')
                     }
                   />
                 </div>
@@ -393,7 +410,7 @@ export function AddPositionsPage() {
                     htmlFor='add-positions-leverage'
                     className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'
                   >
-                    杠杆
+                    {t('page.leverage')}
                   </Label>
                   <Input
                     id='add-positions-leverage'
@@ -409,7 +426,7 @@ export function AddPositionsPage() {
               </div>
               {symbolsError ? <p className='text-destructive text-[11px] leading-tight'>{symbolsError}</p> : null}
               {selectedApi && !symbolsLoading && !symbolsError && symbols.length === 0 ? (
-                <p className='text-muted-foreground text-[11px] leading-tight'>该交易所未返回可用交易对。</p>
+                <p className='text-muted-foreground text-[11px] leading-tight'>{t('page.noSymbols')}</p>
               ) : null}
             </div>
 
@@ -417,25 +434,25 @@ export function AddPositionsPage() {
 
             <div className='grid gap-3 px-4 sm:grid-cols-2 sm:px-5'>
               <div className='space-y-1'>
-                <Label className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>仓位模式</Label>
+                <Label className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>{t('page.marginMode')}</Label>
                 <SegmentedTwo<PositionMarginMode>
                   value={marginMode}
                   onChange={setMarginMode}
                   options={[
-                    { value: 'cross', label: '全仓' },
-                    { value: 'isolated', label: '逐仓' },
+                    { value: 'cross', label: t('page.cross') },
+                    { value: 'isolated', label: t('page.isolated') },
                   ]}
                 />
               </div>
               <div className='space-y-1'>
-                <Label className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>开仓方向</Label>
+                <Label className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>{t('page.side')}</Label>
                 <SegmentedTwo<OpenSide>
                   variant='direction'
                   value={side}
                   onChange={setSide}
                   options={[
-                    { value: 'long', label: '多' },
-                    { value: 'short', label: '空' },
+                    { value: 'long', label: t('page.long') },
+                    { value: 'short', label: t('page.short') },
                   ]}
                 />
               </div>
@@ -445,15 +462,21 @@ export function AddPositionsPage() {
 
             <div className='space-y-1 px-4 sm:px-5'>
               <Label htmlFor='open-qty' className='text-muted-foreground text-[10px] font-medium tracking-wide uppercase'>
-                开仓量
+                {t('page.qty')}
                 {selectedApi ? (
-                  <span className='text-muted-foreground ml-1 font-normal normal-case'>({selectedApi.quantityUnit})</span>
+                  <span className='text-muted-foreground ml-1 font-normal normal-case'>
+                    ({formatQuantityUnit(selectedApi.quantityUnit, t)})
+                  </span>
                 ) : null}
               </Label>
               <Input
                 id='open-qty'
                 inputMode='decimal'
-                placeholder={selectedApi ? `数量，${selectedApi.quantityUnit}` : '请先选择 API'}
+                placeholder={
+                  selectedApi
+                    ? t('page.qtyPlaceholder', { unit: formatQuantityUnit(selectedApi.quantityUnit, t) })
+                    : t('page.selectApiFirst')
+                }
                 value={quantity}
                 onChange={e => setQuantity(e.target.value)}
                 disabled={!selectedApi || loading}
@@ -471,7 +494,7 @@ export function AddPositionsPage() {
                 onClick={openConfirm}
                 disabled={!selectedApi || loading}
               >
-                开仓
+                {t('page.open')}
               </Button>
             </div>
           </CardContent>

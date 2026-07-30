@@ -1708,5 +1708,229 @@
       "invalidAddress": "地址無效",
       "loadMoreFailed": "載入更多失敗，請稍後重試"
     }
+  },
+  "DashboardStudioTasks": {
+    "page": {
+      "title": "跟單任務管理",
+      "subtitle": "按交易員或按 API 聚合查看和管理跟單任務",
+      "empty": "暫無進行中的跟單任務",
+      "unnamedApi": "未命名 API",
+      "fetchFailed": "取得任務列表失敗",
+      "gridView": "卡片視圖",
+      "tableView": "列表視圖",
+      "studioVipOnly": "工作室 VIP 專享"
+    },
+    "toast": {
+      "stopSuccess": "終止跟單成功",
+      "stopFailed": "終止跟單失敗",
+      "stopRequestFailed": "終止請求失敗，請重試"
+    },
+    "table": {
+      "taskId": "任務ID",
+      "trader": "交易員",
+      "invest": "投資額",
+      "createdAt": "建立時間",
+      "actions": "操作",
+      "traderId": "交易員 ID:",
+      "follow": "跟單",
+      "runningCount": "共 {count} 個進行中任務",
+      "view": "查看詳情",
+      "stop": "終止跟單",
+      "stopTitle": "確認終止跟單？",
+      "stopDesc": "終止任務不會進行平倉，目前如有持倉，後續請自行平倉。",
+      "cancel": "取消",
+      "confirmStop": "確認終止"
+    },
+    "platforms": {
+      "3": "幣coin",
+      "4": "熱門",
+      "9": "NOF1 / AI模型",
+      "unknown": "未知"
+    },
+    "roleType": {
+      "okxContract": "合約帶單",
+      "okxProfile": "個人概況",
+      "okxCookieProject": "跟單專案",
+      "binancePublic": "公開帶單",
+      "binanceHidden": "隱藏帶單",
+      "binanceSmart": "聰明錢",
+      "bicoinOps": "操作記錄",
+      "bicoinPosition": "合約倉位"
+    },
+    "utils": {
+      "unknownExchange": "未知"
+    }
+  },
+  "DashboardPositions": {
+    "page": {
+      "title": "目前持倉",
+      "subtitle": "目前工作室下所有交易 API 的即時持倉資訊",
+      "refresh": "重新整理",
+      "empty": "目前沒有交易 API 或無法取得持倉資訊",
+      "studioVipOnly": "工作室 VIP 專享",
+      "balance": "資金: {amount} USDT",
+      "fetchError": "取得失敗: {error}",
+      "flat": "目前空倉",
+      "long": "多",
+      "short": "空"
+    },
+    "fields": {
+      "side": "方向",
+      "size": "倉位",
+      "entry": "開倉價",
+      "mark": "標記",
+      "markPrice": "標記價",
+      "pnl": "收益",
+      "pnlRate": "收益率",
+      "time": "時間",
+      "openTime": "開倉時間",
+      "symbol": "交易對",
+      "actions": "操作",
+      "closeAll": "全平"
+    },
+    "toast": {
+      "refreshOk": "重新整理成功",
+      "loadApiFailed": "載入 API 列表失敗",
+      "loadPosFailed": "載入持倉失敗",
+      "loadPosRetry": "載入持倉失敗，請稍後重試",
+      "closeFailed": "全平請求失敗",
+      "closeRetry": "全平請求失敗，請稍後重試",
+      "closeSubmitted": "{api} 的 {symbol} 倉位已提交全平請求"
+    },
+    "dialog": {
+      "title": "確認平倉",
+      "desc": "確定要全平 {api} 的 {symbol} 倉位嗎？此操作將發送市價全平請求到交易所。",
+      "cancel": "取消",
+      "confirm": "確認平倉",
+      "closing": "平倉中..."
+    }
+  },
+  "DashboardAddPositions": {
+    "page": {
+      "title": "手動補倉",
+      "subtitle": "選擇交易 API 手動新增倉位（列表來自帳戶已綁定的交易 API）。",
+      "refreshApi": "重新整理 API",
+      "studioVipOnly": "工作室 VIP 專享",
+      "loadingApis": "載入 API 列表…",
+      "loadApiFailedTitle": "無法載入 API",
+      "retry": "重試",
+      "noEligibleApi": "暫無可用於手動補倉的 API（需非唯讀的「交易 / 跟單」權限）。請前往「API 管理」新增或調整權限。",
+      "paramsTitle": "開倉參數",
+      "loading": "載入中…",
+      "noApi": "無可選 API",
+      "selectApiHint": "在左側選擇一個 API 後開始設定",
+      "balance": "餘額",
+      "unit": "單位 {unit}",
+      "symbol": "交易對",
+      "selectApiFirst": "請先選擇 API",
+      "loadingSymbols": "載入交易對…",
+      "pickSymbol": "選擇或搜尋交易對",
+      "leverage": "槓桿",
+      "noSymbols": "該交易所未回傳可用交易對。",
+      "marginMode": "倉位模式",
+      "cross": "全倉",
+      "isolated": "逐倉",
+      "side": "開倉方向",
+      "long": "多",
+      "short": "空",
+      "qty": "開倉量",
+      "qtyPlaceholder": "數量，{unit}",
+      "open": "開倉",
+      "unknownExchange": "未知",
+      "unitContract": "張",
+      "unitCoin": "個"
+    },
+    "picker": {
+      "title": "選擇交易 API",
+      "desc": "選擇 API 後在右側開倉",
+      "unit": "單位 {unit}"
+    },
+    "symbolBox": {
+      "placeholder": "選擇或搜尋交易對",
+      "search": "搜尋交易對...",
+      "empty": "無符合交易對"
+    },
+    "errors": {
+      "needApi": "請先選擇 API",
+      "needSymbol": "請選擇交易對",
+      "needQty": "請輸入有效的開倉量（{unit}）",
+      "needLeverage": "請輸入 1–125 的整數槓桿",
+      "invalidApi": "API 參數無效",
+      "invalidQty": "開倉量無效",
+      "fetchApis": "取得 API 列表失敗",
+      "fetchSymbols": "取得交易對失敗",
+      "openFailed": "開倉失敗"
+    },
+    "toast": {
+      "openSubmitted": "開倉請求已提交"
+    },
+    "confirm": {
+      "title": "確認開倉",
+      "lead": "核對開倉參數：交易對、槓桿、倉位模式、方向與數量",
+      "hint": "請核對以下參數，確認後將提交開倉請求",
+      "summaryAria": "開倉參數摘要",
+      "balance": "帳戶餘額",
+      "symbol": "交易對",
+      "leverage": "槓桿",
+      "marginMode": "倉位模式",
+      "side": "方向",
+      "qty": "開倉量",
+      "empty": "無有效參數",
+      "cancel": "取消",
+      "confirm": "確認開倉",
+      "submitting": "提交中…"
+    }
+  },
+  "DashboardInvite": {
+    "page": {
+      "title": "邀請獎勵",
+      "subtitle": "邀請好友註冊，解鎖額外額度與銷售分成"
+    },
+    "codeCard": {
+      "title": "邀請碼與任務獎勵",
+      "desc": "邀請碼展示與邀請獎勵進度總覽",
+      "myCode": "我的邀請碼",
+      "empty": "暫無",
+      "copyLink": "複製邀請連結",
+      "codeHint": "邀請好友註冊使用，可逐步解鎖額外 API 授權、跟單任務額度和帳戶資金上限獎勵（僅適用於免費用戶）。",
+      "effectiveInvites": "有效邀請",
+      "totalRegistrations": "累計註冊",
+      "peopleUnit": "人",
+      "nextStage": "下一階段",
+      "inviteMore": "再邀請 {count} 人",
+      "allUnlocked": "全部獎勵已解鎖"
+    },
+    "progress": {
+      "title": "任務進度",
+      "hint": "關鍵節點獎勵將按有效邀請人數逐步解鎖（僅適用於免費用戶）",
+      "peopleCount": "{count} 人",
+      "unlocked": "已解鎖",
+      "inProgress": "進行中",
+      "pending": "待完成",
+      "milestoneTitle": "有效邀請 {count} 人",
+      "reward3": "API 授權資格 +1，跟單任務額度 +1",
+      "reward5": "帳戶資金上限提升 500U",
+      "reward10": "API 授權資格 +1，跟單任務額度 +1，帳戶資金上限提升 1000U"
+    },
+    "commission": {
+      "title": "銷售分成",
+      "desc": "邀請用戶付費後可累計合作收益",
+      "totalRevenue": "累計分成收益 (USDT)",
+      "vipNotice": "開通 年費VIP 或 年費工作室VIP 即可成為正式代理合作夥伴，進行收益提現。",
+      "benefitsTitle": "代理合作夥伴權益",
+      "benefit1": "邀請好友付費可獲得高達 <pct>40%</pct>~<pct>70%</pct> 的高額返佣",
+      "benefit2": "支援二級代理返佣體系，建立您的推廣網路",
+      "benefit3": "獨立專屬的代理後台，全方位數據分析與管理",
+      "benefit4": "可自訂邀請碼，方便推廣和管理",
+      "benefit5": "支援交易所返佣綁定驗證，可以限制受邀人僅能添加使用返佣 API 進行跟單交易",
+      "benefit6": "綁定返佣的客戶自動享受5折購買 VIP 服務",
+      "benefit7": "提現秒到帳，支援 USDT (TRC20/ERC20) 等網路",
+      "upgradeCta": "立即升級開通代理"
+    },
+    "toast": {
+      "nothingToCopy": "暫無可複製的內容",
+      "noInviteCode": "暫無邀請碼",
+      "linkCopied": "邀請連結已複製"
+    }
   }
 }

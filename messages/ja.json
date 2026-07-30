@@ -1706,5 +1706,229 @@
       "invalidAddress": "無効なアドレスです",
       "loadMoreFailed": "追加読み込みに失敗しました。後でもう一度お試しください"
     }
+  },
+  "DashboardStudioTasks": {
+    "page": {
+      "title": "コピータスク管理",
+      "subtitle": "トレーダーまたは API 単位でコピータスクを管理",
+      "empty": "実行中のコピータスクはありません",
+      "unnamedApi": "名称未設定 API",
+      "fetchFailed": "タスク一覧の取得に失敗しました",
+      "gridView": "カード表示",
+      "tableView": "リスト表示",
+      "studioVipOnly": "Studio VIP 限定"
+    },
+    "toast": {
+      "stopSuccess": "コピーを停止しました",
+      "stopFailed": "停止に失敗しました",
+      "stopRequestFailed": "停止リクエストに失敗しました。再試行してください"
+    },
+    "table": {
+      "taskId": "タスクID",
+      "trader": "トレーダー",
+      "invest": "投資額",
+      "createdAt": "作成日時",
+      "actions": "操作",
+      "traderId": "トレーダー ID:",
+      "follow": "コピー",
+      "runningCount": "実行中 {count} 件",
+      "view": "詳細を見る",
+      "stop": "コピーを停止",
+      "stopTitle": "このコピーを停止しますか？",
+      "stopDesc": "停止しても決済は行われません。建玉がある場合はご自身で決済してください。",
+      "cancel": "キャンセル",
+      "confirmStop": "停止する"
+    },
+    "platforms": {
+      "3": "BiCoin",
+      "4": "人気",
+      "9": "NOF1 / AIモデル",
+      "unknown": "不明"
+    },
+    "roleType": {
+      "okxContract": "先物リード",
+      "okxProfile": "プロフィール",
+      "okxCookieProject": "コピー案件",
+      "binancePublic": "公開リード",
+      "binanceHidden": "非公開リード",
+      "binanceSmart": "スマートマネー",
+      "bicoinOps": "操作履歴",
+      "bicoinPosition": "先物建玉"
+    },
+    "utils": {
+      "unknownExchange": "不明"
+    }
+  },
+  "DashboardPositions": {
+    "page": {
+      "title": "建玉一覧",
+      "subtitle": "スタジオ内の全取引 API のリアルタイム建玉",
+      "refresh": "更新",
+      "empty": "取引 API がないか、建玉を取得できません",
+      "studioVipOnly": "Studio VIP 限定",
+      "balance": "資金: {amount} USDT",
+      "fetchError": "取得失敗: {error}",
+      "flat": "建玉なし",
+      "long": "ロング",
+      "short": "ショート"
+    },
+    "fields": {
+      "side": "方向",
+      "size": "建玉",
+      "entry": "建値",
+      "mark": "マーク",
+      "markPrice": "マーク価格",
+      "pnl": "損益",
+      "pnlRate": "収益率",
+      "time": "時間",
+      "openTime": "建玉日時",
+      "symbol": "銘柄",
+      "actions": "操作",
+      "closeAll": "全決済"
+    },
+    "toast": {
+      "refreshOk": "更新しました",
+      "loadApiFailed": "API 一覧の取得に失敗",
+      "loadPosFailed": "建玉の取得に失敗",
+      "loadPosRetry": "建玉の取得に失敗しました。再試行してください",
+      "closeFailed": "全決済リクエスト失敗",
+      "closeRetry": "全決済に失敗しました。再試行してください",
+      "closeSubmitted": "{api} の {symbol} 建玉の全決済を送信しました"
+    },
+    "dialog": {
+      "title": "決済の確認",
+      "desc": "{api} の {symbol} 建玉を全決済しますか？取引所へ成行全決済を送信します。",
+      "cancel": "キャンセル",
+      "confirm": "決済する",
+      "closing": "決済中..."
+    }
+  },
+  "DashboardAddPositions": {
+    "page": {
+      "title": "手動建玉追加",
+      "subtitle": "取引 API を選び、手動で建玉を追加します（連携済み取引 API）。",
+      "refreshApi": "API を更新",
+      "studioVipOnly": "Studio VIP 限定",
+      "loadingApis": "API 一覧を読み込み中…",
+      "loadApiFailedTitle": "API を読み込めません",
+      "retry": "再試行",
+      "noEligibleApi": "手動追加に使える API がありません（読み取り専用でない取引/コピー権限が必要）。API 管理で追加または権限を調整してください。",
+      "paramsTitle": "建玉パラメータ",
+      "loading": "読み込み中…",
+      "noApi": "選択可能な API なし",
+      "selectApiHint": "左側で API を選んで設定を開始",
+      "balance": "残高",
+      "unit": "単位 {unit}",
+      "symbol": "銘柄",
+      "selectApiFirst": "先に API を選択",
+      "loadingSymbols": "銘柄を読み込み中…",
+      "pickSymbol": "銘柄を選択/検索",
+      "leverage": "レバレッジ",
+      "noSymbols": "この取引所から銘柄が返りませんでした。",
+      "marginMode": "証拠金モード",
+      "cross": "クロス",
+      "isolated": "分離",
+      "side": "方向",
+      "long": "ロング",
+      "short": "ショート",
+      "qty": "数量",
+      "qtyPlaceholder": "数量、{unit}",
+      "open": "建玉",
+      "unknownExchange": "不明",
+      "unitContract": "枚",
+      "unitCoin": "個"
+    },
+    "picker": {
+      "title": "取引 API を選択",
+      "desc": "API を選び、右側で建玉",
+      "unit": "単位 {unit}"
+    },
+    "symbolBox": {
+      "placeholder": "銘柄を選択/検索",
+      "search": "銘柄を検索...",
+      "empty": "一致する銘柄なし"
+    },
+    "errors": {
+      "needApi": "先に API を選択してください",
+      "needSymbol": "銘柄を選択してください",
+      "needQty": "有効な数量を入力（{unit}）",
+      "needLeverage": "1–125 の整数レバレッジを入力",
+      "invalidApi": "API パラメータが無効",
+      "invalidQty": "数量が無効",
+      "fetchApis": "API 一覧の取得に失敗",
+      "fetchSymbols": "銘柄の取得に失敗",
+      "openFailed": "建玉に失敗"
+    },
+    "toast": {
+      "openSubmitted": "建玉リクエストを送信しました"
+    },
+    "confirm": {
+      "title": "建玉の確認",
+      "lead": "銘柄・レバレッジ・証拠金モード・方向・数量を確認",
+      "hint": "以下を確認して送信します",
+      "summaryAria": "建玉パラメータ要約",
+      "balance": "口座残高",
+      "symbol": "銘柄",
+      "leverage": "レバレッジ",
+      "marginMode": "証拠金モード",
+      "side": "方向",
+      "qty": "数量",
+      "empty": "有効なパラメータなし",
+      "cancel": "キャンセル",
+      "confirm": "建玉する",
+      "submitting": "送信中…"
+    }
+  },
+  "DashboardInvite": {
+    "page": {
+      "title": "招待報酬",
+      "subtitle": "友人を招待して追加枠と販売コミッションを解放"
+    },
+    "codeCard": {
+      "title": "招待コードとタスク報酬",
+      "desc": "招待コードと報酬進捗の概要",
+      "myCode": "マイ招待コード",
+      "empty": "なし",
+      "copyLink": "招待リンクをコピー",
+      "codeHint": "友人を招待すると、追加の API 枠・コピータスク枠・口座資金上限を段階的に解放できます（無料ユーザーのみ）。",
+      "effectiveInvites": "有効招待",
+      "totalRegistrations": "累計登録",
+      "peopleUnit": "人",
+      "nextStage": "次の段階",
+      "inviteMore": "あと {count} 人招待",
+      "allUnlocked": "すべての報酬を解放済み"
+    },
+    "progress": {
+      "title": "タスク進捗",
+      "hint": "マイルストーン報酬は有効招待数に応じて解放されます（無料ユーザーのみ）",
+      "peopleCount": "{count} 人",
+      "unlocked": "解放済み",
+      "inProgress": "進行中",
+      "pending": "未完了",
+      "milestoneTitle": "有効招待 {count} 人",
+      "reward3": "API 枠 +1、コピータスク枠 +1",
+      "reward5": "口座資金上限 +500U",
+      "reward10": "API 枠 +1、コピータスク枠 +1、口座資金上限 +1000U"
+    },
+    "commission": {
+      "title": "販売コミッション",
+      "desc": "招待ユーザーの課金でパートナー収益を蓄積",
+      "totalRevenue": "累計コミッション (USDT)",
+      "vipNotice": "年額 VIP または年額スタジオ VIP を契約すると正式パートナーとなり、収益を出金できます。",
+      "benefitsTitle": "パートナー特典",
+      "benefit1": "友人の課金で最大 <pct>40%</pct>~<pct>70%</pct> の高額リベート",
+      "benefit2": "2 階層アフィリエイトで紹介ネットワークを構築",
+      "benefit3": "専用パートナー管理画面で分析と管理が可能",
+      "benefit4": "カスタム招待コードで宣伝が簡単",
+      "benefit5": "取引所リベート紐付け検証により、被招待者をリベート API のコピー取引に制限可能",
+      "benefit6": "リベート紐付け顧客は VIP を半額で購入可能",
+      "benefit7": "USDT (TRC20/ERC20) などで即時出金",
+      "upgradeCta": "今すぐアップグレードしてパートナーになる"
+    },
+    "toast": {
+      "nothingToCopy": "コピーできる内容がありません",
+      "noInviteCode": "招待コードがありません",
+      "linkCopied": "招待リンクをコピーしました"
+    }
   }
 }

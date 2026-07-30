@@ -1706,5 +1706,229 @@
       "invalidAddress": "Invalid address",
       "loadMoreFailed": "Failed to load more. Please try again"
     }
+  },
+  "DashboardStudioTasks": {
+    "page": {
+      "title": "Copy Task Management",
+      "subtitle": "View and manage copy tasks grouped by trader or API",
+      "empty": "No running copy tasks",
+      "unnamedApi": "Unnamed API",
+      "fetchFailed": "Failed to load task list",
+      "gridView": "Card view",
+      "tableView": "Table view",
+      "studioVipOnly": "Studio VIP only"
+    },
+    "toast": {
+      "stopSuccess": "Task stopped",
+      "stopFailed": "Failed to stop task",
+      "stopRequestFailed": "Stop request failed, please retry"
+    },
+    "table": {
+      "taskId": "Task ID",
+      "trader": "Trader",
+      "invest": "Investment",
+      "createdAt": "Created at",
+      "actions": "Actions",
+      "traderId": "Trader ID:",
+      "follow": "Copy",
+      "runningCount": "{count} running tasks",
+      "view": "View details",
+      "stop": "Stop task",
+      "stopTitle": "Stop this copy task?",
+      "stopDesc": "Stopping will not close positions. Close any open positions yourself afterward.",
+      "cancel": "Cancel",
+      "confirmStop": "Confirm stop"
+    },
+    "platforms": {
+      "3": "BiCoin",
+      "4": "Hot",
+      "9": "NOF1 / AI Model",
+      "unknown": "Unknown"
+    },
+    "roleType": {
+      "okxContract": "Futures lead",
+      "okxProfile": "Profile",
+      "okxCookieProject": "Copy project",
+      "binancePublic": "Public lead",
+      "binanceHidden": "Hidden lead",
+      "binanceSmart": "Smart money",
+      "bicoinOps": "Operations",
+      "bicoinPosition": "Futures positions"
+    },
+    "utils": {
+      "unknownExchange": "Unknown"
+    }
+  },
+  "DashboardPositions": {
+    "page": {
+      "title": "Open Positions",
+      "subtitle": "Live positions across all trading APIs in your studio",
+      "refresh": "Refresh",
+      "empty": "No trading APIs or positions unavailable",
+      "studioVipOnly": "Studio VIP only",
+      "balance": "Equity: {amount} USDT",
+      "fetchError": "Failed: {error}",
+      "flat": "No open positions",
+      "long": "Long",
+      "short": "Short"
+    },
+    "fields": {
+      "side": "Side",
+      "size": "Size",
+      "entry": "Entry",
+      "mark": "Mark",
+      "markPrice": "Mark price",
+      "pnl": "PnL",
+      "pnlRate": "ROI",
+      "time": "Time",
+      "openTime": "Opened at",
+      "symbol": "Symbol",
+      "actions": "Actions",
+      "closeAll": "Close all"
+    },
+    "toast": {
+      "refreshOk": "Refreshed",
+      "loadApiFailed": "Failed to load APIs",
+      "loadPosFailed": "Failed to load positions",
+      "loadPosRetry": "Failed to load positions, please retry",
+      "closeFailed": "Close-all request failed",
+      "closeRetry": "Close-all failed, please retry",
+      "closeSubmitted": "Close-all submitted for {api} / {symbol}"
+    },
+    "dialog": {
+      "title": "Confirm close",
+      "desc": "Close all {symbol} positions on {api}? This sends a market close-all to the exchange.",
+      "cancel": "Cancel",
+      "confirm": "Confirm close",
+      "closing": "Closing..."
+    }
+  },
+  "DashboardAddPositions": {
+    "page": {
+      "title": "Manual Add Position",
+      "subtitle": "Pick a trading API and open a position manually (from your bound trading APIs).",
+      "refreshApi": "Refresh APIs",
+      "studioVipOnly": "Studio VIP only",
+      "loadingApis": "Loading APIs…",
+      "loadApiFailedTitle": "Failed to load APIs",
+      "retry": "Retry",
+      "noEligibleApi": "No APIs available for manual add (needs non-readonly trade/copy permission). Add or adjust permissions in API Management.",
+      "paramsTitle": "Open parameters",
+      "loading": "Loading…",
+      "noApi": "No APIs available",
+      "selectApiHint": "Select an API on the left to start",
+      "balance": "Balance",
+      "unit": "Unit {unit}",
+      "symbol": "Symbol",
+      "selectApiFirst": "Select an API first",
+      "loadingSymbols": "Loading symbols…",
+      "pickSymbol": "Select or search symbol",
+      "leverage": "Leverage",
+      "noSymbols": "No symbols returned by this exchange.",
+      "marginMode": "Margin mode",
+      "cross": "Cross",
+      "isolated": "Isolated",
+      "side": "Side",
+      "long": "Long",
+      "short": "Short",
+      "qty": "Quantity",
+      "qtyPlaceholder": "Qty, {unit}",
+      "open": "Open",
+      "unknownExchange": "Unknown",
+      "unitContract": "contracts",
+      "unitCoin": "coins"
+    },
+    "picker": {
+      "title": "Select trading API",
+      "desc": "Choose an API, then open on the right",
+      "unit": "Unit {unit}"
+    },
+    "symbolBox": {
+      "placeholder": "Select or search symbol",
+      "search": "Search symbols...",
+      "empty": "No matching symbols"
+    },
+    "errors": {
+      "needApi": "Select an API first",
+      "needSymbol": "Select a symbol",
+      "needQty": "Enter a valid quantity ({unit})",
+      "needLeverage": "Enter an integer leverage from 1–125",
+      "invalidApi": "Invalid API parameters",
+      "invalidQty": "Invalid quantity",
+      "fetchApis": "Failed to load APIs",
+      "fetchSymbols": "Failed to load symbols",
+      "openFailed": "Open failed"
+    },
+    "toast": {
+      "openSubmitted": "Open request submitted"
+    },
+    "confirm": {
+      "title": "Confirm open",
+      "lead": "Review symbol, leverage, margin mode, side and size",
+      "hint": "Confirm the parameters below, then submit",
+      "summaryAria": "Open parameters summary",
+      "balance": "Account balance",
+      "symbol": "Symbol",
+      "leverage": "Leverage",
+      "marginMode": "Margin mode",
+      "side": "Side",
+      "qty": "Quantity",
+      "empty": "No valid parameters",
+      "cancel": "Cancel",
+      "confirm": "Confirm open",
+      "submitting": "Submitting…"
+    }
+  },
+  "DashboardInvite": {
+    "page": {
+      "title": "Invite Rewards",
+      "subtitle": "Invite friends to unlock extra quotas and sales commissions"
+    },
+    "codeCard": {
+      "title": "Invite code & task rewards",
+      "desc": "Your invite code and reward progress overview",
+      "myCode": "My invite code",
+      "empty": "None",
+      "copyLink": "Copy invite link",
+      "codeHint": "Invite friends to register and gradually unlock extra API slots, copy-task quotas, and account fund limits (free users only).",
+      "effectiveInvites": "Effective invites",
+      "totalRegistrations": "Total signups",
+      "peopleUnit": "",
+      "nextStage": "Next stage",
+      "inviteMore": "Invite {count} more",
+      "allUnlocked": "All rewards unlocked"
+    },
+    "progress": {
+      "title": "Task progress",
+      "hint": "Milestone rewards unlock by effective invite count (free users only)",
+      "peopleCount": "{count}",
+      "unlocked": "Unlocked",
+      "inProgress": "In progress",
+      "pending": "Pending",
+      "milestoneTitle": "{count} effective invites",
+      "reward3": "API slot +1, copy-task quota +1",
+      "reward5": "Account fund limit +500U",
+      "reward10": "API slot +1, copy-task quota +1, account fund limit +1000U"
+    },
+    "commission": {
+      "title": "Sales commission",
+      "desc": "Earn partner revenue when invited users pay",
+      "totalRevenue": "Total commission (USDT)",
+      "vipNotice": "Subscribe to Annual VIP or Annual Studio VIP to become an official partner and withdraw earnings.",
+      "benefitsTitle": "Partner benefits",
+      "benefit1": "Earn up to <pct>40%</pct>~<pct>70%</pct> commission when friends pay",
+      "benefit2": "Two-level affiliate system to grow your referral network",
+      "benefit3": "Dedicated partner dashboard with full analytics and management",
+      "benefit4": "Custom invite codes for easier promotion",
+      "benefit5": "Exchange rebate binding verification—restrict invitees to rebate APIs for copy trading",
+      "benefit6": "Rebate-bound customers get 50% off VIP purchases",
+      "benefit7": "Instant withdrawals via USDT (TRC20/ERC20) and more",
+      "upgradeCta": "Upgrade to become a partner"
+    },
+    "toast": {
+      "nothingToCopy": "Nothing to copy",
+      "noInviteCode": "No invite code yet",
+      "linkCopied": "Invite link copied"
+    }
   }
 }
