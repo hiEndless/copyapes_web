@@ -27,5 +27,5 @@ export default function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/', '/(zh|en)/:path*', '/((?!_next|_vercel|.*\\..*).*)']
+  matcher: ['/', '/(zh-TW|zh|en|ja|ko)/:path*', '/((?!_next|_vercel|.*\\..*).*)']
 };

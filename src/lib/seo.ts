@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 
+import { isChineseLocale, localeToOgLocale } from '@/i18n/locales'
 import { routing } from '@/i18n/routing'
 
 const DEFAULT_SITE_URL = 'https://copyapes.com'
@@ -35,7 +36,7 @@ const OG_IMAGE = {
 }
 
 export function getOgImagePath(locale: string): string {
-  return locale === 'zh' ? '/images/og-image-zh.png' : '/images/og-image.png'
+  return isChineseLocale(locale) ? '/images/og-image-zh.png' : '/images/og-image.png'
 }
 
 export function buildOgImage(locale: string, alt: string) {
@@ -47,7 +48,18 @@ export function buildOgImage(locale: string, alt: string) {
 }
 
 export function localeToLanguageTag(locale: string): string {
-  return locale === 'zh' ? 'zh-CN' : 'en-US'
+  switch (locale) {
+    case 'zh':
+      return 'zh-CN'
+    case 'zh-TW':
+      return 'zh-TW'
+    case 'ja':
+      return 'ja'
+    case 'ko':
+      return 'ko'
+    default:
+      return 'en-US'
+  }
 }
 
 export function getLanguageAlternates(path: string): Record<string, string> {
@@ -97,7 +109,7 @@ export function buildSocialMetadata(options: {
       type: 'website',
       siteName: options.siteName,
       url: getCanonicalUrl(options.path, options.locale),
-      locale: options.locale === 'zh' ? 'zh_CN' : 'en_US',
+      locale: localeToOgLocale(options.locale),
       images: [ogImage]
     },
     twitter: {

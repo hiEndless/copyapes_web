@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from 'next-intl'
 import Script from 'next/script'
 import { toast } from 'sonner'
 
+import { localeToGoogleSignInLocale } from '@/i18n/locales'
 import { useRouter } from '@/i18n/routing'
 
 import { authApi } from '@/api/auth'
@@ -123,7 +124,7 @@ const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) =>
       text: 'signin_with',
       shape: 'rectangular',
       width,
-      locale: locale === 'zh' ? 'zh_CN' : 'en',
+      locale: localeToGoogleSignInLocale(locale),
     })
     initializedRef.current = true
   }, [clientId, scriptReady, handleCredential, locale])

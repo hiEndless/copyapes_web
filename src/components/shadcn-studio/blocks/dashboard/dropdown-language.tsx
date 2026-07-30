@@ -5,6 +5,7 @@ import type { ReactNode } from 'react'
 import { usePathname, useRouter } from '@/i18n/routing'
 import { useLocale } from 'next-intl'
 
+import { LOCALE_OPTIONS } from '@/i18n/locales'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -33,20 +34,16 @@ const LanguageDropdown = ({ defaultOpen, align, trigger }: Props) => {
       <DropdownMenuTrigger asChild>{trigger}</DropdownMenuTrigger>
       <DropdownMenuContent className='w-50' align={align || 'end'}>
         <DropdownMenuRadioGroup value={locale} onValueChange={switchLocale}>
-          <DropdownMenuRadioItem
-            value='zh'
-            className='data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground pl-2 text-base flex items-center gap-2 [&>span:first-child]:hidden'
-          >
-            <span className='text-base'>🇨🇳</span>
-            <span>简体中文</span>
-          </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem
-            value='en'
-            className='data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground pl-2 text-base flex items-center gap-2 [&>span:first-child]:hidden'
-          >
-            <span className='text-base'>🇺🇸</span>
-            <span>English</span>
-          </DropdownMenuRadioItem>
+          {LOCALE_OPTIONS.map(option => (
+            <DropdownMenuRadioItem
+              key={option.value}
+              value={option.value}
+              className='data-[state=checked]:bg-accent data-[state=checked]:text-accent-foreground flex items-center gap-2 pl-2 text-sm [&>span:first-child]:hidden'
+            >
+              <img src={option.flag} alt='' className='h-3.5 w-5 rounded-[1px] object-cover' />
+              <span>{option.label}</span>
+            </DropdownMenuRadioItem>
+          ))}
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
     </DropdownMenu>

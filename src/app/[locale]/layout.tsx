@@ -6,6 +6,7 @@ import { notFound } from 'next/navigation'
 import { Geist, Geist_Mono } from 'next/font/google'
 import type { Metadata } from 'next'
 
+import { localeToOgLocale } from '@/i18n/locales'
 import { routing } from '@/i18n/routing'
 import AnalyticsScripts from '@/components/analytics-scripts'
 import { buildOgImage, getSiteUrl, localeToLanguageTag, SITE_ICONS } from '@/lib/seo'
@@ -52,7 +53,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       description: t('description'),
       type: 'website',
       siteName: t('siteName'),
-      locale: locale === 'zh' ? 'zh_CN' : 'en_US',
+      locale: localeToOgLocale(locale),
       images: [buildOgImage(locale, t('titleDefault'))]
     },
     twitter: {

@@ -63,6 +63,7 @@ import Alert10 from '@/components/shadcn-studio/alert/alert-10'
 
 import Logo from '@/components/logo'
 import { settingsApi } from '@/api/settings'
+import { isChineseLocale } from '@/i18n/locales'
 import { TOUR_ANCHORS, tourAnchor, type TourAnchor } from '@/features/tour/anchors'
 import { TourProvider } from '@/features/tour/tour-provider'
 import TourHelpMenu from '@/features/tour/components/tour-help-menu'
@@ -541,7 +542,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                   target='_blank'
                 >
                   <img
-                    src={locale === 'zh' ? '/images/copyapes-chrome-zh.png' : '/images/copyapes-chrome-en.png'}
+                    src={isChineseLocale(locale) ? '/images/copyapes-chrome-zh.png' : '/images/copyapes-chrome-en.png'}
                     alt={t('extensionAlt')}
                     className='w-full'
                   />

@@ -1,0 +1,1177 @@
+{
+  "NotFound": {
+    "title": "頁面未找到",
+    "description": "您訪問的頁面不存在。",
+    "backHome": "返回首頁"
+  },
+  "AuthMetadata": {
+    "login": "登錄",
+    "register": "註冊",
+    "forgotPassword": "忘記密碼",
+    "resetPassword": "重置密碼"
+  },
+  "BlogMetadata": {
+    "title": "博客",
+    "description": "跟單猿 CopyApes 新聞、跟單教程與產品更新。",
+    "home": "首頁",
+    "postTitle": "{title}",
+    "keywords": [
+      "博客",
+      "跟單",
+      "加密貨幣",
+      "CopyApes",
+      "跟單猿"
+    ]
+  },
+  "Metadata": {
+    "titleTemplate": "%s - 跟單猿 CopyApes",
+    "titleDefault": "跟單猿 - 跨交易所自動跟單助手",
+    "description": "跟單猿(CopyApes)是一款全自動跨交易所合約跟單助手。支持幣安、歐易(OKX)等平臺跟單。0抽成，毫秒級極速跟單，讓世界頂級交易員為您打工。",
+    "keywords": [
+      "跟單",
+      "自動跟單",
+      "合約跟單",
+      "幣安跟單",
+      "歐易跟單",
+      "跨平臺跟單",
+      "加密貨幣交易",
+      "CopyApes",
+      "跟單猿"
+    ],
+    "siteName": "跟單猿 CopyApes"
+  },
+  "Header": {
+    "login": "登錄",
+    "register": "註冊"
+  },
+  "Navigation": {
+    "home": "首頁",
+    "features": "產品功能",
+    "benefits": "產品優勢",
+    "testimonials": "用戶評價",
+    "pricing": "產品價格",
+    "faq": "常見問題",
+    "contact": "聯繫我們"
+  },
+  "Logo": {
+    "brandName": "跟單猿"
+  },
+  "Hero": {
+    "badge": "已穩定運行{years}年",
+    "badgeWithMonths": "已穩定運行{years}年{months}個月",
+    "title": "讓全世界頂級交易員為你打工",
+    "description": "全自動合約跟單交易助手。沒有交易員盈利抽成，沒有跟單席位限制，支持跨交易所和模擬盤跟單。對接交易所官方API，秒級跟單。",
+    "startCopying": "立刻開始跟單",
+    "freeRegister": "免費註冊",
+    "usedBy": "被超過",
+    "people": "人使用"
+  },
+  "BentoGrid": {
+    "badge": "產品功能",
+    "title": "功能強大，易於使用",
+    "subtitle": "全球服務節點，極速跟單。",
+    "targetGroup": {
+      "title": "產品適合群體",
+      "desc": "無論你是普通交易員，還是帶單KOL，亦或是交易社群組織者，都適合使用本產品開展自己的業務。",
+      "team1": "專業交易員",
+      "team2": "帶單KOL",
+      "team3": "交易社群"
+    },
+    "speed": {
+      "title": "極速跟單",
+      "desc": "緊靠交易所機房，實時毫秒級跟單，將跟單滑點降至最低。"
+    },
+    "exchanges": {
+      "title": "多交易所支持",
+      "desc": "支持全球主流交易所，如幣安、歐意。自動轉換交易對代碼，按比例計算交易量，實現跨交易所實時跟單。"
+    },
+    "global": {
+      "title": "全球節點部署",
+      "desc": "全球多個地區部署服務，自建全球代理IP池，毫秒級爬蟲服務，確保跟單服務快速穩定。"
+    }
+  },
+  "Benefits": {
+    "badge": "產品優勢",
+    "title": "跟單猿如何幫助您",
+    "subtitle": "簡化您的跟單流程，節約您的跟單成本，放大您的跟單收益。",
+    "button": "立刻開始跟單"
+  },
+  "BenefitsData": {
+    "crossPlatform": {
+      "title": "跨平臺跟單:",
+      "desc": "可以使用歐意賬戶跟單幣安交易員，也可以使用幣安賬戶跟單歐意交易員。"
+    },
+    "apiCopy": {
+      "title": "API跟單/帶單:",
+      "desc": "可以自定義上傳需要跟單的API，自己或者他人都可以跟隨該API進行交易。"
+    },
+    "reverseCopy": {
+      "title": "反向跟單:",
+      "desc": "對跟單的交易員進行反向交易，交易員開多，你便開空。實時同步開倉平倉。"
+    },
+    "privateCopy": {
+      "title": "私域跟單:",
+      "desc": "針對私域帶單或者隱藏實盤的交易員進行跟單。"
+    },
+    "whitelist": {
+      "title": "黑/白名單跟單:",
+      "desc": "自定義交易對黑名單或白名單，自主把控交易品種。"
+    },
+    "profitCondition": {
+      "title": "盈利條件跟單:",
+      "desc": "可設置交易員盈利條件，滿足條件後自己才進行跟單交易。"
+    }
+  },
+  "Testimonials": {
+    "badge": "用戶評價",
+    "title": "受到聰明的交易者信賴",
+    "subtitle": "用戶通過跟單猿實現盈利增長和社群增長的故事。"
+  },
+  "TestimonialsData": {
+    "1": "同時跟隨幣安和歐易的頂級交易員，這是其他平臺做不到的。跨交易所組合策略讓我的收益曲線更加平滑。延遲低，執行速度快，非常專業。",
+    "2": "0.1秒閃電跟單真的太快了，基本能和帶單員同步成交。對於短線交易來說這個速度優勢非常關鍵，值得投資。",
+    "3": "API安全設計讓我很放心，資金始終在自己的交易所賬戶，平臺只負責下單，完全不碰我的資金。這種模式讓我可以安心使用自動跟單功能。",
+    "4": "精細化的風險控制功能讓我可以為每個帶單員設置不同的參數，真正做到了個性化風險管理。這種專業級的功能在其他平臺很少見。",
+    "5": "客服響應很快，社群氛圍也很好，大家分享交流帶單員信息，感覺找到了一個靠譜的交易社區。不是一個人在戰鬥的感覺真好。",
+    "6": "作為新手完全不懂技術分析，跟著平臺推薦的帶單員，兩個月就盈利25%。平臺的風險控制做得很到位，止損及時讓我睡得很安心。",
+    "7": "跟單功能三個月，通過分散投資多個優秀交易員，收益穩定性提升了40%，最大回撤降低了一半。真正實現了收益和風險的平衡。",
+    "8": "把自己的跟單策略組合部署成帶單員，不僅賺策略收益還能獲得帶單分潤。這個雙重收益模式真的很創新，一舉兩得。"
+  },
+  "Pricing": {
+    "badge": "產品價格",
+    "title": "選擇適合您的跟單套餐",
+    "subtitle": "靈活的定價方案，滿足不同階段交易者的需求。",
+    "monthly": "按月",
+    "yearly": "按年",
+    "save": "省10%",
+    "popular": "最受歡迎"
+  },
+  "PricingData": {
+    "free": {
+      "title": "免費套餐",
+      "description": "免費體驗基礎跟單功能",
+      "button": "免費體驗",
+      "f1": "1 個交易所API授權",
+      "f2": "1 個跟單任務",
+      "f3": "授權API累計交易資金不超過 500 USDT",
+      "f4": "僅支持添加歐意、Gate、Bitget交易所 API"
+    },
+    "vip": {
+      "title": "VIP 套餐",
+      "description": "為專業交易員提供服務",
+      "button": "立即開始",
+      "f1": "支持帶單員 API Key 接入",
+      "f2": "支持添加幣安交易所 API",
+      "f3": "5 個交易所API授權",
+      "f4": "15 個跟單任務",
+      "f5": "授權API累計交易資金不超過 5000 USDT",
+      "ef1": "跟單消息通知",
+      "ef2": "極速交易"
+    },
+    "pro": {
+      "title": "工作室 VIP 套餐",
+      "description": "更專業的跟單服務",
+      "button": "立即開始",
+      "f1": "10 個交易所API授權",
+      "f2": "50 個跟單任務",
+      "f3": "授權API累計交易資金不超過 20,000 USDT",
+      "f5": "支持帶單員 API Key 接入",
+      "ef1": "專屬工作室管理功能",
+      "ef2": "7 * 24 小時專業客服支持",
+      "ef3": "支持功能定製",
+      "ef4": "額外贈送永久代理商權限"
+    }
+  },
+  "Partners": {
+    "title": "我們的合作伙伴",
+    "subtitle": "使用我們的邀請鏈接進行註冊，可享20%高額交易返佣。",
+    "learnMore": "瞭解更多"
+  },
+  "FAQ": {
+    "badge": "常見問題",
+    "title": "我們能幫到您什麼？",
+    "subtitle": "尋找有關我們產品的常見問題解答。如果您需要其他幫助，請隨時聯繫我們。"
+  },
+  "FAQData": {
+    "1": {
+      "q": "什麼是跟單交易？",
+      "a": "跟隨市場上最優秀的交易員，交易員買的時候我們也買入，交易員賣的時候我們也會同步賣出。無需手動操作，對接交易所的 Api Key，在跟單猿平臺配置想要跟隨的交易員，5分鐘即可開始全自動跟單。如果您對接的是帶單員 Api Key，您還可以作為帶單員運行您的跟單策略，賺取額外分潤收益。您可以使用任意喜歡的交易所進行跟單交易。"
+    },
+    "2": {
+      "q": "跟單猿的跟單功能和交易所的跟單有什麼不同？",
+      "a": "現在很多交易所內部都有跟單功能，但是隻能跟隨對應交易所裡的帶單員，在幣安就沒法跟隨歐易交易所的優秀帶單員。在 DDDD，您可以跟隨全平臺所有優秀帶單員，包括幣安、歐易、ByBit 以及 Bitget。甚至還能跟隨 幣Coin 和 HyperLqiuid 上的任意交易員。更重要的是，您可以把多個交易員做成一個跟單組合，分散風險，提升收益。"
+    },
+    "3": {
+      "q": "我可以在歐意跟隨幣安的帶單員進行交易嗎？",
+      "a": "是的！完全沒問題。我們支持各大交易所，包括幣安、歐易、ByBit、Bitget、Gate、HTX 以及 HyperLiquid，未來會支持更多。您可以在任意一個交易所部署跟單策略。有一些有影響力的帶單員在他本身的平臺管理資金規模大，交易可能會造成較大的滑點，這時候在其他的交易所跟隨該帶單員下單，可能反而會獲得比帶單員自己更好的價格！不過要注意，如果帶單員交易的某個交易對在您使用的交易所沒有，那麼這個訂單就不會被交易。"
+    },
+    "4": {
+      "q": "跟單延遲有多少？",
+      "a": "我們使用了業界最頂尖的跟單技術來確保極低的跟單延遲。私有化用戶的大部分交易延遲都在幾百毫秒，吞吐量較大的時候延遲可能在1秒左右。我們還為私有化用戶提供了企業級的 WebSocket 網絡技術，使得延遲可以低至幾毫秒。"
+    },
+    "5": {
+      "q": "有免費試用嗎？",
+      "a": "當然！我們是全行業唯一提供長期免費試用的跟單產品。你可以在有限制的條件下長期免費試用，你可以通過我們提供的教程文檔和視頻，自助解決使用過程中遇到的問題。"
+    },
+    "6": {
+      "q": "跟單猿的安全性如何？",
+      "a": "用戶的資金安全和交易安全一直是我們考慮的頭等大事。我們從幾個維度進行了安全保護：\n1. 您的資金在您自己的賬號裡，平臺使用的 Api Key 只需要交易權限，不要開啟資金轉移權限。\n2. 創建 Api Key 的時候確保填寫 ip 白名單。\n3. 平臺使用銀行級加密算法對 Api Key 信息進行加密存儲。\n4. 在交易安全方面，平臺設計了多種策略止損檢查，確保策略資金在碰到極端行情時能及時止損。"
+    }
+  },
+  "ContactUs": {
+    "title": "我們如何為您提供幫助？",
+    "subtitle": "如果你有任何產品方面的疑問，或者合作需求，請聯繫我們。",
+    "contact": "聯繫方式",
+    "desc": "產品合作 / 社區合作 / 定製開發",
+    "joinTg": "點擊加入TG社區"
+  },
+  "ContactForm": {
+    "name": "如何稱呼您",
+    "namePlaceholder": "您的稱呼...",
+    "contact": "您的聯繫方式",
+    "contactPlaceholder": "輸入您的聯繫方式......",
+    "message": "留言信息",
+    "messagePlaceholder": "在這裡寫下你的留言，我們將第一時間聯繫你！歡迎媒體、KOL、交易員、私域群主等等前來洽談合作！",
+    "submit": "發送信息",
+    "success": "發送成功",
+    "sending": "發送中..."
+  },
+  "PrivacyPolicy": {
+    "metadata": {
+      "title": "隱私政策",
+      "description": "跟單猿 CopyApes 網站與瀏覽器插件的隱私政策，說明我們如何收集、使用和保護您的信息。"
+    },
+    "title": "隱私政策",
+    "lastUpdated": "最後更新：2026年7月16日",
+    "intro": "跟單猿（CopyApes，以下簡稱“我們”）重視您的隱私。本政策說明我們在提供網站服務與瀏覽器插件（跟單猿助手）時，如何收集、使用、存儲和保護您的個人信息與相關數據。",
+    "scope": {
+      "title": "1. 適用範圍",
+      "body": "本政策適用於 CopyApes 官方網站（copyapes.com）、相關 API 服務，以及 Chrome 瀏覽器擴展「跟單猿助手」。若您使用我們的網站或插件，即表示您已閱讀並理解本政策。",
+      "items": []
+    },
+    "collect": {
+      "title": "2. 我們收集的信息",
+      "body": "我們僅收集為提供跟單服務所必要的信息，主要包括：",
+      "items": [
+        "賬戶信息：註冊郵箱、用戶名等您主動提供的信息。",
+        "登錄憑證：您在 CopyApes 的登錄 token，用於識別賬戶並保持登錄狀態。",
+        "交易所會話數據：在您主動操作時，從 OKX、Binance 等已授權頁面讀取的 Cookie 與相關請求頭，用於跟單 Cookie 同步。",
+        "API 信息：您綁定的交易所 API Key（我們建議使用僅交易權限並設置 IP 白名單）。",
+        "插件本地數據：語言、主題、Cookie 抓取狀態、面板顯示偏好等，保存在瀏覽器本地。",
+        "使用與日誌數據：操作記錄、錯誤日誌等，用於保障服務穩定與安全。"
+      ]
+    },
+    "use": {
+      "title": "3. 信息的使用方式",
+      "body": "我們收集的信息僅用於以下目的：",
+      "items": [
+        "提供、維護和改進跟單相關功能。",
+        "同步交易所登錄態，執行您發起的 Cookie 抓取與跟單任務。",
+        "驗證賬戶身份、保障賬戶與交易安全。",
+        "在必要時向您發送與服務相關的通知。",
+        "遵守法律法規要求。"
+      ]
+    },
+    "extension": {
+      "title": "4. 瀏覽器擴展的數據處理",
+      "body": "Chrome 擴展「跟單猿助手」按以下方式處理數據。擴展對用戶數據的收集與使用遵守 Chrome 網上應用店《用戶數據政策》，包括其「有限使用（Limited Use）」要求：",
+      "items": [
+        "Cookie 與網絡請求權限（cookies、webRequest）：僅在您訪問 OKX、Binance 等交易所頁面時，讀取相關 Cookie 與請求頭，用於您主動發起的 Cookie 同步；不會在無關網站上採集數據。",
+        "本地存儲權限（storage）：在您的瀏覽器本地保存登錄 token、語言、主題、Cookie 抓取狀態等偏好設置；除您主動提交 Cookie 外，這些數據不會自動上傳。",
+        "標籤頁權限（tabs、activeTab）：用於識別當前交易所頁面，並在您授權時注入操作面板。",
+        "擴展不收集、不存儲您的完整瀏覽歷史，不用於廣告投放或用戶畫像分析。"
+      ]
+    },
+    "share": {
+      "title": "5. 信息共享與披露",
+      "body": "我們不會向廣告商、數據經紀商或任何無關第三方出售、出租或共享您的個人信息。我們僅在以下情況下與相關方共享必要數據：",
+      "items": [
+        "CopyApes 後端服務（api.copyapes.com）：接收您主動提交的賬戶信息、登錄 token、交易所 Cookie 與 API Key，用於提供跟單服務。",
+        "阿里雲（Alibaba Cloud）：作為雲基礎設施服務商，託管我們的服務器與數據庫；數據存儲於日本的阿里雲數據中心。",
+        "交易所（OKX、Binance 等）：在您發起跟單或 Cookie 同步時，我們使用您提供的 Cookie 或 API Key 向對應交易所發起請求，以執行您授權的交易操作。",
+        "經您明確同意的其他情形。",
+        "法律法規要求，或有權機關依法提出請求。",
+        "為保護用戶、我們或公眾的合法權益所必需。"
+      ]
+    },
+    "storage": {
+      "title": "6. 數據存儲與安全",
+      "body": "您的數據存儲於日本的阿里雲服務器。我們採用合理的技術與管理措施保護您的數據，包括加密存儲敏感憑證、訪問控制與安全審計。",
+      "items": [
+        "API Key、交易所 Cookie 等敏感信息在服務端加密保存。",
+        "瀏覽器插件中的偏好設置保存在您設備本地，卸載插件後可清除。",
+        "賬戶活躍期間，我們保留為提供服務所必需的數據。",
+        "您退出登錄後，登錄 token 立即失效；刪除賬戶後，我們將在 30 天內刪除或匿名化處理您的個人數據，法律法規另有要求的除外。"
+      ]
+    },
+    "rights": {
+      "title": "7. 您的權利",
+      "body": "您有權訪問、更正或刪除您的賬戶信息，撤回授權，或停止使用我們的服務。",
+      "items": [
+        "在賬戶設置中管理 API 綁定與個人信息。",
+        "在插件中退出登錄並清除本地數據。",
+        "通過下方聯繫方式請求刪除賬戶及相關數據。",
+        "如需幫助，請通過網站「聯繫我們」或發送郵件與我們聯繫。"
+      ]
+    },
+    "contact": {
+      "title": "8. 聯繫我們",
+      "body": "如對本隱私政策有任何疑問，或需要行使您的數據權利，請通過以下方式聯繫我們：",
+      "items": [
+        "網站：CopyApes 官網「聯繫我們」頁面（copyapes.com）",
+        "郵箱：service@copyapes.com",
+        "我們將在收到請求後的 15 個工作日內回覆。"
+      ]
+    },
+    "changes": {
+      "title": "9. 政策更新",
+      "body": "我們可能適時更新本政策。更新後將在本頁面公佈並修改「最後更新」日期。重大變更時，我們可能通過網站公告等方式通知您。繼續使用我們的服務即表示您接受更新後的政策。",
+      "items": []
+    }
+  },
+  "Footer": {
+    "desc": "自由組合不同交易所的頂級帶單員，平衡收益和風險，打造專屬您個人的跟單策略，讓全球頂級交易員為你打工。",
+    "product": "產品",
+    "help": "幫助",
+    "about": "關於我們",
+    "terms": "用戶協議",
+    "privacy": "隱私政策",
+    "tutorial": "使用教程",
+    "copyright": "Made with ❤️ by CopyApes."
+  },
+  "About": {
+    "badge": "關於我們",
+    "title": "跟單猿 CopyApes 是什麼",
+    "subtitle": "面向加密貨幣合約交易者的跨交易所自動跟單助手。",
+    "p1": "跟單猿（CopyApes）幫助用戶通過交易所官方 API，自動跟隨所選交易員的開平倉動作。資金始終留在用戶自己的交易所賬戶中，平臺不代持資金，也不對跟單盈利抽成席位費。",
+    "p2": "與單一交易所內置跟單不同，CopyApes 支持跨平臺跟隨：例如用歐易賬戶跟隨幣安帶單員，或將多個交易員組合成跟單組合，以分散風險。產品面向普通交易者、帶單 KOL 與交易社群組織者。",
+    "p3": "核心能力包括毫秒至秒級跟單、多交易所支持（幣安、歐易、Bybit、Bitget、Gate、HTX、HyperLiquid 等）、反向跟單、黑白名單、盈利條件跟單，以及面向私域場景的 Cookie / API 跟單方式。",
+    "p4": "我們提供長期免費試用檔位，並在官網提供產品說明、常見問題、隱私政策與用戶協議。如需合作或支持，可通過網站「聯繫我們」或郵箱 service@copyapes.com 聯繫。",
+    "pointsTitle": "你可以在這裡瞭解",
+    "point1": "產品功能與跨交易所跟單方式",
+    "point2": "定價方案與免費試用範圍",
+    "point3": "安全實踐：僅交易權限 API、IP 白名單與加密存儲",
+    "point4": "聯繫方式、隱私政策與用戶協議",
+    "readMore": "閱讀完整介紹",
+    "metadata": {
+      "title": "關於我們",
+      "description": "瞭解跟單猿 CopyApes：跨交易所自動合約跟單助手的產品定位、適用人群與聯繫方式。"
+    }
+  },
+  "TermsOfService": {
+    "metadata": {
+      "title": "用戶協議",
+      "description": "跟單猿 CopyApes 用戶協議：服務說明、賬戶責任、風險提示與聯繫方式。"
+    },
+    "title": "用戶協議",
+    "lastUpdated": "最後更新：2026年7月30日",
+    "intro": "歡迎使用跟單猿（CopyApes）。使用本網站、相關 API 或瀏覽器擴展即表示您同意本協議。若不同意，請停止使用服務。",
+    "sections": {
+      "service": {
+        "title": "1. 服務說明",
+        "body": "CopyApes 提供加密貨幣合約自動跟單相關的軟件工具與配置能力。我們不提供投資建議，不承諾收益，也不代管您的交易所資金。",
+        "items": []
+      },
+      "account": {
+        "title": "2. 賬戶與憑證",
+        "body": "您應妥善保管賬戶與交易所 API Key / Cookie 等憑證，並僅授予跟單所需的最小權限（建議僅交易權限並配置 IP 白名單，勿開啟提現或資金劃轉權限）。因您洩露憑證或權限配置不當造成的損失，由您自行承擔。",
+        "items": []
+      },
+      "risk": {
+        "title": "3. 風險提示",
+        "body": "合約交易與跟單存在高風險，可能導致本金全部損失。跟單延遲、滑點、交易所故障、交易對不存在、網絡中斷等因素都可能影響成交結果。您應在充分了解風險後自行決定是否使用。",
+        "items": []
+      },
+      "compliance": {
+        "title": "4. 合規使用",
+        "body": "您應遵守所在地法律法規及各交易所規則，不得將本服務用於違法、欺詐或未經授權訪問他人賬戶等行為。我們有權在發現違規時限制或終止服務。",
+        "items": []
+      },
+      "privacy": {
+        "title": "5. 隱私",
+        "body": "我們如何處理個人信息，請參閱網站《隱私政策》。",
+        "items": []
+      },
+      "changes": {
+        "title": "6. 協議變更",
+        "body": "我們可能更新本協議，並在本頁面公佈更新日期。重大變更時可能通過網站公告等方式提示。繼續使用服務即視為接受更新後的條款。",
+        "items": []
+      },
+      "contact": {
+        "title": "7. 聯繫我們",
+        "body": "如對本協議有疑問，請通過官網「聯繫我們」或發送郵件至 service@copyapes.com。更完整的產品協議說明也可參閱文檔站點。",
+        "items": []
+      }
+    },
+    "fullProtocol": "查看完整產品協議文檔"
+  },
+  "DashboardShell": {
+    "groups": {
+      "system": "系統服務",
+      "copy": "跟單服務",
+      "studio": "工作室服務",
+      "tools": "工具服務",
+      "settings": "系統設置"
+    },
+    "nav": {
+      "home": "首頁",
+      "pricing": "訂閱服務",
+      "invite": "邀請獎勵",
+      "admin": "系統後臺",
+      "partner": "代理商後臺",
+      "partnerSettings": "代理設置",
+      "partnerUsers": "用戶列表",
+      "partnerRevenue": "收益與提現",
+      "taskList": "我的跟單",
+      "createTask": "創建跟單",
+      "exchangeTask": "交易所自選",
+      "bicoinTask": "幣coin 自選",
+      "hyperTask": "HyperLiquid 自選",
+      "apiTask": "API 跟單",
+      "cookieTask": "Cookie 跟單",
+      "hotKol": "熱門帶單 KOL",
+      "hyperKol": "HyperLiquid KOL",
+      "cookie": "Cookie 獲取",
+      "grab": "跟單搶位",
+      "studioTasks": "高級任務管理",
+      "positions": "持倉管理",
+      "addPositions": "手動補倉",
+      "api": "API 管理",
+      "account": "賬戶設置",
+      "notifications": "消息通知"
+    },
+    "badges": {
+      "grabHit": "4天必中"
+    },
+    "extensionAlt": "插件安裝",
+    "serviceStatus": "服務狀態",
+    "riskBanner": "交易加密貨幣衍生品涉及重大風險，並不適合所有投資者。程序只是交易輔助工具，有可能出錯，請確保您自己始終是倉位風險的第一控制人。",
+    "close": "關閉",
+    "tour": {
+      "title": "新手指引",
+      "empty": "本頁暫無指引",
+      "features": "功能點介紹",
+      "reset": "重置引導進度"
+    },
+    "profile": {
+      "userFallback": "用戶",
+      "vipDays": "VIP 剩餘 {days} 天",
+      "studioVipDays": "工作室 VIP 剩餘 {days} 天",
+      "partner": "代理合作伙伴",
+      "freeUser": "免費用戶",
+      "assetLimit": "資金限額",
+      "apiSlots": "交易 API 授權",
+      "taskSlots": "跟單任務上限",
+      "pricing": "訂閱服務",
+      "api": "API 管理",
+      "account": "賬戶設置",
+      "notifications": "消息通知",
+      "logout": "退出登錄",
+      "logoutSuccess": "已退出登錄"
+    }
+  },
+  "Auth": {
+    "common": {
+      "or": "或",
+      "startFree": "開始您的免費體驗",
+      "showPassword": "顯示密碼",
+      "hidePassword": "隱藏密碼",
+      "password": "密碼*",
+      "email": "郵箱",
+      "resendIn": "{seconds}s後重發",
+      "sending": "發送中...",
+      "sendCode": "發送驗證碼",
+      "backToLogin": "返回登錄"
+    },
+    "login": {
+      "title": "歡迎回來",
+      "usernameLabel": "用戶名 / 郵箱地址*",
+      "usernamePlaceholder": "請輸入您的用戶名或郵箱地址",
+      "rememberMe": "記住我",
+      "forgotPassword": "忘記密碼？",
+      "submit": "登錄",
+      "submitting": "登錄中...",
+      "success": "登錄成功",
+      "needCredentials": "請輸入用戶名和密碼",
+      "noAccount": "還沒有賬號？",
+      "register": "註冊"
+    },
+    "register": {
+      "title": "註冊",
+      "usernameLabel": "用戶名*",
+      "usernamePlaceholder": "請輸入用戶名",
+      "emailLabel": "郵箱*",
+      "emailPlaceholder": "請輸入您的郵箱地址",
+      "emailCodeLabel": "郵箱驗證碼*",
+      "emailCodePlaceholder": "請輸入6位驗證碼",
+      "passwordPlaceholder": "請輸入您的密碼",
+      "confirmPasswordLabel": "確認密碼*",
+      "inviteLabel": "邀請碼（選填）",
+      "invitePlaceholder": "有邀請碼可填寫，沒有可留空",
+      "agreePrefix": "同意",
+      "privacy": "隱私政策",
+      "terms": "服務條款",
+      "submit": "註冊",
+      "submitting": "註冊中...",
+      "success": "註冊成功，請登錄",
+      "needAllFields": "請填寫完整信息",
+      "passwordMismatch": "兩次密碼輸入不一致",
+      "needAgree": "請先同意隱私政策及服務條款",
+      "needEmail": "請先輸入郵箱",
+      "invalidEmail": "郵箱格式錯誤",
+      "hasAccount": "已有賬號？",
+      "login": "登錄"
+    },
+    "forgot": {
+      "title": "忘記密碼",
+      "subtitle": "向已綁定郵箱獲取驗證碼，驗證通過後設置新密碼。",
+      "emailLabel": "郵箱地址*",
+      "emailPlaceholder": "請輸入已綁定賬號的郵箱",
+      "needEmail": "請輸入郵箱",
+      "invalidEmail": "郵箱格式錯誤",
+      "otpLabel": "郵箱驗證碼（6 位）",
+      "needOtp": "請輸入 6 位驗證碼",
+      "newPasswordLabel": "新密碼*",
+      "newPasswordPlaceholder": "至少 6 位",
+      "passwordTooShort": "新密碼長度不能少於 6 位",
+      "confirmPasswordLabel": "確認新密碼*",
+      "confirmPasswordPlaceholder": "請再次輸入新密碼",
+      "passwordMismatch": "兩次密碼輸入不一致",
+      "resendCode": "重發驗證碼",
+      "submit": "重置密碼",
+      "submitting": "提交中...",
+      "backEditEmail": "返回修改郵箱"
+    },
+    "reset": {
+      "title": "重置密碼",
+      "subtitle": "該入口已合併至忘記密碼流程。",
+      "hint": "請前往「忘記密碼」頁面，通過郵箱驗證碼完成重置。",
+      "goForgot": "前往忘記密碼"
+    },
+    "google": {
+      "fail": "Google 登錄失敗，請重試",
+      "scriptFail": "Google 登錄腳本加載失敗",
+      "registerSuccess": "註冊並登錄成功",
+      "loginSuccess": "登錄成功",
+      "loading": "Google 登錄中..."
+    },
+    "turnstile": {
+      "refresh": "刷新頁面",
+      "widgetFailDomestic": "人機驗證失敗，請刷新頁面重試，或切換海外網絡。若仍無法完成，可嘗試直接提交，系統將按網絡情況處理。",
+      "widgetFailOverseas": "人機驗證失敗，請刷新頁面重試。若仍無法完成，請切換海外網絡後訪問。",
+      "scriptFailDomestic": "人機驗證加載超時，請刷新頁面重試，或切換海外網絡。若仍無法加載，可嘗試直接提交，系統將按網絡情況處理。",
+      "scriptFailOverseas": "人機驗證加載超時，請刷新頁面重試。若仍無法加載，請切換海外網絡後訪問。",
+      "complete": "請完成人機驗證",
+      "notReadyDomestic": "人機驗證未就緒，可嘗試直接提交；若失敗請刷新或切換海外網絡",
+      "notReadyOverseas": "人機驗證未就緒，請刷新頁面或切換海外網絡後重試"
+    }
+  },
+  "Tour": {
+    "fallbackUnavailable": "當前頁面找不到該功能入口，請先展開側邊欄或進入對應頁面",
+    "resetSuccess": "引導記錄已重置，下次進入相關頁面會重新提示",
+    "tours": {
+      "dashboard-overview": {
+        "title": "新手上手指引",
+        "steps": [
+          {
+            "title": "歡迎使用跟單猿",
+            "description": "花一分鐘瞭解主要功能位置，之後可以在右上角問號按鈕裡隨時重看。"
+          },
+          {
+            "title": "第一步：添加交易所 API",
+            "description": "跟單需要交易所 API 權限才能下單，先在這裡完成 API 綁定，後面的步驟才能正常建單。"
+          },
+          {
+            "title": "第二步：配置消息通知",
+            "description": "建單前先在這裡配好通知渠道。未配置通知時無法創建跟單任務，開倉平倉和異常停任務也會漏消息。"
+          },
+          {
+            "title": "第三步：創建跟單",
+            "description": "按信號來源選擇跟單方式：交易所自選、幣coin、HyperLiquid、API 跟單、Cookie 跟單。"
+          },
+          {
+            "title": "熱門帶單 KOL",
+            "description": "不知道跟誰，可以先從這裡精選的交易員開始，一鍵即可建立跟單任務。"
+          },
+          {
+            "title": "我的跟單",
+            "description": "所有跟單任務的運行狀態、收益和明細都在這裡查看與調整。"
+          },
+          {
+            "title": "註冊交易所返佣，半價用產品",
+            "description": "通過下方合作交易所鏈接註冊，可拿約 20% 手續費返佣；註冊後聯繫客服，還能半價開通 VIP。"
+          },
+          {
+            "title": "隨時重看指引",
+            "description": "點這裡可以重播本頁指引，也能單獨查看某個功能的說明。"
+          }
+        ]
+      },
+      "hot-kol-page": {
+        "title": "熱門帶單頁指引",
+        "steps": [
+          {
+            "title": "精選交易員來源",
+            "description": "這裡的交易員來自幣安排行榜、歐意牛人榜、幣coin 等平臺，收益可在原平臺核對。"
+          },
+          {
+            "title": "選人並開始跟單",
+            "description": "「當前資金」為 0 表示信號暫不可用。點擊「立即跟單」後配置金額與倍數即可建單。"
+          }
+        ]
+      },
+      "api-page": {
+        "title": "API 添加指引",
+        "steps": [
+          {
+            "title": "先看 IP 白名單提醒",
+            "description": "交易權限的 API 必須在交易所把我們的 IP 加入白名單。IP 會變化，長期未登錄後可能需要重新授權。"
+          },
+          {
+            "title": "從這裡添加 API",
+            "description": "點擊後是兩步：先閱讀安全說明，再填寫 Key。不清楚字段怎麼填時，在第 2 步彈窗右上角點「填寫說明」會逐項講解。"
+          },
+          {
+            "title": "管理已添加的 API",
+            "description": "這裡能看到每個 API 的餘額與狀態，也可以改備註或刪除。餘額約每 10 分鐘自動更新一次。"
+          }
+        ]
+      },
+      "api-form-guide": {
+        "title": "API 表單填寫說明",
+        "unavailableHint": "請先點擊「添加 API」進入第 2 步表單，再從彈窗右上角的「填寫說明」打開",
+        "steps": [
+          {
+            "title": "選擇交易所",
+            "description": "選你實際持倉的交易所。不同交易所需要的憑據不同，OKX、Bitget、WEEX 還要額外填 Passphrase。"
+          },
+          {
+            "title": "備註名稱",
+            "description": "只用於你自己區分賬戶，例如「主賬戶」「小號」。創建跟單任務時按這個名字選 API。"
+          },
+          {
+            "title": "權限類型要選對",
+            "description": "「只讀」只用來取信號，不會下單；要真正跟單必須選「交易」。這一項選錯會導致任務不成交。"
+          },
+          {
+            "title": "填入 API Key",
+            "description": "在交易所創建 API 時生成，直接複製粘貼。注意不要開啟提幣權限。"
+          },
+          {
+            "title": "Secret 與 Passphrase",
+            "description": "Secret 只在交易所創建時顯示一次，務必先保存好。選了 OKX、Bitget、WEEX 時下方還會要求填 Passphrase。"
+          },
+          {
+            "title": "IP 白名單缺一不可",
+            "description": "把這裡列出的 IP 全部加到交易所該 API 的受信任 IP。交易權限必須綁定，只讀權限不要綁定。"
+          },
+          {
+            "title": "確認綁定",
+            "description": "提交後會先校驗憑據是否可用，校驗通過才會保存。失敗通常是權限或 IP 白名單沒配好。"
+          }
+        ]
+      },
+      "cookie-page": {
+        "title": "Cookie 獲取指引",
+        "steps": [
+          {
+            "title": "先看綁定規則",
+            "description": "每個交易所只能綁一個 Cookie。同所要綁多個時，需要再註冊本平臺賬號分別添加。"
+          },
+          {
+            "title": "推薦：瀏覽器插件自動獲取",
+            "description": "裝好插件後登錄跟單猿與交易所賬號，點自動抓取即可同步到本頁。Chrome 可直接安裝，其他瀏覽器看下方入口說明。"
+          },
+          {
+            "title": "備選：手動上傳",
+            "description": "無法裝插件或要用手機遠程更新時，點「手動上傳」，粘貼 Cookie 字符串或整段 cURL，系統會自動提取。"
+          },
+          {
+            "title": "在這裡查看綁定結果",
+            "description": "上傳成功後會出現在「我的交易所 Cookie」。綠色表示生效中，紅色表示已失效，需要重新獲取後更新。"
+          }
+        ]
+      },
+      "grab-page": {
+        "title": "跟單搶位指引",
+        "steps": [
+          {
+            "title": "搶位要先有 Cookie",
+            "description": "熱門交易員滿員時，系統會自動監控並搶佔名額。點「獲取交易所 Cookie」先完成綁定，沒有有效 Cookie 無法創建搶位。"
+          },
+          {
+            "title": "選擇目標交易所",
+            "description": "選 OKX 或幣安。切換後下方會自動匹配該交易所的 Cookie。"
+          },
+          {
+            "title": "確認 Cookie 有效",
+            "description": "這裡必須顯示「有效」。若提示未找到或已失效，先回 Cookie 獲取頁重新綁定。"
+          },
+          {
+            "title": "填交易員並解析",
+            "description": "粘貼交易員主頁鏈接或 ID，點「解析」提取 UID。解析成功後下方會顯示識別結果。"
+          },
+          {
+            "title": "進入金額配置",
+            "description": "交易所、有效 Cookie、交易員都齊後按鈕才可點。點開後可在面板右上角「配置說明」瞭解跟單金額怎麼填。"
+          }
+        ]
+      },
+      "grab-config-guide": {
+        "title": "搶位配置說明",
+        "unavailableHint": "請先打開搶位配置面板，再從面板右上角的「配置說明」打開",
+        "steps": [
+          {
+            "title": "核對目標交易員",
+            "description": "確認頭像、暱稱和近期收益無誤。搶到名額後會按這裡的交易員開始跟單。"
+          },
+          {
+            "title": "填寫跟單金額",
+            "description": "這是搶到後用於跟單的投入金額。幣安還可選定比或定額；OKX 只需填跟單金額。"
+          },
+          {
+            "title": "開始搶位",
+            "description": "提交後任務進入「進行中」，系統秒級輪詢空位。一般 2-3 天內能搶到，也可隨時在列表裡終止。"
+          }
+        ]
+      },
+      "notifications-page": {
+        "title": "消息通知配置指引",
+        "steps": [
+          {
+            "title": "通知設置",
+            "description": "跟單任務創建前通常需要先配好通知。這裡控制「收什麼消息」以及「發到哪個渠道」。"
+          },
+          {
+            "title": "先選通知類型",
+            "description": "開關對所有已開啟渠道統一生效。交易通知、Cookie/API 失效、任務停止最常用；系統通知不可關閉。"
+          },
+          {
+            "title": "選擇並開啟渠道",
+            "description": "左側點選要配置的渠道。配好參數後，記得打開右側開關真正開啟，否則收不到消息。"
+          },
+          {
+            "title": "填寫渠道配置",
+            "description": "右側按渠道填寫：微信需掃碼拿授權碼，釘釘填 Webhook 與加簽密鑰，QQ 郵箱填 QQ 號與 SMTP 授權碼。"
+          },
+          {
+            "title": "保存後再測試",
+            "description": "先點「保存配置」，再打開左側開關，最後用「測試連接」確認能收到消息。未開啟時測試按鈕不可用。"
+          }
+        ]
+      },
+      "invite-page": {
+        "title": "邀請獎勵指引",
+        "steps": [
+          {
+            "title": "邀請獎勵",
+            "description": "邀請好友註冊，可解鎖額外 API / 跟單額度，好友付費後還能累計銷售分成。"
+          },
+          {
+            "title": "複製邀請鏈接",
+            "description": "點複製按鈕把邀請鏈接發給好友。好友通過鏈接註冊後計入邀請；有效邀請才會推進下方任務進度。"
+          },
+          {
+            "title": "任務進度與節點獎勵",
+            "description": "有效邀請達到 3 / 5 / 10 人時，逐步解鎖 API 授權、跟單任務額度和資金上限。這些節點獎勵僅適用於免費用戶。"
+          },
+          {
+            "title": "銷售分成與代理權益",
+            "description": "這裡顯示累計分成收益。開通年費 VIP 或年費工作室 VIP 成為代理後，可提現並享受返佣等權益。"
+          }
+        ]
+      },
+      "exchange-task-page": {
+        "title": "交易所自選建單指引",
+        "steps": [
+          {
+            "title": "先選目標交易所",
+            "description": "選你要跟單的信號來源交易所。選完下方會顯示該交易所的成交延遲說明，OKX 和幣安規則不同，建議先看一眼。"
+          },
+          {
+            "title": "填交易員主頁鏈接或 ID",
+            "description": "把交易員主頁地址整段粘進來，點「解析」自動提取 ID。解析成功後下方會顯示識別出的交易員 ID。"
+          },
+          {
+            "title": "選對交易員類型",
+            "description": "OKX 分「合約帶單」和「個人概況」，幣安分「公開帶單」和「隱藏帶單」。類型和實際不符會導致取不到信號。"
+          },
+          {
+            "title": "進入跟單配置",
+            "description": "上面三項填全後按鈕才可點。點開後是跟單參數面板，裡面的字段可以點面板右上角「配置說明」逐項瞭解。"
+          }
+        ]
+      },
+      "cookie-task-page": {
+        "title": "Cookie 建單指引",
+        "steps": [
+          {
+            "title": "先選目標交易所",
+            "description": "切換交易所會同時切換下方可用的 Cookie 列表，所以這一步要先定。"
+          },
+          {
+            "title": "選一個可用的 Cookie",
+            "description": "「我的 Cookie」是你自己上傳的，會自動選中當前交易所第一個有效項；「發現 Cookie」可以搜別人共享的。只有狀態為有效的才能選中。"
+          },
+          {
+            "title": "填交易員主頁鏈接或 ID",
+            "description": "把交易員主頁地址整段粘進來，點「解析」自動提取 ID。"
+          },
+          {
+            "title": "選對交易員類型",
+            "description": "OKX 分「合約帶單」和「跟單項目」，幣安分「帶單項目」和「聰明錢」。選錯會取不到信號。"
+          },
+          {
+            "title": "進入跟單配置",
+            "description": "交易所、Cookie、交易員、類型四項都齊全後按鈕才可點。點開後可在面板右上角「配置說明」瞭解各項參數。"
+          }
+        ]
+      },
+      "bicoin-task-page": {
+        "title": "幣Coin 建單指引",
+        "steps": [
+          {
+            "title": "先關聯幣Coin 賬號",
+            "description": "用幣Coin App 的手機號和密碼登錄，點「確認保存」。沒關聯賬號無法搜索交易員，也無法建單。"
+          },
+          {
+            "title": "搜索並選中交易員",
+            "description": "輸入交易員暱稱後搜索，在結果列表裡點一行選中，選中項會高亮。"
+          },
+          {
+            "title": "選跟單數據源",
+            "description": "「操作記錄」速度略快，「合約倉位」穩定性更高。交易員的操作記錄裡若含現貨或買賣模式則無法跟單，可聯繫客服。"
+          },
+          {
+            "title": "進入跟單配置",
+            "description": "賬號已關聯、已選交易員和數據源後按鈕才可點。點開後可在面板右上角「配置說明」瞭解各項參數。"
+          }
+        ]
+      },
+      "hyper-task-page": {
+        "title": "HyperLiquid 建單指引",
+        "steps": [
+          {
+            "title": "先找到要跟的錢包地址",
+            "description": "HyperLiquid 是鏈上交易所，跟單隻認錢包地址。點「查詢數據」可以到 Coinglass 上找巨鯨和大單地址。"
+          },
+          {
+            "title": "粘貼錢包地址",
+            "description": "填交易員的完整錢包地址，以 0x 開頭。這裡不需要解析，也不用選交易員類型。"
+          },
+          {
+            "title": "進入跟單配置",
+            "description": "地址填好後按鈕即可點。點開後可在面板右上角「配置說明」瞭解各項參數。"
+          }
+        ]
+      },
+      "api-task-page": {
+        "title": "API 建單指引",
+        "steps": [
+          {
+            "title": "兩種信號來源",
+            "description": "「我的 API 信號」是你自己添加的只讀 API；「發現 API 信號」可以搜平臺其他用戶公開的 API，搜到後同樣能直接跟。"
+          },
+          {
+            "title": "在卡片上發起跟單",
+            "description": "這一頁沒有底部的「創建跟單」按鈕，直接點卡片下方的「發起跟單」進入配置面板。目前只支持 OKX，其他平臺按鈕會置灰。"
+          }
+        ]
+      },
+      "task-config-guide": {
+        "title": "跟單參數配置說明",
+        "unavailableHint": "請先打開跟單配置面板，再從面板右上角的「配置說明」打開",
+        "steps": [
+          {
+            "title": "先確認通知已配置",
+            "description": "這裡顯示「未配置」時無法創建任務。點「去配置」綁定通知渠道後再回來建單。"
+          },
+          {
+            "title": "選擇執行下單的 API",
+            "description": "這裡選的是你自己用來下單的交易 API，不是信號來源。沒有可選項時說明還沒添加交易權限的 API。"
+          },
+          {
+            "title": "跟單模式",
+            "description": "「固定比例」按「投資額 ÷ 交易員本金 × 倍數」換算你的開倉量，是最常用的模式。"
+          },
+          {
+            "title": "交易員本金對標",
+            "description": "填交易員的本金規模，點「自動獲取」可直接拉取。這個值決定跟單比例，填錯會導致開倉量偏大或偏小。"
+          },
+          {
+            "title": "投資額",
+            "description": "只用於計算跟單比例，不是資金上限，也不會被划走。想放大或縮小倉位就調這個值。"
+          },
+          {
+            "title": "核對跟單比例",
+            "description": "提交前看一眼這裡算出的比例。低於 10% 會提示開倉量可能過低而無法成交。"
+          },
+          {
+            "title": "槓桿模式",
+            "description": "新賬號可能被交易所風控限制，跟不上交易員的高槓杆。改槓桿隻影響保證金佔用，不改變成交量。"
+          },
+          {
+            "title": "勾選跟單協議",
+            "description": "不勾選無法提交。建議先點開協議看一遍風險說明。"
+          },
+          {
+            "title": "提交建單",
+            "description": "提交後任務立即開始監聽信號，可以到「我的跟單」查看運行狀態。"
+          }
+        ]
+      },
+      "feature-api": {
+        "title": "API 管理",
+        "steps": [
+          {
+            "title": "API 管理",
+            "description": "綁定交易所 API 後才能實際下單，建議只開合約交易權限，不要開提幣權限。"
+          }
+        ]
+      },
+      "feature-create-task": {
+        "title": "創建跟單",
+        "steps": [
+          {
+            "title": "創建跟單",
+            "description": "展開後按信號來源選擇建單方式，不同來源對應不同的交易員池。"
+          }
+        ]
+      },
+      "feature-cookie": {
+        "title": "Cookie 獲取",
+        "steps": [
+          {
+            "title": "Cookie 獲取",
+            "description": "Cookie 跟單需要的憑據在這裡獲取，配合瀏覽器插件使用。"
+          }
+        ]
+      },
+      "feature-grab": {
+        "title": "跟單搶位",
+        "steps": [
+          {
+            "title": "跟單搶位",
+            "description": "熱門交易員名額有限時，用搶位功能排隊，位置釋放後自動佔位。"
+          }
+        ]
+      },
+      "feature-notifications": {
+        "title": "消息通知",
+        "steps": [
+          {
+            "title": "消息通知",
+            "description": "配置 Telegram、企業微信、郵件等渠道，成交與異常會實時推送。"
+          }
+        ]
+      },
+      "feature-invite": {
+        "title": "邀請獎勵",
+        "steps": [
+          {
+            "title": "邀請獎勵",
+            "description": "分享邀請鏈接，好友下單後你可獲得對應獎勵。"
+          }
+        ]
+      }
+    },
+    "buttons": {
+      "next": "下一步",
+      "prev": "上一步",
+      "done": "完成",
+      "gotIt": "知道了"
+    }
+  },
+  "DashboardHome": {
+    "noticeTitle": "公告欄",
+    "exchangeTitle": "合作交易所",
+    "exchangeDesc": "點擊註冊享受 <rate>20%</rate> 交易手續費返佣。聯繫客服，還可享受半價 VIP 優惠。",
+    "redeemTitle": "兌換碼核銷",
+    "redeemDesc": "請輸入您的兌換碼進行核銷",
+    "redeemPlaceholder": "請輸入兌換碼",
+    "redeemSubmit": "核銷確認",
+    "redeemSubmitting": "核銷中...",
+    "redeemNeedCode": "請輸入兌換碼",
+    "redeemSuccess": "兌換成功！",
+    "disclaimerTitle": "免責申明",
+    "disclaimerBody": "跟單猿（以下稱為\"本軟件\"）為第三方輔助工具，不能完全替代手動交易和人工盯盤。本軟件不是交易所，不做任何數字貨幣承兌，不觸碰任何用戶的資產，無法對用戶的賬戶進行轉賬操作。使用本軟件，需要提供交易所 API，使用跟單功能，默認授權本軟件可以通過 API 對您的交易所賬戶進行合約交易，採用的交易參數為您設置的任務參數。本軟件會盡力保證服務的正常使用，因外部不可抗力因素，如網絡攻擊、交易所接口發生變更等，導致本軟件無法提供正常服務，或因用戶的交易參數設置導致無法進行交易，本軟件不承擔任何責任。使用本軟件提供的跟單服務，默認知曉以上信息。",
+    "sponsorTitle": "贊助商廣告",
+    "sponsorSlot": "贊助商廣告位，請聯繫客服"
+  },
+  "DashboardApi": {
+    "page": {
+      "title": "API 管理",
+      "subtitle": "添加和管理工作室交易員與跟單 API",
+      "ipNotice": "長期未登錄使用，IP 白名單可能發生變化，需要重新在交易所授權 IP 白名單後才能繼續使用。點擊添加 API 按鈕，查看最新 IP 白名單。",
+      "assetLimitExceeded": "累計 API 資金 {amount} USDT，已超過最大資金上限，請付費提升賬號權限或者將多餘資金劃轉出合約交易賬戶。",
+      "listTitle": "交易所 API 列表",
+      "listDesc": "配置你的交易所 API 密鑰，用於同步帶單信號或執行自動跟單。（自動更新週期：10分鐘）",
+      "fetchFailed": "獲取 API 列表失敗"
+    },
+    "editLabel": {
+      "title": "修改 API 標籤",
+      "description": "為該交易所 API 設置一個更容易識別的名稱。",
+      "label": "標籤名稱",
+      "placeholder": "例如: 我的主力賬戶",
+      "empty": "標籤名稱不能為空",
+      "success": "修改成功",
+      "failed": "修改失敗",
+      "failedRetry": "修改失敗，請重試",
+      "save": "保存",
+      "saving": "保存中..."
+    },
+    "common": {
+      "close": "關閉",
+      "cancel": "取消",
+      "recommended": "推薦",
+      "unknown": "未知"
+    },
+    "addButton": {
+      "label": "添加 API",
+      "toasts": {
+        "labelRequired": "請填寫備註名稱",
+        "addSuccess": "添加成功"
+      }
+    },
+    "risk": {
+      "title": "API Key 安全須知與風險聲明",
+      "stepHint": "第 {current} 步 / 共 {total} 步 · {count} 條 · 請滾動閱讀全部",
+      "items": {
+        "withdraw": {
+          "title": "必須關閉「提現 (Withdraw)」權限",
+          "p1": "請在交易所的 API 管理頁面，<bold>只勾選「讀取」+「合約交易」</bold>，千萬不要勾選「提現」或「劃轉/轉賬」。",
+          "p2": "這是最底層的安全保障。由於 Key 本身不具備提現能力，從物理和機制層面<bold>徹底杜絕了資金被非法轉移的可能</bold>。",
+          "p3": "各大所 API 管理位置：Binance → 右上角頭像 → API 管理；OKX → 左上角賬戶設置 → API；Bitget → 左上角頭像 → API 密鑰；Gate → 左上角頭像 → API；WEEX → 賬戶設置 → API 管理"
+        },
+        "encryption": {
+          "title": "API Secret 以 AES-256-CBC 加密存儲",
+          "p1": "您提交的 API Secret / Passphrase 在存入數據庫之前，會用 <bold>AES-256-CBC 對稱加密算法</bold> 加密。加密密鑰獨立存儲在 GCP Secret Manager，不寫入任何代碼倉庫、日誌或備份。",
+          "p2": "這意味著：即使數據庫被全量導出，攻擊者只能看到加密後的密文，<bold>無密鑰無法還原 Secret 明文</bold>。平臺員工、運維、開發都<bold>無法查看您的 Secret 明文</bold>。"
+        },
+        "engine": {
+          "title": "跟單引擎僅調用交易類 API，永不觸碰本金",
+          "p1": "本平臺的跟單引擎只會調用以下 API：<bold>下單 / 撤單 / 查詢持倉 / 查詢餘額 / 設置槓桿</bold>。",
+          "p2": "<bold>永遠不會調用</bold>：提現（withdraw）、資金劃轉（transfer）、API Key 管理等資金相關 API。",
+          "p3": "系統通過嚴格的權限隔離機制，僅攔截並執行交易指令。不僅永遠不會調用提現、劃轉等敏感 API，在系統架構上也<bold>無法繞過交易所的權限體系</bold>。"
+        },
+        "control": {
+          "title": "您對 API Key 有 100% 的控制權，隨時可撤銷",
+          "p1": "您可在任意時刻，在<bold>交易所</bold>的 API 管理頁刪除此 API Key（不需要經過本平臺）。刪除後本平臺立即失去跟單能力，所有跟單任務自動停止。",
+          "p2": "您也可在本頁面編輯標籤，或刪除當前 API 賬戶一鍵解綁。"
+        },
+        "contractRisk": {
+          "title": "請理解合約交易風險",
+          "p1": "合約交易是<bold>高風險金融衍生品</bold>，存在以下風險：",
+          "bullets": {
+            "liquidation": "<bold>爆倉風險</bold>：劇烈行情下可能損失全部保證金",
+            "latency": "<bold>延遲風險</bold>：跟單經信號監控 → 系統處理 → 交易所下單，存在秒級延遲",
+            "strategy": "<bold>策略風險</bold>：交易員過往業績不代表未來表現",
+            "system": "<bold>系統風險</bold>：極端情況下網絡、交易所故障可能導致信號漏跟",
+            "human": "<bold>人為風險</bold>：交易員可能出現判斷失誤、情緒化交易或扛單行為"
+          },
+          "p2": "<bold>盈虧由您自行承擔</bold>。"
+        },
+        "allocation": {
+          "title": "建議跟單金額不超過賬戶 50%",
+          "p1": "跟單使用的是您賬戶裡的保證金，劇烈行情或交易員異常可能導致保證金佔用過高。建議：",
+          "bullets": {
+            "first": "<bold>首次跟單</bold>：只分配賬戶 10%~20% 資金，觀察 1 周",
+            "stable": "<bold>穩定後</bold>：逐步提高至賬戶 50% 以內",
+            "reserve": "<bold>保留餘量</bold>：始終保留 50%+ 空閒保證金，防強平"
+          }
+        },
+        "privacy": {
+          "title": "關於數據隱私",
+          "p1": "本平臺<bold>不會</bold>將您的 API Key、持倉、盈虧數據出售或分享給任何第三方。數據僅用於跟單執行、風控、盈虧統計。",
+          "p2": "您在本平臺的跟單數據<bold>僅您本人可見</bold>，平臺員工未經您授權不訪問您的個人數據。"
+        }
+      },
+      "agree": "我已閱讀並同意上述條款",
+      "scrollFirst": "· 請先滾動至底部",
+      "next": "下一步：填寫 API Key →"
+    },
+    "bind": {
+      "title": "綁定 API Key",
+      "stepHint": "第 {current} 步 / 共 {total} 步",
+      "formGuide": "填寫說明",
+      "back": "← 返回安全說明",
+      "securityBadges": {
+        "encryption": "AES-256 加密存儲",
+        "noWithdraw": "僅合約交易，不可提現",
+        "secretHidden": "Secret 永不展示"
+      },
+      "supportedExchanges": "已支持以下交易所",
+      "fields": {
+        "exchange": "交易所 *",
+        "exchangePlaceholder": "選擇交易所",
+        "label": "備註名稱 *",
+        "labelPlaceholder": "如：主賬戶",
+        "permissionType": "API 權限類型",
+        "readOnly": "只讀 (信號)",
+        "trade": "交易 (跟單)",
+        "apiKey": "API Key *",
+        "apiKeyPlaceholder": "輸入 API Key",
+        "apiSecret": "API Secret *",
+        "apiSecretPlaceholder": "輸入 API Secret",
+        "passphrase": "Passphrase * ({exchangeRequired})",
+        "passphrasePlaceholder": "輸入 Passphrase",
+        "exchangeRequired": "{exchange} 必填"
+      },
+      "ipWhitelist": {
+        "title": "IP 白名單",
+        "copyAll": "複製全部（半角逗號）",
+        "copyAllTitle": "複製全部 IP（OKX 用半角逗號分隔，可直接粘貼到交易所白名單輸入框）",
+        "instruction1": "把以下 IP 全部添加到交易所 API Key 的「受信任 IP」列表，缺一不可：",
+        "instruction2": "請將以上 IP 全部添加到交易所 API Key 的 IP 白名單，缺一不可。",
+        "readOnlyNote": "只讀權限的 API 不要綁定 IP 白名單；交易權限的 API 必須綁定。",
+        "changeWarning": "IP 可能會發生變化，請關注系統公告，及時更新 IP 白名單。"
+      },
+      "submit": "確認綁定",
+      "submitting": "正在綁定...",
+      "toasts": {
+        "copySuccess": "已複製到剪貼板",
+        "copyFailed": "複製失敗"
+      }
+    },
+    "table": {
+      "columns": {
+        "label": "API 標籤",
+        "uid": "UID",
+        "balance": "USDT 餘額",
+        "createdAt": "創建時間",
+        "permission": "權限",
+        "actions": "操作"
+      },
+      "permission": {
+        "readOnly": "只讀 (信號)",
+        "trade": "交易 (跟單)"
+      },
+      "editLabelAria": "修改標籤",
+      "empty": "暫無交易所 API，請點擊右上角按鈕添加",
+      "pagination": {
+        "summary": "顯示 {from} 到 {to} 條，共 {total} 條數據",
+        "previous": "上一頁",
+        "next": "下一頁"
+      },
+      "actions": {
+        "refreshBalance": "更新余額",
+        "refreshBalanceAria": "更新余額",
+        "delete": "刪除 API",
+        "deleteAria": "刪除API"
+      },
+      "deleteDialog": {
+        "title": "確認刪除此 API？",
+        "description": "刪除後，所有關聯該 API 的進行中任務可能會失敗。此操作無法撤銷。",
+        "confirm": "確認刪除"
+      },
+      "toasts": {
+        "balanceUpdated": "餘額已更新",
+        "balanceUpdateFailed": "更新余額失敗",
+        "balanceUpdateRetry": "更新余額失敗，請重試",
+        "deleteSuccess": "刪除 API 成功",
+        "deleteFailed": "刪除 API 失敗",
+        "deleteRetry": "刪除失敗，請重試"
+      }
+    }
+  }
+}
