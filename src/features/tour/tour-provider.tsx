@@ -3,10 +3,11 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, type ReactNode } from 'react'
 
 import { usePathname } from 'next/navigation'
-
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
-import { featureTours, findPageTour, getTourById, stripLocale } from './registry'
+import { localizeTour } from './localize'
+import { featureTours as featureTourDefs, findPageTour, getTourById, stripLocale } from './registry'
 import { hasSeenTour, resetAllTours } from './storage'
 
 import type { TourDef } from './types'
@@ -25,21 +26,42 @@ type TourContextValue = {
 const TourContext = createContext<TourContextValue | null>(null)
 
 export const TourProvider = ({ children }: { children: ReactNode }) => {
+  const t = useTranslations('Tour')
   const pathname = usePathname()
   const route = stripLocale(pathname ?? '')
-  const pageTour = useMemo(() => findPageTour(route), [route])
+  const pageTour = useMemo(() => {
+    const tour = findPageTour(route)
+    return tour ? localizeTour(tour, t) : undefined
+  }, [route, t])
+  const featureTours = useMemo(
+    () => featureTourDefs.map(tour => localizeTour(tour, t)),
+    [t]
+  )
   const autoStartedRef = useRef<string | null>(null)
 
-  const startTour = useCallback((tour: TourDef) => {
-    void import('./tour-runner').then(({ startTour: run }) => {
-      // 从下拉菜单触发时，等 Radix 关闭动画释放 body 的 pointer-events 再开场
-      window.setTimeout(() => {
-        if (!run(tour)) {
-          toast.info(tour.unavailableHint ?? '当前页面找不到该功能入口，请先展开侧边栏或进入对应页面')
-        }
-      }, 160)
-    })
-  }, [])
+  const uiLabels = useMemo(
+    () => ({
+      next: t('buttons.next'),
+      prev: t('buttons.prev'),
+      done: t('buttons.done'),
+      gotIt: t('buttons.gotIt')
+    }),
+    [t]
+  )
+
+  const startTour = useCallback(
+    (tour: TourDef) => {
+      void import('./tour-runner').then(({ startTour: run }) => {
+        // 从下拉菜单触发时，等 Radix 关闭动画释放 body 的 pointer-events 再开场
+        window.setTimeout(() => {
+          if (!run(tour, uiLabels)) {
+            toast.info(tour.unavailableHint ?? t('fallbackUnavailable'))
+          }
+        }, 160)
+      })
+    },
+    [t, uiLabels]
+  )
 
   const startTourById = useCallback(
     (id: string) => {
@@ -51,16 +73,16 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
         return
       }
 
-      startTour(tour)
+      startTour(localizeTour(tour, t))
     },
-    [startTour]
+    [startTour, t]
   )
 
   const resetProgress = useCallback(() => {
     resetAllTours()
     autoStartedRef.current = null
-    toast.success('引导记录已重置，下次进入相关页面会重新提示')
-  }, [])
+    toast.success(t('resetSuccess'))
+  }, [t])
 
   useEffect(() => {
     if (!pageTour?.autoStart) return
@@ -75,7 +97,7 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
       void import('./tour-runner').then(({ startTour: run }) => {
         if (cancelled) return
 
-        if (run(pageTour)) {
+        if (run(pageTour, uiLabels)) {
           autoStartedRef.current = pageTour.id
 
           return
@@ -96,11 +118,11 @@ export const TourProvider = ({ children }: { children: ReactNode }) => {
       window.clearTimeout(timer)
       if (retryTimer) window.clearTimeout(retryTimer)
     }
-  }, [pageTour])
+  }, [pageTour, uiLabels])
 
   const value = useMemo<TourContextValue>(
     () => ({ pageTour, featureTours, startTour, startTourById, resetProgress }),
-    [pageTour, startTour, startTourById, resetProgress]
+    [pageTour, featureTours, startTour, startTourById, resetProgress]
   )
 
   return <TourContext.Provider value={value}>{children}</TourContext.Provider>

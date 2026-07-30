@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from 'react'
 
 import { EyeIcon, EyeOffIcon, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Script from 'next/script'
 import { toast } from 'sonner'
 
@@ -16,7 +17,7 @@ import { InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot } from '@/comp
 import { PrimaryFlowButton } from '@/components/ui/flow-button'
 import {
   TurnstileLoadHint,
-  turnstileMissingTokenMessage,
+  useTurnstileMissingTokenMessage,
 } from '@/components/auth/turnstile-load-hint'
 import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
 import { buildTurnstileRequestFields } from '@/lib/turnstile-degrade'
@@ -40,6 +41,9 @@ interface TurnstileAPI {
 const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
 
 const ForgotPasswordForm = () => {
+  const t = useTranslations('Auth.forgot')
+  const tc = useTranslations('Auth.common')
+  const turnstileMissingTokenMessage = useTurnstileMissingTokenMessage()
   const router = useRouter()
   const siteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '').trim()
   const [turnstileWidgetError, setTurnstileWidgetError] = useState(false)
@@ -146,13 +150,13 @@ const ForgotPasswordForm = () => {
     }
     const trimmed = (email || '').trim().toLowerCase()
     if (!trimmed) {
-      toast.error('请输入邮箱')
+      toast.error(t('needEmail'))
 
       return
     }
     const re = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
     if (!re.test(trimmed)) {
-      toast.error('邮箱格式错误')
+      toast.error(t('invalidEmail'))
 
       return
     }
@@ -210,17 +214,17 @@ const ForgotPasswordForm = () => {
     e.preventDefault()
     const trimmedCode = code.trim()
     if (trimmedCode.length !== 6) {
-      toast.error('请输入 6 位验证码')
+      toast.error(t('needOtp'))
 
       return
     }
     if (newPassword.length < 6) {
-      toast.error('新密码长度不能少于 6 位')
+      toast.error(t('passwordTooShort'))
 
       return
     }
     if (newPassword !== confirmPassword) {
-      toast.error('两次密码输入不一致')
+      toast.error(t('passwordMismatch'))
 
       return
     }
@@ -268,13 +272,13 @@ const ForgotPasswordForm = () => {
         <form className='space-y-4' onSubmit={handleSendCode}>
           <div className='space-y-1'>
             <Label className='leading-5' htmlFor='resetEmail'>
-              邮箱地址*
+              {t('emailLabel')}
             </Label>
             <Input
               type='email'
               id='resetEmail'
               autoComplete='email'
-              placeholder='请输入已绑定账号的邮箱'
+              placeholder={t('emailPlaceholder')}
               value={email}
               onChange={e => setEmail(e.target.value)}
               disabled={sending}
@@ -286,18 +290,18 @@ const ForgotPasswordForm = () => {
             type='submit'
             disabled={sending || turnstileBlocking || codeCooldown > 0}
           >
-            {codeCooldown > 0 ? `${codeCooldown}s后重发` : sending ? '发送中...' : '发送验证码'}
+            {codeCooldown > 0 ? tc('resendIn', { seconds: codeCooldown }) : sending ? tc('sending') : tc('sendCode')}
           </PrimaryFlowButton>
         </form>
       ) : (
         <form className='space-y-4' onSubmit={handleConfirm}>
           <div className='space-y-1'>
-            <Label className='leading-5'>邮箱</Label>
+            <Label className='leading-5'>{tc('email')}</Label>
             <Input type='email' value={email} readOnly disabled className='bg-muted/40' />
           </div>
 
           <div className='space-y-2'>
-            <Label htmlFor={otpId}>邮箱验证码（6 位）</Label>
+            <Label htmlFor={otpId}>{t('otpLabel')}</Label>
             <InputOTP id={otpId} maxLength={6} value={code} onChange={setCode} disabled={submitting}>
               <InputOTPGroup className='gap-2 *:data-[slot=input-otp-slot]:rounded-md *:data-[slot=input-otp-slot]:border'>
                 <InputOTPSlot index={0} />
@@ -315,14 +319,14 @@ const ForgotPasswordForm = () => {
 
           <div className='w-full space-y-1'>
             <Label className='leading-5' htmlFor='resetNewPassword'>
-              新密码*
+              {t('newPasswordLabel')}
             </Label>
             <div className='relative'>
               <Input
                 id='resetNewPassword'
                 type={isPasswordVisible ? 'text' : 'password'}
                 autoComplete='new-password'
-                placeholder='至少 6 位'
+                placeholder={t('newPasswordPlaceholder')}
                 className='pr-9'
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
@@ -337,21 +341,21 @@ const ForgotPasswordForm = () => {
                 disabled={submitting}
               >
                 {isPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
-                <span className='sr-only'>{isPasswordVisible ? '隐藏密码' : '显示密码'}</span>
+                <span className='sr-only'>{isPasswordVisible ? tc('hidePassword') : tc('showPassword')}</span>
               </Button>
             </div>
           </div>
 
           <div className='w-full space-y-1'>
             <Label className='leading-5' htmlFor='resetConfirmPassword'>
-              确认新密码*
+              {t('confirmPasswordLabel')}
             </Label>
             <div className='relative'>
               <Input
                 id='resetConfirmPassword'
                 type={isConfirmPasswordVisible ? 'text' : 'password'}
                 autoComplete='new-password'
-                placeholder='请再次输入新密码'
+                placeholder={t('confirmPasswordPlaceholder')}
                 className='pr-9'
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
@@ -366,7 +370,7 @@ const ForgotPasswordForm = () => {
                 disabled={submitting}
               >
                 {isConfirmPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
-                <span className='sr-only'>{isConfirmPasswordVisible ? '隐藏密码' : '显示密码'}</span>
+                <span className='sr-only'>{isConfirmPasswordVisible ? tc('hidePassword') : tc('showPassword')}</span>
               </Button>
             </div>
           </div>
@@ -380,19 +384,19 @@ const ForgotPasswordForm = () => {
               disabled={sending || turnstileBlocking || codeCooldown > 0}
             >
               {sending && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-              {codeCooldown > 0 ? `${codeCooldown}s后重发` : '重发验证码'}
+              {codeCooldown > 0 ? tc('resendIn', { seconds: codeCooldown }) : t('resendCode')}
             </Button>
             <PrimaryFlowButton
               className='sm:flex-1 *:w-full [&>button]:after:-inset-55'
               type='submit'
               disabled={submitting || code.trim().length !== 6 || turnstileBlocking}
             >
-              {submitting ? '提交中...' : '重置密码'}
+              {submitting ? t('submitting') : t('submit')}
             </PrimaryFlowButton>
           </div>
 
           <Button type='button' variant='ghost' className='w-full' onClick={() => setStep(1)} disabled={submitting}>
-            返回修改邮箱
+            {t('backEditEmail')}
           </Button>
         </form>
       )}

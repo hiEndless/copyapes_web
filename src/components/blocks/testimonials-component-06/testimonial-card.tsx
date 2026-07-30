@@ -22,7 +22,7 @@ const TestimonialCard = ({ testimonial }: { testimonial: TestimonialItem }) => {
             </AvatarFallback>
           </Avatar>
           <div>
-            <h4 className='font-medium'>{testimonial.name}</h4>
+            <h3 className='font-medium'>{testimonial.name}</h3>
             {/*<p className='text-muted-foreground text-sm'>{testimonial.role}</p>*/}
           </div>
         </div>

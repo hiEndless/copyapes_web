@@ -15,7 +15,12 @@
     "description": "CopyApes news, copy trading guides, and product updates.",
     "home": "Home",
     "postTitle": "{title}",
-    "keywords": ["blog", "copy trading", "crypto", "CopyApes"]
+    "keywords": [
+      "blog",
+      "copy trading",
+      "crypto",
+      "CopyApes"
+    ]
   },
   "Metadata": {
     "titleTemplate": "%s - CopyApes",
@@ -326,9 +331,653 @@
     "desc": "Freely combine top lead traders from different exchanges, balance return and risk, create your exclusive copy trading strategy, and let the world's top traders work for you.",
     "product": "Product",
     "help": "Help",
+    "about": "About",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
     "tutorial": "Tutorial",
     "copyright": "Made with ❤️ by CopyApes."
+  },
+  "About": {
+    "badge": "About",
+    "title": "What is CopyApes",
+    "subtitle": "A cross-exchange automated copy-trading assistant for crypto futures traders.",
+    "p1": "CopyApes helps users automatically follow selected traders' open and close actions through official exchange APIs. Funds always stay in your own exchange accounts. The platform does not custody funds and does not take a profit-share seat fee from your copy trades.",
+    "p2": "Unlike single-exchange built-in copy trading, CopyApes supports cross-platform following — for example, using an OKX account to follow a Binance lead trader, or combining multiple traders into one portfolio to diversify risk. The product is built for individual traders, lead-trader KOLs, and trading communities.",
+    "p3": "Core capabilities include millisecond-to-second copy latency, multi-exchange support (Binance, OKX, Bybit, Bitget, Gate, HTX, HyperLiquid, and more), reverse copying, allow/deny lists, profit-condition copying, and private-domain Cookie/API workflows.",
+    "p4": "We offer a long-term free trial tier, plus product docs, FAQs, Privacy Policy, and Terms of Service on the website. For partnerships or support, use Contact Us or email service@copyapes.com.",
+    "pointsTitle": "What you can learn here",
+    "point1": "Product features and cross-exchange copy trading",
+    "point2": "Pricing plans and free-trial scope",
+    "point3": "Security practices: trade-only API keys, IP allowlists, and encrypted storage",
+    "point4": "Contact channels, Privacy Policy, and Terms of Service",
+    "readMore": "Read the full overview",
+    "metadata": {
+      "title": "About",
+      "description": "Learn about CopyApes: a cross-exchange automated futures copy-trading assistant, who it is for, and how to contact us."
+    }
+  },
+  "TermsOfService": {
+    "metadata": {
+      "title": "Terms of Service",
+      "description": "CopyApes Terms of Service: service description, account responsibilities, risk disclosure, and contact information."
+    },
+    "title": "Terms of Service",
+    "lastUpdated": "Last updated: July 30, 2026",
+    "intro": "Welcome to CopyApes. By using this website, related APIs, or the browser extension, you agree to these terms. If you do not agree, stop using the service.",
+    "sections": {
+      "service": {
+        "title": "1. Service Description",
+        "body": "CopyApes provides software tools and configuration for automated crypto futures copy trading. We do not provide investment advice, guarantee returns, or custody your exchange funds.",
+        "items": []
+      },
+      "account": {
+        "title": "2. Accounts and Credentials",
+        "body": "You must safeguard your account and exchange API keys/cookies, and grant only the minimum permissions required for copy trading (trade-only permissions with an IP allowlist are recommended; do not enable withdrawal or fund-transfer permissions). Losses caused by credential leaks or improper permission settings are your responsibility.",
+        "items": []
+      },
+      "risk": {
+        "title": "3. Risk Disclosure",
+        "body": "Futures trading and copy trading are high risk and may result in total loss of capital. Latency, slippage, exchange outages, missing trading pairs, and network issues can all affect fills. Use the service only after you understand these risks.",
+        "items": []
+      },
+      "compliance": {
+        "title": "4. Acceptable Use",
+        "body": "You must comply with applicable laws and exchange rules. Do not use the service for illegal activity, fraud, or unauthorized access to others' accounts. We may restrict or terminate service upon violations.",
+        "items": []
+      },
+      "privacy": {
+        "title": "5. Privacy",
+        "body": "How we handle personal information is described in our Privacy Policy.",
+        "items": []
+      },
+      "changes": {
+        "title": "6. Changes",
+        "body": "We may update these terms and post the revision date on this page. For material changes we may also announce them on the website. Continued use means you accept the updated terms.",
+        "items": []
+      },
+      "contact": {
+        "title": "7. Contact",
+        "body": "Questions about these terms can be sent via Contact Us on the website or email service@copyapes.com. A fuller product protocol may also be available in our docs site.",
+        "items": []
+      }
+    },
+    "fullProtocol": "View the full product protocol"
+  },
+  "DashboardShell": {
+    "groups": {
+      "system": "System",
+      "copy": "Copy Trading",
+      "studio": "Studio",
+      "tools": "Tools",
+      "settings": "Settings"
+    },
+    "nav": {
+      "home": "Home",
+      "pricing": "Subscription",
+      "invite": "Invite Rewards",
+      "admin": "Admin",
+      "partner": "Partner Console",
+      "partnerSettings": "Partner Settings",
+      "partnerUsers": "User List",
+      "partnerRevenue": "Revenue & Withdrawal",
+      "taskList": "My Copy Tasks",
+      "createTask": "Create Task",
+      "exchangeTask": "Exchange Picks",
+      "bicoinTask": "Bicoin Picks",
+      "hyperTask": "HyperLiquid Picks",
+      "apiTask": "API-to-API Copy",
+      "cookieTask": "Cookie-based Copy",
+      "hotKol": "Hot Lead KOLs",
+      "hyperKol": "HyperLiquid KOLs",
+      "cookie": "Get Cookie",
+      "grab": "Seat Grab",
+      "studioTasks": "Advanced Tasks",
+      "positions": "Positions",
+      "addPositions": "Manual Top-up",
+      "api": "API Management",
+      "account": "Account",
+      "notifications": "Notifications"
+    },
+    "badges": {
+      "grabHit": "Hit in 4 days"
+    },
+    "extensionAlt": "Install extension",
+    "serviceStatus": "Service status",
+    "riskBanner": "Trading crypto derivatives involves significant risk and is not suitable for all investors. This software is only an assistant and may fail — you remain the primary controller of position risk.",
+    "close": "Close",
+    "tour": {
+      "title": "Getting started",
+      "empty": "No tour on this page",
+      "features": "Feature guides",
+      "reset": "Reset tour progress"
+    },
+    "profile": {
+      "userFallback": "User",
+      "vipDays": "VIP: {days} days left",
+      "studioVipDays": "Studio VIP: {days} days left",
+      "partner": "Partner",
+      "freeUser": "Free user",
+      "assetLimit": "Asset limit",
+      "apiSlots": "Trading API slots",
+      "taskSlots": "Copy task limit",
+      "pricing": "Subscription",
+      "api": "API Management",
+      "account": "Account",
+      "notifications": "Notifications",
+      "logout": "Log out",
+      "logoutSuccess": "Logged out"
+    }
+  },
+  "Auth": {
+    "common": {
+      "or": "or",
+      "startFree": "Start your free trial",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "password": "Password*",
+      "email": "Email",
+      "resendIn": "Resend in {seconds}s",
+      "sending": "Sending...",
+      "sendCode": "Send code",
+      "backToLogin": "Back to login"
+    },
+    "login": {
+      "title": "Welcome back",
+      "usernameLabel": "Username / email*",
+      "usernamePlaceholder": "Enter your username or email",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "submit": "Log in",
+      "submitting": "Logging in...",
+      "success": "Logged in",
+      "needCredentials": "Please enter username and password",
+      "noAccount": "Don't have an account?",
+      "register": "Sign up"
+    },
+    "register": {
+      "title": "Sign up",
+      "usernameLabel": "Username*",
+      "usernamePlaceholder": "Enter a username",
+      "emailLabel": "Email*",
+      "emailPlaceholder": "Enter your email",
+      "emailCodeLabel": "Email verification code*",
+      "emailCodePlaceholder": "Enter the 6-digit code",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPasswordLabel": "Confirm password*",
+      "inviteLabel": "Invite code (optional)",
+      "invitePlaceholder": "Enter an invite code if you have one",
+      "agreePrefix": "I agree to the",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "submit": "Sign up",
+      "submitting": "Signing up...",
+      "success": "Registration successful. Please log in.",
+      "needAllFields": "Please fill in all fields",
+      "passwordMismatch": "Passwords do not match",
+      "needAgree": "Please agree to the Privacy Policy and Terms of Service",
+      "needEmail": "Please enter your email first",
+      "invalidEmail": "Invalid email format",
+      "hasAccount": "Already have an account?",
+      "login": "Log in"
+    },
+    "forgot": {
+      "title": "Forgot password",
+      "subtitle": "Get a code via your linked email, then set a new password.",
+      "emailLabel": "Email*",
+      "emailPlaceholder": "Enter the email linked to your account",
+      "needEmail": "Please enter your email",
+      "invalidEmail": "Invalid email format",
+      "otpLabel": "Email verification code (6 digits)",
+      "needOtp": "Please enter the 6-digit code",
+      "newPasswordLabel": "New password*",
+      "newPasswordPlaceholder": "At least 6 characters",
+      "passwordTooShort": "Password must be at least 6 characters",
+      "confirmPasswordLabel": "Confirm new password*",
+      "confirmPasswordPlaceholder": "Enter the new password again",
+      "passwordMismatch": "Passwords do not match",
+      "resendCode": "Resend code",
+      "submit": "Reset password",
+      "submitting": "Submitting...",
+      "backEditEmail": "Change email"
+    },
+    "reset": {
+      "title": "Reset password",
+      "subtitle": "This entry has been merged into the Forgot Password flow.",
+      "hint": "Please go to Forgot Password and reset via email verification code.",
+      "goForgot": "Go to Forgot Password"
+    },
+    "google": {
+      "fail": "Google sign-in failed. Please try again.",
+      "scriptFail": "Failed to load Google sign-in script",
+      "registerSuccess": "Signed up and logged in",
+      "loginSuccess": "Logged in",
+      "loading": "Signing in with Google..."
+    },
+    "turnstile": {
+      "refresh": "Refresh page",
+      "widgetFailDomestic": "Verification failed. Refresh and try again, or switch to an overseas network. If it still fails, you can try submitting — the system will handle it based on network conditions.",
+      "widgetFailOverseas": "Verification failed. Refresh and try again. If it still fails, switch to an overseas network.",
+      "scriptFailDomestic": "Verification timed out. Refresh and try again, or switch to an overseas network. If it still fails to load, you can try submitting — the system will handle it based on network conditions.",
+      "scriptFailOverseas": "Verification timed out. Refresh and try again. If it still fails to load, switch to an overseas network.",
+      "complete": "Please complete the verification",
+      "notReadyDomestic": "Verification is not ready. You can try submitting; if it fails, refresh or switch networks.",
+      "notReadyOverseas": "Verification is not ready. Refresh or switch to an overseas network and try again."
+    }
+  },
+  "Tour": {
+    "fallbackUnavailable": "This feature entry is not on the current page. Expand the sidebar or open the related page first.",
+    "resetSuccess": "Tour progress reset. Related pages will show guides again next time.",
+    "tours": {
+      "dashboard-overview": {
+        "title": "Getting started guide",
+        "steps": [
+          {
+            "title": "Welcome to CopyApes",
+            "description": "Take a minute to learn where the main features are. You can reopen this anytime from the question-mark button in the top right."
+          },
+          {
+            "title": "Step 1: Add an exchange API",
+            "description": "Copy trading needs exchange API permissions to place orders. Bind an API here first so you can create tasks later."
+          },
+          {
+            "title": "Step 2: Set up notifications",
+            "description": "Configure notification channels before creating tasks. Without them you cannot create copy tasks, and you may miss open/close or stop alerts."
+          },
+          {
+            "title": "Step 3: Create a copy task",
+            "description": "Pick a method by signal source: Exchange picks, Bicoin, HyperLiquid, API-to-API Copy, or Cookie-based Copy."
+          },
+          {
+            "title": "Hot lead KOLs",
+            "description": "Not sure who to follow? Start with curated traders here and create a task in one click."
+          },
+          {
+            "title": "My copy tasks",
+            "description": "Check and manage status, PnL, and details for all copy tasks here."
+          },
+          {
+            "title": "Exchange referral — half-price VIP",
+            "description": "Register via the partner exchange links below for about 20% fee rebates. Contact support after signup to unlock half-price VIP."
+          },
+          {
+            "title": "Replay anytime",
+            "description": "Open this menu to replay the page guide or view a single feature walkthrough."
+          }
+        ]
+      },
+      "hot-kol-page": {
+        "title": "Hot KOL page guide",
+        "steps": [
+          {
+            "title": "Curated trader sources",
+            "description": "Traders here come from Binance rankings, OKX leaderboards, Bicoin, and more. Verify performance on the original platforms."
+          },
+          {
+            "title": "Pick and start copying",
+            "description": "Current funds = 0 means the signal is unavailable. Tap Start copying, then set amount and leverage to create a task."
+          }
+        ]
+      },
+      "api-page": {
+        "title": "API setup guide",
+        "steps": [
+          {
+            "title": "Check the IP allowlist notice",
+            "description": "Trading APIs must add our IPs to the exchange allowlist. IPs can change; after long inactivity you may need to re-authorize."
+          },
+          {
+            "title": "Add an API here",
+            "description": "Two steps: read the security notes, then enter keys. In step 2, use Field guide in the top-right for field-by-field help."
+          },
+          {
+            "title": "Manage added APIs",
+            "description": "See balances and status, edit notes, or delete. Balances refresh about every 10 minutes."
+          }
+        ]
+      },
+      "api-form-guide": {
+        "title": "API form field guide",
+        "unavailableHint": "Open Add API and go to step 2, then start Field guide from the top-right of the dialog.",
+        "steps": [
+          {
+            "title": "Choose exchange",
+            "description": "Pick the exchange where you hold funds. Credentials differ by exchange; OKX, Bitget, and WEEX also need a Passphrase."
+          },
+          {
+            "title": "Display name",
+            "description": "For your own labeling only, e.g. Main or Alt. You pick APIs by this name when creating tasks."
+          },
+          {
+            "title": "Pick the right permission",
+            "description": "Read-only is for signals only and cannot place orders. Real copy trading requires Trade. Wrong choice means no fills."
+          },
+          {
+            "title": "Enter API Key",
+            "description": "Create it on the exchange and paste it here. Do not enable withdrawal permissions."
+          },
+          {
+            "title": "Secret and Passphrase",
+            "description": "Secret is shown only once when created—save it. For OKX, Bitget, and WEEX you also need Passphrase."
+          },
+          {
+            "title": "IP allowlist is required",
+            "description": "Add every IP listed here to the API trust list on the exchange. Required for trade permissions; do not bind for read-only."
+          },
+          {
+            "title": "Confirm binding",
+            "description": "We validate credentials before saving. Failures are usually wrong permissions or incomplete IP allowlist."
+          }
+        ]
+      },
+      "cookie-page": {
+        "title": "Cookie capture guide",
+        "steps": [
+          {
+            "title": "Binding rules first",
+            "description": "One Cookie per exchange. To bind more for the same exchange, register additional CopyApes accounts."
+          },
+          {
+            "title": "Recommended: browser extension",
+            "description": "Install the extension, log into CopyApes and the exchange, then auto-capture to sync here. Chrome installs directly; other browsers see the notes below."
+          },
+          {
+            "title": "Fallback: manual upload",
+            "description": "If you cannot install the extension or need mobile remote updates, use Manual upload and paste a Cookie string or full cURL."
+          },
+          {
+            "title": "Review bindings here",
+            "description": "Successful uploads appear under My exchange Cookies. Green means active; red means expired—recapture and update."
+          }
+        ]
+      },
+      "grab-page": {
+        "title": "Seat grab guide",
+        "steps": [
+          {
+            "title": "Cookie required first",
+            "description": "When popular traders are full, we monitor and grab a seat. Bind an exchange Cookie first—grabbing needs a valid Cookie."
+          },
+          {
+            "title": "Choose target exchange",
+            "description": "Pick OKX or Binance. The Cookie list below matches the selected exchange."
+          },
+          {
+            "title": "Confirm Cookie is valid",
+            "description": "Status must show Valid. If missing or expired, rebind on the Cookie page."
+          },
+          {
+            "title": "Enter trader and parse",
+            "description": "Paste the trader profile URL or ID, then Parse to extract the UID."
+          },
+          {
+            "title": "Open amount settings",
+            "description": "Enabled only when exchange, valid Cookie, and trader are set. Use Config guide in the panel for amount fields."
+          }
+        ]
+      },
+      "grab-config-guide": {
+        "title": "Seat grab config guide",
+        "unavailableHint": "Open the seat-grab config panel first, then start Config guide from the top-right.",
+        "steps": [
+          {
+            "title": "Verify target trader",
+            "description": "Confirm avatar, nickname, and recent PnL. After grabbing a seat, copying follows this trader."
+          },
+          {
+            "title": "Set copy amount",
+            "description": "Capital used for copying after a seat is grabbed. Binance supports ratio or fixed size; OKX needs the copy amount."
+          },
+          {
+            "title": "Start grabbing",
+            "description": "After submit the task is In progress and polls seats every second. Usually succeeds in 2–3 days; you can stop anytime in the list."
+          }
+        ]
+      },
+      "notifications-page": {
+        "title": "Notifications setup guide",
+        "steps": [
+          {
+            "title": "Notification settings",
+            "description": "Usually required before creating copy tasks. Control what you receive and which channels deliver it."
+          },
+          {
+            "title": "Choose notification types",
+            "description": "Toggles apply to all enabled channels. Trade alerts, Cookie/API expiry, and task stops are common; system notices cannot be turned off."
+          },
+          {
+            "title": "Pick and enable channels",
+            "description": "Select a channel on the left, configure it, then turn on the switch—otherwise you will not receive messages."
+          },
+          {
+            "title": "Fill channel settings",
+            "description": "WeChat needs a scanned auth code; DingTalk needs Webhook and signing secret; QQ email needs QQ number and SMTP auth code."
+          },
+          {
+            "title": "Save then test",
+            "description": "Save config, enable the channel, then Test connection. Test is disabled until the channel is on."
+          }
+        ]
+      },
+      "invite-page": {
+        "title": "Invite rewards guide",
+        "steps": [
+          {
+            "title": "Invite rewards",
+            "description": "Invite friends to unlock extra API/copy quotas. Paid upgrades by friends also accumulate sales commission."
+          },
+          {
+            "title": "Copy invite link",
+            "description": "Share the link. Friends who register via it count as invites; only valid invites advance task progress."
+          },
+          {
+            "title": "Milestones and rewards",
+            "description": "At 3 / 5 / 10 valid invites, unlock API slots, copy-task quotas, and asset limits. Milestone rewards apply to free users only."
+          },
+          {
+            "title": "Commission and partner perks",
+            "description": "Shows cumulative commission. Annual VIP or Studio VIP partners can withdraw and enjoy rebate benefits."
+          }
+        ]
+      },
+      "exchange-task-page": {
+        "title": "Exchange picks task guide",
+        "steps": [
+          {
+            "title": "Choose signal exchange",
+            "description": "Select the exchange providing the signal. Latency notes appear below; OKX and Binance rules differ."
+          },
+          {
+            "title": "Paste profile URL or ID",
+            "description": "Paste the full trader profile URL and Parse to extract the ID."
+          },
+          {
+            "title": "Pick the correct trader type",
+            "description": "OKX: contract lead vs personal overview; Binance: public vs hidden lead. Wrong type means no signals."
+          },
+          {
+            "title": "Open copy settings",
+            "description": "Enabled when the fields above are complete. Use Config guide in the panel for each parameter."
+          }
+        ]
+      },
+      "cookie-task-page": {
+        "title": "Cookie-based task guide",
+        "steps": [
+          {
+            "title": "Choose target exchange",
+            "description": "Switching exchange also switches available Cookies—set this first."
+          },
+          {
+            "title": "Pick a valid Cookie",
+            "description": "My Cookies are yours (first valid for the exchange is auto-selected). Discover Cookies lets you search shared ones. Only Valid can be selected."
+          },
+          {
+            "title": "Paste profile URL or ID",
+            "description": "Paste the full trader profile URL and Parse to extract the ID."
+          },
+          {
+            "title": "Pick the correct trader type",
+            "description": "OKX: contract lead vs copy project; Binance: lead project vs smart money. Wrong type means no signals."
+          },
+          {
+            "title": "Open copy settings",
+            "description": "Enabled when exchange, Cookie, trader, and type are set. Use Config guide for parameters."
+          }
+        ]
+      },
+      "bicoin-task-page": {
+        "title": "Bicoin task guide",
+        "steps": [
+          {
+            "title": "Link a Bicoin account",
+            "description": "Sign in with Bicoin App phone and password, then save. Without it you cannot search traders or create tasks."
+          },
+          {
+            "title": "Search and select a trader",
+            "description": "Search by nickname and click a row to select; the selection is highlighted."
+          },
+          {
+            "title": "Choose data source",
+            "description": "Operation history is slightly faster; contract positions are more stable. Spot or buy/sell modes in history cannot be copied—contact support if needed."
+          },
+          {
+            "title": "Open copy settings",
+            "description": "Enabled when account, trader, and source are set. Use Config guide for parameters."
+          }
+        ]
+      },
+      "hyper-task-page": {
+        "title": "HyperLiquid task guide",
+        "steps": [
+          {
+            "title": "Find a wallet address",
+            "description": "HyperLiquid is on-chain; copying uses wallet addresses. Use Query data to find whale addresses on Coinglass."
+          },
+          {
+            "title": "Paste wallet address",
+            "description": "Enter the full address starting with 0x. No parse step or trader type is needed."
+          },
+          {
+            "title": "Open copy settings",
+            "description": "Enabled once the address is filled. Use Config guide for parameters."
+          }
+        ]
+      },
+      "api-task-page": {
+        "title": "API-to-API task guide",
+        "steps": [
+          {
+            "title": "Two signal sources",
+            "description": "My API signals are your read-only APIs; Discover API signals lets you search public APIs from others and follow them."
+          },
+          {
+            "title": "Start copying from a card",
+            "description": "There is no bottom Create button—use Start copying on a card. Only OKX is supported for now; others stay disabled."
+          }
+        ]
+      },
+      "task-config-guide": {
+        "title": "Copy settings guide",
+        "unavailableHint": "Open the copy settings panel first, then start Config guide from the top-right.",
+        "steps": [
+          {
+            "title": "Confirm notifications are set",
+            "description": "If it shows Not configured, you cannot create a task. Open Configure to bind channels first."
+          },
+          {
+            "title": "Choose the trading API",
+            "description": "This is your order-placement API, not the signal source. Empty list means you have not added a trade-permission API yet."
+          },
+          {
+            "title": "Copy mode",
+            "description": "Fixed ratio sizes your order as investment ÷ trader equity × multiplier—the most common mode."
+          },
+          {
+            "title": "Trader equity benchmark",
+            "description": "Enter the trader's equity; Auto-fetch can pull it. This drives the ratio—wrong values over/under size positions."
+          },
+          {
+            "title": "Investment amount",
+            "description": "Used only to compute the ratio—not a hard fund cap and not transferred. Adjust it to scale position size."
+          },
+          {
+            "title": "Check copy ratio",
+            "description": "Review the calculated ratio before submit. Below 10% may warn that size is too small to fill."
+          },
+          {
+            "title": "Leverage mode",
+            "description": "New accounts may be limited by exchange risk controls. Changing leverage affects margin, not fill size."
+          },
+          {
+            "title": "Accept the copy agreement",
+            "description": "Required to submit. Open it first to read the risk disclosure."
+          },
+          {
+            "title": "Submit task",
+            "description": "After submit the task starts listening for signals. Check status under My copy tasks."
+          }
+        ]
+      },
+      "feature-api": {
+        "title": "API Management",
+        "steps": [
+          {
+            "title": "API Management",
+            "description": "Bind exchange APIs before placing orders. Prefer futures trade permission only—never enable withdrawals."
+          }
+        ]
+      },
+      "feature-create-task": {
+        "title": "Create Task",
+        "steps": [
+          {
+            "title": "Create Task",
+            "description": "Expand and choose a create method by signal source; each source has a different trader pool."
+          }
+        ]
+      },
+      "feature-cookie": {
+        "title": "Get Cookie",
+        "steps": [
+          {
+            "title": "Get Cookie",
+            "description": "Capture credentials for Cookie-based Copy here, ideally with the browser extension."
+          }
+        ]
+      },
+      "feature-grab": {
+        "title": "Seat Grab",
+        "steps": [
+          {
+            "title": "Seat Grab",
+            "description": "When popular traders are full, queue with seat grab and auto-take a spot when one frees up."
+          }
+        ]
+      },
+      "feature-notifications": {
+        "title": "Notifications",
+        "steps": [
+          {
+            "title": "Notifications",
+            "description": "Configure Telegram, WeCom, email, and more for realtime trade and error alerts."
+          }
+        ]
+      },
+      "feature-invite": {
+        "title": "Invite Rewards",
+        "steps": [
+          {
+            "title": "Invite Rewards",
+            "description": "Share your invite link and earn rewards when friends place orders."
+          }
+        ]
+      }
+    },
+    "buttons": {
+      "next": "Next",
+      "prev": "Previous",
+      "done": "Done",
+      "gotIt": "Got it"
+    }
   }
 }

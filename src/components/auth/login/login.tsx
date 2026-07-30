@@ -1,3 +1,7 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
+
 import { Link } from '@/i18n/routing'
 
 import { Separator } from '@/components/ui/separator'
@@ -9,6 +13,9 @@ import LoginForm from '@/components/auth/login/login-form'
 const googleClientId = (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '').trim()
 
 const Login = () => {
+  const t = useTranslations('Auth.login')
+  const tc = useTranslations('Auth.common')
+
   return (
     <div className='flex flex-col gap-6'>
       <Link href='/'>
@@ -16,8 +23,8 @@ const Login = () => {
       </Link>
 
       <div>
-        <h1 className='mb-3 text-2xl font-semibold md:text-3xl lg:text-4xl'>欢迎回来</h1>
-        <p className='text-muted-foreground'>开始您的免费体验</p>
+        <h1 className='mb-3 text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h1>
+        <p className='text-muted-foreground'>{tc('startFree')}</p>
       </div>
 
       {googleClientId ? (
@@ -25,7 +32,7 @@ const Login = () => {
           <GoogleLoginButton />
           <div className='flex items-center gap-4'>
             <Separator className='flex-1' />
-            <p className='text-muted-foreground text-sm'>或</p>
+            <p className='text-muted-foreground text-sm'>{tc('or')}</p>
             <Separator className='flex-1' />
           </div>
         </>
@@ -35,9 +42,9 @@ const Login = () => {
         <LoginForm />
 
         <p className='text-muted-foreground text-center'>
-          还没有账号？{' '}
+          {t('noAccount')}{' '}
           <Link href='/register' className='text-foreground hover:underline'>
-            注册
+            {t('register')}
           </Link>
         </p>
       </div>

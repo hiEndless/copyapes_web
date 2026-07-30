@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useEffect, useRef, useState, type ComponentType } from 'react'
+import React, { useEffect, useMemo, useRef, useState, type ComponentType } from 'react'
 
 import { useTheme } from 'next-themes'
+import { useTranslations } from 'next-intl'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -67,12 +68,14 @@ import { TourProvider } from '@/features/tour/tour-provider'
 import TourHelpMenu from '@/features/tour/components/tour-help-menu'
 
 type MenuSubItem = {
+  id: string
   label: string
   href: string
   badge?: string
 }
 
 type MenuItem = {
+  id: string
   icon: ComponentType
   label: string
   /** 引导锚点，供新手指引与功能点介绍定位 */
@@ -86,129 +89,199 @@ type MenuItem = {
   | { href?: never; badge?: never; items: MenuSubItem[] }
 )
 
-const menuItems: MenuItem[] = [
+type MenuSubItemConfig = {
+  id: string
+  labelKey: string
+  href: string
+  badgeKey?: string
+}
+
+type MenuItemConfig = {
+  id: string
+  icon: ComponentType
+  labelKey: string
+  anchor?: TourAnchor
+} & (
+  | {
+      href: string
+      badgeKey?: string
+      items?: never
+    }
+  | { href?: never; badgeKey?: never; items: MenuSubItemConfig[] }
+)
+
+const menuItemConfigs: MenuItemConfig[] = [
   {
+    id: 'home',
     icon: LayoutGridIcon,
-    label: '首页',
+    labelKey: 'nav.home',
     href: '/dashboard',
     anchor: TOUR_ANCHORS.navHome
   },
   {
+    id: 'pricing',
     icon: Crown,
-    label: '订阅服务',
+    labelKey: 'nav.pricing',
     href: '/dashboard/pricing',
     anchor: TOUR_ANCHORS.navPricing
   },
   {
+    id: 'invite',
     icon: Gift,
-    label: '邀请奖励',
+    labelKey: 'nav.invite',
     href: '/dashboard/invite',
     anchor: TOUR_ANCHORS.navInvite
   }
 ]
 
-const adminItems: MenuItem[] = [
+const adminItemConfigs: MenuItemConfig[] = [
   {
+    id: 'admin',
     icon: ShieldUser,
-    label: '系统后台',
+    labelKey: 'nav.admin',
     href: '/dashboard/admin'
   },
   {
+    id: 'partner',
     icon: UserStar,
-    label: '代理商后台',
+    labelKey: 'nav.partner',
     items: [
-      { label: '代理设置', href: '/dashboard/partner/settings' },
-      { label: '用户列表', href: '/dashboard/partner/user_list' },
-      { label: '收益与提现', href: '/dashboard/partner/revenue' },
+      { id: 'partnerSettings', labelKey: 'nav.partnerSettings', href: '/dashboard/partner/settings' },
+      { id: 'partnerUsers', labelKey: 'nav.partnerUsers', href: '/dashboard/partner/user_list' },
+      { id: 'partnerRevenue', labelKey: 'nav.partnerRevenue', href: '/dashboard/partner/revenue' }
     ]
   }
 ]
 
-const copyItems: MenuItem[] = [
+const copyItemConfigs: MenuItemConfig[] = [
   {
+    id: 'taskList',
     icon: LayoutListIcon,
-    label: '我的跟单',
+    labelKey: 'nav.taskList',
     href: '/dashboard/task_list',
     anchor: TOUR_ANCHORS.navTaskList
   },
   {
+    id: 'createTask',
     icon: CopyIcon,
-    label: '创建跟单',
+    labelKey: 'nav.createTask',
     anchor: TOUR_ANCHORS.navCreateTask,
     items: [
-      { label: '交易所自选', href: '/dashboard/add_task/exchange_task' },
-      { label: '币coin 自选', href: '/dashboard/add_task/bicoin_task' },
-      { label: 'HyperLiquid 自选', href: '/dashboard/add_task/hyper_task' },
-      { label: 'API 跟单', href: '/dashboard/add_task/api_task' },
-      { label: 'Cookie 跟单', href: '/dashboard/add_task/cookie_task' }
+      { id: 'exchangeTask', labelKey: 'nav.exchangeTask', href: '/dashboard/add_task/exchange_task' },
+      { id: 'bicoinTask', labelKey: 'nav.bicoinTask', href: '/dashboard/add_task/bicoin_task' },
+      { id: 'hyperTask', labelKey: 'nav.hyperTask', href: '/dashboard/add_task/hyper_task' },
+      { id: 'apiTask', labelKey: 'nav.apiTask', href: '/dashboard/add_task/api_task' },
+      { id: 'cookieTask', labelKey: 'nav.cookieTask', href: '/dashboard/add_task/cookie_task' }
     ]
   },
   {
+    id: 'hotKol',
     icon: Flame,
-    label: '热门带单 KOL ',
+    labelKey: 'nav.hotKol',
     href: '/dashboard/add_task/hot',
     anchor: TOUR_ANCHORS.navHotKol
   },
   {
+    id: 'hyperKol',
     icon: Flame,
-    label: 'HyperLiquid KOL ',
+    labelKey: 'nav.hyperKol',
     href: '/dashboard/hyper_discover'
   }
 ]
 
-const toolsItems: MenuItem[] = [
+const toolsItemConfigs: MenuItemConfig[] = [
   {
+    id: 'cookie',
     icon: Cookie,
-    label: 'Cookie 获取',
+    labelKey: 'nav.cookie',
     href: '/dashboard/cookie',
     anchor: TOUR_ANCHORS.navCookie
   },
   {
+    id: 'grab',
     icon: LandPlot,
-    label: '跟单抢位',
+    labelKey: 'nav.grab',
     href: '/dashboard/grab',
-    badge: '4天必中',
+    badgeKey: 'badges.grabHit',
     anchor: TOUR_ANCHORS.navGrab
   }
 ]
 
-const studioToolsItems: MenuItem[] = [
+const studioToolsItemConfigs: MenuItemConfig[] = [
   {
+    id: 'studioTasks',
     icon: Boxes,
-    label: '高级任务管理',
+    labelKey: 'nav.studioTasks',
     href: '/dashboard/studio_tasks'
   },
   {
+    id: 'positions',
     icon: ListChecks,
-    label: '持仓管理',
+    labelKey: 'nav.positions',
     href: '/dashboard/positions'
   },
   {
+    id: 'addPositions',
     icon: ListCheck,
-    label: '手动补仓',
+    labelKey: 'nav.addPositions',
     href: '/dashboard/add_positions'
   }
 ]
 
-const settingsItems: MenuItem[] = [
+const settingsItemConfigs: MenuItemConfig[] = [
   {
+    id: 'api',
     icon: Unplug,
-    label: 'API 管理',
+    labelKey: 'nav.api',
     href: '/dashboard/api',
     anchor: TOUR_ANCHORS.navApi
   },
   {
+    id: 'account',
     icon: SettingsIcon,
-    label: '账户设置',
+    labelKey: 'nav.account',
     href: '/dashboard/account'
   },
   {
+    id: 'notifications',
     icon: MessageCircleWarning,
-    label: '消息通知',
+    labelKey: 'nav.notifications',
     href: '/dashboard/notifications',
     anchor: TOUR_ANCHORS.navNotifications
   }
 ]
+
+function localizeMenuItems(
+  configs: MenuItemConfig[],
+  t: (key: string) => string
+): MenuItem[] {
+  return configs.map(config => {
+    const label = t(config.labelKey)
+    if (config.items) {
+      return {
+        id: config.id,
+        icon: config.icon,
+        label,
+        anchor: config.anchor,
+        items: config.items.map(sub => ({
+          id: sub.id,
+          label: t(sub.labelKey),
+          href: sub.href,
+          ...(sub.badgeKey ? { badge: t(sub.badgeKey) } : {})
+        }))
+      }
+    }
+
+    return {
+      id: config.id,
+      icon: config.icon,
+      label,
+      href: config.href,
+      anchor: config.anchor,
+      ...(config.badgeKey ? { badge: t(config.badgeKey) } : {})
+    }
+  })
+}
 
 const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; groupLabel?: string }) => {
   const pathname = usePathname()
@@ -245,7 +318,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
             const anchorProps = item.anchor ? tourAnchor(item.anchor) : undefined
 
             return item.items ? (
-              <Collapsible className='group/collapsible' key={item.label} defaultOpen={isSubMenuActive}>
+              <Collapsible className='group/collapsible' key={item.id} defaultOpen={isSubMenuActive}>
                 <SidebarMenuItem {...anchorProps}>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuButton tooltip={item.label} isActive={isSubMenuActive}>
@@ -257,7 +330,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
                   <CollapsibleContent>
                     <SidebarMenuSub>
                       {item.items.map(subItem => (
-                        <SidebarMenuSubItem key={subItem.label}>
+                        <SidebarMenuSubItem key={subItem.id}>
                           <SidebarMenuSubButton
                             className='justify-between'
                             isActive={
@@ -282,7 +355,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
                 </SidebarMenuItem>
               </Collapsible>
             ) : (
-              <SidebarMenuItem key={item.label} {...anchorProps}>
+              <SidebarMenuItem key={item.id} {...anchorProps}>
                 <SidebarMenuButton tooltip={item.label} isActive={isActiveItem} asChild>
                   <Link href={item.href} onClick={() => startNavigationLoader(item.href)}>
                     <item.icon />
@@ -300,6 +373,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
 }
 
 const DashboardShell = ({ children }: { children: React.ReactNode }) => {
+  const t = useTranslations('DashboardShell')
   const [mounted, setMounted] = useState(false)
   const { resolvedTheme, setTheme } = useTheme()
   const topLoader = useTopLoader()
@@ -310,6 +384,13 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const [isPartner, setIsPartner] = useState(false)
 
   topLoaderRef.current = topLoader
+
+  const menuItems = useMemo(() => localizeMenuItems(menuItemConfigs, t), [t])
+  const adminItems = useMemo(() => localizeMenuItems(adminItemConfigs, t), [t])
+  const copyItems = useMemo(() => localizeMenuItems(copyItemConfigs, t), [t])
+  const toolsItems = useMemo(() => localizeMenuItems(toolsItemConfigs, t), [t])
+  const studioToolsItems = useMemo(() => localizeMenuItems(studioToolsItemConfigs, t), [t])
+  const settingsItems = useMemo(() => localizeMenuItems(settingsItemConfigs, t), [t])
 
   useEffect(() => {
     setMounted(true)
@@ -420,8 +501,8 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   }, [])
 
   const filteredAdminItems = adminItems.filter(item => {
-    if (item.label === '系统后台' && !isAdmin) return false
-    if (item.label === '代理商后台' && !isPartner) return false
+    if (item.id === 'admin' && !isAdmin) return false
+    if (item.id === 'partner' && !isPartner) return false
 
     return true
   })
@@ -446,11 +527,11 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
               </SidebarHeader>
               <SidebarContent>
                 <SidebarGroupedMenuItems data={menuItems} />
-                <SidebarGroupedMenuItems data={filteredAdminItems} groupLabel='系统服务' />
-                <SidebarGroupedMenuItems data={copyItems} groupLabel='跟单服务' />
-                <SidebarGroupedMenuItems data={studioToolsItems} groupLabel='工作室服务' />
-                <SidebarGroupedMenuItems data={toolsItems} groupLabel='工具服务' />
-                <SidebarGroupedMenuItems data={settingsItems} groupLabel='系统设置' />
+                <SidebarGroupedMenuItems data={filteredAdminItems} groupLabel={t('groups.system')} />
+                <SidebarGroupedMenuItems data={copyItems} groupLabel={t('groups.copy')} />
+                <SidebarGroupedMenuItems data={studioToolsItems} groupLabel={t('groups.studio')} />
+                <SidebarGroupedMenuItems data={toolsItems} groupLabel={t('groups.tools')} />
+                <SidebarGroupedMenuItems data={settingsItems} groupLabel={t('groups.settings')} />
               </SidebarContent>
               <SidebarFooter className='group-data-[collapsible=icon]:hidden'>
                 <Link
@@ -460,7 +541,7 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                 >
                   <img
                     src='/images/copyapes-chrome-zh.png'
-                    alt='插件安装'
+                    alt={t('extensionAlt')}
                     className='w-full'
                   />
                 </Link>
@@ -473,22 +554,6 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                   <div className='flex items-center gap-1.5 sm:gap-4'>
                     <SidebarTrigger className='[&_svg]:!size-5' {...tourAnchor(TOUR_ANCHORS.sidebarToggle)} />
                     <Separator orientation='vertical' className='hidden !h-4 sm:block' />
-                    {/* <SearchDialog
-                  trigger={
-                    <>
-                      <Button variant='ghost' className='hidden !bg-transparent px-1 py-0 font-normal sm:block'>
-                        <div className='text-muted-foreground hidden items-center gap-1.5 text-sm sm:flex'>
-                          <SearchIcon />
-                          <span>Type to search...</span>
-                        </div>
-                      </Button>
-                      <Button variant='ghost' size='icon' className='sm:hidden'>
-                        <SearchIcon />
-                        <span className='sr-only'>Search</span>
-                      </Button>
-                    </>
-                  }
-                /> */}
               </div>
               <div className='flex items-center gap-1.5'>
                 <TourHelpMenu />
@@ -499,14 +564,14 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                     </Button>
                   }
                 />
-                <Button variant='ghost' size='icon' title='服务状态' asChild>
+                <Button variant='ghost' size='icon' title={t('serviceStatus')} asChild>
                   <a
                     href='https://watchdog.lichaoyuan.com/status'
                     target='_blank'
                     rel='noopener noreferrer'
                   >
                     <ActivityIcon />
-                    <span className='sr-only'>服务状态</span>
+                    <span className='sr-only'>{t('serviceStatus')}</span>
                   </a>
                 </Button>
                 <Button

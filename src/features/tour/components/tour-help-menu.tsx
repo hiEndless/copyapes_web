@@ -1,6 +1,7 @@
 'use client'
 
 import { CircleHelpIcon, RotateCcwIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -19,25 +20,26 @@ import { TOUR_ANCHORS, tourAnchor } from '../anchors'
 import { useTour } from '../tour-provider'
 
 const TourHelpMenu = () => {
+  const t = useTranslations('DashboardShell.tour')
   const { pageTour, featureTours, startTour, resetProgress } = useTour()
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' size='icon' title='新手指引' {...tourAnchor(TOUR_ANCHORS.headerTour)}>
+        <Button variant='ghost' size='icon' title={t('title')} {...tourAnchor(TOUR_ANCHORS.headerTour)}>
           <CircleHelpIcon />
-          <span className='sr-only'>新手指引</span>
+          <span className='sr-only'>{t('title')}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align='end' className='w-52'>
-        <DropdownMenuLabel>新手指引</DropdownMenuLabel>
+        <DropdownMenuLabel>{t('title')}</DropdownMenuLabel>
         {pageTour ? (
           <DropdownMenuItem onSelect={() => startTour(pageTour)}>{pageTour.title}</DropdownMenuItem>
         ) : (
-          <DropdownMenuItem disabled>本页暂无指引</DropdownMenuItem>
+          <DropdownMenuItem disabled>{t('empty')}</DropdownMenuItem>
         )}
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger>功能点介绍</DropdownMenuSubTrigger>
+          <DropdownMenuSubTrigger>{t('features')}</DropdownMenuSubTrigger>
           <DropdownMenuSubContent className='w-44'>
             {featureTours.map(tour => (
               <DropdownMenuItem key={tour.id} onSelect={() => startTour(tour)}>
@@ -49,7 +51,7 @@ const TourHelpMenu = () => {
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={resetProgress}>
           <RotateCcwIcon />
-          重置引导记录
+          {t('reset')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

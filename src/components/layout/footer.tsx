@@ -79,7 +79,12 @@ const Footer = () => {
             <div className='text-lg font-medium'>{t('help')}</div>
             <ul className='text-muted-foreground space-y-3'>
               <li>
-                <Link href='#contact' className='hover:text-foreground transition-colors duration-300'>
+                <Link href='/about' className='hover:text-foreground transition-colors duration-300'>
+                  {t('about')}
+                </Link>
+              </li>
+              <li>
+                <Link href='/#contact' className='hover:text-foreground transition-colors duration-300'>
                   {tn('contact')}
                 </Link>
               </li>
@@ -89,10 +94,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link
-                  href='https://docs.lichaoyuan.com/copyapes/protocol'
-                  className='hover:text-foreground transition-colors duration-300'
-                >
+                <Link href='/terms' className='hover:text-foreground transition-colors duration-300'>
                   {t('terms')}
                 </Link>
               </li>

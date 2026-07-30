@@ -15,7 +15,13 @@
     "description": "跟单猿 CopyApes 新闻、跟单教程与产品更新。",
     "home": "首页",
     "postTitle": "{title}",
-    "keywords": ["博客", "跟单", "加密货币", "CopyApes", "跟单猿"]
+    "keywords": [
+      "博客",
+      "跟单",
+      "加密货币",
+      "CopyApes",
+      "跟单猿"
+    ]
   },
   "Metadata": {
     "titleTemplate": "%s - 跟单猿 CopyApes",
@@ -327,9 +333,653 @@
     "desc": "自由组合不同交易所的顶级带单员，平衡收益和风险，打造专属您个人的跟单策略，让全球顶级交易员为你打工。",
     "product": "产品",
     "help": "帮助",
+    "about": "关于我们",
     "terms": "用户协议",
     "privacy": "隐私政策",
     "tutorial": "使用教程",
     "copyright": "Made with ❤️ by CopyApes."
+  },
+  "About": {
+    "badge": "关于我们",
+    "title": "跟单猿 CopyApes 是什么",
+    "subtitle": "面向加密货币合约交易者的跨交易所自动跟单助手。",
+    "p1": "跟单猿（CopyApes）帮助用户通过交易所官方 API，自动跟随所选交易员的开平仓动作。资金始终留在用户自己的交易所账户中，平台不代持资金，也不对跟单盈利抽成席位费。",
+    "p2": "与单一交易所内置跟单不同，CopyApes 支持跨平台跟随：例如用欧易账户跟随币安带单员，或将多个交易员组合成跟单组合，以分散风险。产品面向普通交易者、带单 KOL 与交易社群组织者。",
+    "p3": "核心能力包括毫秒至秒级跟单、多交易所支持（币安、欧易、Bybit、Bitget、Gate、HTX、HyperLiquid 等）、反向跟单、黑白名单、盈利条件跟单，以及面向私域场景的 Cookie / API 跟单方式。",
+    "p4": "我们提供长期免费试用档位，并在官网提供产品说明、常见问题、隐私政策与用户协议。如需合作或支持，可通过网站「联系我们」或邮箱 service@copyapes.com 联系。",
+    "pointsTitle": "你可以在这里了解",
+    "point1": "产品功能与跨交易所跟单方式",
+    "point2": "定价方案与免费试用范围",
+    "point3": "安全实践：仅交易权限 API、IP 白名单与加密存储",
+    "point4": "联系方式、隐私政策与用户协议",
+    "readMore": "阅读完整介绍",
+    "metadata": {
+      "title": "关于我们",
+      "description": "了解跟单猿 CopyApes：跨交易所自动合约跟单助手的产品定位、适用人群与联系方式。"
+    }
+  },
+  "TermsOfService": {
+    "metadata": {
+      "title": "用户协议",
+      "description": "跟单猿 CopyApes 用户协议：服务说明、账户责任、风险提示与联系方式。"
+    },
+    "title": "用户协议",
+    "lastUpdated": "最后更新：2026年7月30日",
+    "intro": "欢迎使用跟单猿（CopyApes）。使用本网站、相关 API 或浏览器扩展即表示您同意本协议。若不同意，请停止使用服务。",
+    "sections": {
+      "service": {
+        "title": "1. 服务说明",
+        "body": "CopyApes 提供加密货币合约自动跟单相关的软件工具与配置能力。我们不提供投资建议，不承诺收益，也不代管您的交易所资金。",
+        "items": []
+      },
+      "account": {
+        "title": "2. 账户与凭证",
+        "body": "您应妥善保管账户与交易所 API Key / Cookie 等凭证，并仅授予跟单所需的最小权限（建议仅交易权限并配置 IP 白名单，勿开启提现或资金划转权限）。因您泄露凭证或权限配置不当造成的损失，由您自行承担。",
+        "items": []
+      },
+      "risk": {
+        "title": "3. 风险提示",
+        "body": "合约交易与跟单存在高风险，可能导致本金全部损失。跟单延迟、滑点、交易所故障、交易对不存在、网络中断等因素都可能影响成交结果。您应在充分了解风险后自行决定是否使用。",
+        "items": []
+      },
+      "compliance": {
+        "title": "4. 合规使用",
+        "body": "您应遵守所在地法律法规及各交易所规则，不得将本服务用于违法、欺诈或未经授权访问他人账户等行为。我们有权在发现违规时限制或终止服务。",
+        "items": []
+      },
+      "privacy": {
+        "title": "5. 隐私",
+        "body": "我们如何处理个人信息，请参阅网站《隐私政策》。",
+        "items": []
+      },
+      "changes": {
+        "title": "6. 协议变更",
+        "body": "我们可能更新本协议，并在本页面公布更新日期。重大变更时可能通过网站公告等方式提示。继续使用服务即视为接受更新后的条款。",
+        "items": []
+      },
+      "contact": {
+        "title": "7. 联系我们",
+        "body": "如对本协议有疑问，请通过官网「联系我们」或发送邮件至 service@copyapes.com。更完整的产品协议说明也可参阅文档站点。",
+        "items": []
+      }
+    },
+    "fullProtocol": "查看完整产品协议文档"
+  },
+  "DashboardShell": {
+    "groups": {
+      "system": "系统服务",
+      "copy": "跟单服务",
+      "studio": "工作室服务",
+      "tools": "工具服务",
+      "settings": "系统设置"
+    },
+    "nav": {
+      "home": "首页",
+      "pricing": "订阅服务",
+      "invite": "邀请奖励",
+      "admin": "系统后台",
+      "partner": "代理商后台",
+      "partnerSettings": "代理设置",
+      "partnerUsers": "用户列表",
+      "partnerRevenue": "收益与提现",
+      "taskList": "我的跟单",
+      "createTask": "创建跟单",
+      "exchangeTask": "交易所自选",
+      "bicoinTask": "币coin 自选",
+      "hyperTask": "HyperLiquid 自选",
+      "apiTask": "API 跟单",
+      "cookieTask": "Cookie 跟单",
+      "hotKol": "热门带单 KOL",
+      "hyperKol": "HyperLiquid KOL",
+      "cookie": "Cookie 获取",
+      "grab": "跟单抢位",
+      "studioTasks": "高级任务管理",
+      "positions": "持仓管理",
+      "addPositions": "手动补仓",
+      "api": "API 管理",
+      "account": "账户设置",
+      "notifications": "消息通知"
+    },
+    "badges": {
+      "grabHit": "4天必中"
+    },
+    "extensionAlt": "插件安装",
+    "serviceStatus": "服务状态",
+    "riskBanner": "交易加密货币衍生品涉及重大风险，并不适合所有投资者。程序只是交易辅助工具，有可能出错，请确保您自己始终是仓位风险的第一控制人。",
+    "close": "关闭",
+    "tour": {
+      "title": "新手指引",
+      "empty": "本页暂无指引",
+      "features": "功能点介绍",
+      "reset": "重置引导进度"
+    },
+    "profile": {
+      "userFallback": "用户",
+      "vipDays": "VIP 剩余 {days} 天",
+      "studioVipDays": "工作室 VIP 剩余 {days} 天",
+      "partner": "代理合作伙伴",
+      "freeUser": "免费用户",
+      "assetLimit": "资金限额",
+      "apiSlots": "交易 API 授权",
+      "taskSlots": "跟单任务上限",
+      "pricing": "订阅服务",
+      "api": "API 管理",
+      "account": "账户设置",
+      "notifications": "消息通知",
+      "logout": "退出登录",
+      "logoutSuccess": "已退出登录"
+    }
+  },
+  "Auth": {
+    "common": {
+      "or": "或",
+      "startFree": "开始您的免费体验",
+      "showPassword": "显示密码",
+      "hidePassword": "隐藏密码",
+      "password": "密码*",
+      "email": "邮箱",
+      "resendIn": "{seconds}s后重发",
+      "sending": "发送中...",
+      "sendCode": "发送验证码",
+      "backToLogin": "返回登录"
+    },
+    "login": {
+      "title": "欢迎回来",
+      "usernameLabel": "用户名 / 邮箱地址*",
+      "usernamePlaceholder": "请输入您的用户名或邮箱地址",
+      "rememberMe": "记住我",
+      "forgotPassword": "忘记密码？",
+      "submit": "登录",
+      "submitting": "登录中...",
+      "success": "登录成功",
+      "needCredentials": "请输入用户名和密码",
+      "noAccount": "还没有账号？",
+      "register": "注册"
+    },
+    "register": {
+      "title": "注册",
+      "usernameLabel": "用户名*",
+      "usernamePlaceholder": "请输入用户名",
+      "emailLabel": "邮箱*",
+      "emailPlaceholder": "请输入您的邮箱地址",
+      "emailCodeLabel": "邮箱验证码*",
+      "emailCodePlaceholder": "请输入6位验证码",
+      "passwordPlaceholder": "请输入您的密码",
+      "confirmPasswordLabel": "确认密码*",
+      "inviteLabel": "邀请码（选填）",
+      "invitePlaceholder": "有邀请码可填写，没有可留空",
+      "agreePrefix": "同意",
+      "privacy": "隐私政策",
+      "terms": "服务条款",
+      "submit": "注册",
+      "submitting": "注册中...",
+      "success": "注册成功，请登录",
+      "needAllFields": "请填写完整信息",
+      "passwordMismatch": "两次密码输入不一致",
+      "needAgree": "请先同意隐私政策及服务条款",
+      "needEmail": "请先输入邮箱",
+      "invalidEmail": "邮箱格式错误",
+      "hasAccount": "已有账号？",
+      "login": "登录"
+    },
+    "forgot": {
+      "title": "忘记密码",
+      "subtitle": "向已绑定邮箱获取验证码，验证通过后设置新密码。",
+      "emailLabel": "邮箱地址*",
+      "emailPlaceholder": "请输入已绑定账号的邮箱",
+      "needEmail": "请输入邮箱",
+      "invalidEmail": "邮箱格式错误",
+      "otpLabel": "邮箱验证码（6 位）",
+      "needOtp": "请输入 6 位验证码",
+      "newPasswordLabel": "新密码*",
+      "newPasswordPlaceholder": "至少 6 位",
+      "passwordTooShort": "新密码长度不能少于 6 位",
+      "confirmPasswordLabel": "确认新密码*",
+      "confirmPasswordPlaceholder": "请再次输入新密码",
+      "passwordMismatch": "两次密码输入不一致",
+      "resendCode": "重发验证码",
+      "submit": "重置密码",
+      "submitting": "提交中...",
+      "backEditEmail": "返回修改邮箱"
+    },
+    "reset": {
+      "title": "重置密码",
+      "subtitle": "该入口已合并至忘记密码流程。",
+      "hint": "请前往「忘记密码」页面，通过邮箱验证码完成重置。",
+      "goForgot": "前往忘记密码"
+    },
+    "google": {
+      "fail": "Google 登录失败，请重试",
+      "scriptFail": "Google 登录脚本加载失败",
+      "registerSuccess": "注册并登录成功",
+      "loginSuccess": "登录成功",
+      "loading": "Google 登录中..."
+    },
+    "turnstile": {
+      "refresh": "刷新页面",
+      "widgetFailDomestic": "人机验证失败，请刷新页面重试，或切换海外网络。若仍无法完成，可尝试直接提交，系统将按网络情况处理。",
+      "widgetFailOverseas": "人机验证失败，请刷新页面重试。若仍无法完成，请切换海外网络后访问。",
+      "scriptFailDomestic": "人机验证加载超时，请刷新页面重试，或切换海外网络。若仍无法加载，可尝试直接提交，系统将按网络情况处理。",
+      "scriptFailOverseas": "人机验证加载超时，请刷新页面重试。若仍无法加载，请切换海外网络后访问。",
+      "complete": "请完成人机验证",
+      "notReadyDomestic": "人机验证未就绪，可尝试直接提交；若失败请刷新或切换海外网络",
+      "notReadyOverseas": "人机验证未就绪，请刷新页面或切换海外网络后重试"
+    }
+  },
+  "Tour": {
+    "fallbackUnavailable": "当前页面找不到该功能入口，请先展开侧边栏或进入对应页面",
+    "resetSuccess": "引导记录已重置，下次进入相关页面会重新提示",
+    "tours": {
+      "dashboard-overview": {
+        "title": "新手上手指引",
+        "steps": [
+          {
+            "title": "欢迎使用跟单猿",
+            "description": "花一分钟了解主要功能位置，之后可以在右上角问号按钮里随时重看。"
+          },
+          {
+            "title": "第一步：添加交易所 API",
+            "description": "跟单需要交易所 API 权限才能下单，先在这里完成 API 绑定，后面的步骤才能正常建单。"
+          },
+          {
+            "title": "第二步：配置消息通知",
+            "description": "建单前先在这里配好通知渠道。未配置通知时无法创建跟单任务，开仓平仓和异常停任务也会漏消息。"
+          },
+          {
+            "title": "第三步：创建跟单",
+            "description": "按信号来源选择跟单方式：交易所自选、币coin、HyperLiquid、API 跟单、Cookie 跟单。"
+          },
+          {
+            "title": "热门带单 KOL",
+            "description": "不知道跟谁，可以先从这里精选的交易员开始，一键即可建立跟单任务。"
+          },
+          {
+            "title": "我的跟单",
+            "description": "所有跟单任务的运行状态、收益和明细都在这里查看与调整。"
+          },
+          {
+            "title": "注册交易所返佣，半价用产品",
+            "description": "通过下方合作交易所链接注册，可拿约 20% 手续费返佣；注册后联系客服，还能半价开通 VIP。"
+          },
+          {
+            "title": "随时重看指引",
+            "description": "点这里可以重播本页指引，也能单独查看某个功能的说明。"
+          }
+        ]
+      },
+      "hot-kol-page": {
+        "title": "热门带单页指引",
+        "steps": [
+          {
+            "title": "精选交易员来源",
+            "description": "这里的交易员来自币安排行榜、欧意牛人榜、币coin 等平台，收益可在原平台核对。"
+          },
+          {
+            "title": "选人并开始跟单",
+            "description": "「当前资金」为 0 表示信号暂不可用。点击「立即跟单」后配置金额与倍数即可建单。"
+          }
+        ]
+      },
+      "api-page": {
+        "title": "API 添加指引",
+        "steps": [
+          {
+            "title": "先看 IP 白名单提醒",
+            "description": "交易权限的 API 必须在交易所把我们的 IP 加入白名单。IP 会变化，长期未登录后可能需要重新授权。"
+          },
+          {
+            "title": "从这里添加 API",
+            "description": "点击后是两步：先阅读安全说明，再填写 Key。不清楚字段怎么填时，在第 2 步弹窗右上角点「填写说明」会逐项讲解。"
+          },
+          {
+            "title": "管理已添加的 API",
+            "description": "这里能看到每个 API 的余额与状态，也可以改备注或删除。余额约每 10 分钟自动更新一次。"
+          }
+        ]
+      },
+      "api-form-guide": {
+        "title": "API 表单填写说明",
+        "unavailableHint": "请先点击「添加 API」进入第 2 步表单，再从弹窗右上角的「填写说明」打开",
+        "steps": [
+          {
+            "title": "选择交易所",
+            "description": "选你实际持仓的交易所。不同交易所需要的凭据不同，OKX、Bitget、WEEX 还要额外填 Passphrase。"
+          },
+          {
+            "title": "备注名称",
+            "description": "只用于你自己区分账户，例如「主账户」「小号」。创建跟单任务时按这个名字选 API。"
+          },
+          {
+            "title": "权限类型要选对",
+            "description": "「只读」只用来取信号，不会下单；要真正跟单必须选「交易」。这一项选错会导致任务不成交。"
+          },
+          {
+            "title": "填入 API Key",
+            "description": "在交易所创建 API 时生成，直接复制粘贴。注意不要开启提币权限。"
+          },
+          {
+            "title": "Secret 与 Passphrase",
+            "description": "Secret 只在交易所创建时显示一次，务必先保存好。选了 OKX、Bitget、WEEX 时下方还会要求填 Passphrase。"
+          },
+          {
+            "title": "IP 白名单缺一不可",
+            "description": "把这里列出的 IP 全部加到交易所该 API 的受信任 IP。交易权限必须绑定，只读权限不要绑定。"
+          },
+          {
+            "title": "确认绑定",
+            "description": "提交后会先校验凭据是否可用，校验通过才会保存。失败通常是权限或 IP 白名单没配好。"
+          }
+        ]
+      },
+      "cookie-page": {
+        "title": "Cookie 获取指引",
+        "steps": [
+          {
+            "title": "先看绑定规则",
+            "description": "每个交易所只能绑一个 Cookie。同所要绑多个时，需要再注册本平台账号分别添加。"
+          },
+          {
+            "title": "推荐：浏览器插件自动获取",
+            "description": "装好插件后登录跟单猿与交易所账号，点自动抓取即可同步到本页。Chrome 可直接安装，其他浏览器看下方入口说明。"
+          },
+          {
+            "title": "备选：手动上传",
+            "description": "无法装插件或要用手机远程更新时，点「手动上传」，粘贴 Cookie 字符串或整段 cURL，系统会自动提取。"
+          },
+          {
+            "title": "在这里查看绑定结果",
+            "description": "上传成功后会出现在「我的交易所 Cookie」。绿色表示生效中，红色表示已失效，需要重新获取后更新。"
+          }
+        ]
+      },
+      "grab-page": {
+        "title": "跟单抢位指引",
+        "steps": [
+          {
+            "title": "抢位要先有 Cookie",
+            "description": "热门交易员满员时，系统会自动监控并抢占名额。点「获取交易所 Cookie」先完成绑定，没有有效 Cookie 无法创建抢位。"
+          },
+          {
+            "title": "选择目标交易所",
+            "description": "选 OKX 或币安。切换后下方会自动匹配该交易所的 Cookie。"
+          },
+          {
+            "title": "确认 Cookie 有效",
+            "description": "这里必须显示「有效」。若提示未找到或已失效，先回 Cookie 获取页重新绑定。"
+          },
+          {
+            "title": "填交易员并解析",
+            "description": "粘贴交易员主页链接或 ID，点「解析」提取 UID。解析成功后下方会显示识别结果。"
+          },
+          {
+            "title": "进入金额配置",
+            "description": "交易所、有效 Cookie、交易员都齐后按钮才可点。点开后可在面板右上角「配置说明」了解跟单金额怎么填。"
+          }
+        ]
+      },
+      "grab-config-guide": {
+        "title": "抢位配置说明",
+        "unavailableHint": "请先打开抢位配置面板，再从面板右上角的「配置说明」打开",
+        "steps": [
+          {
+            "title": "核对目标交易员",
+            "description": "确认头像、昵称和近期收益无误。抢到名额后会按这里的交易员开始跟单。"
+          },
+          {
+            "title": "填写跟单金额",
+            "description": "这是抢到后用于跟单的投入金额。币安还可选定比或定额；OKX 只需填跟单金额。"
+          },
+          {
+            "title": "开始抢位",
+            "description": "提交后任务进入「进行中」，系统秒级轮询空位。一般 2-3 天内能抢到，也可随时在列表里终止。"
+          }
+        ]
+      },
+      "notifications-page": {
+        "title": "消息通知配置指引",
+        "steps": [
+          {
+            "title": "通知设置",
+            "description": "跟单任务创建前通常需要先配好通知。这里控制「收什么消息」以及「发到哪个渠道」。"
+          },
+          {
+            "title": "先选通知类型",
+            "description": "开关对所有已开启渠道统一生效。交易通知、Cookie/API 失效、任务停止最常用；系统通知不可关闭。"
+          },
+          {
+            "title": "选择并开启渠道",
+            "description": "左侧点选要配置的渠道。配好参数后，记得打开右侧开关真正开启，否则收不到消息。"
+          },
+          {
+            "title": "填写渠道配置",
+            "description": "右侧按渠道填写：微信需扫码拿授权码，钉钉填 Webhook 与加签密钥，QQ 邮箱填 QQ 号与 SMTP 授权码。"
+          },
+          {
+            "title": "保存后再测试",
+            "description": "先点「保存配置」，再打开左侧开关，最后用「测试连接」确认能收到消息。未开启时测试按钮不可用。"
+          }
+        ]
+      },
+      "invite-page": {
+        "title": "邀请奖励指引",
+        "steps": [
+          {
+            "title": "邀请奖励",
+            "description": "邀请好友注册，可解锁额外 API / 跟单额度，好友付费后还能累计销售分成。"
+          },
+          {
+            "title": "复制邀请链接",
+            "description": "点复制按钮把邀请链接发给好友。好友通过链接注册后计入邀请；有效邀请才会推进下方任务进度。"
+          },
+          {
+            "title": "任务进度与节点奖励",
+            "description": "有效邀请达到 3 / 5 / 10 人时，逐步解锁 API 授权、跟单任务额度和资金上限。这些节点奖励仅适用于免费用户。"
+          },
+          {
+            "title": "销售分成与代理权益",
+            "description": "这里显示累计分成收益。开通年费 VIP 或年费工作室 VIP 成为代理后，可提现并享受返佣等权益。"
+          }
+        ]
+      },
+      "exchange-task-page": {
+        "title": "交易所自选建单指引",
+        "steps": [
+          {
+            "title": "先选目标交易所",
+            "description": "选你要跟单的信号来源交易所。选完下方会显示该交易所的成交延迟说明，OKX 和币安规则不同，建议先看一眼。"
+          },
+          {
+            "title": "填交易员主页链接或 ID",
+            "description": "把交易员主页地址整段粘进来，点「解析」自动提取 ID。解析成功后下方会显示识别出的交易员 ID。"
+          },
+          {
+            "title": "选对交易员类型",
+            "description": "OKX 分「合约带单」和「个人概况」，币安分「公开带单」和「隐藏带单」。类型和实际不符会导致取不到信号。"
+          },
+          {
+            "title": "进入跟单配置",
+            "description": "上面三项填全后按钮才可点。点开后是跟单参数面板，里面的字段可以点面板右上角「配置说明」逐项了解。"
+          }
+        ]
+      },
+      "cookie-task-page": {
+        "title": "Cookie 建单指引",
+        "steps": [
+          {
+            "title": "先选目标交易所",
+            "description": "切换交易所会同时切换下方可用的 Cookie 列表，所以这一步要先定。"
+          },
+          {
+            "title": "选一个可用的 Cookie",
+            "description": "「我的 Cookie」是你自己上传的，会自动选中当前交易所第一个有效项；「发现 Cookie」可以搜别人共享的。只有状态为有效的才能选中。"
+          },
+          {
+            "title": "填交易员主页链接或 ID",
+            "description": "把交易员主页地址整段粘进来，点「解析」自动提取 ID。"
+          },
+          {
+            "title": "选对交易员类型",
+            "description": "OKX 分「合约带单」和「跟单项目」，币安分「带单项目」和「聪明钱」。选错会取不到信号。"
+          },
+          {
+            "title": "进入跟单配置",
+            "description": "交易所、Cookie、交易员、类型四项都齐全后按钮才可点。点开后可在面板右上角「配置说明」了解各项参数。"
+          }
+        ]
+      },
+      "bicoin-task-page": {
+        "title": "币Coin 建单指引",
+        "steps": [
+          {
+            "title": "先关联币Coin 账号",
+            "description": "用币Coin App 的手机号和密码登录，点「确认保存」。没关联账号无法搜索交易员，也无法建单。"
+          },
+          {
+            "title": "搜索并选中交易员",
+            "description": "输入交易员昵称后搜索，在结果列表里点一行选中，选中项会高亮。"
+          },
+          {
+            "title": "选跟单数据源",
+            "description": "「操作记录」速度略快，「合约仓位」稳定性更高。交易员的操作记录里若含现货或买卖模式则无法跟单，可联系客服。"
+          },
+          {
+            "title": "进入跟单配置",
+            "description": "账号已关联、已选交易员和数据源后按钮才可点。点开后可在面板右上角「配置说明」了解各项参数。"
+          }
+        ]
+      },
+      "hyper-task-page": {
+        "title": "HyperLiquid 建单指引",
+        "steps": [
+          {
+            "title": "先找到要跟的钱包地址",
+            "description": "HyperLiquid 是链上交易所，跟单只认钱包地址。点「查询数据」可以到 Coinglass 上找巨鲸和大单地址。"
+          },
+          {
+            "title": "粘贴钱包地址",
+            "description": "填交易员的完整钱包地址，以 0x 开头。这里不需要解析，也不用选交易员类型。"
+          },
+          {
+            "title": "进入跟单配置",
+            "description": "地址填好后按钮即可点。点开后可在面板右上角「配置说明」了解各项参数。"
+          }
+        ]
+      },
+      "api-task-page": {
+        "title": "API 建单指引",
+        "steps": [
+          {
+            "title": "两种信号来源",
+            "description": "「我的 API 信号」是你自己添加的只读 API；「发现 API 信号」可以搜平台其他用户公开的 API，搜到后同样能直接跟。"
+          },
+          {
+            "title": "在卡片上发起跟单",
+            "description": "这一页没有底部的「创建跟单」按钮，直接点卡片下方的「发起跟单」进入配置面板。目前只支持 OKX，其他平台按钮会置灰。"
+          }
+        ]
+      },
+      "task-config-guide": {
+        "title": "跟单参数配置说明",
+        "unavailableHint": "请先打开跟单配置面板，再从面板右上角的「配置说明」打开",
+        "steps": [
+          {
+            "title": "先确认通知已配置",
+            "description": "这里显示「未配置」时无法创建任务。点「去配置」绑定通知渠道后再回来建单。"
+          },
+          {
+            "title": "选择执行下单的 API",
+            "description": "这里选的是你自己用来下单的交易 API，不是信号来源。没有可选项时说明还没添加交易权限的 API。"
+          },
+          {
+            "title": "跟单模式",
+            "description": "「固定比例」按「投资额 ÷ 交易员本金 × 倍数」换算你的开仓量，是最常用的模式。"
+          },
+          {
+            "title": "交易员本金对标",
+            "description": "填交易员的本金规模，点「自动获取」可直接拉取。这个值决定跟单比例，填错会导致开仓量偏大或偏小。"
+          },
+          {
+            "title": "投资额",
+            "description": "只用于计算跟单比例，不是资金上限，也不会被划走。想放大或缩小仓位就调这个值。"
+          },
+          {
+            "title": "核对跟单比例",
+            "description": "提交前看一眼这里算出的比例。低于 10% 会提示开仓量可能过低而无法成交。"
+          },
+          {
+            "title": "杠杆模式",
+            "description": "新账号可能被交易所风控限制，跟不上交易员的高杠杆。改杠杆只影响保证金占用，不改变成交量。"
+          },
+          {
+            "title": "勾选跟单协议",
+            "description": "不勾选无法提交。建议先点开协议看一遍风险说明。"
+          },
+          {
+            "title": "提交建单",
+            "description": "提交后任务立即开始监听信号，可以到「我的跟单」查看运行状态。"
+          }
+        ]
+      },
+      "feature-api": {
+        "title": "API 管理",
+        "steps": [
+          {
+            "title": "API 管理",
+            "description": "绑定交易所 API 后才能实际下单，建议只开合约交易权限，不要开提币权限。"
+          }
+        ]
+      },
+      "feature-create-task": {
+        "title": "创建跟单",
+        "steps": [
+          {
+            "title": "创建跟单",
+            "description": "展开后按信号来源选择建单方式，不同来源对应不同的交易员池。"
+          }
+        ]
+      },
+      "feature-cookie": {
+        "title": "Cookie 获取",
+        "steps": [
+          {
+            "title": "Cookie 获取",
+            "description": "Cookie 跟单需要的凭据在这里获取，配合浏览器插件使用。"
+          }
+        ]
+      },
+      "feature-grab": {
+        "title": "跟单抢位",
+        "steps": [
+          {
+            "title": "跟单抢位",
+            "description": "热门交易员名额有限时，用抢位功能排队，位置释放后自动占位。"
+          }
+        ]
+      },
+      "feature-notifications": {
+        "title": "消息通知",
+        "steps": [
+          {
+            "title": "消息通知",
+            "description": "配置 Telegram、企业微信、邮件等渠道，成交与异常会实时推送。"
+          }
+        ]
+      },
+      "feature-invite": {
+        "title": "邀请奖励",
+        "steps": [
+          {
+            "title": "邀请奖励",
+            "description": "分享邀请链接，好友下单后你可获得对应奖励。"
+          }
+        ]
+      }
+    },
+    "buttons": {
+      "next": "下一步",
+      "prev": "上一步",
+      "done": "完成",
+      "gotIt": "知道了"
+    }
   }
 }

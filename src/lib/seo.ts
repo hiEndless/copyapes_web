@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 
 import { routing } from '@/i18n/routing'
 
-const DEFAULT_SITE_URL = 'http://copyapes.com'
+const DEFAULT_SITE_URL = 'https://copyapes.com'
 
 export function getSiteUrl(): string {
   const url = process.env.NEXT_PUBLIC_APP_URL
@@ -109,29 +109,72 @@ export function buildSocialMetadata(options: {
   }
 }
 
-export function buildHomePageJsonLd(options: { locale: string; name: string; description: string }) {
+export function buildHomePageJsonLd(options: {
+  locale: string
+  name: string
+  description: string
+  faqs?: Array<{ question: string; answer: string }>
+  dateModified?: string
+}) {
   const siteUrl = getSiteUrl()
+  const pageUrl = getCanonicalUrl('/', options.locale)
+  const graph: Record<string, unknown>[] = [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}#website`,
+      name: options.name,
+      description: options.description,
+      url: siteUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      publisher: { '@id': `${siteUrl}#organization` }
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}#organization`,
+      name: options.name,
+      url: siteUrl,
+      logo: `${siteUrl}/site_logo/logo-small.png`,
+      description: options.description,
+      email: 'service@copyapes.com',
+      contactPoint: {
+        '@type': 'ContactPoint',
+        email: 'service@copyapes.com',
+        contactType: 'customer support'
+      }
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: options.name,
+      description: options.description,
+      isPartOf: { '@id': `${siteUrl}#website` },
+      about: { '@id': `${siteUrl}#organization` },
+      inLanguage: localeToLanguageTag(options.locale),
+      ...(options.dateModified ? { dateModified: options.dateModified } : {})
+    }
+  ]
+
+  if (options.faqs && options.faqs.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      url: `${pageUrl}#faq`,
+      isPartOf: { '@id': `${pageUrl}#webpage` },
+      mainEntity: options.faqs.map(faq => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer
+        }
+      }))
+    })
+  }
 
   return {
     '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebSite',
-        '@id': `${siteUrl}#website`,
-        name: options.name,
-        description: options.description,
-        url: siteUrl,
-        inLanguage: localeToLanguageTag(options.locale)
-      },
-      {
-        '@type': 'Organization',
-        '@id': `${siteUrl}#organization`,
-        name: options.name,
-        url: siteUrl,
-        logo: `${siteUrl}/site_logo/logo-small.png`,
-        description: options.description
-      }
-    ]
+    '@graph': graph
   }
 }
 

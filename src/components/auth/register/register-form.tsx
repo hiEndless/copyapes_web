@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Script from 'next/script'
 import { toast } from 'sonner'
 
@@ -16,7 +17,7 @@ import { PrimaryFlowButton } from '@/components/ui/flow-button'
 import { authApi } from '@/api/auth'
 import {
   TurnstileLoadHint,
-  turnstileMissingTokenMessage,
+  useTurnstileMissingTokenMessage,
 } from '@/components/auth/turnstile-load-hint'
 import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
 import { buildTurnstileRequestFields } from '@/lib/turnstile-degrade'
@@ -45,6 +46,9 @@ interface TurnstileAPI {
 const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
 
 const RegisterForm = () => {
+  const t = useTranslations('Auth.register')
+  const tc = useTranslations('Auth.common')
+  const turnstileMissingTokenMessage = useTurnstileMissingTokenMessage()
   const siteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '').trim()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] = useState(false)
@@ -130,12 +134,12 @@ const RegisterForm = () => {
   const handleSendEmailCode = async () => {
     const trimmedEmail = (email || '').trim().toLowerCase()
     if (!trimmedEmail) {
-      toast.error('请先输入邮箱')
+      toast.error(t('needEmail'))
       return
     }
     const emailReg = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
     if (!emailReg.test(trimmedEmail)) {
-      toast.error('邮箱格式错误')
+      toast.error(t('invalidEmail'))
       return
     }
     if (codeCooldown > 0) return
@@ -180,19 +184,19 @@ const RegisterForm = () => {
     e.preventDefault()
 
     if (!username || !email || !emailCode || !password || !confirmPassword) {
-      toast.error('请填写完整信息')
+      toast.error(t('needAllFields'))
 
       return
     }
 
     if (password !== confirmPassword) {
-      toast.error('两次密码输入不一致')
+      toast.error(t('passwordMismatch'))
 
       return
     }
 
     if (!agreed) {
-      toast.error('请先同意隐私政策及服务条款')
+      toast.error(t('needAgree'))
 
       return
     }
@@ -228,7 +232,7 @@ const RegisterForm = () => {
       })
 
       if (res.code === 0) {
-        toast.success('注册成功，请登录')
+        toast.success(t('success'))
         router.push('/login')
       } else if (siteKey) {
         resetTurnstile()
@@ -259,12 +263,12 @@ const RegisterForm = () => {
       {/* Email */}
       <div className='space-y-1'>
         <Label className='leading-5' htmlFor='username'>
-          用户名*
+          {t('usernameLabel')}
         </Label>
         <Input
           type='text'
           id='username'
-          placeholder='请输入用户名'
+          placeholder={t('usernamePlaceholder')}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           disabled={isLoading}
@@ -274,12 +278,12 @@ const RegisterForm = () => {
       {/* Register Email */}
       <div className='space-y-1'>
         <Label className='leading-5' htmlFor='email'>
-          邮箱*
+          {t('emailLabel')}
         </Label>
         <Input
           type='email'
           id='email'
-          placeholder='请输入您的邮箱地址'
+          placeholder={t('emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           disabled={isLoading || isSendingCode}
@@ -289,13 +293,13 @@ const RegisterForm = () => {
       {/* Email Code */}
       <div className='space-y-1'>
         <Label className='leading-5' htmlFor='emailCode'>
-          邮箱验证码*
+          {t('emailCodeLabel')}
         </Label>
         <div className='flex gap-2'>
           <Input
             type='text'
             id='emailCode'
-            placeholder='请输入6位验证码'
+            placeholder={t('emailCodePlaceholder')}
             value={emailCode}
             onChange={(e) => setEmailCode(e.target.value)}
             disabled={isLoading}
@@ -307,7 +311,7 @@ const RegisterForm = () => {
             onClick={handleSendEmailCode}
             disabled={isLoading || isSendingCode || codeCooldown > 0 || turnstileBlocking}
           >
-            {codeCooldown > 0 ? `${codeCooldown}s后重发` : (isSendingCode ? '发送中...' : '发送验证码')}
+            {codeCooldown > 0 ? tc('resendIn', { seconds: codeCooldown }) : (isSendingCode ? tc('sending') : tc('sendCode'))}
           </Button>
         </div>
       </div>
@@ -315,13 +319,13 @@ const RegisterForm = () => {
       {/* Password */}
       <div className='w-full space-y-1'>
         <Label className='leading-5' htmlFor='password'>
-          密码*
+          {tc('password')}
         </Label>
         <div className='relative'>
           <Input
             id='password'
             type={isPasswordVisible ? 'text' : 'password'}
-            placeholder='请输入您的密码'
+            placeholder={t('passwordPlaceholder')}
             className='pr-9'
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -336,7 +340,7 @@ const RegisterForm = () => {
             disabled={isLoading}
           >
             {isPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
-            <span className='sr-only'>{isPasswordVisible ? '隐藏密码' : '显示密码'}</span>
+            <span className='sr-only'>{isPasswordVisible ? tc('hidePassword') : tc('showPassword')}</span>
           </Button>
         </div>
       </div>
@@ -344,7 +348,7 @@ const RegisterForm = () => {
       {/* Confirm Password */}
       <div className='w-full space-y-1'>
         <Label className='leading-5' htmlFor='confirmPassword'>
-          确认密码*
+          {t('confirmPasswordLabel')}
         </Label>
         <div className='relative'>
           <Input
@@ -365,7 +369,7 @@ const RegisterForm = () => {
             disabled={isLoading}
           >
             {isConfirmPasswordVisible ? <EyeOffIcon /> : <EyeIcon />}
-            <span className='sr-only'>{isConfirmPasswordVisible ? '隐藏密码' : '显示密码'}</span>
+            <span className='sr-only'>{isConfirmPasswordVisible ? tc('hidePassword') : tc('showPassword')}</span>
           </Button>
         </div>
       </div>
@@ -374,12 +378,12 @@ const RegisterForm = () => {
       {/* Invite Code */}
       <div className='space-y-1'>
         <Label className='leading-5' htmlFor='inviteCode'>
-          邀请码（选填）
+          {t('inviteLabel')}
         </Label>
         <Input
           type='text'
           id='inviteCode'
-          placeholder='有邀请码可填写，没有可留空'
+          placeholder={t('invitePlaceholder')}
           value={inviteCode}
           onChange={(e) => setInviteCode(e.target.value)}
           disabled={isLoading || isInviteCodeLocked}
@@ -397,20 +401,14 @@ const RegisterForm = () => {
           disabled={isLoading}
         />
         <Label htmlFor='rememberMe' className='cursor-pointer font-normal'>
-          同意{' '}
+          {t('agreePrefix')}{' '}
           <Link href='/privacy' className='text-primary underline underline-offset-2' onClick={(e) => e.stopPropagation()}>
-            隐私政策
+            {t('privacy')}
           </Link>
           {' & '}
-          <a
-            href='https://docs.lichaoyuan.com/copyapes/protocol'
-            target='_blank'
-            rel='noopener noreferrer'
-            className='text-primary underline underline-offset-2'
-            onClick={(e) => e.stopPropagation()}
-          >
-            服务条款
-          </a>
+          <Link href='/terms' className='text-primary underline underline-offset-2' onClick={(e) => e.stopPropagation()}>
+            {t('terms')}
+          </Link>
         </Label>
       </div>
 
@@ -424,7 +422,7 @@ const RegisterForm = () => {
       ) : null}
 
       <PrimaryFlowButton className='w-full *:w-full [&>button]:after:-inset-55' type='submit' disabled={isLoading || isSendingCode || turnstileBlocking}>
-        {isLoading ? '注册中...' : '注册'}
+        {isLoading ? t('submitting') : t('submit')}
       </PrimaryFlowButton>
     </form>
   )

@@ -12,6 +12,7 @@ import {
   KeyRound,
   ListTodo
 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { useRouter } from '@/i18n/routing'
@@ -36,6 +37,7 @@ type Props = {
 }
 
 const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
+  const t = useTranslations('DashboardShell.profile')
   const router = useRouter()
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [profile, setProfile] = useState<EntitlementProfileResponse | null>(null)
@@ -87,7 +89,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
     localStorage.removeItem('userInfo')
     localStorage.removeItem('entitlementProfile')
     document.cookie = 'token=; path=/; max-age=0;'
-    toast.success('已退出登录')
+    toast.success(t('logoutSuccess'))
     router.push('/login')
   }
 
@@ -104,7 +106,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
             <span className='ring-card absolute right-0 bottom-0 block size-2 rounded-full bg-green-600 ring-2' />
           </div>
           <div className='flex flex-1 flex-col items-start'>
-            <span className='text-foreground text-sm font-semibold'>{userInfo?.name || '用户'}</span>
+            <span className='text-foreground text-sm font-semibold'>{userInfo?.name || t('userFallback')}</span>
             <span className='text-muted-foreground text-xs'>UID: {userInfo?.uid || '--'}</span>
           </div>
         </DropdownMenuLabel>
@@ -115,7 +117,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           <DropdownMenuGroup>
             <DropdownMenuItem className='px-3 py-2 text-sm'>
               <CrownIcon className='mr-2 size-4 text-yellow-500' />
-              <span className='text-yellow-600'>VIP 剩余 {profile?.vip_days ?? 0} 天</span>
+              <span className='text-yellow-600'>{t('vipDays', { days: profile?.vip_days ?? 0 })}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         )}
@@ -124,7 +126,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           <DropdownMenuGroup>
             <DropdownMenuItem className='px-3 py-2 text-sm'>
               <Users className='mr-2 size-4 text-purple-500' />
-              <span className='text-purple-600'>工作室 VIP 剩余 {profile?.studio_vip_days ?? 0} 天</span>
+              <span className='text-purple-600'>{t('studioVipDays', { days: profile?.studio_vip_days ?? 0 })}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         )}
@@ -133,7 +135,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           <DropdownMenuGroup>
             <DropdownMenuItem className='px-3 py-2 text-sm'>
               <UserStar className='mr-2 size-4 text-blue-500' />
-              <span className='text-blue-600'>代理合作伙伴</span>
+              <span className='text-blue-600'>{t('partner')}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         )}
@@ -141,7 +143,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
         {!profile?.is_vip && !profile?.is_studio_vip && !userInfo?.is_partner && (
           <DropdownMenuGroup>
             <DropdownMenuItem className='px-3 py-2 text-sm'>
-              <span className='text-muted-foreground'>免费用户</span>
+              <span className='text-muted-foreground'>{t('freeUser')}</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         )}
@@ -152,7 +154,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           <DropdownMenuItem className='px-3 py-2 text-sm flex-col items-start gap-1'>
             <div className='flex w-full items-center'>
               <Banknote className='text-muted-foreground mr-2 size-4' />
-              <span className='text-muted-foreground flex-1'>资金限额</span>
+              <span className='text-muted-foreground flex-1'>{t('assetLimit')}</span>
               <span className='text-foreground font-medium'>{profile?.asset_limit_usdt?.toLocaleString() ?? 0} USDT</span>
             </div>
           </DropdownMenuItem>
@@ -160,33 +162,21 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           <DropdownMenuItem className='px-3 py-2 text-sm flex-col items-start gap-1'>
             <div className='flex w-full items-center'>
               <KeyRound className='text-muted-foreground mr-2 size-4' />
-              <span className='text-muted-foreground flex-1'>交易 API 授权</span>
+              <span className='text-muted-foreground flex-1'>{t('apiSlots')}</span>
               <span className='text-foreground font-medium'>
                 {profile?.api_slot_used ?? 0} / {profile?.api_slot_limit ?? 0}
               </span>
             </div>
-            {/* <div className='flex items-center justify-between w-full ml-6 text-xs text-muted-foreground'>
-              <span>可用 {profile?.api_slot_available ?? 0}</span>
-              {(profile?.api_slot_extra_perm ?? 0) > 0 && (
-                <span className='text-green-600'>含增购 +{profile?.api_slot_extra_perm}</span>
-              )}
-            </div> */}
           </DropdownMenuItem>
 
           <DropdownMenuItem className='px-3 py-2 text-sm flex-col items-start gap-1'>
             <div className='flex w-full items-center'>
               <ListTodo className='text-muted-foreground mr-2 size-4' />
-              <span className='text-muted-foreground flex-1'>跟单任务上限</span>
+              <span className='text-muted-foreground flex-1'>{t('taskSlots')}</span>
               <span className='text-foreground font-medium'>
                 {profile?.task_slot_used ?? 0} / {profile?.task_slot_limit ?? 0}
               </span>
             </div>
-            {/* <div className='flex items-center justify-between w-full ml-6 text-xs text-muted-foreground'>
-              <span>可用 {profile?.task_slot_available ?? 0}</span>
-              {(profile?.task_slot_extra ?? 0) > 0 && (
-                <span className='text-green-600'>含增购 +{profile?.task_slot_extra}</span>
-              )}
-            </div> */}
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -194,7 +184,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
         <DropdownMenuGroup>
           <DropdownMenuItem className='px-3 py-2 text-sm' onClick={() => router.push('/dashboard/pricing')}>
             <CrownIcon className='text-foreground mr-2 size-4' />
-            <span>订阅服务</span>
+            <span>{t('pricing')}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -203,15 +193,15 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
         <DropdownMenuGroup>
           <DropdownMenuItem className='px-3 py-2 text-sm' onClick={() => router.push('/dashboard/api')}>
             <Unplug className='text-foreground mr-2 size-4' />
-            <span>API 管理</span>
+            <span>{t('api')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem className='px-3 py-2 text-sm' onClick={() => router.push('/dashboard/account')}>
             <SettingsIcon className='text-foreground mr-2 size-4' />
-            <span>账户设置</span>
+            <span>{t('account')}</span>
           </DropdownMenuItem>
           <DropdownMenuItem className='px-3 py-2 text-sm' onClick={() => router.push('/dashboard/notifications')}>
             <MessageCircleWarning className='text-foreground mr-2 size-4' />
-            <span>消息通知</span>
+            <span>{t('notifications')}</span>
           </DropdownMenuItem>
         </DropdownMenuGroup>
 
@@ -219,7 +209,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
 
         <DropdownMenuItem variant='destructive' className='px-3 py-2 text-sm' onClick={handleLogout}>
           <LogOutIcon className='mr-2 size-4' />
-          <span>退出登录</span>
+          <span>{t('logout')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

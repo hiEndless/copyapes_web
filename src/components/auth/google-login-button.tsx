@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useLocale, useTranslations } from 'next-intl'
 import Script from 'next/script'
 import { toast } from 'sonner'
 
@@ -53,6 +54,8 @@ type GoogleLoginButtonProps = {
 }
 
 const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) => {
+  const t = useTranslations('Auth.google')
+  const locale = useLocale()
   const clientId = (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '').trim()
   const [scriptReady, setScriptReady] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -61,7 +64,6 @@ const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) =>
   const router = useRouter()
 
   useEffect(() => {
-    // 客户端路由切换时 GIS 脚本可能已加载，不会再次触发 onLoad。
     if (window.google?.accounts?.id) {
       setScriptReady(true)
     }
@@ -77,7 +79,7 @@ const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) =>
     async (response: GoogleCredentialResponse) => {
       const idToken = (response.credential || '').trim()
       if (!idToken) {
-        toast.error('Google 登录失败，请重试')
+        toast.error(t('fail'))
         return
       }
 
@@ -88,7 +90,7 @@ const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) =>
           invite_code: resolveInviteCode(),
         })
         if (res.code === 0 && res.data) {
-          toast.success(res.data.created ? '注册并登录成功' : '登录成功')
+          toast.success(res.data.created ? t('registerSuccess') : t('loginSuccess'))
           persistAuthSession(res.data)
           router.push('/dashboard')
         }
@@ -98,7 +100,7 @@ const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) =>
         setIsLoading(false)
       }
     },
-    [resolveInviteCode, router]
+    [resolveInviteCode, router, t]
   )
 
   useEffect(() => {
@@ -113,7 +115,6 @@ const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) =>
       cancel_on_tap_outside: true,
     })
 
-    // 宽度跟表单一致；GIS 要求整数像素
     const width = Math.min(400, Math.max(240, buttonRef.current.clientWidth || 320))
     buttonRef.current.innerHTML = ''
     idApi.renderButton(buttonRef.current, {
@@ -122,10 +123,10 @@ const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) =>
       text: 'signin_with',
       shape: 'rectangular',
       width,
-      locale: 'zh_CN',
+      locale: locale === 'zh' ? 'zh_CN' : 'en',
     })
     initializedRef.current = true
-  }, [clientId, scriptReady, handleCredential])
+  }, [clientId, scriptReady, handleCredential, locale])
 
   if (!clientId) {
     return null
@@ -138,12 +139,12 @@ const GoogleLoginButton = ({ inviteCode, className }: GoogleLoginButtonProps) =>
         strategy='afterInteractive'
         onLoad={() => setScriptReady(true)}
         onReady={() => setScriptReady(true)}
-        onError={() => toast.error('Google 登录脚本加载失败')}
+        onError={() => toast.error(t('scriptFail'))}
       />
       <div className={className || 'w-full'}>
         <div ref={buttonRef} className='flex min-h-10 w-full justify-center' />
         {isLoading ? (
-          <p className='text-muted-foreground mt-2 text-center text-sm'>Google 登录中...</p>
+          <p className='text-muted-foreground mt-2 text-center text-sm'>{t('loading')}</p>
         ) : null}
       </div>
     </>

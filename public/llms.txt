@@ -1,0 +1,27 @@
+# CopyApes (跟单猿)
+
+> Cross-exchange automated crypto futures copy-trading assistant.
+> Official site: https://copyapes.com
+
+## Product
+- Automated copy trading via official exchange APIs
+- Cross-exchange following (e.g. OKX account following Binance traders)
+- Funds remain in the user's own exchange account
+- No profit-share seat fee from copy trades
+- Free trial tier available
+
+## Key pages
+- Home: https://copyapes.com/
+- About: https://copyapes.com/about
+- Blog: https://copyapes.com/blog
+- Privacy Policy: https://copyapes.com/privacy
+- Terms of Service: https://copyapes.com/terms
+- Chinese home: https://copyapes.com/zh
+
+## Docs
+- Tutorial: https://docs.lichaoyuan.com/copyapes/step
+- Product protocol: https://docs.lichaoyuan.com/copyapes/protocol
+
+## Contact
+- Email: service@copyapes.com
+- Contact form: https://copyapes.com/#contact

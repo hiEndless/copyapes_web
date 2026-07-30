@@ -4,9 +4,6 @@ import type { Metadata } from 'next'
 import { getTranslations } from 'next-intl/server'
 
 import HeroSection from '@/components/blocks/hero-section-27/hero-section-27'
-// import CTA from '@/components/blocks/cta/cta'
-// import TrustedBrands from '@/components/blocks/trusted-brands/trusted-brands'
-// import Features from '@/components/blocks/features/features'
 
 const BentoGrid = dynamic(() => import('@/components/blocks/bento-grid-17/bento-grid-17'), {
   ssr: true,
@@ -31,10 +28,9 @@ const ContactUs = dynamic(() => import('@/components/blocks/contact-us-page-02/c
   loading: () => null
 })
 
-// import { logos } from '@/assets/data/trusted-brands'
 import { usePricingPlans } from '@/assets/data/pricing'
 import { useTestimonials } from '@/assets/data/testimonials-component-06'
-import { useFaqItems } from '@/assets/data/faqs'
+import { getFaqItems, useFaqItems } from '@/assets/data/faqs'
 
 import { useBenefits } from '@/assets/data/benefits'
 import { avatarMotionData } from '@/assets/data/hero-section'
@@ -61,6 +57,7 @@ export async function generateMetadata({
 
 const HomeJsonLd = async ({ locale }: { locale: string }) => {
   const t = await getTranslations({ locale, namespace: 'Metadata' })
+  const faqs = await getFaqItems(locale)
 
   return (
     <script
@@ -68,7 +65,9 @@ const HomeJsonLd = async ({ locale }: { locale: string }) => {
         buildHomePageJsonLd({
           locale,
           name: t('siteName'),
-          description: t('description')
+          description: t('description'),
+          faqs,
+          dateModified: '2026-07-30'
         })
       )}
     />
@@ -83,14 +82,6 @@ const HomeContent = () => {
 
   return (
     <>
-      <HeroSection avatarMotion={avatarMotionData} />
-
-      {/*<SectionSeparator />*/}
-
-      {/*<TrustedBrands brandLogos={logos} />*/}
-
-      <SectionSeparator />
-
       <BentoGrid />
 
       <SectionSeparator />
@@ -112,8 +103,6 @@ const HomeContent = () => {
       <Partners />
 
       <ContactUs />
-
-      {/*<CTA />*/}
     </>
   )
 }
@@ -123,6 +112,8 @@ const Home = async ({ params }: { params: Promise<{ locale: string }> }) => {
 
   return (
     <>
+      <HeroSection avatarMotion={avatarMotionData} />
+      <SectionSeparator />
       <HomeContent />
       <HomeJsonLd locale={locale} />
     </>

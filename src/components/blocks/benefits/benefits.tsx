@@ -69,7 +69,7 @@ const Benefits = ({ featuresList }: { featuresList: Features }) => {
                     </AvatarFallback>
                   </Avatar>
                   <div>
-                    <h6 className='mb-1 text-lg font-semibold'>{feature.title}</h6>
+                    <h3 className='mb-1 text-lg font-semibold'>{feature.title}</h3>
                     <p className='text-muted-foreground leading-relaxed'>{feature.description}</p>
                   </div>
                 </CardContent>

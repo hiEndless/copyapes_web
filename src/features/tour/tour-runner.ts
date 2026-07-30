@@ -7,6 +7,20 @@ import { markTourSeen } from './storage'
 
 import type { TourDef } from './types'
 
+export type TourUiLabels = {
+  next: string
+  prev: string
+  done: string
+  gotIt: string
+}
+
+const DEFAULT_UI_LABELS: TourUiLabels = {
+  next: '下一步',
+  prev: '上一步',
+  done: '完成',
+  gotIt: '知道了'
+}
+
 let activeDriver: Driver | null = null
 
 const stopActiveDriver = () => {
@@ -29,7 +43,7 @@ const hasAnyAnchor = (tour: TourDef) => {
   return anchored.some(step => document.querySelector(anchorSelector(step.anchor!)) !== null)
 }
 
-export const startTour = (tour: TourDef): boolean => {
+export const startTour = (tour: TourDef, labels: TourUiLabels = DEFAULT_UI_LABELS): boolean => {
   if (typeof document === 'undefined') return false
 
   if (!hasAnyAnchor(tour)) {
@@ -58,9 +72,9 @@ export const startTour = (tour: TourDef): boolean => {
     waitForElement: 1500,
     showProgress: !isSingleStep,
     progressText: '{{current}} / {{total}}',
-    nextBtnText: '下一步',
-    prevBtnText: '上一步',
-    doneBtnText: isSingleStep ? '知道了' : '完成',
+    nextBtnText: labels.next,
+    prevBtnText: labels.prev,
+    doneBtnText: isSingleStep ? labels.gotIt : labels.done,
     showButtons: isSingleStep ? ['next'] : ['next', 'previous', 'close'],
     steps: tour.steps.map(step => ({
       element: step.anchor ? anchorSelector(step.anchor) : undefined,

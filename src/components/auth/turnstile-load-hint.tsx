@@ -1,6 +1,7 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
+import { useTranslations } from 'next-intl'
 
 import { isLikelyDomesticClient } from '@/lib/turnstile-degrade'
 
@@ -11,6 +12,8 @@ type Props = {
 }
 
 export function TurnstileLoadHint({ visible, reason = 'script' }: Props) {
+  const t = useTranslations('Auth.turnstile')
+
   if (!visible) {
     return null
   }
@@ -18,13 +21,9 @@ export function TurnstileLoadHint({ visible, reason = 'script' }: Props) {
   const canTrySubmit = isLikelyDomesticClient()
   const message = (() => {
     if (reason === 'widget') {
-      return canTrySubmit
-        ? '人机验证失败，请刷新页面重试，或切换海外网络。若仍无法完成，可尝试直接提交，系统将按网络情况处理。'
-        : '人机验证失败，请刷新页面重试。若仍无法完成，请切换海外网络后访问。'
+      return canTrySubmit ? t('widgetFailDomestic') : t('widgetFailOverseas')
     }
-    return canTrySubmit
-      ? '人机验证加载超时，请刷新页面重试，或切换海外网络。若仍无法加载，可尝试直接提交，系统将按网络情况处理。'
-      : '人机验证加载超时，请刷新页面重试。若仍无法加载，请切换海外网络后访问。'
+    return canTrySubmit ? t('scriptFailDomestic') : t('scriptFailOverseas')
   })()
 
   return (
@@ -36,12 +35,27 @@ export function TurnstileLoadHint({ visible, reason = 'script' }: Props) {
         className='text-amber-900 dark:text-amber-200 h-auto px-0 py-1'
         onClick={() => window.location.reload()}
       >
-        刷新页面
+        {t('refresh')}
       </Button>
     </div>
   )
 }
 
+export function useTurnstileMissingTokenMessage() {
+  const t = useTranslations('Auth.turnstile')
+
+  return (unavailable: boolean): string => {
+    if (!unavailable) {
+      return t('complete')
+    }
+    if (isLikelyDomesticClient()) {
+      return t('notReadyDomestic')
+    }
+    return t('notReadyOverseas')
+  }
+}
+
+/** @deprecated Prefer useTurnstileMissingTokenMessage in components */
 export function turnstileMissingTokenMessage(unavailable: boolean): string {
   if (!unavailable) {
     return '请完成人机验证'

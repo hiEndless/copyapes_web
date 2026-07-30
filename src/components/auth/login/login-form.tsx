@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { EyeIcon, EyeOffIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import Script from 'next/script'
 import { toast } from 'sonner'
 
@@ -18,7 +19,7 @@ import { PrimaryFlowButton } from '@/components/ui/flow-button'
 import { authApi } from '@/api/auth'
 import {
   TurnstileLoadHint,
-  turnstileMissingTokenMessage,
+  useTurnstileMissingTokenMessage,
 } from '@/components/auth/turnstile-load-hint'
 import { useTurnstileScriptLoaded } from '@/hooks/use-turnstile-script-loaded'
 import { persistAuthSession } from '@/lib/auth-session'
@@ -49,6 +50,9 @@ declare global {
 const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js'
 
 const LoginForm = () => {
+  const t = useTranslations('Auth.login')
+  const tc = useTranslations('Auth.common')
+  const turnstileMissingTokenMessage = useTurnstileMissingTokenMessage()
   const siteKey = (process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '').trim()
 
   const [isVisible, setIsVisible] = useState(false)
@@ -111,7 +115,7 @@ const LoginForm = () => {
     e.preventDefault()
 
     if (!username || !password) {
-      toast.error('请输入用户名和密码')
+      toast.error(t('needCredentials'))
 
       return
     }
@@ -142,9 +146,9 @@ const LoginForm = () => {
       })
 
       if (res.code === 0 && res.data) {
-        toast.success('登录成功')
+        toast.success(t('success'))
         persistAuthSession(res.data)
-        router.push('/dashboard') // or '/' depending on where it should go
+        router.push('/dashboard')
       } else if (siteKey) {
         resetTurnstile()
       }
@@ -152,7 +156,6 @@ const LoginForm = () => {
       if (siteKey) {
         resetTurnstile()
       }
-      // toast is handled globally
     } finally {
       setIsLoading(false)
     }
@@ -171,25 +174,23 @@ const LoginForm = () => {
           onError={onTurnstileScriptError}
         />
       ) : null}
-      {/* Email */}
       <div className='space-y-1'>
         <Label className='leading-5' htmlFor='username'>
-          用户名 / 邮箱地址*
+          {t('usernameLabel')}
         </Label>
         <Input
           type='text'
           id='username'
-          placeholder='请输入您的用户名或邮箱地址'
+          placeholder={t('usernamePlaceholder')}
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           disabled={isLoading}
         />
       </div>
 
-      {/* Password */}
       <div className='w-full space-y-1'>
         <Label className='leading-5' htmlFor='password'>
-          密码*
+          {tc('password')}
         </Label>
         <div className='relative'>
           <Input
@@ -210,7 +211,7 @@ const LoginForm = () => {
             disabled={isLoading}
           >
             {isVisible ? <EyeOffIcon /> : <EyeIcon />}
-            <span className='sr-only'>{isVisible ? '隐藏密码' : '显示密码'}</span>
+            <span className='sr-only'>{isVisible ? tc('hidePassword') : tc('showPassword')}</span>
           </Button>
         </div>
       </div>
@@ -224,15 +225,14 @@ const LoginForm = () => {
         </div>
       ) : null}
 
-      {/* Remember Me and Forgot Password */}
       <div className='flex items-center justify-between gap-y-2'>
         <div className='flex items-center gap-3'>
           <Checkbox id='rememberMe' className='size-6' disabled={isLoading} />
-          <Label htmlFor='rememberMe'>记住我</Label>
+          <Label htmlFor='rememberMe'>{t('rememberMe')}</Label>
         </div>
 
         <Link href='/forgot-password' className='hover:underline'>
-          忘记密码？
+          {t('forgotPassword')}
         </Link>
       </div>
 
@@ -241,7 +241,7 @@ const LoginForm = () => {
         type='submit'
         disabled={isLoading || turnstileBlocking}
       >
-        {isLoading ? '登录中...' : '登录'}
+        {isLoading ? t('submitting') : t('submit')}
       </PrimaryFlowButton>
     </form>
   )

@@ -1,4 +1,7 @@
+'use client'
+
 import { ChevronLeftIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Link } from '@/i18n/routing'
 
@@ -8,6 +11,9 @@ import Logo from '@/components/logo'
 import ForgotPasswordForm from '@/components/auth/forgot-password/forgot-password-form'
 
 const ForgotPassword = () => {
+  const t = useTranslations('Auth.forgot')
+  const tc = useTranslations('Auth.common')
+
   return (
     <div className='flex flex-col gap-6'>
       <Link href='/'>
@@ -15,8 +21,8 @@ const ForgotPassword = () => {
       </Link>
 
       <div>
-        <h1 className='mb-2 text-2xl font-semibold'>忘记密码</h1>
-        <p className='text-muted-foreground'>向已绑定邮箱获取验证码，验证通过后设置新密码。</p>
+        <h1 className='mb-2 text-2xl font-semibold'>{t('title')}</h1>
+        <p className='text-muted-foreground'>{t('subtitle')}</p>
       </div>
 
       <div className='space-y-3'>
@@ -25,7 +31,7 @@ const ForgotPassword = () => {
         <Button asChild variant='ghost' className='group w-full'>
           <Link href='/login'>
             <ChevronLeftIcon className='transition-transform duration-200 group-hover:-translate-x-0.5' />
-            <p>返回登录</p>
+            <p>{tc('backToLogin')}</p>
           </Link>
         </Button>
       </div>

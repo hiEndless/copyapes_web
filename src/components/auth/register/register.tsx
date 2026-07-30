@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react'
 
+import { useTranslations } from 'next-intl'
+
 import { Link } from '@/i18n/routing'
 
 import { Separator } from '@/components/ui/separator'
@@ -14,6 +16,8 @@ import { getPersistedInviteCode, isValidInviteCode, persistInviteCode } from '@/
 const googleClientId = (process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || '').trim()
 
 const Register = () => {
+  const t = useTranslations('Auth.register')
+  const tc = useTranslations('Auth.common')
   const [inviteCode, setInviteCode] = useState('')
 
   useEffect(() => {
@@ -34,8 +38,8 @@ const Register = () => {
       </Link>
 
       <div>
-        <h1 className='mb-2 text-2xl font-semibold'>注册</h1>
-        <p className='text-muted-foreground'>开始您的免费体验</p>
+        <h1 className='mb-2 text-2xl font-semibold'>{t('title')}</h1>
+        <p className='text-muted-foreground'>{tc('startFree')}</p>
       </div>
 
       {googleClientId ? (
@@ -43,7 +47,7 @@ const Register = () => {
           <GoogleLoginButton inviteCode={inviteCode} />
           <div className='flex items-center gap-4'>
             <Separator className='flex-1' />
-            <p className='text-muted-foreground text-sm'>或</p>
+            <p className='text-muted-foreground text-sm'>{tc('or')}</p>
             <Separator className='flex-1' />
           </div>
         </>
@@ -53,9 +57,9 @@ const Register = () => {
 
       <div className='space-y-4'>
         <p className='text-muted-foreground text-center'>
-          已有账号？{' '}
+          {t('hasAccount')}{' '}
           <Link href='/login' className='text-foreground hover:underline'>
-            登录
+            {t('login')}
           </Link>
         </p>
       </div>
