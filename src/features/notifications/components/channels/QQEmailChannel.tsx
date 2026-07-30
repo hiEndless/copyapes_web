@@ -5,6 +5,7 @@ import { useState } from 'react'
 import type { UseFormReturn } from 'react-hook-form'
 
 import { Info, Loader2 } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 
 import { request } from '@/api/request'
@@ -19,26 +20,10 @@ interface ChannelProps {
   form: UseFormReturn<NotificationChannelUpdate>
 }
 
-const STEPS = [
-  '登录 QQ 邮箱，点击左上角的“设置”',
-  '切换到“账号”选项卡',
-  '找到“POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务”部分',
-  '开启“POP3/SMTP服务”，根据提示发送短信进行验证',
-  '获取系统生成的“授权码”，复制并粘贴到下方输入框',
-  <span key='link'>
-    图文教程：
-    <a
-      href='https://www.jijyun.cn/help/detail/914'
-      target='_blank'
-      rel='noopener noreferrer'
-      className='text-blue-500 hover:underline'
-    >
-      如何开启QQ邮箱SMTP服务？
-    </a>
-  </span>
-]
+const STEP_KEYS = ['1', '2', '3', '4', '5'] as const
 
 export function QQEmailChannel({ form }: ChannelProps) {
+  const t = useTranslations('DashboardNotifications')
   const [isValidating, setIsValidating] = useState(false)
 
   const validateQQMail = async () => {
@@ -46,7 +31,7 @@ export function QQEmailChannel({ form }: ChannelProps) {
     const authCode = form.getValues('config.qq_auth_code')
 
     if (!qq || !authCode) {
-      toast.error('请填写 QQ 账号和授权码')
+      toast.error(t('qqEmail.toast.fillRequired'))
 
       return
     }
@@ -63,10 +48,10 @@ export function QQEmailChannel({ form }: ChannelProps) {
       })
 
       if (response.code === 0) {
-        toast.success('邮箱校验成功')
+        toast.success(t('qqEmail.toast.validateSuccess'))
       }
     } catch (error) {
-      console.error('校验失败:', error)
+      console.error('Failed to validate QQ mail:', error)
     } finally {
       setIsValidating(false)
     }
@@ -74,16 +59,30 @@ export function QQEmailChannel({ form }: ChannelProps) {
 
   return (
     <div className='space-y-4'>
-      <h3 className='text-muted-foreground text-sm font-medium tracking-wider uppercase'>QQ 邮箱配置</h3>
+      <h3 className='text-muted-foreground text-sm font-medium tracking-wider uppercase'>{t('qqEmail.sectionTitle')}</h3>
 
       <Alert variant='default' className='bg-muted/50'>
         <Info className='h-4 w-4' />
-        <AlertTitle className='text-sm font-medium'>如何获取 QQ 邮箱授权码</AlertTitle>
+        <AlertTitle className='text-sm font-medium'>{t('qqEmail.alertTitle')}</AlertTitle>
         <AlertDescription>
           <ol className='text-muted-foreground mt-2 list-inside list-decimal space-y-1 text-xs'>
-            {STEPS.map((step, i) => (
-              <li key={i}>{step}</li>
+            {STEP_KEYS.map(key => (
+              <li key={key}>{t(`qqEmail.steps.${key}`)}</li>
             ))}
+            <li>
+              {t.rich('qqEmail.stepTutorial', {
+                link: chunks => (
+                  <a
+                    href='https://www.jijyun.cn/help/detail/914'
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='text-blue-500 hover:underline'
+                  >
+                    {chunks}
+                  </a>
+                )
+              })}
+            </li>
           </ol>
         </AlertDescription>
       </Alert>
@@ -94,11 +93,11 @@ export function QQEmailChannel({ form }: ChannelProps) {
           name='config.qq_email_address'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>QQ 账号</FormLabel>
+              <FormLabel>{t('qqEmail.qqLabel')}</FormLabel>
               <FormControl>
                 <div className='flex items-center'>
                   <Input
-                    placeholder='12345678'
+                    placeholder={t('qqEmail.qqPlaceholder')}
                     {...field}
                     value={field.value || ''}
                     className=''
@@ -117,11 +116,11 @@ export function QQEmailChannel({ form }: ChannelProps) {
           name='config.qq_auth_code'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>授权码</FormLabel>
+              <FormLabel>{t('qqEmail.authCodeLabel')}</FormLabel>
               <FormControl>
-                <Input placeholder='abcdefghijklmnop' {...field} value={field.value || ''} />
+                <Input placeholder={t('qqEmail.authCodePlaceholder')} {...field} value={field.value || ''} />
               </FormControl>
-              <FormDescription className='text-xs'>在 QQ 邮箱 设置 &gt; 账户 &gt; 生成授权码 获取。</FormDescription>
+              <FormDescription className='text-xs'>{t('qqEmail.authCodeDesc')}</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -129,7 +128,7 @@ export function QQEmailChannel({ form }: ChannelProps) {
         <div className='col-span-2 flex justify-end'>
           <Button type='button' onClick={validateQQMail} disabled={isValidating}>
             {isValidating && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            校验配置
+            {t('qqEmail.validate')}
           </Button>
         </div>
       </div>

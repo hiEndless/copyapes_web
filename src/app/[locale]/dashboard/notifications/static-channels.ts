@@ -28,7 +28,7 @@ export const STATIC_CHANNELS: NotificationChannel[] = [
   {
     id: 'wechat_official',
     channel_type: 'wechat_official',
-    name: '微信服务号',
+    name: 'WeChat Official Account',
     logo: 'wechat',
     is_active: false,
     config: {},
@@ -52,7 +52,7 @@ export const STATIC_CHANNELS: NotificationChannel[] = [
   {
     id: 'dingtalk_bot',
     channel_type: 'dingtalk_bot',
-    name: '钉钉机器人',
+    name: 'DingTalk Bot',
     logo: 'dingtalk',
     is_active: false,
     config: {},

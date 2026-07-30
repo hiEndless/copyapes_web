@@ -2594,5 +2594,161 @@
       "terminateFailed": "終止請求失敗",
       "terminateRetry": "終止請求失敗，請重試"
     }
+  },
+  "DashboardNotifications": {
+    "page": {
+      "title": "通知設定",
+      "subtitle": "設定通知類型與訊息管道",
+      "channelsTitle": "通知管道",
+      "channelsDesc": "選擇要設定的管道",
+      "selectChannelHint": "請從左側選擇一個通知管道進行設定"
+    },
+    "channels": {
+      "wechat_official": "微信服務號",
+      "qq_email": "QQ 信箱",
+      "dingtalk_bot": "釘釘機器人",
+      "smtp_email": "郵件通知",
+      "telegram_bot": "Telegram Bot"
+    },
+    "preferences": {
+      "title": "通知類型",
+      "desc": "控制接收哪些類型的通知，對所有已開啟管道統一生效",
+      "items": {
+        "cookie_expired": {
+          "label": "Cookie / API 失效提醒",
+          "description": "交易所 Cookie、JWT 或 API 失效時通知您"
+        },
+        "trade_notice": {
+          "label": "交易通知",
+          "description": "開倉、平倉及交易失敗等交易相關通知"
+        },
+        "task_auto_stop": {
+          "label": "任務自動停止",
+          "description": "跟單任務因異常自動停止時通知您"
+        },
+        "system_notice": {
+          "label": "系統通知",
+          "description": "平台公告、維護提醒等系統訊息，不可關閉"
+        }
+      }
+    },
+    "form": {
+      "configTitle": "{name} 設定",
+      "lastUpdated": "上次更新: {date}",
+      "test": "測試連線",
+      "save": "儲存設定",
+      "notFound": "找不到類型「{type}」的設定元件。"
+    },
+    "wechat": {
+      "sectionTitle": "微信服務號設定",
+      "alertTitle": "如何綁定服務號以接收通知",
+      "qrAlt": "ApePush 二維碼",
+      "authCodeLabel": "授權碼",
+      "authCodePlaceholder": "點擊右側按鈕產生",
+      "generate": "產生授權碼",
+      "regenerate": "重新產生",
+      "authCodeDesc": "請將此授權碼傳送給服務號以完成綁定驗證",
+      "steps": {
+        "1": "微信掃碼關注服務號『ApePush』",
+        "2": "點擊下方按鈕產生授權碼",
+        "3": "在服務號聊天視窗輸入產生的授權碼，完成帳號關聯"
+      },
+      "toast": {
+        "generateSuccess": "授權碼產生成功",
+        "generateFailed": "未能取得授權碼"
+      }
+    },
+    "dingtalk": {
+      "sectionTitle": "釘釘機器人設定",
+      "alertTitle": "如何建立釘釘機器人",
+      "webhookLabel": "Webhook 位址",
+      "webhookPlaceholder": "https://oapi.dingtalk.com/robot/send?access_token=...",
+      "webhookDesc": "從釘釘群的機器人設定中複製 Webhook 位址。",
+      "secretLabel": "簽名金鑰",
+      "secretPlaceholder": "SEC...",
+      "secretDesc": "安全設定選擇「加簽」，請在此貼上金鑰。",
+      "steps": {
+        "1": "開啟釘釘，進入需要接收通知的群聊",
+        "2": "點擊右上角「...」→ 群設定 → 智慧群助手 → 新增機器人",
+        "3": "選擇「自訂（透過 Webhook 接入自訂服務）」",
+        "4": "設定機器人名稱，安全設定必須選擇「加簽」並記錄金鑰，不要選擇關鍵字",
+        "5": "完成後複製 Webhook 位址，貼到下方輸入框"
+      }
+    },
+    "qqEmail": {
+      "sectionTitle": "QQ 信箱設定",
+      "alertTitle": "如何取得 QQ 信箱授權碼",
+      "qqLabel": "QQ 帳號",
+      "qqPlaceholder": "12345678",
+      "authCodeLabel": "授權碼",
+      "authCodePlaceholder": "abcdefghijklmnop",
+      "authCodeDesc": "在 QQ 信箱 設定 > 帳戶 > 產生授權碼 取得。",
+      "validate": "校驗設定",
+      "steps": {
+        "1": "登入 QQ 信箱，點擊左上角的「設定」",
+        "2": "切換到「帳號」分頁",
+        "3": "找到「POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服務」區塊",
+        "4": "開啟「POP3/SMTP服務」，依提示傳送簡訊進行驗證",
+        "5": "取得系統產生的「授權碼」，複製並貼到下方輸入框"
+      },
+      "stepTutorial": "圖文教學：<link>如何開啟QQ信箱SMTP服務？</link>",
+      "toast": {
+        "fillRequired": "請填寫 QQ 帳號和授權碼",
+        "validateSuccess": "信箱校驗成功"
+      }
+    },
+    "email": {
+      "sectionTitle": "SMTP 伺服器設定",
+      "smtpHostLabel": "SMTP 伺服器位址",
+      "smtpHostPlaceholder": "smtp.example.com",
+      "smtpPortLabel": "SMTP 連接埠",
+      "smtpPortPlaceholder": "587",
+      "usernameLabel": "使用者名稱",
+      "usernamePlaceholder": "user@example.com",
+      "passwordLabel": "密碼",
+      "passwordPlaceholder": "••••••••",
+      "fromLabel": "寄件人位址",
+      "fromPlaceholder": "notifications@example.com",
+      "fromDesc": "作為寄件人顯示的電子郵件位址。",
+      "toLabel": "收件人位址",
+      "toPlaceholder": "admin@example.com",
+      "toDesc": "接收通知的電子郵件位址。"
+    },
+    "telegram": {
+      "sectionTitle": "Telegram Bot 設定",
+      "tokenLabel": "Bot Token",
+      "tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+      "tokenDesc": "透過 <link>@BotFather</link> 建立機器人，並將 Token 貼到此處。",
+      "chatIdLabel": "Chat ID / Channel Username",
+      "chatIdPlaceholder": "@my_channel_name or -1001234567890",
+      "chatIdDesc": "頻道使用者名稱（如 @my_channel）或數字 Chat ID。"
+    },
+    "toast": {
+      "testMessage": "這是一條測試訊息",
+      "fetchChannelsFailed": "取得通知管道失敗：{error}",
+      "saveSuccess": "設定已儲存",
+      "saveFailed": "儲存失敗：{error}",
+      "testSuccess": "{name} 測試訊息傳送成功",
+      "testFailed": "測試傳送失敗：{error}",
+      "preferenceOn": "已開啟{label}",
+      "preferenceOff": "已關閉{label}",
+      "updateFailed": "更新失敗：{error}",
+      "channelOn": "{name} 已開啟通知",
+      "channelOff": "{name} 已關閉通知",
+      "updateStatusFailed": "更新狀態失敗：{error}"
+    },
+    "errors": {
+      "operationFailed": "操作失敗",
+      "saveQqEmailFailed": "儲存QQ信箱設定失敗",
+      "webhookRequired": "請填寫 Webhook 位址",
+      "saveDingtalkFailed": "儲存釘釘機器人設定失敗",
+      "testNotSupported": "目前管道暫不支援測試傳送",
+      "testFailed": "測試傳送失敗",
+      "retryableHint": "，可稍後重試",
+      "updatePreferenceFailed": "更新通知偏好失敗",
+      "toggleWechatFailed": "切換微信通知失敗",
+      "toggleQqEmailFailed": "切換QQ信箱通知失敗",
+      "toggleDingtalkFailed": "切換釘釘通知失敗"
+    }
   }
 }

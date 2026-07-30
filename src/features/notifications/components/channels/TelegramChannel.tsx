@@ -1,7 +1,8 @@
 'use client';
 
 import { UseFormReturn } from 'react-hook-form';
-import { NotificationChannel, NotificationChannelUpdate } from '../../types';
+import { useTranslations } from 'next-intl';
+import { NotificationChannelUpdate } from '../../types';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 
@@ -10,21 +11,29 @@ interface ChannelProps {
 }
 
 export function TelegramChannel({ form }: ChannelProps) {
+  const t = useTranslations('DashboardNotifications');
+
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Telegram Bot Configuration</h3>
+      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t('telegram.sectionTitle')}</h3>
 
       <FormField
         control={form.control}
         name="config.telegram_bot_token"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Bot Token</FormLabel>
+            <FormLabel>{t('telegram.tokenLabel')}</FormLabel>
             <FormControl>
-              <Input type="password" placeholder="123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11" {...field} value={field.value || ''} />
+              <Input type="password" placeholder={t('telegram.tokenPlaceholder')} {...field} value={field.value || ''} />
             </FormControl>
             <FormDescription>
-              Create a bot via <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" className="underline text-primary">@BotFather</a> and paste the token here.
+              {t.rich('telegram.tokenDesc', {
+                link: chunks => (
+                  <a href="https://t.me/BotFather" target="_blank" rel="noopener noreferrer" className="underline text-primary">
+                    {chunks}
+                  </a>
+                ),
+              })}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -36,12 +45,12 @@ export function TelegramChannel({ form }: ChannelProps) {
         name="config.channel_id"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Chat ID / Channel Username</FormLabel>
+            <FormLabel>{t('telegram.chatIdLabel')}</FormLabel>
             <FormControl>
-              <Input placeholder="@my_channel_name or -1001234567890" {...field} value={field.value || ''} />
+              <Input placeholder={t('telegram.chatIdPlaceholder')} {...field} value={field.value || ''} />
             </FormControl>
             <FormDescription>
-              The username of the channel (e.g. @my_channel) or the numeric Chat ID.
+              {t('telegram.chatIdDesc')}
             </FormDescription>
             <FormMessage />
           </FormItem>

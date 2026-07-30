@@ -2594,5 +2594,161 @@
       "terminateFailed": "终止请求失败",
       "terminateRetry": "终止请求失败，请重试"
     }
+  },
+  "DashboardNotifications": {
+    "page": {
+      "title": "通知设置",
+      "subtitle": "配置通知类型与消息渠道",
+      "channelsTitle": "通知渠道",
+      "channelsDesc": "选择要配置的渠道",
+      "selectChannelHint": "请从左侧选择一个通知渠道进行配置"
+    },
+    "channels": {
+      "wechat_official": "微信服务号",
+      "qq_email": "QQ 邮箱",
+      "dingtalk_bot": "钉钉机器人",
+      "smtp_email": "邮件通知",
+      "telegram_bot": "Telegram Bot"
+    },
+    "preferences": {
+      "title": "通知类型",
+      "desc": "控制接收哪些类型的通知，对所有已开启渠道统一生效",
+      "items": {
+        "cookie_expired": {
+          "label": "Cookie / API 失效提醒",
+          "description": "交易所 Cookie、JWT 或 API 失效时通知您"
+        },
+        "trade_notice": {
+          "label": "交易通知",
+          "description": "开仓、平仓及交易失败等交易相关通知"
+        },
+        "task_auto_stop": {
+          "label": "任务自动停止",
+          "description": "跟单任务因异常自动停止时通知您"
+        },
+        "system_notice": {
+          "label": "系统通知",
+          "description": "平台公告、维护提醒等系统消息，不可关闭"
+        }
+      }
+    },
+    "form": {
+      "configTitle": "{name} 配置",
+      "lastUpdated": "上次更新: {date}",
+      "test": "测试连接",
+      "save": "保存配置",
+      "notFound": "未找到类型「{type}」的配置组件。"
+    },
+    "wechat": {
+      "sectionTitle": "微信服务号配置",
+      "alertTitle": "如何绑定服务号以接收通知",
+      "qrAlt": "ApePush 二维码",
+      "authCodeLabel": "授权码",
+      "authCodePlaceholder": "点击右侧按钮生成",
+      "generate": "生成授权码",
+      "regenerate": "重新生成",
+      "authCodeDesc": "请将此授权码发送给服务号进行绑定验证",
+      "steps": {
+        "1": "微信扫码关注服务号『ApePush』",
+        "2": "点击下方按钮生成授权码",
+        "3": "在服务号聊天窗口输入生成的授权码，完成账号关联"
+      },
+      "toast": {
+        "generateSuccess": "授权码生成成功",
+        "generateFailed": "未能获取到授权码"
+      }
+    },
+    "dingtalk": {
+      "sectionTitle": "钉钉机器人配置",
+      "alertTitle": "如何创建钉钉机器人",
+      "webhookLabel": "Webhook 地址",
+      "webhookPlaceholder": "https://oapi.dingtalk.com/robot/send?access_token=...",
+      "webhookDesc": "从钉钉群的机器人设置中复制 Webhook 地址。",
+      "secretLabel": "签名密钥",
+      "secretPlaceholder": "SEC...",
+      "secretDesc": "安全设置选择「加签」，请在此粘贴密钥。",
+      "steps": {
+        "1": "打开钉钉，进入需要接收通知的群聊",
+        "2": "点击右上角「...」→ 群设置 → 智能群助手 → 添加机器人",
+        "3": "选择「自定义（通过 Webhook 接入自定义服务）」",
+        "4": "设置机器人名称，安全设置必须选择「加签」并记录密钥，不要选择关键词",
+        "5": "完成后复制 Webhook 地址，粘贴到下方输入框"
+      }
+    },
+    "qqEmail": {
+      "sectionTitle": "QQ 邮箱配置",
+      "alertTitle": "如何获取 QQ 邮箱授权码",
+      "qqLabel": "QQ 账号",
+      "qqPlaceholder": "12345678",
+      "authCodeLabel": "授权码",
+      "authCodePlaceholder": "abcdefghijklmnop",
+      "authCodeDesc": "在 QQ 邮箱 设置 > 账户 > 生成授权码 获取。",
+      "validate": "校验配置",
+      "steps": {
+        "1": "登录 QQ 邮箱，点击左上角的「设置」",
+        "2": "切换到「账号」选项卡",
+        "3": "找到「POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV服务」部分",
+        "4": "开启「POP3/SMTP服务」，根据提示发送短信进行验证",
+        "5": "获取系统生成的「授权码」，复制并粘贴到下方输入框"
+      },
+      "stepTutorial": "图文教程：<link>如何开启QQ邮箱SMTP服务？</link>",
+      "toast": {
+        "fillRequired": "请填写 QQ 账号和授权码",
+        "validateSuccess": "邮箱校验成功"
+      }
+    },
+    "email": {
+      "sectionTitle": "SMTP 服务器配置",
+      "smtpHostLabel": "SMTP 服务器地址",
+      "smtpHostPlaceholder": "smtp.example.com",
+      "smtpPortLabel": "SMTP 端口",
+      "smtpPortPlaceholder": "587",
+      "usernameLabel": "用户名",
+      "usernamePlaceholder": "user@example.com",
+      "passwordLabel": "密码",
+      "passwordPlaceholder": "••••••••",
+      "fromLabel": "发件人地址",
+      "fromPlaceholder": "notifications@example.com",
+      "fromDesc": "作为发件人显示的邮箱地址。",
+      "toLabel": "收件人地址",
+      "toPlaceholder": "admin@example.com",
+      "toDesc": "接收通知的邮箱地址。"
+    },
+    "telegram": {
+      "sectionTitle": "Telegram Bot 配置",
+      "tokenLabel": "Bot Token",
+      "tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+      "tokenDesc": "通过 <link>@BotFather</link> 创建机器人，并将 Token 粘贴到此处。",
+      "chatIdLabel": "Chat ID / Channel Username",
+      "chatIdPlaceholder": "@my_channel_name or -1001234567890",
+      "chatIdDesc": "频道用户名（如 @my_channel）或数字 Chat ID。"
+    },
+    "toast": {
+      "testMessage": "这是一条测试消息",
+      "fetchChannelsFailed": "获取通知渠道失败：{error}",
+      "saveSuccess": "配置已保存",
+      "saveFailed": "保存失败：{error}",
+      "testSuccess": "{name} 测试消息发送成功",
+      "testFailed": "测试发送失败：{error}",
+      "preferenceOn": "已开启{label}",
+      "preferenceOff": "已关闭{label}",
+      "updateFailed": "更新失败：{error}",
+      "channelOn": "{name} 已开启通知",
+      "channelOff": "{name} 已关闭通知",
+      "updateStatusFailed": "更新状态失败：{error}"
+    },
+    "errors": {
+      "operationFailed": "操作失败",
+      "saveQqEmailFailed": "保存QQ邮箱配置失败",
+      "webhookRequired": "请填写 Webhook 地址",
+      "saveDingtalkFailed": "保存钉钉机器人配置失败",
+      "testNotSupported": "当前渠道暂不支持测试发送",
+      "testFailed": "测试发送失败",
+      "retryableHint": "，可稍后重试",
+      "updatePreferenceFailed": "更新通知偏好失败",
+      "toggleWechatFailed": "切换微信通知失败",
+      "toggleQqEmailFailed": "切换QQ邮箱通知失败",
+      "toggleDingtalkFailed": "切换钉钉通知失败"
+    }
   }
 }

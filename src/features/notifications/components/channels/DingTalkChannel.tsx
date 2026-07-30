@@ -1,6 +1,7 @@
 'use client';
 
 import { Info } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 import type { UseFormReturn } from 'react-hook-form';
 
 import type { NotificationChannelUpdate } from '../../types';
@@ -12,26 +13,22 @@ interface ChannelProps {
   form: UseFormReturn<NotificationChannelUpdate>;
 }
 
-const STEPS = [
-  '打开钉钉，进入需要接收通知的群聊',
-  '点击右上角"..."  ->  群设置  ->  智能群助手  ->  添加机器人',
-  '选择"自定义（通过 Webhook 接入自定义服务）"',
-  '设置机器人名称，安全设置必须选择"加签"并记录密钥，不要选择关键词',
-  '完成后复制 Webhook 地址，粘贴到下方输入框',
-];
+const STEP_KEYS = ['1', '2', '3', '4', '5'] as const;
 
 export function DingTalkChannel({ form }: ChannelProps) {
+  const t = useTranslations('DashboardNotifications');
+
   return (
     <div className="space-y-4">
-      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">钉钉机器人配置</h3>
+      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">{t('dingtalk.sectionTitle')}</h3>
 
       <Alert variant="default" className="bg-muted/50">
         <Info className="h-4 w-4" />
-        <AlertTitle className="text-sm font-medium">如何创建钉钉机器人</AlertTitle>
+        <AlertTitle className="text-sm font-medium">{t('dingtalk.alertTitle')}</AlertTitle>
         <AlertDescription>
           <ol className="mt-2 space-y-1 text-xs text-muted-foreground list-decimal list-inside">
-            {STEPS.map((step, i) => (
-              <li key={i}>{step}</li>
+            {STEP_KEYS.map(key => (
+              <li key={key}>{t(`dingtalk.steps.${key}`)}</li>
             ))}
           </ol>
         </AlertDescription>
@@ -42,17 +39,17 @@ export function DingTalkChannel({ form }: ChannelProps) {
         name="config.dingtalk_webhook"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>Webhook 地址</FormLabel>
+            <FormLabel>{t('dingtalk.webhookLabel')}</FormLabel>
             <FormControl>
               <Input
-                placeholder="https://oapi.dingtalk.com/robot/send?access_token=..."
+                placeholder={t('dingtalk.webhookPlaceholder')}
                 {...field}
                 value={field.value || ''}
                 onBlur={(event) => field.onChange(event.target.value.trim())}
               />
             </FormControl>
             <FormDescription>
-              从钉钉群的机器人设置中复制 Webhook 地址。
+              {t('dingtalk.webhookDesc')}
             </FormDescription>
             <FormMessage />
           </FormItem>
@@ -64,18 +61,18 @@ export function DingTalkChannel({ form }: ChannelProps) {
         name="config.dingtalk_secret"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>签名密钥</FormLabel>
+            <FormLabel>{t('dingtalk.secretLabel')}</FormLabel>
             <FormControl>
               <Input
                 type="password"
-                placeholder="SEC..."
+                placeholder={t('dingtalk.secretPlaceholder')}
                 {...field}
                 value={field.value || ''}
                 onBlur={(event) => field.onChange(event.target.value.trim())}
               />
             </FormControl>
             <FormDescription>
-              安全设置选择 `加签`，请在此粘贴密钥。
+              {t('dingtalk.secretDesc')}
             </FormDescription>
             <FormMessage />
           </FormItem>

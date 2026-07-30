@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 
 import { AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 import { request } from '@/api/request';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -30,12 +30,6 @@ const DEFAULT_PREFERENCES: NotificationPreferences = {
   system_notice: true,
 };
 
-const PREFERENCE_LABELS: Record<Exclude<NotificationPreferenceKey, 'system_notice'>, string> = {
-  cookie_expired: 'Cookie / API 失效提醒',
-  trade_notice: '交易通知',
-  task_auto_stop: '任务自动停止提醒',
-};
-
 const StatusDot = ({ enabled }: { enabled: boolean }) => (
   <div className="relative flex h-3 w-3 mr-2">
     {enabled ? (
@@ -49,13 +43,13 @@ const StatusDot = ({ enabled }: { enabled: boolean }) => (
   </div>
 );
 
-function getErrorMessage(error: unknown) {
+function getErrorMessage(error: unknown, fallback: string) {
   if (error instanceof Error) return error.message;
 
   try {
     return JSON.stringify(error);
   } catch {
-    return '操作失败';
+    return fallback;
   }
 }
 
@@ -67,8 +61,6 @@ interface NotificationTestResult {
   retryable: boolean;
 }
 
-const TEST_MESSAGE = '这是一条测试消息';
-
 const TEST_ENDPOINTS: Partial<Record<NotificationChannel['id'], string>> = {
   wechat_official: '/notify/test/wx/',
   qq_email: '/notify/test/qqmail/',
@@ -76,6 +68,7 @@ const TEST_ENDPOINTS: Partial<Record<NotificationChannel['id'], string>> = {
 };
 
 export default function NotificationPage() {
+  const t = useTranslations('DashboardNotifications');
   const locale = useLocale();
   const [channels, setChannels] = useState<NotificationChannel[]>([]);
   const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
@@ -84,6 +77,9 @@ export default function NotificationPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const [isUpdatingPreference, setIsUpdatingPreference] = useState(false);
+
+  const channelLabel = (id: string, fallback?: string) =>
+    t(`channels.${id}` as 'channels.wechat_official') || fallback || id;
 
   useEffect(() => {
     const initializeChannels = async () => {
@@ -139,13 +135,16 @@ export default function NotificationPage() {
         console.error('Failed to fetch channels, using static channels:', error);
         setChannels(STATIC_CHANNELS);
         setSelectedChannelId(STATIC_CHANNELS[0]?.id || null);
-        toast.error(`获取通知渠道失败：${getErrorMessage(error)}`);
+        toast.error(t('toast.fetchChannelsFailed', {
+          error: getErrorMessage(error, t('errors.operationFailed')),
+        }));
       } finally {
         setIsLoading(false);
       }
     };
 
     initializeChannels();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 仅首次加载
   }, []);
 
   const selectedChannel = channels.find(c => c.id === selectedChannelId);
@@ -164,13 +163,15 @@ export default function NotificationPage() {
           }
         });
 
-        if (response.code !== 0) throw new Error(response.error || response.msg || '保存QQ邮箱配置失败');
+        if (response.code !== 0) {
+          throw new Error(response.error || response.msg || t('errors.saveQqEmailFailed'));
+        }
       } else if (selectedChannel.id === 'dingtalk_bot') {
         const webhook = data.config?.dingtalk_webhook?.trim() || '';
         const secret = data.config?.dingtalk_secret?.trim() || '';
 
         if (!webhook) {
-          throw new Error('请填写 Webhook 地址');
+          throw new Error(t('errors.webhookRequired'));
         }
 
         const response = await request('/ding/', {
@@ -181,7 +182,9 @@ export default function NotificationPage() {
           }
         });
 
-        if (response.code !== 0) throw new Error(response.error || response.msg || '保存钉钉机器人配置失败');
+        if (response.code !== 0) {
+          throw new Error(response.error || response.msg || t('errors.saveDingtalkFailed'));
+        }
 
         data = {
           ...data,
@@ -204,10 +207,12 @@ export default function NotificationPage() {
         c.channel_type === channelToUpdate.channel_type ? channelToUpdate : c
       ));
 
-      toast.success('配置已保存');
+      toast.success(t('toast.saveSuccess'));
     } catch (error) {
       console.error('Failed to save:', error);
-      toast.error(`保存失败：${getErrorMessage(error)}`);
+      toast.error(t('toast.saveFailed', {
+        error: getErrorMessage(error, t('errors.operationFailed')),
+      }));
     } finally {
       setIsSaving(false);
     }
@@ -221,25 +226,31 @@ export default function NotificationPage() {
       const endpoint = TEST_ENDPOINTS[selectedChannel.id];
 
       if (!endpoint) {
-        throw new Error('当前渠道暂不支持测试发送');
+        throw new Error(t('errors.testNotSupported'));
       }
 
       const response = await request<NotificationTestResult>(endpoint, {
         method: 'POST',
-        body: { message: TEST_MESSAGE },
+        body: { message: t('toast.testMessage') },
         silent: true
       });
 
       const result = response.data;
 
       if (response.code !== 0 || !result?.success) {
-        const retryHint = result?.retryable ? '，可稍后重试' : '';
-        throw new Error(result?.error_message || response.error || response.msg || `测试发送失败${retryHint}`);
+        const retryHint = result?.retryable ? t('errors.retryableHint') : '';
+        throw new Error(
+          result?.error_message || response.error || response.msg || `${t('errors.testFailed')}${retryHint}`
+        );
       }
 
-      toast.success(`${selectedChannel.name} 测试消息发送成功`);
+      toast.success(t('toast.testSuccess', {
+        name: channelLabel(selectedChannel.id, selectedChannel.name),
+      }));
     } catch (error) {
-      toast.error(`测试发送失败：${getErrorMessage(error)}`);
+      toast.error(t('toast.testFailed', {
+        error: getErrorMessage(error, t('errors.operationFailed')),
+      }));
     } finally {
       setIsTesting(false);
     }
@@ -259,17 +270,20 @@ export default function NotificationPage() {
       });
 
       if (response.code !== 0) {
-        throw new Error(response.error || response.msg || '更新通知偏好失败');
+        throw new Error(response.error || response.msg || t('errors.updatePreferenceFailed'));
       }
 
       if (response.data) {
         setPreferences({ ...DEFAULT_PREFERENCES, ...response.data });
       }
 
-      toast.success(`已${enabled ? '开启' : '关闭'}${PREFERENCE_LABELS[key]}`);
+      const label = t(`preferences.items.${key}.label`);
+      toast.success(enabled ? t('toast.preferenceOn', { label }) : t('toast.preferenceOff', { label }));
     } catch (error) {
       setPreferences(prev => ({ ...prev, [key]: previous }));
-      toast.error(`更新失败：${getErrorMessage(error)}`);
+      toast.error(t('toast.updateFailed', {
+        error: getErrorMessage(error, t('errors.operationFailed')),
+      }));
     } finally {
       setIsUpdatingPreference(false);
     }
@@ -290,31 +304,40 @@ export default function NotificationPage() {
           body: { wx: enabled }
         });
 
-        if (response.code !== 0) throw new Error(response.error || response.msg || '切换微信通知失败');
+        if (response.code !== 0) {
+          throw new Error(response.error || response.msg || t('errors.toggleWechatFailed'));
+        }
       } else if (id === 'qq_email') {
         const response = await request('/qqmail/', {
           method: 'PATCH',
           body: { qq_mail: enabled }
         });
 
-        if (response.code !== 0) throw new Error(response.error || response.msg || '切换QQ邮箱通知失败');
+        if (response.code !== 0) {
+          throw new Error(response.error || response.msg || t('errors.toggleQqEmailFailed'));
+        }
       } else if (id === 'dingtalk_bot') {
         const response = await request('/ding/', {
           method: 'PATCH',
           body: { ding_bot: enabled }
         });
 
-        if (response.code !== 0) throw new Error(response.error || response.msg || '切换钉钉通知失败');
+        if (response.code !== 0) {
+          throw new Error(response.error || response.msg || t('errors.toggleDingtalkFailed'));
+        }
       } else {
         // 模拟其他渠道 API 状态更新
         await new Promise(resolve => setTimeout(resolve, 300));
       }
-      
-      toast.success(`${channelToToggle.name} 已${enabled ? '开启' : '关闭'}通知`);
+
+      const name = channelLabel(channelToToggle.id, channelToToggle.name);
+      toast.success(enabled ? t('toast.channelOn', { name }) : t('toast.channelOff', { name }));
     } catch (error) {
       // Revert on failure
       setChannels(prev => prev.map(c => c.id === id ? { ...c, is_active: !enabled } : c));
-      toast.error(`更新状态失败：${getErrorMessage(error)}`);
+      toast.error(t('toast.updateStatusFailed', {
+        error: getErrorMessage(error, t('errors.operationFailed')),
+      }));
     }
   };
 
@@ -329,9 +352,9 @@ export default function NotificationPage() {
   return (
     <div className="flex h-full flex-col gap-4 overflow-y-auto p-4 lg:p-8">
       <div className="flex flex-col gap-1" {...tourAnchor(TOUR_ANCHORS.notifyHeader)}>
-        <h2 className="text-2xl font-bold tracking-tight">通知设置</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t('page.title')}</h2>
         <p className="text-muted-foreground text-sm">
-          配置通知类型与消息渠道
+          {t('page.subtitle')}
         </p>
       </div>
 
@@ -344,8 +367,8 @@ export default function NotificationPage() {
       <div className="flex flex-col md:flex-row gap-4 h-full min-h-[600px]">
         <Card className="w-full md:w-[30%] h-fit shadow-sm" {...tourAnchor(TOUR_ANCHORS.notifyChannelList)}>
           <CardHeader>
-            <CardTitle className="text-lg">通知渠道</CardTitle>
-            <CardDescription>选择要配置的渠道</CardDescription>
+            <CardTitle className="text-lg">{t('page.channelsTitle')}</CardTitle>
+            <CardDescription>{t('page.channelsDesc')}</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
             <ScrollArea className="h-[300px] md:h-[500px]">
@@ -367,7 +390,9 @@ export default function NotificationPage() {
                       <StatusDot enabled={channel.is_active} />
                       <ChannelLogo type={channel.channel_type} />
                       <div className="flex flex-col">
-                        <span className="font-medium text-sm">{channel.name}</span>
+                        <span className="font-medium text-sm">
+                          {channelLabel(channel.id, channel.name)}
+                        </span>
                       </div>
                     </div>
 
@@ -400,7 +425,7 @@ export default function NotificationPage() {
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-12">
               <AlertCircle className="h-12 w-12 mb-4 opacity-20" />
-              <p>请从左侧选择一个通知渠道进行配置</p>
+              <p>{t('page.selectChannelHint')}</p>
             </div>
           )}
         </Card>

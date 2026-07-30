@@ -2592,5 +2592,161 @@
       "terminateFailed": "停止リクエスト失敗",
       "terminateRetry": "停止リクエスト失敗。再試行してください"
     }
+  },
+  "DashboardNotifications": {
+    "page": {
+      "title": "通知設定",
+      "subtitle": "通知タイプとメッセージチャネルを設定します",
+      "channelsTitle": "通知チャネル",
+      "channelsDesc": "設定するチャネルを選択",
+      "selectChannelHint": "左側から設定する通知チャネルを選択してください"
+    },
+    "channels": {
+      "wechat_official": "WeChat公式アカウント",
+      "qq_email": "QQメール",
+      "dingtalk_bot": "DingTalkボット",
+      "smtp_email": "メール通知",
+      "telegram_bot": "Telegram Bot"
+    },
+    "preferences": {
+      "title": "通知タイプ",
+      "desc": "受信する通知タイプを制御します。有効なすべてのチャネルに適用されます",
+      "items": {
+        "cookie_expired": {
+          "label": "Cookie / API 失効アラート",
+          "description": "取引所の Cookie、JWT、API が失効したときに通知します"
+        },
+        "trade_notice": {
+          "label": "取引通知",
+          "description": "建玉・決済・取引失敗など取引関連の通知"
+        },
+        "task_auto_stop": {
+          "label": "タスク自動停止",
+          "description": "コピー取引タスクが異常で自動停止したときに通知します"
+        },
+        "system_notice": {
+          "label": "システム通知",
+          "description": "プラットフォーム告知やメンテナンス通知など。無効化できません"
+        }
+      }
+    },
+    "form": {
+      "configTitle": "{name} 設定",
+      "lastUpdated": "最終更新: {date}",
+      "test": "接続テスト",
+      "save": "設定を保存",
+      "notFound": "タイプ「{type}」の設定コンポーネントが見つかりません。"
+    },
+    "wechat": {
+      "sectionTitle": "WeChat公式アカウント設定",
+      "alertTitle": "通知を受け取るための公式アカウント連携方法",
+      "qrAlt": "ApePush QRコード",
+      "authCodeLabel": "認証コード",
+      "authCodePlaceholder": "右側のボタンをクリックして生成",
+      "generate": "認証コードを生成",
+      "regenerate": "再生成",
+      "authCodeDesc": "この認証コードを公式アカウントに送信して連携を完了してください",
+      "steps": {
+        "1": "WeChatでQRコードをスキャンし、公式アカウント『ApePush』をフォロー",
+        "2": "下のボタンをクリックして認証コードを生成",
+        "3": "公式アカウントのチャットに認証コードを入力し、アカウント連携を完了"
+      },
+      "toast": {
+        "generateSuccess": "認証コードを生成しました",
+        "generateFailed": "認証コードを取得できませんでした"
+      }
+    },
+    "dingtalk": {
+      "sectionTitle": "DingTalkボット設定",
+      "alertTitle": "DingTalkボットの作成方法",
+      "webhookLabel": "Webhook URL",
+      "webhookPlaceholder": "https://oapi.dingtalk.com/robot/send?access_token=...",
+      "webhookDesc": "DingTalkグループのボット設定から Webhook URL をコピーしてください。",
+      "secretLabel": "署名シークレット",
+      "secretPlaceholder": "SEC...",
+      "secretDesc": "セキュリティ設定で「署名」を選択し、シークレットをここに貼り付けてください。",
+      "steps": {
+        "1": "DingTalkを開き、通知を受け取るグループに入る",
+        "2": "右上の「...」→ グループ設定 → スマートグループアシスタント → ボットを追加",
+        "3": "「カスタム（Webhook）」を選択",
+        "4": "ボット名を設定し、セキュリティは必ず「署名」を選びシークレットを控える（キーワードは使わない）",
+        "5": "Webhook URL をコピーし、下の入力欄に貼り付ける"
+      }
+    },
+    "qqEmail": {
+      "sectionTitle": "QQメール設定",
+      "alertTitle": "QQメール認証コードの取得方法",
+      "qqLabel": "QQアカウント",
+      "qqPlaceholder": "12345678",
+      "authCodeLabel": "認証コード",
+      "authCodePlaceholder": "abcdefghijklmnop",
+      "authCodeDesc": "QQメールの 設定 > アカウント > 認証コード生成 から取得します。",
+      "validate": "設定を検証",
+      "steps": {
+        "1": "QQメールにログインし、左上の「設定」をクリック",
+        "2": "「アカウント」タブに切り替え",
+        "3": "「POP3/IMAP/SMTP/Exchange/CardDAV/CalDAV」セクションを探す",
+        "4": "「POP3/SMTP」を有効化し、案内に従ってSMS認証を完了",
+        "5": "生成された認証コードをコピーし、下の入力欄に貼り付ける"
+      },
+      "stepTutorial": "図解ガイド：<link>QQメールのSMTPを有効にするには？</link>",
+      "toast": {
+        "fillRequired": "QQアカウントと認証コードを入力してください",
+        "validateSuccess": "メール検証に成功しました"
+      }
+    },
+    "email": {
+      "sectionTitle": "SMTPサーバー設定",
+      "smtpHostLabel": "SMTPホスト",
+      "smtpHostPlaceholder": "smtp.example.com",
+      "smtpPortLabel": "SMTPポート",
+      "smtpPortPlaceholder": "587",
+      "usernameLabel": "ユーザー名",
+      "usernamePlaceholder": "user@example.com",
+      "passwordLabel": "パスワード",
+      "passwordPlaceholder": "••••••••",
+      "fromLabel": "送信元アドレス",
+      "fromPlaceholder": "notifications@example.com",
+      "fromDesc": "送信者として表示されるメールアドレス。",
+      "toLabel": "受信者アドレス",
+      "toPlaceholder": "admin@example.com",
+      "toDesc": "通知を受信するメールアドレス。"
+    },
+    "telegram": {
+      "sectionTitle": "Telegram Bot 設定",
+      "tokenLabel": "Bot Token",
+      "tokenPlaceholder": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
+      "tokenDesc": "<link>@BotFather</link> でボットを作成し、トークンをここに貼り付けてください。",
+      "chatIdLabel": "Chat ID / Channel Username",
+      "chatIdPlaceholder": "@my_channel_name or -1001234567890",
+      "chatIdDesc": "チャンネルのユーザー名（例: @my_channel）または数値の Chat ID。"
+    },
+    "toast": {
+      "testMessage": "これはテストメッセージです",
+      "fetchChannelsFailed": "通知チャネルの取得に失敗しました：{error}",
+      "saveSuccess": "設定を保存しました",
+      "saveFailed": "保存に失敗しました：{error}",
+      "testSuccess": "{name} のテストメッセージを送信しました",
+      "testFailed": "テスト送信に失敗しました：{error}",
+      "preferenceOn": "{label} を有効にしました",
+      "preferenceOff": "{label} を無効にしました",
+      "updateFailed": "更新に失敗しました：{error}",
+      "channelOn": "{name} の通知を有効にしました",
+      "channelOff": "{name} の通知を無効にしました",
+      "updateStatusFailed": "状態の更新に失敗しました：{error}"
+    },
+    "errors": {
+      "operationFailed": "操作に失敗しました",
+      "saveQqEmailFailed": "QQメール設定の保存に失敗しました",
+      "webhookRequired": "Webhook URL を入力してください",
+      "saveDingtalkFailed": "DingTalkボット設定の保存に失敗しました",
+      "testNotSupported": "このチャネルはまだテスト送信に対応していません",
+      "testFailed": "テスト送信に失敗しました",
+      "retryableHint": "。後でもう一度お試しください",
+      "updatePreferenceFailed": "通知設定の更新に失敗しました",
+      "toggleWechatFailed": "WeChat通知の切替に失敗しました",
+      "toggleQqEmailFailed": "QQメール通知の切替に失敗しました",
+      "toggleDingtalkFailed": "DingTalk通知の切替に失敗しました"
+    }
   }
 }
