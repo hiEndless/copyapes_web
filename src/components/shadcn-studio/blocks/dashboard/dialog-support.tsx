@@ -8,6 +8,7 @@ import { IconBrandWechat, IconBrandTelegram, IconMail, IconMessageChatbot, IconB
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Link } from '@/i18n/routing'
 
 export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
   const [activeContact, setActiveContact] = useState<'qq' | 'wechat' | 'telegram' | 'email'>('email')
@@ -179,23 +180,22 @@ export default function SupportDialog({ trigger }: { trigger?: ReactNode }) {
           <div className='shrink-0 overflow-hidden rounded-2xl border bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950'>
             <div className='flex flex-col'>
               {[
-                { label: '用户协议', href: 'https://docs.lichaoyuan.com/copyapes/protocol' },
-                { label: '简易跟单流程', href: 'https://docs.lichaoyuan.com/copyapes/step' },
-                { label: '币coin 跟单介绍', href: 'https://docs.lichaoyuan.com/copyapes/vip/bicoin' },
-                { label: 'Cookie 跟单介绍', href: 'https://docs.lichaoyuan.com/copyapes/vip/cookie' },
-                { label: 'API 跟单介绍', href: 'https://docs.lichaoyuan.com/copyapes/vip/ws' },
-                { label: '如何获取交易所 Cookie', href: 'https://docs.lichaoyuan.com/copyapes/other/add-cookie' },
-                { label: '交易所跟单抢位介绍', href: 'https://docs.lichaoyuan.com/copyapes/other/grab' }
+                { label: '用户协议', href: '/terms' },
+                { label: '简易跟单流程', href: '/docs/step' },
+                { label: '币coin 跟单介绍', href: '/docs/vip/bicoin' },
+                { label: 'Cookie 跟单介绍', href: '/docs/vip/cookie' },
+                { label: 'API 跟单介绍', href: '/docs/vip/ws' },
+                { label: '如何获取交易所 Cookie', href: '/docs/other/add-cookie' },
+                { label: '交易所跟单抢位介绍', href: '/docs/other/grab' }
               ].map((item, index) => (
-                <a
+                <Link
                   key={index}
                   href={item.href}
-                  target='_blank'
                   className='flex items-center justify-between border-b border-zinc-100 px-5 py-3.5 transition-colors last:border-0 hover:bg-zinc-50 dark:border-zinc-800/80 dark:hover:bg-zinc-900'
                 >
                   <span className='text-[15px] text-zinc-700 dark:text-zinc-300'>{item.label}</span>
                   <ExternalLink className='size-4 text-zinc-400 dark:text-zinc-500' />
-                </a>
+                </Link>
               ))}
             </div>
           </div>

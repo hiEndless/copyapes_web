@@ -90,7 +90,7 @@ const HeroSection = ({ posts }: { posts: PostMetadata[] }) => {
                 <CardContent className='flex h-full flex-col gap-6'>
                   <div className='overflow-hidden rounded-md'>
                     <img
-                      src={post.image}
+                      src={post.coverImage ?? post.image}
                       alt={post.title}
                       className='h-65 w-full object-cover transition-transform duration-300 group-hover:scale-105 max-lg:h-full max-sm:h-50 sm:max-lg:max-h-65'
                     />
@@ -143,7 +143,7 @@ const HeroSection = ({ posts }: { posts: PostMetadata[] }) => {
                     </div>
                     <div className='overflow-hidden rounded-md'>
                       <img
-                        src={post.image}
+                        src={post.coverImage ?? post.image}
                         alt={post.title}
                         className='h-50 w-full rounded-md object-cover transition-transform duration-300 group-hover:scale-105 sm:size-30'
                       />

@@ -12,6 +12,16 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'cdn.shadcnstudio.com',
         pathname: '/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'raw.githubusercontent.com',
+        pathname: '/hiEndless/copyapes_content/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'static.copyapes.com',
+        pathname: '/content/**'
       }
     ]
   },

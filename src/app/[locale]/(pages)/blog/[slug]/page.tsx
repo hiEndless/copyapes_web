@@ -36,7 +36,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params
   const t = await getTranslations({ locale, namespace: 'BlogMetadata' })
-  const post = await getPostBySlug(slug)
+  const post = await getPostBySlug(slug, locale)
 
   if (!post) {
     return {}
@@ -52,7 +52,7 @@ export async function generateMetadata({
   }
 }
 
-export const dynamicParams = false
+export const dynamicParams = true
 
 export async function generateStaticParams() {
   const posts = await getPosts()
@@ -64,9 +64,9 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
   const { locale, slug } = await params
   const t = await getTranslations({ locale, namespace: 'BlogMetadata' })
   const siteT = await getTranslations({ locale, namespace: 'Metadata' })
-  const posts = await getPosts()
+  const posts = await getPosts(undefined, locale)
 
-  const post = await getPostBySlug(slug)
+  const post = await getPostBySlug(slug, locale)
 
   if (!post) {
     notFound()
@@ -100,7 +100,7 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
     title: metadata.title ?? slug,
     description: metadata.description ?? siteT('description'),
     slug: metadata.slug,
-    image: metadata.image,
+    image: metadata.coverImage ?? metadata.image,
     publishedAt: metadata.publishedAt,
     authorName: metadata.author?.name
   })
@@ -169,7 +169,13 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
               </div>
             </div>
 
-            <img src={metadata.image} alt={metadata.title} className='mb-16 max-h-110 w-full rounded-xl object-cover' />
+            {(metadata.coverImage ?? metadata.image) ? (
+              <img
+                src={metadata.coverImage ?? metadata.image}
+                alt={metadata.title}
+                className='mb-16 max-h-110 w-full rounded-xl object-cover'
+              />
+            ) : null}
 
             <MDXContent source={content} />
 

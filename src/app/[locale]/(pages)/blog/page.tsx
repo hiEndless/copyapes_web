@@ -29,7 +29,7 @@ const BlogPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
   const { locale } = await params
   const t = await getTranslations({ locale, namespace: 'BlogMetadata' })
   const siteT = await getTranslations({ locale, namespace: 'Metadata' })
-  const blogPosts = await getPosts()
+  const blogPosts = await getPosts(undefined, locale)
   const featuredPosts = blogPosts.filter(post => post.featured)
   const jsonLd = buildBlogPageJsonLd({
     locale,

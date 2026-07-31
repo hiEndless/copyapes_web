@@ -99,10 +99,7 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link
-                  href='https://docs.lichaoyuan.com/copyapes/step'
-                  className='hover:text-foreground transition-colors duration-300'
-                >
+                <Link href='/docs/step' className='hover:text-foreground transition-colors duration-300'>
                   {t('tutorial')}
                 </Link>
               </li>

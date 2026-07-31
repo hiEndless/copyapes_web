@@ -14,13 +14,14 @@
 - Home: https://copyapes.com/
 - About: https://copyapes.com/about
 - Blog: https://copyapes.com/blog
+- Docs: https://copyapes.com/docs
 - Privacy Policy: https://copyapes.com/privacy
 - Terms of Service: https://copyapes.com/terms
 - Chinese home: https://copyapes.com/zh
 
 ## Docs
-- Tutorial: https://docs.lichaoyuan.com/copyapes/step
-- Product protocol: https://docs.lichaoyuan.com/copyapes/protocol
+- Tutorial: https://copyapes.com/docs/step
+- Product protocol: https://copyapes.com/terms
 
 ## Contact
 - Email: service@copyapes.com

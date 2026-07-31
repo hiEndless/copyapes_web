@@ -29,7 +29,7 @@ const RelatedBlogSection = ({ posts }: { posts: PostMetadata[] }) => {
                 <CardContent className='flex h-full flex-col gap-3.5'>
                   <div className='mb-2.5 overflow-hidden rounded-lg'>
                     <img
-                      src={post.image}
+                      src={post.coverImage ?? post.image}
                       alt={post.title}
                       className='h-59.5 w-full object-cover transition-transform duration-300 group-hover:scale-105'
                     />

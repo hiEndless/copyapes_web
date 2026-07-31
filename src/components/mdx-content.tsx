@@ -48,7 +48,18 @@ const components: MDXRemoteProps['components'] = {
   li: ({ children }) => <li className='text-muted-foreground mt-2'>{children}</li>,
   hr: () => <hr className='my-8 border-0' />,
   pre: ({ children }) => <pre className='bg-muted my-6 overflow-x-auto rounded-lg p-4'>{children}</pre>,
-  code: ({ children }) => <code className='bg-muted rounded font-mono text-sm'>{children}</code>
+  code: ({ children }) => <code className='bg-muted rounded font-mono text-sm'>{children}</code>,
+  a: ({ href, children }) => (
+    <a href={href} className='text-primary underline-offset-4 hover:underline' rel='noopener noreferrer'>
+      {children}
+    </a>
+  ),
+  img: ({ src, alt }) => (
+    <img src={src} alt={alt ?? ''} className='my-6 max-h-110 w-full rounded-xl object-cover' />
+  ),
+  blockquote: ({ children }) => (
+    <blockquote className='text-muted-foreground border-l-2 pl-4 italic'>{children}</blockquote>
+  )
 }
 
 const MDXContent = (props: JSX.IntrinsicAttributes & MDXRemoteProps) => {
