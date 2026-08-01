@@ -22,6 +22,11 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'static.copyapes.com',
         pathname: '/content/**'
+      },
+      {
+        protocol: 'https',
+        hostname: 'r2.lichaoyuan.com',
+        pathname: '/**'
       }
     ]
   },

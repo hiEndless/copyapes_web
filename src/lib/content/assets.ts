@@ -76,6 +76,15 @@ export async function resolveAssetRef(ref: string | undefined, locale: ContentLo
   for (const key of candidateManifestKeys(assetKey, locale)) {
     const entry = manifest[key]
 
+    // Local/dev: prefer sibling content files so empty/broken CDN does not break preview.
+    if (entry?.local_path) {
+      const root = getLocalContentRoot()
+
+      if (root && existsSync(join(root, entry.local_path))) {
+        return toServableUrl(entry.local_path)
+      }
+    }
+
     if (entry?.url) {
       return entry.url
     }
