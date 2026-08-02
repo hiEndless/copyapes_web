@@ -20,7 +20,17 @@
       "카피 트레이딩",
       "암호화폐",
       "CopyApes"
-    ]
+    ],
+    "writtenBy": "작성자",
+    "readTime": "읽는 시간",
+    "postedOn": "게시일",
+    "previousPost": "이전 글",
+    "nextPost": "다음 글",
+    "onThisPage": "이 페이지 목차",
+    "relatedEyebrow": "관련 글",
+    "relatedTitle": "관련 포스트",
+    "relatedDescription": "함께 읽으면 좋은 글을 모았습니다.",
+    "readMore": "더 읽기: {title}"
   },
   "BlogSection": {
     "badge": "블로그",

@@ -1,6 +1,10 @@
+'use client'
+
 import { ArrowRightIcon, CalendarDaysIcon } from 'lucide-react'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { Link } from '@/i18n/routing'
+import { localeToDateLocale } from '@/i18n/locales'
 
 import { Badge } from '@/components/ui/badge'
 import { SecondaryFlowButton } from '@/components/ui/flow-button'
@@ -9,19 +13,20 @@ import { Card, CardContent } from '@/components/ui/card'
 import type { PostMetadata } from '@/lib/posts'
 
 const RelatedBlogSection = ({ posts }: { posts: PostMetadata[] }) => {
+  const t = useTranslations('BlogMetadata')
+  const locale = useLocale()
+
   return (
     <section className='pt-8 sm:pt-16 lg:pt-24'>
       <div className='mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:space-y-16 lg:px-8'>
-        {/* Header */}
         <div className='space-y-4 text-center'>
-          <p className='text-sm font-medium uppercase'>Related blogs</p>
+          <p className='text-sm font-medium uppercase'>{t('relatedEyebrow')}</p>
 
-          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>Related Post</h2>
+          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('relatedTitle')}</h2>
 
-          <p className='text-muted-foreground text-xl'>Expand your knowledge with these hand-picked posts.</p>
+          <p className='text-muted-foreground text-xl'>{t('relatedDescription')}</p>
         </div>
 
-        {/* Blog Grid */}
         <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
           {posts.map(post => (
             <Link key={post.slug} href={`/blog/${post.slug}`}>
@@ -39,11 +44,13 @@ const RelatedBlogSection = ({ posts }: { posts: PostMetadata[] }) => {
                     <div className='text-muted-foreground flex items-center gap-1.5'>
                       <CalendarDaysIcon className='size-4.5' />
                       <span className='text-muted-foreground'>
-                        {new Date(post.publishedAt ?? '').toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: '2-digit'
-                        })}
+                        {post.publishedAt
+                          ? new Date(post.publishedAt).toLocaleDateString(localeToDateLocale(locale), {
+                              year: 'numeric',
+                              month: 'long',
+                              day: '2-digit'
+                            })
+                          : ''}
                       </span>
                     </div>
                     <Badge className='bg-primary/10 text-primary rounded-full text-sm'>{post.category}</Badge>
@@ -55,7 +62,7 @@ const RelatedBlogSection = ({ posts }: { posts: PostMetadata[] }) => {
                     <p className='text-sm font-medium'>{post.author?.name}</p>
                     <SecondaryFlowButton size='icon'>
                       <ArrowRightIcon className='size-4 -rotate-45' />
-                      <span className='sr-only'>Read more: {post.title}</span>
+                      <span className='sr-only'>{t('readMore', { title: post.title })}</span>
                     </SecondaryFlowButton>
                   </div>
                 </CardContent>

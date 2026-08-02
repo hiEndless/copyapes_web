@@ -6,6 +6,7 @@ import { getTranslations } from 'next-intl/server'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
 import { Link } from '@/i18n/routing'
+import { localeToDateLocale } from '@/i18n/locales'
 
 import {
   Breadcrumb,
@@ -25,7 +26,6 @@ import { Separator } from '@/components/ui/separator'
 
 import RelatedBlogSection from '@/components/blog/related-blog-section/related-blog-section'
 import SectionSeparator from '@/components/section-separator'
-import CTASection from '@/components/blocks/cta/cta'
 import { SecondaryFlowButton } from '@/components/ui/flow-button'
 import { buildAlternates, buildBlogPostingJsonLd, jsonLdScriptProps } from '@/lib/seo'
 
@@ -91,6 +91,14 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
   // Extract headings for TOC
   const headings = extractHeadings(content)
 
+  const publishedLabel = metadata.publishedAt
+    ? new Date(metadata.publishedAt).toLocaleDateString(localeToDateLocale(locale), {
+        year: 'numeric',
+        month: 'long',
+        day: '2-digit'
+      })
+    : ''
+
   const jsonLd = buildBlogPostingJsonLd({
     locale,
     siteName: siteT('siteName'),
@@ -118,13 +126,13 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
               <BreadcrumbList>
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href='/'>Home</Link>
+                    <Link href='/'>{t('home')}</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link href='/blog'>Blog</Link>
+                    <Link href='/blog'>{t('title')}</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator />
@@ -147,25 +155,19 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
                   <AvatarFallback>{metadata.author?.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div className='flex flex-col text-sm'>
-                  <span className='text-muted-foreground mb-1'>Written by</span>
+                  <span className='text-muted-foreground mb-1'>{t('writtenBy')}</span>
                   <span className='font-medium'>{metadata.author?.name}</span>
                 </div>
               </div>
 
               <div className='flex flex-col text-sm'>
-                <span className='text-muted-foreground mb-1.5'>Read Time</span>
+                <span className='text-muted-foreground mb-1.5'>{t('readTime')}</span>
                 <span className='font-medium'>{metadata.readTime}</span>
               </div>
 
               <div className='flex flex-col text-sm'>
-                <span className='text-muted-foreground mb-1.5'>Posted on</span>
-                <span className='font-medium'>
-                  {new Date(metadata.publishedAt ?? '').toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: '2-digit'
-                  })}
-                </span>
+                <span className='text-muted-foreground mb-1.5'>{t('postedOn')}</span>
+                <span className='font-medium'>{publishedLabel}</span>
               </div>
             </div>
 
@@ -184,25 +186,25 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
                 <SecondaryFlowButton asChild size='lg'>
                   <Link href={`/blog/${previousPost.slug}`}>
                     <ChevronLeftIcon className='max-sm:hidden' />
-                    Previous Post
+                    {t('previousPost')}
                   </Link>
                 </SecondaryFlowButton>
               ) : (
                 <SecondaryFlowButton size='lg' className='pointer-events-none opacity-50'>
                   <ChevronLeftIcon className='max-sm:hidden' />
-                  Previous Post
+                  {t('previousPost')}
                 </SecondaryFlowButton>
               )}
               {nextPost ? (
                 <SecondaryFlowButton asChild size='lg'>
                   <Link href={`/blog/${nextPost.slug}`}>
-                    Next Post
+                    {t('nextPost')}
                     <ChevronRightIcon className='max-sm:hidden' />
                   </Link>
                 </SecondaryFlowButton>
               ) : (
                 <SecondaryFlowButton size='lg' className='pointer-events-none opacity-50'>
-                  Next Post
+                  {t('nextPost')}
                   <ChevronRightIcon className='max-sm:hidden' />
                 </SecondaryFlowButton>
               )}
@@ -213,9 +215,9 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
 
       <SectionSeparator />
 
-      <RelatedBlogSection posts={relatedPosts} />
-
-      {/*<CTASection />*/}
+      <div className="mb-16">
+        <RelatedBlogSection posts={relatedPosts} />
+      </div>
 
       <script {...jsonLdScriptProps(jsonLd)} />
     </>

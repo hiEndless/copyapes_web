@@ -47,3 +47,19 @@ export function localeToGoogleSignInLocale(locale: string): string {
       return 'en'
   }
 }
+
+/** BCP 47 tag for `toLocaleDateString` / `Intl` formatting. */
+export function localeToDateLocale(locale: string): string {
+  switch (locale) {
+    case 'zh':
+      return 'zh-CN'
+    case 'zh-TW':
+      return 'zh-TW'
+    case 'ja':
+      return 'ja-JP'
+    case 'ko':
+      return 'ko-KR'
+    default:
+      return 'en-US'
+  }
+}

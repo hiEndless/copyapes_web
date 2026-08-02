@@ -20,7 +20,17 @@
       "コピートレード",
       "暗号資産",
       "CopyApes"
-    ]
+    ],
+    "writtenBy": "著者",
+    "readTime": "読了時間",
+    "postedOn": "公開日",
+    "previousPost": "前の記事",
+    "nextPost": "次の記事",
+    "onThisPage": "このページの目次",
+    "relatedEyebrow": "関連記事",
+    "relatedTitle": "関連ポスト",
+    "relatedDescription": "あわせて読みたい記事をピックアップしました。",
+    "readMore": "続きを読む：{title}"
   },
   "BlogSection": {
     "badge": "ブログ",

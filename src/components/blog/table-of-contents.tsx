@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 
 import { CircleIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Link } from '@/i18n/routing'
 
@@ -53,6 +54,7 @@ function buildTocTree(headings: { slug: string; text: string; depth: number }[])
 }
 
 const TableOfContents = ({ headings }: TableOfContentsProps) => {
+  const t = useTranslations('BlogMetadata')
   const [activeId, setActiveId] = useState<string>('')
   const groupedHeadings = buildTocTree(headings)
 
@@ -141,7 +143,7 @@ const TableOfContents = ({ headings }: TableOfContentsProps) => {
 
   return (
     <div className='sticky top-20 hidden max-h-[calc(100vh-5rem)] md:block'>
-      <div className='mb-4 text-sm font-semibold'>On This Page</div>
+      <div className='mb-4 text-sm font-semibold'>{t('onThisPage')}</div>
       <ScrollArea className='h-[calc(100vh-8rem)]'>
         <nav>
           <ul className='flex list-none flex-col gap-y-3'>{renderTocItems(groupedHeadings)}</ul>

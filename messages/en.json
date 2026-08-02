@@ -20,7 +20,17 @@
       "copy trading",
       "crypto",
       "CopyApes"
-    ]
+    ],
+    "writtenBy": "Written by",
+    "readTime": "Read Time",
+    "postedOn": "Posted on",
+    "previousPost": "Previous Post",
+    "nextPost": "Next Post",
+    "onThisPage": "On This Page",
+    "relatedEyebrow": "Related blogs",
+    "relatedTitle": "Related Post",
+    "relatedDescription": "Expand your knowledge with these hand-picked posts.",
+    "readMore": "Read more: {title}"
   },
   "BlogSection": {
     "badge": "Blog",

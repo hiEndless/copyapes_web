@@ -21,7 +21,17 @@
       "加密貨幣",
       "CopyApes",
       "跟單猿"
-    ]
+    ],
+    "writtenBy": "作者",
+    "readTime": "閱讀時長",
+    "postedOn": "發布日期",
+    "previousPost": "上一篇",
+    "nextPost": "下一篇",
+    "onThisPage": "本頁目錄",
+    "relatedEyebrow": "相關文章",
+    "relatedTitle": "繼續閱讀",
+    "relatedDescription": "精選相關文章，幫你擴展閱讀。",
+    "readMore": "閱讀更多：{title}"
   },
   "BlogSection": {
     "badge": "博客",
