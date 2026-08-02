@@ -6,7 +6,7 @@ import { getTranslations } from 'next-intl/server'
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react'
 
 import { Link } from '@/i18n/routing'
-import { localeToDateLocale } from '@/i18n/locales'
+import { localeToDateLocale, localeToOgLocale } from '@/i18n/locales'
 
 import {
   Breadcrumb,
@@ -20,14 +20,14 @@ import MDXContent from '@/components/mdx-content'
 import TableOfContents from '@/components/blog/table-of-contents'
 
 import { getPostBySlug, getPosts } from '@/lib/posts'
-import { extractHeadings } from '@/lib/extract-headings'
+import { extractFaqsFromMarkdown, extractHeadings } from '@/lib/extract-headings'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Separator } from '@/components/ui/separator'
 
 import RelatedBlogSection from '@/components/blog/related-blog-section/related-blog-section'
 import SectionSeparator from '@/components/section-separator'
 import { SecondaryFlowButton } from '@/components/ui/flow-button'
-import { buildAlternates, buildBlogPostingJsonLd, jsonLdScriptProps } from '@/lib/seo'
+import { buildAlternates, buildBlogPostingJsonLd, getCanonicalUrl, jsonLdScriptProps, toSchemaDate } from '@/lib/seo'
 
 export async function generateMetadata({
   params
@@ -36,6 +36,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale, slug } = await params
   const t = await getTranslations({ locale, namespace: 'BlogMetadata' })
+  const siteT = await getTranslations({ locale, namespace: 'Metadata' })
   const post = await getPostBySlug(slug, locale)
 
   if (!post) {
@@ -43,12 +44,43 @@ export async function generateMetadata({
   }
 
   const { metadata } = post
+  const path = `/blog/${metadata.slug}`
+  const publishedTime = toSchemaDate(metadata.publishedAt)
+  const modifiedTime = toSchemaDate(metadata.updatedAt || metadata.publishedAt)
+  const cover = metadata.coverImage ?? metadata.image
 
   return {
     title: t('postTitle', { title: metadata.title ?? slug }),
     description: metadata.description ?? t('description'),
     keywords: metadata.keywords,
-    alternates: buildAlternates(`/blog/${metadata.slug}`, locale)
+    alternates: buildAlternates(path, locale),
+    openGraph: {
+      type: 'article',
+      title: metadata.title ?? slug,
+      description: metadata.description ?? t('description'),
+      url: getCanonicalUrl(path, locale),
+      siteName: siteT('siteName'),
+      locale: localeToOgLocale(locale),
+      ...(publishedTime ? { publishedTime } : {}),
+      ...(modifiedTime ? { modifiedTime } : {}),
+      authors: metadata.author?.name ? [metadata.author.name] : undefined,
+      images: cover
+        ? [
+            {
+              url: cover,
+              width: 1200,
+              height: 630,
+              alt: metadata.title ?? slug
+            }
+          ]
+        : undefined
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: metadata.title ?? slug,
+      description: metadata.description ?? t('description'),
+      images: cover ? [cover] : undefined
+    }
   }
 }
 
@@ -90,6 +122,7 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
 
   // Extract headings for TOC
   const headings = extractHeadings(content)
+  const faqs = extractFaqsFromMarkdown(content)
 
   const publishedLabel = metadata.publishedAt
     ? new Date(metadata.publishedAt).toLocaleDateString(localeToDateLocale(locale), {
@@ -110,7 +143,9 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
     slug: metadata.slug,
     image: metadata.coverImage ?? metadata.image,
     publishedAt: metadata.publishedAt,
-    authorName: metadata.author?.name
+    updatedAt: metadata.updatedAt,
+    authorName: metadata.author?.name,
+    faqs
   })
 
   return (

@@ -48,6 +48,42 @@ function uniqueSlug(base: string, seen: Map<string, number>): string {
   return count === 0 ? base : `${base}-${count}`
 }
 
+/**
+ * Extract FAQ pairs from markdown sections titled FAQ / 常见问题 / よくある質問 / 자주 묻는 질문.
+ * Expects ### Question headings followed by answer paragraphs until the next heading.
+ */
+export function extractFaqsFromMarkdown(content: string): Array<{ question: string; answer: string }> {
+  const headingRegex = /^##\s+(?:FAQ|常见问题|常見問題|よくある質問|자주 묻는 질문)\s*$/gim
+  const headingMatch = headingRegex.exec(content)
+
+  if (!headingMatch) {
+    return []
+  }
+
+  const sectionStart = headingMatch.index + headingMatch[0].length
+  const rest = content.slice(sectionStart)
+  const nextHeading = rest.search(/^##\s+/m)
+  const section = (nextHeading === -1 ? rest : rest.slice(0, nextHeading)).trim()
+  const faqs: Array<{ question: string; answer: string }> = []
+  const parts = section.split(/^###\s+/m).slice(1)
+
+  for (const part of parts) {
+    const newline = part.indexOf('\n')
+    const question = (newline === -1 ? part : part.slice(0, newline)).trim()
+    const answer = (newline === -1 ? '' : part.slice(newline + 1))
+      .replace(/^\s*>\s?/gm, '')
+      .replace(/\*\*/g, '')
+      .replace(/\n+/g, ' ')
+      .trim()
+
+    if (question && answer) {
+      faqs.push({ question, answer })
+    }
+  }
+
+  return faqs
+}
+
 /** Flatten MDX/React heading children into plain text for slug generation. */
 export function headingTextFromChildren(children: unknown): string {
   if (typeof children === 'string' || typeof children === 'number') {

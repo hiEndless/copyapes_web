@@ -148,6 +148,11 @@ export function buildHomePageJsonLd(options: {
       logo: `${siteUrl}/site_logo/logo-small.png`,
       description: options.description,
       email: 'service@copyapes.com',
+      sameAs: [
+        'https://t.me/copyapes_admin',
+        'https://t.me/copyapes_cn',
+        `${siteUrl}/about`
+      ],
       contactPoint: {
         '@type': 'ContactPoint',
         email: 'service@copyapes.com',
@@ -223,6 +228,20 @@ export function buildBlogPageJsonLd(options: {
   }
 }
 
+export function toSchemaDate(value?: string): string | undefined {
+  if (!value) {
+    return undefined
+  }
+
+  const date = new Date(value)
+
+  if (Number.isNaN(date.getTime())) {
+    return undefined
+  }
+
+  return date.toISOString()
+}
+
 export function buildBlogPostingJsonLd(options: {
   locale: string
   siteName: string
@@ -234,57 +253,90 @@ export function buildBlogPostingJsonLd(options: {
   slug: string
   image?: string
   publishedAt?: string
+  updatedAt?: string
   authorName?: string
+  faqs?: Array<{ question: string; answer: string }>
 }) {
   const siteUrl = getSiteUrl()
   const pageUrl = getCanonicalUrl(`/blog/${options.slug}`, options.locale)
   const blogUrl = getCanonicalUrl('/blog', options.locale)
   const homeUrl = getCanonicalUrl('/', options.locale)
+  const aboutUrl = getCanonicalUrl('/about', options.locale)
+  const datePublished = toSchemaDate(options.publishedAt)
+  const dateModified = toSchemaDate(options.updatedAt || options.publishedAt)
   const imageUrl = options.image
     ? options.image.startsWith('http')
       ? options.image
       : `${siteUrl}${options.image}`
     : undefined
 
+  const graph: Record<string, unknown>[] = [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}#website`,
+      name: options.siteName,
+      description: options.siteDescription,
+      url: siteUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      publisher: { '@id': `${siteUrl}#organization` }
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}#organization`,
+      name: options.siteName,
+      url: siteUrl,
+      logo: `${siteUrl}/site_logo/logo-small.png`,
+      sameAs: ['https://t.me/copyapes_admin', 'https://t.me/copyapes_cn', aboutUrl]
+    },
+    {
+      '@type': 'BlogPosting',
+      '@id': `${pageUrl}#article`,
+      headline: options.title,
+      description: options.description,
+      url: pageUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      ...(imageUrl ? { image: [imageUrl] } : {}),
+      ...(datePublished ? { datePublished } : {}),
+      ...(dateModified ? { dateModified } : {}),
+      author: options.authorName
+        ? {
+            '@type': 'Person',
+            name: options.authorName,
+            url: aboutUrl
+          }
+        : { '@id': `${siteUrl}#organization` },
+      publisher: { '@id': `${siteUrl}#organization` },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+      isPartOf: { '@id': `${blogUrl}#blog` }
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: options.homeLabel, item: homeUrl },
+        { '@type': 'ListItem', position: 2, name: options.blogLabel, item: blogUrl },
+        { '@type': 'ListItem', position: 3, name: options.title, item: pageUrl }
+      ]
+    }
+  ]
+
+  if (options.faqs && options.faqs.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: options.faqs.map(faq => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer
+        }
+      }))
+    })
+  }
+
   return {
     '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebSite',
-        '@id': `${siteUrl}#website`,
-        name: options.siteName,
-        description: options.siteDescription,
-        url: siteUrl,
-        inLanguage: localeToLanguageTag(options.locale)
-      },
-      {
-        '@type': 'BlogPosting',
-        '@id': `${pageUrl}#article`,
-        headline: options.title,
-        description: options.description,
-        url: pageUrl,
-        ...(imageUrl ? { image: [imageUrl] } : {}),
-        ...(options.publishedAt ? { datePublished: options.publishedAt } : {}),
-        author: options.authorName
-          ? { '@type': 'Person', name: options.authorName }
-          : { '@type': 'Organization', name: options.siteName },
-        publisher: {
-          '@type': 'Organization',
-          name: options.siteName,
-          url: siteUrl
-        },
-        mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
-        isPartOf: { '@id': `${blogUrl}#blog` }
-      },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: options.homeLabel, item: homeUrl },
-          { '@type': 'ListItem', position: 2, name: options.blogLabel, item: blogUrl },
-          { '@type': 'ListItem', position: 3, name: options.title, item: pageUrl }
-        ]
-      }
-    ]
+    '@graph': graph
   }
 }
 
