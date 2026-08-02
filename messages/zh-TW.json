@@ -31,12 +31,33 @@
     "relatedEyebrow": "相關文章",
     "relatedTitle": "繼續閱讀",
     "relatedDescription": "精選相關文章，幫你擴展閱讀。",
-    "readMore": "閱讀更多：{title}"
+    "readMore": "閱讀更多：{title}",
+    "pageHeading": "跟單猿博客",
+    "intro": "關於加密貨幣跟單的實戰觀察：交易員激勵、平台機制、延遲風險，以及 CopyApes 產品動態。",
+    "topicsHeading": "我們寫什麼",
+    "topicsBody": "聚焦跟單風險、交易所實操，以及如何評估「高手」——避免把展示帳戶誤當成中立策略。",
+    "listHeading": "最新文章",
+    "listIntro": "以下為服務端渲染的文章索引，便於閱讀與檢索。點擊標題查看全文。",
+    "citationNote": "建議先讀跟單虧錢第一課，再結合用戶協議與關於頁了解產品邊界。",
+    "faqHeading": "常見問題",
+    "faq1q": "跟單猿博客主要寫什麼？",
+    "faq1a": "涵蓋加密貨幣跟單風險、交易員行為、平台機制，以及 CopyApes 產品更新。",
+    "faq2q": "這是投資建議嗎？",
+    "faq2a": "不是。文章為觀察與科普，請獨立決策並自行風控。",
+    "faq3q": "最新精選文章在哪裡？",
+    "faq3a": "見本頁「最新文章」列表，或打開 /blog/copy-trading-loss-lesson-1 閱讀系列第一課。"
   },
   "BlogSection": {
     "badge": "博客",
     "title": "跟單猿博客",
-    "description": "從入門到進階：跟單技巧、交易所實操與產品動態，一站看懂。"
+    "description": "從入門到進階：跟單技巧、交易所實操與產品動態，一站看懂。",
+    "allCategory": "全部",
+    "searchLabel": "搜尋",
+    "searchPlaceholder": "搜尋文章",
+    "emptyTitle": "未找到文章",
+    "emptySearch": "在「{category}」中沒有匹配「{query}」的結果。",
+    "emptyCategory": "「{category}」分類下暫無文章。",
+    "clearSearch": "清除搜尋"
   },
   "Metadata": {
     "titleTemplate": "%s - 跟單猿 CopyApes",

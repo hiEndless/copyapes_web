@@ -3,9 +3,10 @@
 import { useState } from 'react'
 
 import { SearchIcon, ArrowRightIcon, CalendarDaysIcon } from 'lucide-react'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { Link } from '@/i18n/routing'
+import { localeToDateLocale } from '@/i18n/locales'
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -23,10 +24,13 @@ const BlogGrid = ({
   posts: PostMetadata[]
   onCategoryClick: (category: string) => void
 }) => {
+  const locale = useLocale()
+  const dateLocale = localeToDateLocale(locale)
+
   return (
     <div className='grid gap-6 sm:grid-cols-2 lg:grid-cols-3'>
       {posts.map((post, index) => (
-        <Card key={index} className='group h-full overflow-hidden shadow-none transition-all duration-300'>
+        <Card key={post.slug || index} className='group h-full overflow-hidden shadow-none transition-all duration-300'>
           <CardContent className='flex h-full flex-col gap-3.5'>
             <Link href={`/blog/${post.slug}`} className='mb-2.5 overflow-hidden rounded-lg'>
               <img
@@ -39,11 +43,13 @@ const BlogGrid = ({
               <div className='text-muted-foreground flex items-center gap-1.5'>
                 <CalendarDaysIcon className='size-4.5' />
                 <span className='text-muted-foreground'>
-                  {new Date(post.publishedAt ?? '').toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: '2-digit'
-                  })}
+                  {post.publishedAt
+                    ? new Date(post.publishedAt).toLocaleDateString(dateLocale, {
+                        year: 'numeric',
+                        month: 'long',
+                        day: '2-digit'
+                      })
+                    : ''}
                 </span>
               </div>
               <Badge
@@ -110,23 +116,8 @@ const BlogSection = ({ posts }: { posts: PostMetadata[] }) => {
   })
 
   return (
-    <section className='pt-8 sm:pt-16 lg:pt-24'>
-      <div className='mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:space-y-16 lg:px-8'>
-        {/* Header */}
-        <MotionPreset
-          fade
-          slide={{ direction: 'down', offset: 50 }}
-          blur
-          transition={{ duration: 0.5 }}
-          className='space-y-4 text-center'
-        >
-          <p className='text-sm font-medium uppercase'>{t('badge')}</p>
-
-          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
-
-          <p className='text-muted-foreground mx-auto max-w-3xl text-xl'>{t('description')}</p>
-        </MotionPreset>
-
+    <section className='pt-8 sm:pt-12 lg:pt-16'>
+      <div className='mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:space-y-12 lg:px-8'>
         {/* Tabs and Search */}
         <Tabs value={selectedTab} onValueChange={handleTabChange} className='gap-8 lg:gap-16'>
           <MotionPreset fade slide={{ direction: 'down' }} transition={{ duration: 0.5 }} inView={false} delay={0.2}>
@@ -139,7 +130,7 @@ const BlogSection = ({ posts }: { posts: PostMetadata[] }) => {
                       value={category}
                       className='hover:bg-primary/10 dark:data-[state=active]:bg-background dark:data-[state=active]:border-background min-w-30 cursor-pointer px-4 text-base'
                     >
-                      {category}
+                      {category === 'All' ? t('allCategory') : category}
                     </TabsTrigger>
                   ))}
                 </TabsList>
@@ -149,11 +140,11 @@ const BlogSection = ({ posts }: { posts: PostMetadata[] }) => {
               <div className='relative w-full max-w-82 max-md:w-full max-md:max-w-89'>
                 <div className='text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center justify-center pl-3 peer-disabled:opacity-50'>
                   <SearchIcon className='size-4' />
-                  <span className='sr-only'>Search</span>
+                  <span className='sr-only'>{t('searchLabel')}</span>
                 </div>
                 <Input
                   type='search'
-                  placeholder='Search insights'
+                  placeholder={t('searchPlaceholder')}
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   className='peer h-10 ps-9 [&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none'
@@ -172,16 +163,16 @@ const BlogSection = ({ posts }: { posts: PostMetadata[] }) => {
                   <div className='text-muted-foreground flex min-h-100 flex-col items-center justify-center space-y-4 rounded-lg border border-dashed p-8 text-center'>
                     <SearchIcon className='size-12 opacity-50' />
                     <div className='space-y-2'>
-                      <h3 className='text-foreground text-lg font-medium'>No posts found</h3>
+                      <h3 className='text-foreground text-lg font-medium'>{t('emptyTitle')}</h3>
                       <p className='text-sm'>
                         {searchQuery
-                          ? `No results in "${category}" for "${searchQuery}".`
-                          : `No posts in "${category}" category yet.`}
+                          ? t('emptySearch', { category, query: searchQuery })
+                          : t('emptyCategory', { category })}
                       </p>
                     </div>
                     {searchQuery && (
                       <SecondaryFlowButton size='sm' onClick={() => setSearchQuery('')}>
-                        Clear search
+                        {t('clearSearch')}
                       </SecondaryFlowButton>
                     )}
                   </div>

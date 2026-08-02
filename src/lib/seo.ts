@@ -201,30 +201,105 @@ export function buildBlogPageJsonLd(options: {
   siteDescription: string
   pageTitle: string
   pageDescription: string
+  publishedAt?: string
+  updatedAt?: string
+  posts?: Array<{
+    title: string
+    description?: string
+    slug: string
+    publishedAt?: string
+    updatedAt?: string
+    authorName?: string
+  }>
+  faqs?: Array<{ question: string; answer: string }>
 }) {
   const siteUrl = getSiteUrl()
   const pageUrl = getCanonicalUrl('/blog', options.locale)
+  const aboutUrl = getCanonicalUrl('/about', options.locale)
+  const datePublished = toSchemaDate(options.publishedAt)
+  const dateModified = toSchemaDate(options.updatedAt || options.publishedAt)
+
+  const graph: Record<string, unknown>[] = [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}#website`,
+      name: options.siteName,
+      description: options.siteDescription,
+      url: siteUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      publisher: { '@id': `${siteUrl}#organization` }
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}#organization`,
+      name: options.siteName,
+      url: siteUrl,
+      logo: `${siteUrl}/site_logo/logo-small.png`,
+      email: 'service@copyapes.com',
+      sameAs: ['https://t.me/copyapes_admin', 'https://t.me/copyapes_cn', aboutUrl]
+    },
+    {
+      '@type': 'CollectionPage',
+      '@id': `${pageUrl}#webpage`,
+      name: options.pageTitle,
+      description: options.pageDescription,
+      url: pageUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      isPartOf: { '@id': `${siteUrl}#website` },
+      about: { '@id': `${siteUrl}#organization` },
+      publisher: { '@id': `${siteUrl}#organization` },
+      author: { '@id': `${siteUrl}#organization` },
+      ...(datePublished ? { datePublished } : {}),
+      ...(dateModified ? { dateModified } : {})
+    }
+  ]
+
+  if (options.posts && options.posts.length > 0) {
+    graph.push({
+      '@type': 'ItemList',
+      '@id': `${pageUrl}#itemlist`,
+      name: options.pageTitle,
+      numberOfItems: options.posts.length,
+      itemListElement: options.posts.map((post, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: getCanonicalUrl(`/blog/${post.slug}`, options.locale),
+        name: post.title,
+        item: {
+          '@type': 'BlogPosting',
+          headline: post.title,
+          description: post.description,
+          url: getCanonicalUrl(`/blog/${post.slug}`, options.locale),
+          ...(toSchemaDate(post.publishedAt) ? { datePublished: toSchemaDate(post.publishedAt) } : {}),
+          ...(toSchemaDate(post.updatedAt || post.publishedAt)
+            ? { dateModified: toSchemaDate(post.updatedAt || post.publishedAt) }
+            : {}),
+          author: post.authorName
+            ? { '@type': 'Person', name: post.authorName }
+            : { '@id': `${siteUrl}#organization` }
+        }
+      }))
+    })
+  }
+
+  if (options.faqs && options.faqs.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: options.faqs.map(faq => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer
+        }
+      }))
+    })
+  }
 
   return {
     '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'WebSite',
-        '@id': `${siteUrl}#website`,
-        name: options.siteName,
-        description: options.siteDescription,
-        url: siteUrl,
-        inLanguage: localeToLanguageTag(options.locale)
-      },
-      {
-        '@type': 'CollectionPage',
-        '@id': `${pageUrl}#webpage`,
-        name: options.pageTitle,
-        description: options.pageDescription,
-        url: pageUrl,
-        isPartOf: { '@id': `${siteUrl}#website` }
-      }
-    ]
+    '@graph': graph
   }
 }
 
