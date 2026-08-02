@@ -98,11 +98,6 @@ const Footer = () => {
                   {t('terms')}
                 </Link>
               </li>
-              <li>
-                <Link href='/docs/step' className='hover:text-foreground transition-colors duration-300'>
-                  {t('tutorial')}
-                </Link>
-              </li>
             </ul>
           </div>
 

@@ -12,9 +12,8 @@ const PRIVATE_PATHS = [
   '/reset-password'
 ] as const
 
-/** AI search + training crawlers explicitly allowed (same private-path policy as *). */
+/** Explicit Allow-only rules for AI bots (avoids false “blocked” from private Disallow lines). */
 const AI_CRAWLERS = [
-  // Search / answer engines
   'OAI-SearchBot',
   'Claude-SearchBot',
   'PerplexityBot',
@@ -22,13 +21,11 @@ const AI_CRAWLERS = [
   'Bingbot',
   'DuckAssistBot',
   'Applebot',
-  // User-triggered fetchers
   'ChatGPT-User',
   'Claude-User',
   'Perplexity-User',
   'meta-externalfetcher',
   'MistralAI-User',
-  // Training crawlers
   'GPTBot',
   'ClaudeBot',
   'Google-Extended',
@@ -59,19 +56,16 @@ function localizedPrivatePaths(): string[] {
 }
 
 export default function robots(): MetadataRoute.Robots {
-  const disallow = localizedPrivatePaths()
-
   return {
     rules: [
       {
         userAgent: '*',
         allow: '/',
-        disallow
+        disallow: localizedPrivatePaths()
       },
       ...AI_CRAWLERS.map(userAgent => ({
         userAgent,
-        allow: '/',
-        disallow
+        allow: '/'
       }))
     ],
     sitemap: `${getSiteUrl()}/sitemap.xml`
