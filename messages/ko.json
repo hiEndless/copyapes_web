@@ -30,21 +30,7 @@
     "relatedEyebrow": "관련 글",
     "relatedTitle": "관련 포스트",
     "relatedDescription": "함께 읽으면 좋은 글을 모았습니다.",
-    "readMore": "더 읽기: {title}",
-    "pageHeading": "CopyApes 블로그",
-    "intro": "암호화폐 카피 트레이딩 실전 노트: 트레이더 인센티브, 플랫폼 메커니즘, 지연 리스크, CopyApes 제품 업데이트.",
-    "topicsHeading": "다루는 주제",
-    "topicsBody": "카피 리스크, 거래소 실무, “고수” 평가의 함정(공개 계좌≠중립 전략)에 초점을 둡니다.",
-    "listHeading": "최신 글",
-    "listIntro": "서버에서 렌더링된 글 목록입니다. 제목을 눌러 전문을 읽으세요.",
-    "citationNote": "먼저 손실 1강을 읽고, 이용약관과 About에서 제품 경계를 확인하세요.",
-    "faqHeading": "자주 묻는 질문",
-    "faq1q": "CopyApes 블로그는 무엇에 관한가요?",
-    "faq1a": "카피 트레이딩 리스크, 트레이더 행동, 플랫폼 메커니즘, 제품 업데이트를 다룹니다.",
-    "faq2q": "투자 자문인가요?",
-    "faq2a": "아닙니다. 관찰과 설명이며, 판단과 리스크 관리는 스스로 해야 합니다.",
-    "faq3q": "최신 추천 글은 어디에 있나요?",
-    "faq3a": "이 페이지의 최신 글 목록 또는 /blog/copy-trading-loss-lesson-1을 보세요."
+    "readMore": "더 읽기: {title}"
   },
   "BlogSection": {
     "badge": "블로그",

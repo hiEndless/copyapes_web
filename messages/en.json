@@ -30,21 +30,7 @@
     "relatedEyebrow": "Related blogs",
     "relatedTitle": "Related Post",
     "relatedDescription": "Expand your knowledge with these hand-picked posts.",
-    "readMore": "Read more: {title}",
-    "pageHeading": "CopyApes Blog",
-    "intro": "Practical notes on crypto copy trading: trader incentives, platform mechanics, latency risk, and product updates from CopyApes.",
-    "topicsHeading": "What we write about",
-    "topicsBody": "We focus on copy-trading risk, exchange workflows, and how to evaluate “top traders” without mistaking display accounts for neutral strategies.",
-    "listHeading": "Latest articles",
-    "listIntro": "Server-rendered article index for readers and AI crawlers. Open any title for the full analysis.",
-    "citationNote": "Start with our copy-trading loss lesson, then review the User Agreement and About page for product context.",
-    "faqHeading": "FAQ",
-    "faq1q": "What is the CopyApes blog about?",
-    "faq1a": "It covers crypto copy-trading risks, trader behavior, platform mechanics, and CopyApes product updates.",
-    "faq2q": "Is this investment advice?",
-    "faq2a": "No. Articles are educational and observational. Always decide independently and manage your own risk.",
-    "faq3q": "Where can I read the latest featured post?",
-    "faq3a": "See the Latest articles list on this page, or open /blog/copy-trading-loss-lesson-1 for the first lesson in the series."
+    "readMore": "Read more: {title}"
   },
   "BlogSection": {
     "badge": "Blog",

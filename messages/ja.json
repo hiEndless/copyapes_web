@@ -30,21 +30,7 @@
     "relatedEyebrow": "関連記事",
     "relatedTitle": "関連ポスト",
     "relatedDescription": "あわせて読みたい記事をピックアップしました。",
-    "readMore": "続きを読む：{title}",
-    "pageHeading": "CopyApes ブログ",
-    "intro": "暗号資産コピートレードの実践ノート：トレーダー動機、プラットフォーム機構、遅延リスク、CopyApes の製品アップデート。",
-    "topicsHeading": "扱うテーマ",
-    "topicsBody": "コピー取引リスク、取引所オペレーション、「強者」評価の落とし穴（公開口座≠中立戦略）に焦点を当てます。",
-    "listHeading": "最新記事",
-    "listIntro": "サーバー描画の記事インデックスです。タイトルから全文へ進めます。",
-    "citationNote": "まず損失レッスン第1回を読み、利用規約と About で製品境界を確認してください。",
-    "faqHeading": "よくある質問",
-    "faq1q": "CopyApes ブログの内容は？",
-    "faq1a": "コピートレードのリスク、トレーダー行動、プラットフォーム機構、製品更新を扱います。",
-    "faq2q": "投資助言ですか？",
-    "faq2a": "いいえ。観察と解説です。判断とリスク管理はご自身で行ってください。",
-    "faq3q": "最新の注目記事は？",
-    "faq3a": "本ページの最新記事一覧、または /blog/copy-trading-loss-lesson-1 をご覧ください。"
+    "readMore": "続きを読む：{title}"
   },
   "BlogSection": {
     "badge": "ブログ",
