@@ -340,6 +340,90 @@ export function buildBlogPostingJsonLd(options: {
   }
 }
 
+export function buildLegalPageJsonLd(options: {
+  locale: string
+  siteName: string
+  siteDescription: string
+  homeLabel: string
+  pageTitle: string
+  pageDescription: string
+  path: '/terms' | '/privacy'
+  publishedAt?: string
+  updatedAt?: string
+  version?: string | number
+  faqs?: Array<{ question: string; answer: string }>
+}) {
+  const siteUrl = getSiteUrl()
+  const pageUrl = getCanonicalUrl(options.path, options.locale)
+  const homeUrl = getCanonicalUrl('/', options.locale)
+  const aboutUrl = getCanonicalUrl('/about', options.locale)
+  const datePublished = toSchemaDate(options.publishedAt)
+  const dateModified = toSchemaDate(options.updatedAt || options.publishedAt)
+
+  const graph: Record<string, unknown>[] = [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}#website`,
+      name: options.siteName,
+      description: options.siteDescription,
+      url: siteUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      publisher: { '@id': `${siteUrl}#organization` }
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}#organization`,
+      name: options.siteName,
+      url: siteUrl,
+      logo: `${siteUrl}/site_logo/logo-small.png`,
+      email: 'service@copyapes.com',
+      sameAs: ['https://t.me/copyapes_admin', 'https://t.me/copyapes_cn', aboutUrl]
+    },
+    {
+      '@type': 'WebPage',
+      '@id': `${pageUrl}#webpage`,
+      url: pageUrl,
+      name: options.pageTitle,
+      description: options.pageDescription,
+      inLanguage: localeToLanguageTag(options.locale),
+      isPartOf: { '@id': `${siteUrl}#website` },
+      about: { '@id': `${siteUrl}#organization` },
+      publisher: { '@id': `${siteUrl}#organization` },
+      author: { '@id': `${siteUrl}#organization` },
+      ...(datePublished ? { datePublished } : {}),
+      ...(dateModified ? { dateModified } : {}),
+      ...(options.version ? { version: String(options.version) } : {})
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: options.homeLabel, item: homeUrl },
+        { '@type': 'ListItem', position: 2, name: options.pageTitle, item: pageUrl }
+      ]
+    }
+  ]
+
+  if (options.faqs && options.faqs.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: options.faqs.map(faq => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer
+        }
+      }))
+    })
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': graph
+  }
+}
+
 export function jsonLdScriptProps(data: unknown) {
   return {
     type: 'application/ld+json' as const,

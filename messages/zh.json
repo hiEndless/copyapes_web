@@ -342,7 +342,9 @@
       "title": "9. 政策更新",
       "body": "我们可能适时更新本政策。更新后将在本页面公布并修改「最后更新」日期。重大变更时，我们可能通过网站公告等方式通知您。继续使用我们的服务即表示您接受更新后的政策。",
       "items": []
-    }
+    },
+    "updatedLabel": "最后更新：{date}",
+    "versionLabel": "版本 {version}"
   },
   "Footer": {
     "desc": "自由组合不同交易所的顶级带单员，平衡收益和风险，打造专属您个人的跟单策略，让全球顶级交易员为你打工。",
@@ -418,7 +420,9 @@
         "items": []
       }
     },
-    "fullProtocol": "查看完整产品协议文档"
+    "fullProtocol": "查看完整产品协议文档",
+    "updatedLabel": "最后更新：{date}",
+    "versionLabel": "版本 {version}"
   },
   "DashboardShell": {
     "groups": {

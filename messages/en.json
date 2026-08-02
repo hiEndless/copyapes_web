@@ -340,7 +340,9 @@
       "title": "9. Policy Updates",
       "body": "We may update this policy from time to time. Updates will be posted on this page with a revised \"Last updated\" date. For material changes, we may notify you via website announcements. Continued use of our services means you accept the updated policy.",
       "items": []
-    }
+    },
+    "updatedLabel": "Last updated: {date}",
+    "versionLabel": "Version {version}"
   },
   "Footer": {
     "desc": "Freely combine top lead traders from different exchanges, balance return and risk, create your exclusive copy trading strategy, and let the world's top traders work for you.",
@@ -416,7 +418,9 @@
         "items": []
       }
     },
-    "fullProtocol": "View the full product protocol"
+    "fullProtocol": "View the full product protocol",
+    "updatedLabel": "Last updated: {date}",
+    "versionLabel": "Version {version}"
   },
   "DashboardShell": {
     "groups": {
