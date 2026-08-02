@@ -16,6 +16,18 @@ function isPublished(status: string | undefined): boolean {
   return status === 'published'
 }
 
+function toIsoDateString(value: unknown): string {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (value instanceof Date && !Number.isNaN(value.getTime())) {
+    return value.toISOString().slice(0, 10)
+  }
+
+  return ''
+}
+
 function normalizeMetadata(data: Record<string, unknown>, slug: string): ContentMetadata {
   const authorRaw = data.author
 
@@ -50,8 +62,8 @@ function normalizeMetadata(data: Record<string, unknown>, slug: string): Content
     sourceLocale: typeof data.source_locale === 'string' ? data.source_locale : undefined,
     translationSource: typeof data.translation_source === 'string' ? data.translation_source : undefined,
     translationStatus: data.translation_status as ContentMetadata['translationStatus'],
-    publishedAt: typeof data.published_at === 'string' ? data.published_at : '',
-    updatedAt: typeof data.updated_at === 'string' ? data.updated_at : '',
+    publishedAt: toIsoDateString(data.published_at),
+    updatedAt: toIsoDateString(data.updated_at),
     status: (data.status as ContentStatus) || 'draft'
   }
 }
@@ -130,22 +142,26 @@ async function loadDocument(
       continue
     }
 
-    const { data, content } = matter(fileContent)
-    const metadata = normalizeMetadata(data as Record<string, unknown>, slug)
+    try {
+      const { data, content } = matter(fileContent)
+      const metadata = normalizeMetadata(data as Record<string, unknown>, slug)
 
-    if (!isPublished(metadata.status)) {
-      continue
-    }
+      if (!isPublished(metadata.status)) {
+        continue
+      }
 
-    const hydrated = await hydrateMetadata(metadata, locale)
-    const resolvedContent = await resolveAssetRefsInMarkdown(content, locale)
+      const hydrated = await hydrateMetadata(metadata, locale)
+      const resolvedContent = await resolveAssetRefsInMarkdown(content, locale)
 
-    return {
-      metadata: hydrated,
-      content: resolvedContent,
-      type,
-      locale,
-      path: fullPath
+      return {
+        metadata: hydrated,
+        content: resolvedContent,
+        type,
+        locale,
+        path: fullPath
+      }
+    } catch (error) {
+      console.error('Failed to parse content document:', fullPath, error)
     }
   }
 

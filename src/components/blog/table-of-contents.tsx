@@ -106,8 +106,8 @@ const TableOfContents = ({ headings }: TableOfContentsProps) => {
   }
 
   const renderTocItems = (items: TocItem[], depth: number = 0) => {
-    return items.map(item => (
-      <li key={item.slug}>
+    return items.map((item, index) => (
+      <li key={item.slug || `${depth}-${index}-${item.text}`}>
         <Link
           href={`#${item.slug}`}
           onClick={e => handleClick(e, item.slug)}

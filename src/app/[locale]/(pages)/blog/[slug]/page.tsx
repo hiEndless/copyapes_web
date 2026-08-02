@@ -215,7 +215,7 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
 
       <RelatedBlogSection posts={relatedPosts} />
 
-      <CTASection />
+      {/*<CTASection />*/}
 
       <script {...jsonLdScriptProps(jsonLd)} />
     </>

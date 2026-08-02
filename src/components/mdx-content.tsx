@@ -3,22 +3,12 @@ import type { JSX } from 'react'
 import { MDXRemote, type MDXRemoteProps } from 'next-mdx-remote-client/rsc'
 
 import CompareTable from '@/components/mdx/compare-table'
-
-// Helper function to generate slug from text
-function generateSlug(text: string): string {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w\-]+/g, '')
-    .replace(/\-\-+/g, '-')
-}
+import { generateSlug, headingTextFromChildren } from '@/lib/extract-headings'
 
 const components: MDXRemoteProps['components'] = {
   h1: ({ children }) => <h1 className='text-4xl font-bold'>{children}</h1>,
   h2: ({ children }) => {
-    const slug = generateSlug(children as string)
+    const slug = generateSlug(headingTextFromChildren(children))
 
     return (
       <h2 id={slug} className='mt-6 scroll-mt-20 text-3xl font-semibold'>
@@ -27,7 +17,7 @@ const components: MDXRemoteProps['components'] = {
     )
   },
   h3: ({ children }) => {
-    const slug = generateSlug(children as string)
+    const slug = generateSlug(headingTextFromChildren(children))
 
     return (
       <h3 id={slug} className='mt-4 scroll-mt-20 text-xl font-medium'>
@@ -36,7 +26,7 @@ const components: MDXRemoteProps['components'] = {
     )
   },
   h4: ({ children }) => {
-    const slug = generateSlug(children as string)
+    const slug = generateSlug(headingTextFromChildren(children))
 
     return (
       <h4 id={slug} className='mt-4 scroll-mt-20 text-lg font-medium'>
