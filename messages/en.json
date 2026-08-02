@@ -22,6 +22,11 @@
       "CopyApes"
     ]
   },
+  "BlogSection": {
+    "badge": "Blog",
+    "title": "CopyApes Blog",
+    "description": "From beginner to advanced: copy trading tips, exchange walkthroughs, and product updates—all in one place."
+  },
   "Metadata": {
     "titleTemplate": "%s - CopyApes",
     "titleDefault": "CopyApes - Cross-Exchange Crypto Copy Trading",

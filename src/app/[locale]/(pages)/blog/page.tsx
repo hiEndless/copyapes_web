@@ -41,13 +41,15 @@ const BlogPage = async ({ params }: { params: Promise<{ locale: string }> }) => 
 
   return (
     <>
-      <HeroSection posts={featuredPosts} />
+      {/*<HeroSection posts={featuredPosts} />*/}
 
-      <SectionSeparator />
+      {/*<SectionSeparator />*/}
 
-      <BlogSection posts={blogPosts} />
+      <div className="mb-16">
+        <BlogSection posts={blogPosts} />
+      </div>
 
-      <CTASection />
+      {/*<CTASection />*/}
 
       <script {...jsonLdScriptProps(jsonLd)} />
     </>

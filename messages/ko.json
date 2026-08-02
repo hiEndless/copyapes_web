@@ -22,6 +22,11 @@
       "CopyApes"
     ]
   },
+  "BlogSection": {
+    "badge": "블로그",
+    "title": "CopyApes 블로그",
+    "description": "입문부터 심화까지. 카피 트레이딩 팁, 거래소 실전, 제품 소식을 한곳에서 확인하세요."
+  },
   "Metadata": {
     "titleTemplate": "%s - CopyApes",
     "titleDefault": "CopyApes - 거래소 간 암호화폐 카피 트레이딩",

@@ -23,6 +23,11 @@
       "跟單猿"
     ]
   },
+  "BlogSection": {
+    "badge": "博客",
+    "title": "跟單猿博客",
+    "description": "從入門到進階：跟單技巧、交易所實操與產品動態，一站看懂。"
+  },
   "Metadata": {
     "titleTemplate": "%s - 跟單猿 CopyApes",
     "titleDefault": "跟單猿 - 跨交易所自動跟單助手",

@@ -37,7 +37,7 @@ function normalizeMetadata(data: Record<string, unknown>, slug: string): Content
     slug: typeof data.slug === 'string' ? data.slug : slug,
     title: typeof data.title === 'string' ? data.title : slug,
     description: typeof data.description === 'string' ? data.description : '',
-    category: (data.category as ContentMetadata['category']) || 'blog',
+    category: (data.category as ContentMetadata['category']) || 'Blog',
     tags: Array.isArray(data.tags) ? data.tags.filter((item): item is string => typeof item === 'string') : undefined,
     keywords: Array.isArray(data.keywords)
       ? data.keywords.filter((item): item is string => typeof item === 'string')

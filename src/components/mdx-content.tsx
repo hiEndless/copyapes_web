@@ -2,6 +2,8 @@ import type { JSX } from 'react'
 
 import { MDXRemote, type MDXRemoteProps } from 'next-mdx-remote-client/rsc'
 
+import CompareTable from '@/components/mdx/compare-table'
+
 // Helper function to generate slug from text
 function generateSlug(text: string): string {
   return text
@@ -58,8 +60,21 @@ const components: MDXRemoteProps['components'] = {
     <img src={src} alt={alt ?? ''} className='my-6 max-h-110 w-full rounded-xl object-cover' />
   ),
   blockquote: ({ children }) => (
-    <blockquote className='text-muted-foreground border-l-2 pl-4 italic'>{children}</blockquote>
-  )
+    <blockquote className='text-muted-foreground my-4 border-l-2 pl-4 italic'>{children}</blockquote>
+  ),
+  table: ({ children }) => (
+    <div className='border-border my-6 overflow-x-auto rounded-xl border'>
+      <table className='w-full min-w-[36rem] border-collapse text-left text-sm'>{children}</table>
+    </div>
+  ),
+  thead: ({ children }) => <thead className='bg-muted/60'>{children}</thead>,
+  tbody: ({ children }) => <tbody className='divide-border divide-y'>{children}</tbody>,
+  tr: ({ children }) => <tr className='even:bg-muted/20'>{children}</tr>,
+  th: ({ children }) => (
+    <th className='text-foreground px-4 py-3 text-sm font-semibold whitespace-nowrap'>{children}</th>
+  ),
+  td: ({ children }) => <td className='text-muted-foreground px-4 py-3 align-top leading-6'>{children}</td>,
+  CompareTable
 }
 
 const MDXContent = (props: JSX.IntrinsicAttributes & MDXRemoteProps) => {

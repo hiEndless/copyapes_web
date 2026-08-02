@@ -22,6 +22,11 @@
       "CopyApes"
     ]
   },
+  "BlogSection": {
+    "badge": "ブログ",
+    "title": "CopyApes ブログ",
+    "description": "入門から応用まで。コピートレードのコツ、取引所の実践、プロダクト情報をここでまとめて確認。"
+  },
   "Metadata": {
     "titleTemplate": "%s - CopyApes",
     "titleDefault": "CopyApes - 取引所横断型暗号資産コピートレード",

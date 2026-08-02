@@ -1,6 +1,6 @@
 export type ContentTypeDir = 'blog' | 'tutorials' | 'legal'
 
-export type ContentCategory = 'blog' | 'tutorial' | 'legal'
+export type ContentCategory = 'Blog' | 'tutorial' | 'legal'
 
 export type ContentStatus = 'draft' | 'review' | 'published' | 'archived'
 

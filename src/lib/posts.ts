@@ -41,5 +41,5 @@ export async function getPostMetadata(filepath: string, locale = 'en'): Promise<
   const slug = filepath.replace(/\.mdx$/, '')
   const post = await getPostBySlug(slug, locale)
 
-  return post?.metadata ?? { slug, title: slug, description: '', category: 'blog', publishedAt: '', updatedAt: '', status: 'draft', image: undefined }
+  return post?.metadata ?? { slug, title: slug, description: '', category: 'Blog', publishedAt: '', updatedAt: '', status: 'draft', image: undefined }
 }

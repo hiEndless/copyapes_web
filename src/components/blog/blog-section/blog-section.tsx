@@ -3,6 +3,7 @@
 import { useState } from 'react'
 
 import { SearchIcon, ArrowRightIcon, CalendarDaysIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { Link } from '@/i18n/routing'
 
@@ -79,6 +80,7 @@ const BlogGrid = ({
 }
 
 const BlogSection = ({ posts }: { posts: PostMetadata[] }) => {
+  const t = useTranslations('BlogSection')
   const [selectedTab, setSelectedTab] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
 
@@ -118,14 +120,11 @@ const BlogSection = ({ posts }: { posts: PostMetadata[] }) => {
           transition={{ duration: 0.5 }}
           className='space-y-4 text-center'
         >
-          <p className='text-sm font-medium uppercase'>Blogs</p>
+          <p className='text-sm font-medium uppercase'>{t('badge')}</p>
 
-          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>Learn How High-Performing Products Grow</h2>
+          <h2 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h2>
 
-          <p className='text-muted-foreground mx-auto max-w-3xl text-xl'>
-            Actionable insights, real-world strategies, and product analytics lessons to help you track what matters,
-            move faster, and scale with confidence.
-          </p>
+          <p className='text-muted-foreground mx-auto max-w-3xl text-xl'>{t('description')}</p>
         </MotionPreset>
 
         {/* Tabs and Search */}
