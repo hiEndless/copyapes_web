@@ -116,8 +116,23 @@ const BlogSection = ({ posts }: { posts: PostMetadata[] }) => {
   })
 
   return (
-    <section className='pt-8 sm:pt-12 lg:pt-16'>
-      <div className='mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:space-y-12 lg:px-8'>
+    <section className='pt-8 sm:pt-16 lg:pt-24'>
+      <div className='mx-auto max-w-7xl space-y-8 px-4 sm:px-6 lg:space-y-16 lg:px-8'>
+        {/* Header */}
+        <MotionPreset
+          fade
+          slide={{ direction: 'down', offset: 50 }}
+          blur
+          transition={{ duration: 0.5 }}
+          className='space-y-4 text-center'
+        >
+          <p className='text-sm font-medium uppercase'>{t('badge')}</p>
+
+          <h1 className='text-2xl font-semibold md:text-3xl lg:text-4xl'>{t('title')}</h1>
+
+          <p className='text-muted-foreground mx-auto max-w-3xl text-xl'>{t('description')}</p>
+        </MotionPreset>
+
         {/* Tabs and Search */}
         <Tabs value={selectedTab} onValueChange={handleTabChange} className='gap-8 lg:gap-16'>
           <MotionPreset fade slide={{ direction: 'down' }} transition={{ duration: 0.5 }} inView={false} delay={0.2}>
