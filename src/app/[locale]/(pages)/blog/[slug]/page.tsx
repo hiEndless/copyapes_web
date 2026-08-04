@@ -26,7 +26,8 @@ import { Separator } from '@/components/ui/separator'
 
 import RelatedBlogSection from '@/components/blog/related-blog-section/related-blog-section'
 import SectionSeparator from '@/components/section-separator'
-import { SecondaryFlowButton } from '@/components/ui/flow-button'
+import { buttonVariants } from '@/components/ui/button'
+import { cn } from '@/lib/utils'
 import { buildAlternates, buildBlogPostingJsonLd, getCanonicalUrl, jsonLdScriptProps, toSchemaDate } from '@/lib/seo'
 
 export async function generateMetadata({
@@ -218,30 +219,36 @@ const BlogDetailsPage = async ({ params }: { params: Promise<{ locale: string; s
 
             <div className='flex items-center justify-between gap-4 pt-8 sm:pt-16'>
               {previousPost ? (
-                <SecondaryFlowButton asChild size='lg'>
-                  <Link href={`/blog/${previousPost.slug}`}>
-                    <ChevronLeftIcon className='max-sm:hidden' />
-                    {t('previousPost')}
-                  </Link>
-                </SecondaryFlowButton>
-              ) : (
-                <SecondaryFlowButton size='lg' className='pointer-events-none opacity-50'>
+                <Link
+                  href={`/blog/${previousPost.slug}`}
+                  className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'gap-2')}
+                >
                   <ChevronLeftIcon className='max-sm:hidden' />
                   {t('previousPost')}
-                </SecondaryFlowButton>
+                </Link>
+              ) : (
+                <span className='invisible' aria-hidden>
+                  <span className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'gap-2')}>
+                    <ChevronLeftIcon className='max-sm:hidden' />
+                    {t('previousPost')}
+                  </span>
+                </span>
               )}
               {nextPost ? (
-                <SecondaryFlowButton asChild size='lg'>
-                  <Link href={`/blog/${nextPost.slug}`}>
-                    {t('nextPost')}
-                    <ChevronRightIcon className='max-sm:hidden' />
-                  </Link>
-                </SecondaryFlowButton>
-              ) : (
-                <SecondaryFlowButton size='lg' className='pointer-events-none opacity-50'>
+                <Link
+                  href={`/blog/${nextPost.slug}`}
+                  className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'gap-2')}
+                >
                   {t('nextPost')}
                   <ChevronRightIcon className='max-sm:hidden' />
-                </SecondaryFlowButton>
+                </Link>
+              ) : (
+                <span className='invisible' aria-hidden>
+                  <span className={cn(buttonVariants({ variant: 'outline', size: 'lg' }), 'gap-2')}>
+                    {t('nextPost')}
+                    <ChevronRightIcon className='max-sm:hidden' />
+                  </span>
+                </span>
               )}
             </div>
           </div>
