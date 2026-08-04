@@ -86,7 +86,14 @@ export async function resolveAssetRef(ref: string | undefined, locale: ContentLo
     }
 
     if (entry?.url) {
-      return entry.url
+      // Same R2 key is overwritten on republish; bust CDN/browser cache with content hash.
+      const version = typeof entry.sha256 === 'string' ? entry.sha256.slice(0, 12) : ''
+      if (!version) {
+        return entry.url
+      }
+
+      const separator = entry.url.includes('?') ? '&' : '?'
+      return `${entry.url}${separator}v=${version}`
     }
 
     if (entry?.local_path) {
