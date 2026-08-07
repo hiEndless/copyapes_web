@@ -383,7 +383,9 @@
     "terms": "用户协议",
     "privacy": "隐私政策",
     "tutorial": "跟单教程",
-    "copyright": "Made with ❤️ by CopyApes."
+    "copyright": "Made with ❤️ by CopyApes.",
+    "riskNotice": "跟单猿是跟单技术工具，不是交易所或券商；资金留在您的交易所账户。合约与跟单交易风险极高，可能导致本金全部亏损。网站内容不构成投资建议。请自行确认所在地法规允许后再使用。详见",
+    "riskNoticeTerms": "用户协议"
   },
   "About": {
     "badge": "关于我们",
@@ -568,7 +570,9 @@
       "needEmail": "请先输入邮箱",
       "invalidEmail": "邮箱格式错误",
       "hasAccount": "已有账号？",
-      "login": "登录"
+      "login": "登录",
+      "riskAgree": "我已知晓：合约与跟单交易风险极高，可能导致本金全部亏损；跟单猿不是交易所/券商，不提供投资建议；我须自行遵守所在地法律法规。",
+      "needRiskAgree": "请先确认风险披露后再注册"
     },
     "forgot": {
       "title": "忘记密码",

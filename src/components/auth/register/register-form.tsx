@@ -60,6 +60,7 @@ const RegisterForm = () => {
   const [inviteCode, setInviteCode] = useState('')
   const [isInviteCodeLocked, setIsInviteCodeLocked] = useState(false)
   const [agreed, setAgreed] = useState(false)
+  const [riskAgreed, setRiskAgreed] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSendingCode, setIsSendingCode] = useState(false)
   const [codeCooldown, setCodeCooldown] = useState(0)
@@ -197,6 +198,12 @@ const RegisterForm = () => {
 
     if (!agreed) {
       toast.error(t('needAgree'))
+
+      return
+    }
+
+    if (!riskAgreed) {
+      toast.error(t('needRiskAgree'))
 
       return
     }
@@ -392,15 +399,15 @@ const RegisterForm = () => {
       </div>
 
       {/* Privacy policy */}
-      <div className='flex items-center gap-3'>
+      <div className='flex items-start gap-3'>
         <Checkbox
           id='rememberMe'
-          className='size-6'
+          className='mt-0.5 size-6'
           checked={agreed}
           onCheckedChange={(checked) => setAgreed(checked as boolean)}
           disabled={isLoading}
         />
-        <Label htmlFor='rememberMe' className='cursor-pointer font-normal'>
+        <Label htmlFor='rememberMe' className='cursor-pointer font-normal leading-snug'>
           {t('agreePrefix')}{' '}
           <Link href='/privacy' className='text-primary underline underline-offset-2' onClick={(e) => e.stopPropagation()}>
             {t('privacy')}
@@ -409,6 +416,19 @@ const RegisterForm = () => {
           <Link href='/terms' className='text-primary underline underline-offset-2' onClick={(e) => e.stopPropagation()}>
             {t('terms')}
           </Link>
+        </Label>
+      </div>
+
+      <div className='flex items-start gap-3'>
+        <Checkbox
+          id='riskAgree'
+          className='mt-0.5 size-6'
+          checked={riskAgreed}
+          onCheckedChange={(checked) => setRiskAgreed(checked as boolean)}
+          disabled={isLoading}
+        />
+        <Label htmlFor='riskAgree' className='cursor-pointer font-normal leading-snug'>
+          {t('riskAgree')}
         </Label>
       </div>
 

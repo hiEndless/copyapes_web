@@ -43,6 +43,13 @@ const Footer = () => {
               {`©${new Date().getFullYear()}`} {t('copyright')}
             </p>
           </div>
+          <p className='text-muted-foreground max-w-md text-left text-xs leading-relaxed text-balance'>
+            {t('riskNotice')}{' '}
+            <Link href='/terms' className='text-foreground/80 underline underline-offset-2 hover:text-foreground'>
+              {t('riskNoticeTerms')}
+            </Link>
+            .
+          </p>
         </div>
         <div className='col-span-full grid grid-cols-2 gap-6 sm:grid-cols-4 lg:col-span-4 lg:gap-8'>
           <div className='flex flex-col gap-5'>
