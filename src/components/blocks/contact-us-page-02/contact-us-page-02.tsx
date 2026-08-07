@@ -31,33 +31,38 @@ const ContactUs = () => {
                   </div>
 
                   <div className='space-y-7'>
-                    {/* wx */}
-                    <div className='flex items-start gap-4 text-lg font-semibold'>
-                      <IconBrandWechat className='size-7 shrink-0' />
-                      copyapes_admin
+                    <div className='space-y-1'>
+                      <p className='text-primary-foreground/80 text-xs font-medium tracking-wide uppercase'>
+                        {t('supportEn')}
+                      </p>
+                      <div className='flex items-start gap-4 text-lg font-semibold'>
+                        <IconBrandTelegram className='size-7 shrink-0' />
+                        <a className='text-lg font-semibold' href='https://t.me/copyapes_admin'>
+                          @copyapes_admin
+                        </a>
+                      </div>
+                      <div className='flex items-start gap-4'>
+                        <MailIcon className='size-7 shrink-0' />
+                        <a className='text-lg font-semibold' href='mailto:service@copyapes.com'>
+                          service@copyapes.com
+                        </a>
+                      </div>
                     </div>
 
-                    {/* Email */}
-                    <div className='flex items-start gap-4'>
-                      <MailIcon className='size-7 shrink-0' />
-                      <a className='text-lg font-semibold' href='mailto:service@copyapes.com'>
-                        service@copyapes.com
-                      </a>
-                    </div>
-
-                    {/* tg */}
-                    <div className='flex items-start gap-4 text-lg font-semibold'>
-                      <IconBrandTelegram className='size-7 shrink-0' />
-                      <a className='text-lg font-semibold' href='https://t.me/copyapes_admin'>
-                        @copyapes_admin
-                      </a>
-                    </div>
-
-                    <div className='flex items-start gap-4 text-lg font-semibold'>
-                      <IconBrandTelegram className='size-7 shrink-0' />
-                      <a className='text-lg font-semibold' href='https://t.me/copyapes_cn'>
-                        {t('joinTg')}
-                      </a>
+                    <div className='space-y-1'>
+                      <p className='text-primary-foreground/80 text-xs font-medium tracking-wide uppercase'>
+                        {t('supportCn')}
+                      </p>
+                      <div className='flex items-start gap-4 text-lg font-semibold'>
+                        <IconBrandWechat className='size-7 shrink-0' />
+                        <span>copyapes_admin</span>
+                      </div>
+                      <div className='flex items-start gap-4 text-lg font-semibold'>
+                        <IconBrandTelegram className='size-7 shrink-0' />
+                        <a className='text-lg font-semibold' href='https://t.me/copyapes_cn'>
+                          {t('joinTg')}
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

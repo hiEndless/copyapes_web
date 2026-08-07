@@ -70,6 +70,15 @@ export function ApiRiskDisclosureStep({ onNext }: ApiRiskDisclosureStepProps) {
         onScroll={checkScrollBottom}
         className='min-h-0 flex-1 overflow-y-auto px-6 py-4'
       >
+        <div className='border-border bg-muted/40 mb-4 rounded-lg border p-3'>
+          <p className='text-foreground mb-2 text-sm font-semibold'>{t('risk.checklistTitle')}</p>
+          <ul className='text-muted-foreground list-disc space-y-1.5 pl-4 text-xs leading-relaxed'>
+            <li>{t('risk.checklist1')}</li>
+            <li>{t('risk.checklist2')}</li>
+            <li>{t('risk.checklist3')}</li>
+            <li>{t('risk.checklist4')}</li>
+          </ul>
+        </div>
         <RiskItem
           index={1}
           highlight

@@ -197,6 +197,7 @@ export function PaymentMethodDialog({
           </div>
 
           <div className='border-border bg-muted/30 rounded-lg border p-3'>
+            <p className='text-muted-foreground mb-3 text-xs leading-relaxed'>{t('pay.intro')}</p>
             <p className='text-foreground mb-3 text-sm font-medium'>{t('pay.stepsTitle')}</p>
 
             <div className='text-foreground space-y-4 text-sm'>
@@ -205,6 +206,7 @@ export function PaymentMethodDialog({
                   {t('pay.step1Before', { exchange: exchangeLabelLocal })}{' '}
                   <span className='text-destructive font-semibold'>{amountUsdt}</span> USDT
                 </p>
+                <p className='text-muted-foreground mb-2 text-xs leading-relaxed'>{t('pay.step1Hint')}</p>
                 <div className='flex gap-2'>
                   <Input
                     readOnly
@@ -218,12 +220,18 @@ export function PaymentMethodDialog({
                 </div>
               </div>
 
-              <p className='text-muted-foreground leading-relaxed'>
-                {t('pay.step2', { exchange: exchangeLabel })}
-              </p>
+              <div>
+                <p className='text-muted-foreground leading-relaxed'>
+                  {t('pay.step2', { exchange: exchangeLabel })}
+                </p>
+                <p className='text-muted-foreground mt-1 text-xs leading-relaxed'>{t('pay.step2Hint')}</p>
+              </div>
 
               <div>
                 <p className='text-muted-foreground mb-2'>{t('pay.step3', { label: referenceIdLabel })}</p>
+                <p className='text-muted-foreground mb-2 text-xs leading-relaxed'>
+                  {exchange === 'binance' ? t('pay.step3HintBinance') : t('pay.step3HintOkx')}
+                </p>
                 <Input
                   value={referenceId}
                   onChange={e => setReferenceId(e.target.value)}
@@ -233,8 +241,9 @@ export function PaymentMethodDialog({
               </div>
             </div>
 
-            <div className='mt-4 rounded-md bg-amber-50 px-3 py-2 text-xs leading-relaxed text-foreground'>
-              {t('pay.tip')}
+            <div className='mt-4 rounded-md bg-amber-50 px-3 py-2 text-xs leading-relaxed text-foreground dark:bg-amber-950/40'>
+              <p>{t('pay.settlementNote')}</p>
+              <p className='mt-1'>{t('pay.tip')}</p>
             </div>
           </div>
         </div>

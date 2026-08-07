@@ -38,18 +38,36 @@ const Footer = () => {
           {/*    <YoutubeIcon className='text-muted-foreground hover:text-foreground size-5' />*/}
           {/*  </Link>*/}
           {/*</div>*/}
-          <div className='flex justify-start text-sm'>
-            <p className='text-muted-foreground text-left text-balance'>
-              {`©${new Date().getFullYear()}`} {t('copyright')}
+          <div className='flex flex-col gap-2'>
+            <div className='flex justify-start text-sm'>
+              <p className='text-muted-foreground text-left text-balance'>
+                {`©${new Date().getFullYear()}`} {t('copyright')}
+              </p>
+            </div>
+            <p className='text-muted-foreground max-w-md text-left text-xs leading-relaxed text-balance'>
+              {t('riskNotice')}{' '}
+              <Link href='/terms' className='text-foreground/80 underline underline-offset-2 hover:text-foreground'>
+                {t('riskNoticeTerms')}
+              </Link>
+              .
             </p>
+            <div className='text-muted-foreground flex flex-col gap-1 text-xs'>
+              <a
+                href='mailto:service@copyapes.com'
+                className='hover:text-foreground w-fit underline-offset-2 hover:underline'
+              >
+                {t('supportEmail')}: service@copyapes.com
+              </a>
+              <a
+                href='https://t.me/copyapes_admin'
+                target='_blank'
+                rel='noopener noreferrer'
+                className='hover:text-foreground w-fit underline-offset-2 hover:underline'
+              >
+                {t('supportTelegram')}: @copyapes_admin
+              </a>
+            </div>
           </div>
-          <p className='text-muted-foreground max-w-md text-left text-xs leading-relaxed text-balance'>
-            {t('riskNotice')}{' '}
-            <Link href='/terms' className='text-foreground/80 underline underline-offset-2 hover:text-foreground'>
-              {t('riskNoticeTerms')}
-            </Link>
-            .
-          </p>
         </div>
         <div className='col-span-full grid grid-cols-2 gap-6 sm:grid-cols-4 lg:col-span-4 lg:gap-8'>
           <div className='flex flex-col gap-5'>

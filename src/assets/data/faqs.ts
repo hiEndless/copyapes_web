@@ -2,7 +2,7 @@ import type { FAQs } from '@/components/blocks/faq/faq'
 import { useTranslations } from 'next-intl'
 import { getTranslations } from 'next-intl/server'
 
-const FAQ_KEYS = ['1', '2', '3', '4', '5', '6'] as const
+const FAQ_KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10'] as const
 
 function mapFaqItems(t: (key: string) => string): FAQs {
   return FAQ_KEYS.map(key => ({

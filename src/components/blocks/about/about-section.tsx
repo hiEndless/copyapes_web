@@ -29,6 +29,18 @@ const AboutSection = async ({ locale, compact = false }: AboutSectionProps) => {
         </div>
 
         {!compact ? (
+          <div className='border-border bg-muted/30 space-y-3 rounded-xl border p-4 sm:p-5'>
+            <h3 className='text-foreground text-lg font-semibold'>{t('trustTitle')}</h3>
+            <ul className='text-muted-foreground list-disc space-y-2 pl-5 leading-7'>
+              {(['trust1', 'trust2', 'trust3', 'trust4'] as const).map(key => (
+                <li key={key}>{t(key)}</li>
+              ))}
+            </ul>
+            <p className='text-muted-foreground text-sm leading-6'>{t('disclosure')}</p>
+          </div>
+        ) : null}
+
+        {!compact ? (
           <div className='space-y-3'>
             <h3 className='text-lg font-semibold'>{t('pointsTitle')}</h3>
             <ul className='text-muted-foreground list-disc space-y-2 pl-5 leading-7'>

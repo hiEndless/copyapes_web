@@ -253,6 +253,22 @@
     "6": {
       "q": "How secure is CopyApes?",
       "a": "The safety of users' funds and trading security is always our top priority. We provide security protection from several dimensions:\n1. Your funds stay in your own account. The API Key used by the platform only needs trading permissions; do not enable fund transfer permissions.\n2. Ensure you fill in the IP whitelist when creating the API Key.\n3. The platform uses bank-grade encryption algorithms to store API Key information securely.\n4. In terms of trading security, the platform has designed multiple strategy stop-loss checks to ensure that strategy funds can stop losses in time when encountering extreme market conditions."
+    },
+    "7": {
+      "q": "How do I pay for a plan?",
+      "a": "Plans are priced in USDT. Pay by internal transfer on Binance or OKX to the UID shown in the payment dialog, then submit the payment order ID (Binance) or reference number (OKX) for verification. Contact @copyapes_admin or service@copyapes.com if the transfer fails."
+    },
+    "8": {
+      "q": "Does CopyApes hold or transfer my funds?",
+      "a": "No. Funds stay in your exchange account. CopyApes only places futures orders via API permissions you grant. Never enable withdraw or transfer on the API key."
+    },
+    "9": {
+      "q": "Which exchanges can I bind for execution?",
+      "a": "You can bind execution accounts on OKX, Binance, Gate, Bitget, WEEX, and HTX. Lead-trader sources focus on major venues such as Binance and OKX; availability depends on the task type."
+    },
+    "10": {
+      "q": "What if copy trading is delayed or misses a fill?",
+      "a": "Latency, slippage, exchange outages, and network issues can delay or miss copies. Check task status and exchange fills first, then contact English support on Telegram @copyapes_admin or email service@copyapes.com."
     }
   },
   "Partners": {
@@ -264,8 +280,10 @@
     "title": "How Can We Help You?",
     "subtitle": "If you have any questions about the product or partnership inquiries, please contact us.",
     "contact": "Contact Us",
-    "desc": "Product Partnership / Community Partnership / Custom Development",
-    "joinTg": "Join Telegram Community"
+    "desc": "Product partnerships, community partnerships, custom development, and English customer support.",
+    "joinTg": "Chinese Telegram community",
+    "supportEn": "English support",
+    "supportCn": "Chinese channels"
   },
   "ContactForm": {
     "name": "How should we address you",
@@ -383,26 +401,34 @@
     "tutorial": "Copy Trading Tutorials",
     "copyright": "Made with ❤️ by CopyApes.",
     "riskNotice": "CopyApes is a copy-trading software tool, not an exchange or broker. Funds stay in your exchange account. Crypto futures and copy trading are high risk and may result in total loss. Content is not investment advice. Confirm that your local laws allow use before continuing. See",
-    "riskNoticeTerms": "Terms of Service"
+    "riskNoticeTerms": "Terms of Service",
+    "supportEmail": "Email support",
+    "supportTelegram": "Telegram (EN)"
   },
   "About": {
     "badge": "About",
     "title": "What is CopyApes",
     "subtitle": "A cross-exchange automated copy-trading assistant for crypto futures traders.",
-    "p1": "CopyApes helps users automatically follow selected traders' open and close actions through official exchange APIs. Funds always stay in your own exchange accounts. The platform does not custody funds and does not take a profit-share seat fee from your copy trades.",
+    "p1": "CopyApes is a copy-trading software tool. It follows selected traders' open and close actions through official exchange APIs. Funds always stay in your own exchange accounts. We do not custody assets, we are not an exchange or broker, and we do not take a profit-share seat fee from your copy trades.",
     "p2": "Unlike single-exchange built-in copy trading, CopyApes supports cross-platform following — for example, using an OKX account to follow a Binance lead trader, or combining multiple traders into one portfolio to diversify risk. The product is built for individual traders, lead-trader KOLs, and trading communities.",
     "p3": "Core capabilities include millisecond-to-second copy latency, multi-exchange support (Binance, OKX, Bybit, Bitget, Gate, HTX, HyperLiquid, and more), reverse copying, allow/deny lists, profit-condition copying, and private-domain Cookie/API workflows.",
-    "p4": "We offer a long-term free trial tier, plus product docs, FAQs, Privacy Policy, and Terms of Service on the website. For partnerships or support, use Contact Us or email service@copyapes.com.",
+    "p4": "We offer a free-trial tier, plus docs, FAQs, Privacy Policy, and Terms of Service. For English support use Telegram @copyapes_admin or email service@copyapes.com. Rankings, win rates, and marketing content are educational only—not investment advice.",
     "pointsTitle": "What you can learn here",
     "point1": "Product features and cross-exchange copy trading",
     "point2": "Pricing plans and free-trial scope",
-    "point3": "Security practices: trade-only API keys, IP allowlists, and encrypted storage",
-    "point4": "Contact channels, Privacy Policy, and Terms of Service",
+    "point3": "Security practices: trade-only API keys (no withdraw), IP allowlists, and encrypted storage",
+    "point4": "English support via Telegram/email, plus Privacy Policy and Terms of Service",
     "readMore": "Read the full overview",
     "metadata": {
       "title": "About",
       "description": "Learn about CopyApes: a cross-exchange automated futures copy-trading assistant, who it is for, and how to contact us."
-    }
+    },
+    "trustTitle": "Trust & safety at a glance",
+    "trust1": "Funds remain on your exchange; CopyApes never holds your crypto.",
+    "trust2": "API keys should enable trading only—never withdraw or transfer.",
+    "trust3": "We do not provide investment advice or guarantee returns.",
+    "trust4": "You must confirm that local laws allow crypto derivatives and copy trading before use.",
+    "disclosure": "Any partnership, affiliate, or referral relationships will be disclosed where relevant. Marketing and blog content must not be read as a promise of profit."
   },
   "TermsOfService": {
     "metadata": {
@@ -1138,7 +1164,12 @@
       },
       "agree": "I have read and agree to the above terms",
       "scrollFirst": "· Scroll to the bottom first",
-      "next": "Next: Enter API Key →"
+      "next": "Next: Enter API Key →",
+      "checklistTitle": "Security checklist before you bind",
+      "checklist1": "Enable Read + Futures Trading only — never Withdraw/Transfer.",
+      "checklist2": "Bind an IP allowlist on the exchange when possible.",
+      "checklist3": "Store secrets carefully; we encrypt API secrets at rest.",
+      "checklist4": "You can delete the key on the exchange anytime to stop copying."
     },
     "bind": {
       "title": "Connect API Key",
@@ -1418,11 +1449,17 @@
       "okxZh": "OKX",
       "orderId": "Payment order ID",
       "referenceNo": "Reference number",
-      "tip": "Tip: If you see transfer failed or network errors, contact us for help.",
+      "tip": "If you see transfer failed, network errors, or amount mismatch, contact Telegram @copyapes_admin or service@copyapes.com.",
       "close": "Close",
       "submit": "Submit verification",
       "submitSuccess": "Submitted. Transfer amount confirmed!",
-      "submitFailed": "Submit failed"
+      "submitFailed": "Submit failed",
+      "intro": "Pay with a Binance or OKX internal transfer in USDT. Exact amount required. After transfer, submit the reference for automatic verification.",
+      "step1Hint": "Use internal/UID transfer only (not on-chain deposit). Amount must match exactly.",
+      "step2Hint": "Open the successful transfer record on the exchange to copy the reference fields.",
+      "step3HintBinance": "On Binance, copy the Payment order ID from the transfer details.",
+      "step3HintOkx": "On OKX, copy the Reference number (or equivalent) from the transfer details.",
+      "settlementNote": "Verification usually completes shortly after a matching transfer is found. Keep the transfer receipt until confirmed."
     },
     "plans": {
       "free_vip": {
