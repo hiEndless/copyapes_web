@@ -32,6 +32,27 @@
     "relatedDescription": "あわせて読みたい記事をピックアップしました。",
     "readMore": "続きを読む：{title}"
   },
+  "Docs": {
+    "navDocs": "チュートリアル",
+    "navHome": "ホーム",
+    "navBlog": "ブログ",
+    "brandTitle": "CopyApes ドキュメント",
+    "search": "検索",
+    "searchPlaceholder": "検索...",
+    "searchTitle": "検索",
+    "searchMinChars": "3文字以上入力してください。",
+    "searching": "検索中...",
+    "noResults": "「{query}」に一致する結果はありません",
+    "toggleTheme": "テーマを切り替え",
+    "toggleLanguage": "言語を切り替え",
+    "menu": "メニュー",
+    "pageNavigation": "ページナビゲーション",
+    "onThisPage": "このページの目次",
+    "scrollToTop": "ページ上部へ",
+    "tableOfContents": "目次",
+    "emptyDocs": "公開中のドキュメントはありません。",
+    "pageDescription": "CopyApes の製品チュートリアルとガイド。"
+  },
   "BlogSection": {
     "badge": "ブログ",
     "title": "CopyApes ブログ",
@@ -71,6 +92,7 @@
     "testimonials": "ユーザーの声",
     "pricing": "料金",
     "faq": "FAQ",
+    "blog": "ブログ",
     "contact": "お問い合わせ"
   },
   "Logo": {
@@ -358,7 +380,7 @@
     "about": "会社概要",
     "terms": "利用規約",
     "privacy": "プライバシーポリシー",
-    "tutorial": "チュートリアル",
+    "tutorial": "コピートレードガイド",
     "copyright": "Made with ❤️ by CopyApes."
   },
   "About": {

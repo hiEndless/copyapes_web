@@ -1,18 +1,20 @@
 export const docsNavigations = [
   {
-    title: 'Docs',
+    titleKey: 'navDocs',
     href: '/docs'
   },
   {
-    title: 'Home',
+    titleKey: 'navHome',
     href: '/',
     external: false
   },
   {
-    title: 'Blog',
+    titleKey: 'navBlog',
     href: '/blog'
   }
 ] as const
+
+export type DocsNavigationTitleKey = (typeof docsNavigations)[number]['titleKey']
 
 /** Client-safe defaults; mirrors content github.ts fallbacks. */
 export function getDocsGithubLink() {
@@ -29,7 +31,6 @@ export function getDocsGithubLink() {
 }
 
 export const docsBrand = {
-  title: 'CopyApes Docs',
   name: 'CopyApes',
   link: 'https://copyapes.com',
   siteicon: '/site_logo/logo-small.png'

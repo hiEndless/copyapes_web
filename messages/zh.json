@@ -33,6 +33,27 @@
     "relatedDescription": "精选相关文章，帮你扩展阅读。",
     "readMore": "阅读更多：{title}"
   },
+  "Docs": {
+    "navDocs": "教程文档",
+    "navHome": "首页",
+    "navBlog": "博客",
+    "brandTitle": "CopyApes 文档",
+    "search": "搜索",
+    "searchPlaceholder": "搜索...",
+    "searchTitle": "搜索",
+    "searchMinChars": "请至少输入 3 个字符。",
+    "searching": "搜索中...",
+    "noResults": "未找到与 “{query}” 相关的结果",
+    "toggleTheme": "切换主题",
+    "toggleLanguage": "切换语言",
+    "menu": "菜单",
+    "pageNavigation": "页面导航",
+    "onThisPage": "本页目录",
+    "scrollToTop": "回到顶部",
+    "tableOfContents": "目录",
+    "emptyDocs": "暂无已发布文档。",
+    "pageDescription": "CopyApes 产品教程与使用指南。"
+  },
   "BlogSection": {
     "badge": "博客",
     "title": "跟单猿博客",
@@ -73,6 +94,7 @@
     "testimonials": "用户评价",
     "pricing": "产品价格",
     "faq": "常见问题",
+    "blog": "博客",
     "contact": "联系我们"
   },
   "Logo": {
@@ -360,7 +382,7 @@
     "about": "关于我们",
     "terms": "用户协议",
     "privacy": "隐私政策",
-    "tutorial": "使用教程",
+    "tutorial": "跟单教程",
     "copyright": "Made with ❤️ by CopyApes."
   },
   "About": {

@@ -1,7 +1,7 @@
 'use client'
 
 import { Globe } from 'lucide-react'
-import { useLocale } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 
 import { useMounted } from '@/components/docs/use-mounted'
 import { Button } from '@/components/ui/button'
@@ -19,6 +19,7 @@ export function DocsLocaleSwitcher() {
   const locale = useLocale()
   const router = useRouter()
   const pathname = usePathname()
+  const t = useTranslations('Docs')
 
   const switchLocale = (nextLocale: string) => {
     router.replace(pathname, { locale: nextLocale })
@@ -27,7 +28,7 @@ export function DocsLocaleSwitcher() {
   if (!mounted) {
     return (
       <Button
-        aria-label='Toggle language'
+        aria-label={t('toggleLanguage')}
         className='h-9 w-9 cursor-pointer'
         size='icon'
         type='button'
@@ -42,7 +43,7 @@ export function DocsLocaleSwitcher() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
-          aria-label='Toggle language'
+          aria-label={t('toggleLanguage')}
           className='h-9 w-9 cursor-pointer'
           size='icon'
           variant='outline'

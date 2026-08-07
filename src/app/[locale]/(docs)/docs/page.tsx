@@ -19,9 +19,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params
   const siteT = await getTranslations({ locale, namespace: 'Metadata' })
-  const tFooter = await getTranslations({ locale, namespace: 'Footer' })
-  const title = tFooter('tutorial')
-  const description = siteT('description')
+  const tDocs = await getTranslations({ locale, namespace: 'Docs' })
+  const title = tDocs('navDocs')
+  const description = tDocs('pageDescription')
 
   return {
     title,
@@ -48,9 +48,9 @@ const DocsIndexPage = async ({ params }: { params: Promise<{ locale: string }> }
   }
 
   const siteT = await getTranslations({ locale, namespace: 'Metadata' })
-  const tFooter = await getTranslations({ locale, namespace: 'Footer' })
-  const pageTitle = tFooter('tutorial')
-  const pageDescription = siteT('description')
+  const tDocs = await getTranslations({ locale, namespace: 'Docs' })
+  const pageTitle = tDocs('navDocs')
+  const pageDescription = tDocs('pageDescription')
 
   const jsonLd = buildDocsPageJsonLd({
     locale,
@@ -76,7 +76,7 @@ const DocsIndexPage = async ({ params }: { params: Promise<{ locale: string }> }
         </div>
 
         <ul className='space-y-4'>
-          <li className='text-muted-foreground text-sm'>暂无已发布文档。</li>
+          <li className='text-muted-foreground text-sm'>{tDocs('emptyDocs')}</li>
         </ul>
       </div>
       <script {...jsonLdScriptProps(jsonLd)} />

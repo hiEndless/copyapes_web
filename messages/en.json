@@ -32,6 +32,27 @@
     "relatedDescription": "Expand your knowledge with these hand-picked posts.",
     "readMore": "Read more: {title}"
   },
+  "Docs": {
+    "navDocs": "Tutorial Docs",
+    "navHome": "Home",
+    "navBlog": "Blog",
+    "brandTitle": "CopyApes Docs",
+    "search": "Search",
+    "searchPlaceholder": "Search...",
+    "searchTitle": "Search",
+    "searchMinChars": "Please enter at least 3 characters.",
+    "searching": "Searching...",
+    "noResults": "No results found for \"{query}\"",
+    "toggleTheme": "Toggle theme",
+    "toggleLanguage": "Change language",
+    "menu": "Menu",
+    "pageNavigation": "Page navigation",
+    "onThisPage": "On this page",
+    "scrollToTop": "Scroll to top",
+    "tableOfContents": "Table of contents",
+    "emptyDocs": "No published docs yet.",
+    "pageDescription": "CopyApes product tutorials and guides."
+  },
   "BlogSection": {
     "badge": "Blog",
     "title": "CopyApes Blog",
@@ -71,6 +92,7 @@
     "testimonials": "Testimonials",
     "pricing": "Pricing",
     "faq": "FAQ",
+    "blog": "Blog",
     "contact": "Contact Us"
   },
   "Logo": {
@@ -358,7 +380,7 @@
     "about": "About",
     "terms": "Terms of Service",
     "privacy": "Privacy Policy",
-    "tutorial": "Tutorial",
+    "tutorial": "Copy Trading Tutorials",
     "copyright": "Made with ❤️ by CopyApes."
   },
   "About": {

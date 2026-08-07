@@ -35,6 +35,10 @@ const PagesLayout = ({ children }: Readonly<{ children: ReactNode }>) => {
       href: '/#faq'
     },
     {
+      title: t('blog'),
+      href: '/blog'
+    },
+    {
       title: t('contact'),
       href: '/#contact'
     }

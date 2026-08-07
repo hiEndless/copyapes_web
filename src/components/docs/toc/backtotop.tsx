@@ -3,6 +3,7 @@
 import type { ReactElement } from 'react'
 import { useEffect, useRef } from 'react'
 import { ArrowUp } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 function scrollToTop() {
   if (typeof window !== 'undefined') {
@@ -12,6 +13,7 @@ function scrollToTop() {
 
 export function DocsBackToTop(): ReactElement {
   const ref = useRef<HTMLButtonElement>(null)
+  const t = useTranslations('Docs')
 
   useEffect(() => {
     function toggleVisible() {
@@ -31,15 +33,15 @@ export function DocsBackToTop(): ReactElement {
 
   return (
     <button
-      aria-label='Scroll to top'
+      aria-label={t('scrollToTop')}
       className='text-foreground mt-2 ml-2 flex cursor-pointer items-center self-start text-sm opacity-0 transition'
       onClick={scrollToTop}
       ref={ref}
-      title='Scroll to top'
+      title={t('scrollToTop')}
       type='button'
     >
       <ArrowUp className='mr-1 inline-block h-4 w-4 align-middle' />
-      <span>Scroll to top</span>
+      <span>{t('scrollToTop')}</span>
     </button>
   )
 }

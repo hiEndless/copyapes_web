@@ -1,5 +1,7 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
+
 import { DocsSubLink } from '@/components/docs/sidebar/sublink'
 import { Separator } from '@/components/ui/separator'
 import type { DocsNavItem } from '@/lib/docs/nav'
@@ -8,11 +10,12 @@ import { usePathname } from '@/i18n/routing'
 
 export function DocsPageMenu({ items, isSheet = false }: { items: DocsNavItem[]; isSheet?: boolean }) {
   const path = usePathname()
+  const t = useTranslations('Docs')
 
   if (!path.startsWith('/docs')) return null
 
   if (!items.length) {
-    return <p className='text-muted-foreground text-sm'>暂无文档。</p>
+    return <p className='text-muted-foreground text-sm'>{t('emptyDocs')}</p>
   }
 
   return (

@@ -34,7 +34,7 @@ export async function generateMetadata({
   const slugPath = slug.join('/')
   const doc = await getContentBySlug('tutorials', slugPath, locale)
   const siteT = await getTranslations({ locale, namespace: 'Metadata' })
-  const tFooter = await getTranslations({ locale, namespace: 'Footer' })
+  const tDocs = await getTranslations({ locale, namespace: 'Docs' })
 
   if (!doc) {
     return {}
@@ -67,7 +67,7 @@ export async function generateMetadata({
       locale: localeToOgLocale(locale),
       ...(publishedTime ? { publishedTime } : {}),
       ...(modifiedTime ? { modifiedTime } : {}),
-      section: tFooter('tutorial'),
+      section: tDocs('navDocs'),
       tags: keywords,
       images: cover
         ? [
@@ -127,7 +127,7 @@ const DocsDetailPage = async ({ params }: { params: Promise<DocsParams> }) => {
   }
 
   const siteT = await getTranslations({ locale, namespace: 'Metadata' })
-  const tFooter = await getTranslations({ locale, namespace: 'Footer' })
+  const tDocs = await getTranslations({ locale, namespace: 'Docs' })
   const tBlog = await getTranslations({ locale, namespace: 'BlogMetadata' })
   const tutorials = await listContent('tutorials', locale)
   const routes = flattenDocsRoutes(tutorials)
@@ -147,7 +147,7 @@ const DocsDetailPage = async ({ params }: { params: Promise<DocsParams> }) => {
     siteName: siteT('siteName'),
     siteDescription: siteT('description'),
     homeLabel: tBlog('home'),
-    docsLabel: tFooter('tutorial'),
+    docsLabel: tDocs('navDocs'),
     title,
     description,
     slug: slugPath,

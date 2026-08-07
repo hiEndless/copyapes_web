@@ -2,12 +2,15 @@
 
 import type { MouseEvent } from 'react'
 import { clsx } from 'clsx'
+import { useTranslations } from 'next-intl'
 
 import { Link } from '@/i18n/routing'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import type { DocsTocItem } from '@/lib/docs/toc'
 
 export function DocsTableAnchor({ tocs }: { tocs: DocsTocItem[] }) {
+  const t = useTranslations('Docs')
+
   const handleSmoothScroll = (e: MouseEvent<HTMLAnchorElement>, href: string) => {
     e.preventDefault()
     const id = href.startsWith('#') ? href.slice(1) : href
@@ -23,7 +26,7 @@ export function DocsTableAnchor({ tocs }: { tocs: DocsTocItem[] }) {
 
   return (
     <div className='flex w-full flex-col gap-3 pl-2'>
-      <h3 className='text-sm font-semibold'>On this page</h3>
+      <h3 className='text-sm font-semibold'>{t('onThisPage')}</h3>
       <ScrollArea className='pt-0.5 pb-4'>
         <div className='text-foreground flex flex-col gap-2.5 text-sm'>
           {tocs.map(({ href, level, text }) => (

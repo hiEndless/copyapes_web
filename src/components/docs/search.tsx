@@ -2,6 +2,7 @@
 
 import { type ReactNode, useEffect, useMemo, useState } from 'react'
 import { FileText, Search as SearchIcon } from 'lucide-react'
+import { useTranslations } from 'next-intl'
 
 import { DocsAnchor } from '@/components/docs/anchor'
 import { useMounted } from '@/components/docs/use-mounted'
@@ -26,13 +27,13 @@ import {
 } from '@/lib/docs/search'
 import { cn } from '@/lib/utils'
 
-function SearchTriggerShell() {
+function SearchTriggerShell({ placeholder }: { placeholder: string }) {
   return (
     <div className='relative max-w-md flex-1'>
       <SearchIcon className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-500 dark:text-neutral-400' />
       <Input
         className='bg-background h-9 w-full rounded-md border pr-4 pl-10 text-sm shadow md:w-full'
-        placeholder='Search'
+        placeholder={placeholder}
         readOnly
         type='search'
       />
@@ -47,6 +48,7 @@ export function DocsSearch({
   documents: DocsSearchDocument[]
   navItems: DocsNavItem[]
 }) {
+  const t = useTranslations('Docs')
   const mounted = useMounted()
   const [searchedInput, setSearchedInput] = useState('')
   const [isOpen, setIsOpen] = useState(false)
@@ -120,7 +122,7 @@ export function DocsSearch({
   }
 
   if (!mounted) {
-    return <SearchTriggerShell />
+    return <SearchTriggerShell placeholder={t('search')} />
   }
 
   return (
@@ -139,7 +141,7 @@ export function DocsSearch({
           <SearchIcon className='absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-neutral-500 dark:text-neutral-400' />
           <Input
             className='bg-background h-9 w-full rounded-md border pr-4 pl-10 text-sm shadow md:w-full'
-            placeholder='Search'
+            placeholder={t('search')}
             readOnly
             type='search'
           />
@@ -147,28 +149,28 @@ export function DocsSearch({
       </DialogTrigger>
 
       <DialogContent className='top-[45%] max-w-xs p-0 sm:top-[38%] sm:max-w-lg'>
-        <DialogTitle className='sr-only'>Search</DialogTitle>
+        <DialogTitle className='sr-only'>{t('searchTitle')}</DialogTitle>
         <DialogHeader>
           <input
             autoFocus
             className='h-14 border-b bg-transparent px-4 text-[15px] outline-none'
             onChange={e => setSearchedInput(e.target.value)}
-            placeholder='Search...'
+            placeholder={t('searchPlaceholder')}
             value={searchedInput}
           />
         </DialogHeader>
 
         {searchedInput.length > 0 && searchedInput.length < 3 ? (
-          <p className='text-warning mx-auto mt-2 text-sm'>Please enter at least 3 characters.</p>
+          <p className='text-warning mx-auto mt-2 text-sm'>{t('searchMinChars')}</p>
         ) : null}
 
         {isLoading ? (
-          <p className='text-muted-foreground mx-auto mt-2 text-sm'>Searching...</p>
+          <p className='text-muted-foreground mx-auto mt-2 text-sm'>{t('searching')}</p>
         ) : (
           results.length === 0 &&
           searchedInput.length >= 3 && (
             <p className='text-muted-foreground mx-auto mt-2 text-sm'>
-              No results found for <span className='text-primary'>{`"${searchedInput}"`}</span>
+              {t('noResults', { query: searchedInput })}
             </p>
           )
         )}

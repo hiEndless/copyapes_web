@@ -2,6 +2,7 @@
 
 import { AlignLeft } from 'lucide-react'
 import { useState } from 'react'
+import { useTranslations } from 'next-intl'
 
 import { DocsLogo } from '@/components/docs/navigation/logo'
 import { DocsNavMenu } from '@/components/docs/navigation/nav-menu'
@@ -24,9 +25,11 @@ import type { DocsNavItem } from '@/lib/docs/nav'
 import type { DocsSearchDocument } from '@/lib/docs/search'
 
 export function DocsSidebar({ items }: { items: DocsNavItem[] }) {
+  const t = useTranslations('Docs')
+
   return (
     <aside
-      aria-label='Page navigation'
+      aria-label={t('pageNavigation')}
       className='sticky top-26 hidden h-[calc(100vh-8rem)] min-w-57.5 flex-1 flex-col overflow-y-auto md:flex'
     >
       <ScrollArea>
@@ -45,11 +48,12 @@ export function DocsSheetLeft({
 }) {
   const mounted = useMounted()
   const [open, setOpen] = useState(false)
+  const t = useTranslations('Docs')
 
   if (!mounted) {
     return (
       <Button
-        aria-label='Menu'
+        aria-label={t('menu')}
         className='flex cursor-pointer md:hidden'
         size='icon'
         type='button'
@@ -63,12 +67,17 @@ export function DocsSheetLeft({
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <Button className='flex cursor-pointer md:hidden' size='icon' variant='ghost'>
+        <Button
+          aria-label={t('menu')}
+          className='flex cursor-pointer md:hidden'
+          size='icon'
+          variant='ghost'
+        >
           <AlignLeft className='size-6' />
         </Button>
       </SheetTrigger>
       <SheetContent className='flex h-full flex-col gap-0 px-0' side='left'>
-        <SheetTitle className='sr-only'>Menu</SheetTitle>
+        <SheetTitle className='sr-only'>{t('menu')}</SheetTitle>
         <SheetHeader>
           <SheetClose asChild>
             <div className='px-2'>
@@ -76,7 +85,7 @@ export function DocsSheetLeft({
             </div>
           </SheetClose>
         </SheetHeader>
-        <SheetDescription className='sr-only'>Page navigation</SheetDescription>
+        <SheetDescription className='sr-only'>{t('pageNavigation')}</SheetDescription>
         {open ? (
           <ScrollArea className='flex h-full flex-col overflow-y-auto'>
             <div className='mx-0 mt-3 flex flex-col gap-2.5 px-5'>

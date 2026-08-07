@@ -84,8 +84,8 @@ const Footer = () => {
                 </Link>
               </li>
               <li>
-                <Link href='/#contact' className='hover:text-foreground transition-colors duration-300'>
-                  {tn('contact')}
+                <Link href='/docs' className='hover:text-foreground transition-colors duration-300'>
+                  {t('tutorial')}
                 </Link>
               </li>
               <li>
