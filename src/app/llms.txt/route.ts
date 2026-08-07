@@ -5,13 +5,15 @@ export const revalidate = 3600
 
 export async function GET() {
   const siteUrl = getSiteUrl()
-  const [postsEn, postsZh, tutorials] = await Promise.all([
+  const [postsEn, postsZh, tutorialsEn, tutorialsZh] = await Promise.all([
     listContent('blog', 'en'),
     listContent('blog', 'zh'),
+    listContent('tutorials', 'en'),
     listContent('tutorials', 'zh')
   ])
 
   const postsZhBySlug = new Map(postsZh.map(post => [post.slug, post]))
+  const tutorialsZhBySlug = new Map(tutorialsZh.map(item => [item.slug, item]))
 
   const blogLines = postsEn.flatMap(post => {
     const zh = postsZhBySlug.get(post.slug)
@@ -24,9 +26,19 @@ export async function GET() {
     return lines
   })
 
+  const docsSource = tutorialsEn.length > 0 ? tutorialsEn : tutorialsZh
   const docsLines =
-    tutorials.length > 0
-      ? tutorials.map(item => `- [${item.title}](${getCanonicalUrl(`/docs/${item.slug}`, 'en')})`)
+    docsSource.length > 0
+      ? docsSource.flatMap(item => {
+          const zh = tutorialsZhBySlug.get(item.slug)
+          const lines = [`- [${item.title}](${getCanonicalUrl(`/docs/${item.slug}`, 'en')})`]
+
+          if (zh && tutorialsEn.length > 0) {
+            lines.push(`- [中文：${zh.title}](${getCanonicalUrl(`/docs/${item.slug}`, 'zh')})`)
+          }
+
+          return lines
+        })
       : [`- [Docs](${getCanonicalUrl('/docs', 'en')})`]
 
   docsLines.push(`- [Product protocol / Terms](${getCanonicalUrl('/terms', 'en')})`)

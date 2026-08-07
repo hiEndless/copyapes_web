@@ -499,6 +499,216 @@ export function buildLegalPageJsonLd(options: {
   }
 }
 
+/** Prefer a distinct description; otherwise derive a short plain excerpt from markdown body. */
+export function resolveDocsMetaDescription(
+  title: string,
+  description: string | undefined,
+  content?: string
+): string {
+  const trimmed = description?.trim()
+
+  if (trimmed && trimmed !== title.trim()) {
+    return trimmed
+  }
+
+  if (content) {
+    const body = content.replace(/^---[\s\S]*?---\s*/, '')
+    const excerpt = body
+      .split('\n')
+      .map(line =>
+        line
+          .replace(/^#{1,6}\s+/, '')
+          .replace(/!\[[^\]]*\]\([^)]*\)/g, '')
+          .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+          .replace(/[`*_>|-]/g, '')
+          .replace(/<[^>]+>/g, '')
+          .trim()
+      )
+      .find(line => line.length >= 24)
+
+    if (excerpt) {
+      return excerpt.length > 160 ? `${excerpt.slice(0, 157)}...` : excerpt
+    }
+  }
+
+  return title
+}
+
+export function buildTechArticleJsonLd(options: {
+  locale: string
+  siteName: string
+  siteDescription: string
+  homeLabel: string
+  docsLabel: string
+  title: string
+  description: string
+  slug: string
+  image?: string
+  publishedAt?: string
+  updatedAt?: string
+  keywords?: string[]
+  faqs?: Array<{ question: string; answer: string }>
+}) {
+  const siteUrl = getSiteUrl()
+  const pageUrl = getCanonicalUrl(`/docs/${options.slug}`, options.locale)
+  const docsUrl = getCanonicalUrl('/docs', options.locale)
+  const homeUrl = getCanonicalUrl('/', options.locale)
+  const aboutUrl = getCanonicalUrl('/about', options.locale)
+  const datePublished = toSchemaDate(options.publishedAt)
+  const dateModified = toSchemaDate(options.updatedAt || options.publishedAt)
+  const imageUrl = options.image
+    ? options.image.startsWith('http')
+      ? options.image
+      : `${siteUrl}${options.image}`
+    : undefined
+
+  const graph: Record<string, unknown>[] = [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}#website`,
+      name: options.siteName,
+      description: options.siteDescription,
+      url: siteUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      publisher: { '@id': `${siteUrl}#organization` }
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}#organization`,
+      name: options.siteName,
+      url: siteUrl,
+      logo: `${siteUrl}/site_logo/logo-small.png`,
+      sameAs: ['https://t.me/copyapes_admin', 'https://t.me/copyapes_cn', aboutUrl]
+    },
+    {
+      '@type': 'TechArticle',
+      '@id': `${pageUrl}#article`,
+      headline: options.title,
+      name: options.title,
+      description: options.description,
+      url: pageUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      ...(imageUrl ? { image: [imageUrl] } : {}),
+      ...(datePublished ? { datePublished } : {}),
+      ...(dateModified ? { dateModified } : {}),
+      ...(options.keywords?.length ? { keywords: options.keywords.join(', ') } : {}),
+      author: { '@id': `${siteUrl}#organization` },
+      publisher: { '@id': `${siteUrl}#organization` },
+      mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+      isPartOf: { '@id': `${docsUrl}#docs` }
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: options.homeLabel, item: homeUrl },
+        { '@type': 'ListItem', position: 2, name: options.docsLabel, item: docsUrl },
+        { '@type': 'ListItem', position: 3, name: options.title, item: pageUrl }
+      ]
+    }
+  ]
+
+  if (options.faqs && options.faqs.length > 0) {
+    graph.push({
+      '@type': 'FAQPage',
+      '@id': `${pageUrl}#faq`,
+      mainEntity: options.faqs.map(faq => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer
+        }
+      }))
+    })
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': graph
+  }
+}
+
+export function buildDocsPageJsonLd(options: {
+  locale: string
+  siteName: string
+  siteDescription: string
+  pageTitle: string
+  pageDescription: string
+  docs?: Array<{
+    title: string
+    description?: string
+    slug: string
+    publishedAt?: string
+    updatedAt?: string
+  }>
+}) {
+  const siteUrl = getSiteUrl()
+  const pageUrl = getCanonicalUrl('/docs', options.locale)
+  const aboutUrl = getCanonicalUrl('/about', options.locale)
+
+  const graph: Record<string, unknown>[] = [
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}#website`,
+      name: options.siteName,
+      description: options.siteDescription,
+      url: siteUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      publisher: { '@id': `${siteUrl}#organization` }
+    },
+    {
+      '@type': 'Organization',
+      '@id': `${siteUrl}#organization`,
+      name: options.siteName,
+      url: siteUrl,
+      logo: `${siteUrl}/site_logo/logo-small.png`,
+      sameAs: ['https://t.me/copyapes_admin', 'https://t.me/copyapes_cn', aboutUrl]
+    },
+    {
+      '@type': 'CollectionPage',
+      '@id': `${pageUrl}#docs`,
+      name: options.pageTitle,
+      description: options.pageDescription,
+      url: pageUrl,
+      inLanguage: localeToLanguageTag(options.locale),
+      isPartOf: { '@id': `${siteUrl}#website` },
+      about: { '@id': `${siteUrl}#organization` },
+      publisher: { '@id': `${siteUrl}#organization` }
+    }
+  ]
+
+  if (options.docs && options.docs.length > 0) {
+    graph.push({
+      '@type': 'ItemList',
+      '@id': `${pageUrl}#itemlist`,
+      name: options.pageTitle,
+      numberOfItems: options.docs.length,
+      itemListElement: options.docs.map((doc, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        url: getCanonicalUrl(`/docs/${doc.slug}`, options.locale),
+        name: doc.title,
+        item: {
+          '@type': 'TechArticle',
+          headline: doc.title,
+          description: doc.description,
+          url: getCanonicalUrl(`/docs/${doc.slug}`, options.locale),
+          ...(toSchemaDate(doc.publishedAt) ? { datePublished: toSchemaDate(doc.publishedAt) } : {}),
+          ...(toSchemaDate(doc.updatedAt || doc.publishedAt)
+            ? { dateModified: toSchemaDate(doc.updatedAt || doc.publishedAt) }
+            : {}),
+          author: { '@id': `${siteUrl}#organization` }
+        }
+      }))
+    })
+  }
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': graph
+  }
+}
+
 export function jsonLdScriptProps(data: unknown) {
   return {
     type: 'application/ld+json' as const,
