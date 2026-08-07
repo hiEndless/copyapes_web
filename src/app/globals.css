@@ -1,5 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import 'katex/dist/katex.min.css';
+@plugin '@tailwindcss/typography';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -299,4 +301,215 @@ input,
 
 .driver-popover.copyapes-tour .driver-popover-arrow-side-bottom {
   border-bottom-color: var(--card);
+}
+
+.docs-typography {
+  @apply prose prose-zinc prose-headings:scroll-m-20 prose-code:rounded-md prose-code:p-1 prose-code:leading-6 prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:bg-neutral-100 prose-img:rounded-md prose-img:border;
+  @apply w-[85vw] min-w-full! pt-2 text-sm sm:mx-auto sm:w-full prose-code:text-xs;
+  @apply dark:prose-invert prose-code:text-neutral-800 dark:prose-code:bg-neutral-900 dark:prose-code:text-white dark:prose-pre:bg-neutral-900;
+}
+
+.docs-mdx-stack > * + *,
+.docs-mdx-stack > :only-child > * + * {
+  margin-top: 1.75rem;
+}
+
+.docs-typography iframe,
+.docs-mdx-stack iframe {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+  border-radius: 0.5rem;
+}
+
+.docs-typography hr,
+.docs-mdx-stack hr {
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+}
+
+.docs-typography img,
+.docs-mdx-stack img {
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.docs-typography .prose {
+  margin: 0;
+}
+
+.docs-typography ul > li::marker {
+  color: hsl(0, 0%, 29%);
+}
+
+.dark .docs-typography ul > li::marker {
+  color: hsl(0, 0%, 79%);
+}
+
+.docs-typography :where(ul > li):not(:where([class~='not-prose'], [class~='not-prose'] *)) {
+  padding-inline-start: 0;
+}
+
+.docs-typography .code-line {
+  padding: 0.75px 12.5px;
+}
+
+.docs-typography pre {
+  padding: 0 !important;
+  width: inherit !important;
+  overflow-x: auto;
+}
+
+.docs-typography pre > code {
+  display: grid;
+  max-width: inherit !important;
+  padding: 14px 0 !important;
+}
+
+.docs-typography .contains-task-list {
+  list-style-type: none;
+  padding-inline-start: 0;
+}
+
+.docs-typography .task-list-item {
+  display: flex;
+  align-items: center;
+}
+
+.docs-typography .task-list-item input {
+  margin-right: 0.5rem;
+}
+
+.docs-typography .line-number::before {
+  display: inline-block;
+  width: 1rem;
+  margin-right: 22px;
+  margin-left: -2px;
+  color: rgb(110, 110, 110);
+  content: attr(line);
+  text-align: right;
+}
+
+.docs-typography .highlight {
+  font-weight: bold;
+  color: black;
+}
+
+.dark .docs-typography .highlight {
+  font-weight: bold;
+  color: white;
+}
+
+.highlight {
+  font-weight: bold;
+  color: black;
+}
+
+.dark .highlight {
+  font-weight: bold;
+  color: white;
+}
+
+.docs-typography .highlight-line {
+  @apply bg-neutral-200/90 dark:bg-neutral-800/90;
+}
+
+.docs-typography .highlight-comp > code {
+  background-color: transparent !important;
+}
+
+.docs-typography .attr-name {
+  color: #414141;
+}
+
+.dark .docs-typography .attr-name {
+  color: #cacaca;
+}
+
+.docs-typography .punctuation,
+.docs-typography .comment {
+  color: gray;
+}
+
+.docs-typography .attr-name,
+.docs-typography .number,
+.docs-typography .tag,
+.docs-typography .property-access,
+.docs-typography .keyword {
+  color: hsla(335, 73%, 53%, 1);
+}
+
+.dark .docs-typography .attr-name,
+.dark .docs-typography .tag,
+.dark .docs-typography .keyword,
+.dark .docs-typography .property-access,
+.dark .docs-typography .number {
+  color: hsla(335, 76%, 59%, 1);
+}
+
+.docs-typography .at.operator,
+.docs-typography .builtin,
+.docs-typography .function {
+  color: hsla(210, 100%, 66%, 1);
+}
+
+.docs-typography .attr-value,
+.docs-typography .string {
+  color: hsla(131, 43%, 57%, 1);
+}
+
+.docs-typography .constant,
+.docs-typography .annotation,
+.docs-typography .boolean {
+  color: hsl(0, 0%, 29%);
+}
+
+.dark .docs-typography .constant,
+.dark .docs-typography .annotation,
+.dark .docs-typography .boolean {
+  color: hsl(0, 0%, 71%);
+}
+
+.docs-typography span.katex-display {
+  display: flex;
+}
+
+.docs-typography span.katex-html {
+  display: none;
+}
+
+.docs-typography .rehype-code-title {
+  @apply -mb-8 w-full px-2 pt-1 pb-5 text-sm font-medium tracking-wider;
+  font-family: var(--font-mono) !important;
+}
+
+.docs-collapsible-content {
+  overflow: hidden;
+}
+
+.docs-collapsible-content[data-state='open'] {
+  animation: docs-slide-down 300ms ease-out;
+}
+
+.docs-collapsible-content[data-state='closed'] {
+  animation: docs-slide-up 300ms ease-out;
+}
+
+@keyframes docs-slide-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-collapsible-content-height);
+  }
+}
+
+@keyframes docs-slide-up {
+  from {
+    height: var(--radix-collapsible-content-height);
+  }
+  to {
+    height: 0;
+  }
 }

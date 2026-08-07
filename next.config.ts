@@ -4,7 +4,14 @@ const nextConfig: NextConfig = {
   basePath: process.env.BASEPATH ?? '',
   reactStrictMode: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
-  serverExternalPackages: ['gray-matter', 'next-mdx-remote-client'],
+  serverExternalPackages: [
+    'gray-matter',
+    'next-mdx-remote-client',
+    'mermaid',
+    'katex',
+    'rehype-prism-plus',
+    'rehype-katex'
+  ],
   images: {
     unoptimized: true,
     remotePatterns: [

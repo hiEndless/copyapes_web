@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs'
+import { existsSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
 import { fetchContentJson, getRawContentBaseUrl } from './github'
@@ -47,11 +47,32 @@ function candidateLocalPaths(assetKey: string, locale: ContentLocale): string[] 
   ]
 }
 
+function withVersionQuery(url: string, version: string): string {
+  if (!version) return url
+
+  const separator = url.includes('?') ? '&' : '?'
+
+  return `${url}${separator}v=${version}`
+}
+
+/** Bust browser cache after same-path replacements; uses file mtime+size (no sync needed). */
+function localAssetVersion(absolutePath: string): string {
+  try {
+    const st = statSync(absolutePath)
+
+    return `${Math.trunc(st.mtimeMs)}-${st.size}`
+  } catch {
+    return ''
+  }
+}
+
 function toServableUrl(localPath: string): string {
   const root = getLocalContentRoot()
 
   if (root && existsSync(join(root, localPath))) {
-    return `/api/content-assets/${localPath}`
+    const absolute = join(root, localPath)
+
+    return withVersionQuery(`/api/content-assets/${localPath}`, localAssetVersion(absolute))
   }
 
   return `${getRawContentBaseUrl()}/${localPath}`
@@ -92,8 +113,7 @@ export async function resolveAssetRef(ref: string | undefined, locale: ContentLo
         return entry.url
       }
 
-      const separator = entry.url.includes('?') ? '&' : '?'
-      return `${entry.url}${separator}v=${version}`
+      return withVersionQuery(entry.url, version)
     }
 
     if (entry?.local_path) {
