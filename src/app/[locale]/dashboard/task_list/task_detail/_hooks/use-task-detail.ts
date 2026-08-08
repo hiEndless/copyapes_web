@@ -9,7 +9,7 @@ import { useDashboardRouter as useRouter } from '@/hooks/use-dashboard-router'
 import { getTaskDetail, getTraderDetail, stopTask } from '@/api/task'
 import { settingsApi } from '@/api/settings'
 
-import type { TaskLogItem } from '../_lib/types'
+import type { TaskLogItem, TaskLogMeta } from '../_lib/types'
 
 export function useTaskDetail(taskId: string) {
   const t = useTranslations('DashboardTaskDetail')
@@ -39,6 +39,7 @@ export function useTaskDetail(taskId: string) {
 
   const [spiderData, setSpiderData] = React.useState<TaskLogItem[]>([])
   const [tradeData, setTradeData] = React.useState<TaskLogItem[]>([])
+  const [logMeta, setLogMeta] = React.useState<TaskLogMeta | null>(null)
   const [loading, setLoading] = React.useState(!task)
   const taskRef = React.useRef(task)
   taskRef.current = task
@@ -65,6 +66,7 @@ export function useTaskDetail(taskId: string) {
       if (traderRes.code === 0 && traderRes.data) {
         setTradeData((traderRes.data.trade || []) as TaskLogItem[])
         setSpiderData((traderRes.data.spider || []) as TaskLogItem[])
+        setLogMeta((traderRes.data.meta || null) as TaskLogMeta | null)
       }
     } catch (err) {
       console.error(err)
@@ -113,6 +115,7 @@ export function useTaskDetail(taskId: string) {
     task,
     spiderData,
     tradeData,
+    logMeta,
     loading,
     loadTaskData,
     handleTerminateTask

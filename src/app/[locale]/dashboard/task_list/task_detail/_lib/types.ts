@@ -16,6 +16,13 @@ export type TaskLogItem = {
   log_payload?: Record<string, unknown>
 }
 
+export type TaskLogMeta = {
+  limit?: number
+  spider_truncated?: boolean
+  trade_truncated?: boolean
+  truncated?: boolean
+}
+
 export type TaskParameterItem = {
   label: string
   value: ReactNode

@@ -2622,6 +2622,7 @@
       "tradeTitle": "跟单猿跟单记录",
       "empty": "暂无数据",
       "reverseBadge": "反向跟单",
+      "limitHint": "仅展示最近 {limit} 条日志，更多历史日志暂不展示。",
       "actions": {
         "open": "开仓",
         "add": "加仓",

@@ -2620,6 +2620,7 @@
       "tradeTitle": "CopyApe 카피 기록",
       "empty": "데이터 없음",
       "reverseBadge": "역방향",
+      "limitHint": "최근 {limit}개 로그만 표시합니다. 이전 로그는 현재 표시하지 않습니다.",
       "actions": {
         "open": "진입",
         "add": "추가",

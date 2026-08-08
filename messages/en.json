@@ -2620,6 +2620,7 @@
       "tradeTitle": "CopyApe Copy Logs",
       "empty": "No data",
       "reverseBadge": "Reverse",
+      "limitHint": "Only the latest {limit} logs are shown. Older logs are not displayed for now.",
       "actions": {
         "open": "Open",
         "add": "Add",

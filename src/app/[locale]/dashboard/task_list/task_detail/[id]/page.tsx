@@ -27,7 +27,7 @@ export default function TaskDetailPage({ params }: { params: { id?: string; loca
   const taskId = String(unwrappedParams?.id || (params as { id?: string })?.id || '')
   const locale = String(unwrappedParams?.locale || (params as { locale?: string })?.locale || 'zh')
 
-  const { task, spiderData, tradeData, handleTerminateTask } = useTaskDetail(taskId)
+  const { task, spiderData, tradeData, logMeta, handleTerminateTask } = useTaskDetail(taskId)
 
   const parameterList = React.useMemo(() => (task ? buildTaskParameterList(task, t) : []), [task, t])
   const isRunning = task?.status === 1
@@ -62,6 +62,7 @@ export default function TaskDetailPage({ params }: { params: { id?: string; loca
       <TaskLogSections
         spiderData={spiderData}
         tradeData={tradeData}
+        logMeta={logMeta}
         isReverseFollow={isReverseFollow}
       />
     </div>

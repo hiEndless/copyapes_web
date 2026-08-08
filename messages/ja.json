@@ -2620,6 +2620,7 @@
       "tradeTitle": "CopyApe コピー記録",
       "empty": "データなし",
       "reverseBadge": "逆コピー",
+      "limitHint": "最新 {limit} 件のログのみ表示しています。古いログは現在表示されません。",
       "actions": {
         "open": "建玉",
         "add": "追加",
