@@ -1,5 +1,6 @@
 'use client'
 
+import { Info } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -22,9 +23,10 @@ export function TaskLogSections({ spiderData, tradeData, logMeta, isReverseFollo
   const shouldShowLimitHint = Boolean(logMeta?.truncated)
   const limit = Number(logMeta?.limit || 100)
   const limitHint = shouldShowLimitHint ? (
-    <div className='mb-4 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200'>
-      {t('logs.limitHint', { limit })}
-    </div>
+    <p className='mb-3 flex items-center gap-1.5 text-xs text-muted-foreground'>
+      <Info className='size-3.5 shrink-0 opacity-70' aria-hidden />
+      <span>{t('logs.limitHint', { limit })}</span>
+    </p>
   ) : null
 
   if (isMobile) {
