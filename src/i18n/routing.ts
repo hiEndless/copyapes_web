@@ -11,7 +11,11 @@ export const routing = defineRouting({
   defaultLocale: 'en',
 
   // Hide the prefix for the default locale
-  localePrefix: 'as-needed'
+  localePrefix: 'as-needed',
+
+  // Keep marketing HTML cacheable: locale comes from URL, not cookies/Accept-Language.
+  localeDetection: false,
+  localeCookie: false
 });
  
 // Lightweight wrappers around Next.js' navigation APIs

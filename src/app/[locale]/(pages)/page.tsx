@@ -10,6 +10,8 @@ import { getFaqItems } from '@/assets/data/faqs'
 import SectionSeparator from '@/components/section-separator'
 import { buildHomePageJsonLd, buildSocialMetadata, jsonLdScriptProps } from '@/lib/seo'
 
+export const revalidate = 300
+
 export async function generateMetadata({
   params
 }: {

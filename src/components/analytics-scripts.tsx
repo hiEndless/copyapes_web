@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 
 const LA_ID = '3ID9Aw1hNsoyCcId'
 const GTM_ID = 'GTM-T656N8D8'
+const IDLE_TIMEOUT_MS = 4000
 
 declare global {
   interface Window {
@@ -45,24 +46,67 @@ const loadScript = (src: string, id: string): Promise<void> =>
     document.head.appendChild(script)
   })
 
-const AnalyticsScripts = () => {
-  useEffect(() => {
-    void loadScript('https://sdk.51.la/js-sdk-pro.min.js', 'LA_COLLECT')
-      .then(() => {
-        window.LA?.init({ id: LA_ID, ck: LA_ID })
-      })
-      .catch(() => {})
+const loadAnalytics = () => {
+  void loadScript('https://sdk.51.la/js-sdk-pro.min.js', 'LA_COLLECT')
+    .then(() => {
+      window.LA?.init({ id: LA_ID, ck: LA_ID })
+    })
+    .catch(() => {})
 
-    if (!document.getElementById('gtm-script')) {
-      const gtmScript = document.createElement('script')
+  if (document.getElementById('gtm-script')) {
+    return
+  }
 
-      gtmScript.id = 'gtm-script'
-      gtmScript.text = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  const gtmScript = document.createElement('script')
+
+  gtmScript.id = 'gtm-script'
+  gtmScript.text = `(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','${GTM_ID}');`
-      document.head.appendChild(gtmScript)
+  document.head.appendChild(gtmScript)
+}
+
+const scheduleIdle = (fn: () => void) => {
+  const ric = window.requestIdleCallback?.bind(window)
+
+  if (ric) {
+    const id = ric(() => fn(), { timeout: IDLE_TIMEOUT_MS })
+
+    return () => window.cancelIdleCallback?.(id)
+  }
+
+  const timer = window.setTimeout(fn, IDLE_TIMEOUT_MS)
+
+  return () => window.clearTimeout(timer)
+}
+
+const AnalyticsScripts = () => {
+  useEffect(() => {
+    let loaded = false
+    let cancelIdle: (() => void) | undefined
+
+    const run = () => {
+      if (loaded) return
+      loaded = true
+      cancelIdle?.()
+      loadAnalytics()
+    }
+
+    const onInteract = () => run()
+
+    cancelIdle = scheduleIdle(run)
+
+    window.addEventListener('pointerdown', onInteract, { once: true, passive: true })
+    window.addEventListener('keydown', onInteract, { once: true })
+    window.addEventListener('scroll', onInteract, { once: true, passive: true })
+
+    return () => {
+      cancelIdle?.()
+      window.removeEventListener('pointerdown', onInteract)
+      window.removeEventListener('keydown', onInteract)
+      window.removeEventListener('scroll', onInteract)
     }
   }, [])
 
