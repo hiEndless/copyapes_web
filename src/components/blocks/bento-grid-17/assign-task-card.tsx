@@ -67,6 +67,8 @@ const AssignTaskCard = ({ TeamImages }: { TeamImages: TeamImagesType[] }) => {
                       key={`${current}-${imageData.src}`}
                       src={imageData.src}
                       alt=''
+                      loading='lazy'
+                      decoding='async'
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}

@@ -130,20 +130,48 @@ const Footer = () => {
             <div>
               {/* <p className='mb-3 text-lg font-medium'>徽章区</p> */}
               <div className='flex flex-wrap gap-4'>
-                <img src='/images/brand-logos/bestofjs-logo-bw.webp' alt='Best of JS' className='h-5 dark:invert' />
+                <img
+                  src='/images/brand-logos/bestofjs-logo-bw.webp'
+                  alt='Best of JS'
+                  loading='lazy'
+                  decoding='async'
+                  className='h-5 dark:invert'
+                />
                 <img
                   src='/images/brand-logos/product-hunt-logo-bw.webp'
                   alt='Product Hunt'
+                  loading='lazy'
+                  decoding='async'
                   className='h-5 dark:invert'
                 />
-                <img src='/images/brand-logos/reddit-logo-bw.webp' alt='Reddit' className='h-5 dark:invert' />
-                <img src='/images/brand-logos/medium-logo-bw.webp' alt='Medium' className='h-5 dark:invert' />
+                <img
+                  src='/images/brand-logos/reddit-logo-bw.webp'
+                  alt='Reddit'
+                  loading='lazy'
+                  decoding='async'
+                  className='h-5 dark:invert'
+                />
+                <img
+                  src='/images/brand-logos/medium-logo-bw.webp'
+                  alt='Medium'
+                  loading='lazy'
+                  decoding='async'
+                  className='h-5 dark:invert'
+                />
                 <img
                   src='/images/brand-logos/ycombinator-logo-bw.webp'
                   alt='Y Combinator'
+                  loading='lazy'
+                  decoding='async'
                   className='h-5 dark:invert'
                 />
-                <img src='/images/brand-logos/launchtory-logo-bw.webp' alt='Launchtory' className='h-5 dark:invert' />
+                <img
+                  src='/images/brand-logos/launchtory-logo-bw.webp'
+                  alt='Launchtory'
+                  loading='lazy'
+                  decoding='async'
+                  className='h-5 dark:invert'
+                />
               </div>
             </div>
           </div>

@@ -25,7 +25,7 @@ const BentoGrid = () => {
       images: [
         { index: 0, src: '/head/chuangtouzengzhi.jpg' },
         { index: 2, src: '/head/bitlanglang.jpg' },
-        { index: 3, src: '/head/huangtianwa.png' },
+        { index: 3, src: '/head/huangtianwa.jpg' },
         { index: 7, src: '/head/xiaozhou.jpg' }
       ],
       team: t('targetGroup.team1')

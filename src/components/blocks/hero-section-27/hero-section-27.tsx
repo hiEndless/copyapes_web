@@ -96,15 +96,15 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
             {' '}
             <div className='flex -space-x-2'>
               <Avatar className='ring-background size-10.5 ring-2'>
-                <AvatarImage src='/face/face-4.png' alt='Olivia Sparks' />
+                <AvatarImage src='/face/face-4.png' alt='Olivia Sparks' loading='lazy' decoding='async' />
                 <AvatarFallback>OS</AvatarFallback>
               </Avatar>
               <Avatar className='ring-background size-10.5 ring-2'>
-                <AvatarImage src='/face/face-2.png' alt='Howard Lloyd' />
+                <AvatarImage src='/face/face-2.png' alt='Howard Lloyd' loading='lazy' decoding='async' />
                 <AvatarFallback>HL</AvatarFallback>
               </Avatar>
               <Avatar className='ring-background size-10.5 ring-2'>
-                <AvatarImage src='/face/face-3.png' alt='Hallie Richards' />
+                <AvatarImage src='/face/face-3.png' alt='Hallie Richards' loading='lazy' decoding='async' />
                 <AvatarFallback>HR</AvatarFallback>
               </Avatar>
               {/* <Avatar className='ring-background size-10.5 ring-2'>
@@ -112,11 +112,11 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
                 <AvatarFallback>JW</AvatarFallback>
               </Avatar>*/}
               <Avatar className='ring-background size-10.5 ring-2'>
-                <AvatarImage src='/face/face-6.png' alt='Jenny Wilson' />
+                <AvatarImage src='/face/face-6.png' alt='Jenny Wilson' loading='lazy' decoding='async' />
                 <AvatarFallback>JW</AvatarFallback>
               </Avatar>
               <Avatar className='ring-background size-10.5 ring-2'>
-                <AvatarImage src='/face/face-7.png' alt='Jenny Wilson' />
+                <AvatarImage src='/face/face-7.png' alt='Jenny Wilson' loading='lazy' decoding='async' />
                 <AvatarFallback>JW</AvatarFallback>
               </Avatar>
             </div>
@@ -139,31 +139,43 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
               <img
                 src='/exchanges/binance/logo.svg'
                 alt='Binance'
+                loading='lazy'
+                decoding='async'
                 className='h-8 w-auto shrink-0 object-contain opacity-80 grayscale transition-opacity duration-300 hover:opacity-90 dark:invert'
               />
               <img
                 src='/exchanges/bitget/logo.png'
                 alt='Bitget'
+                loading='lazy'
+                decoding='async'
                 className='h-8 w-auto shrink-0 object-contain opacity-95 grayscale transition-opacity duration-300 hover:opacity-100 dark:invert'
               />
               <img
                 src='/exchanges/gate/logo.png'
                 alt='Gate.io'
+                loading='lazy'
+                decoding='async'
                 className='h-8 w-auto shrink-0 object-contain opacity-35 grayscale transition-opacity duration-300 hover:opacity-70 dark:invert'
               />
               <img
                 src='/exchanges/hyperliquid/logo-light.svg'
                 alt='Hyperliquid'
+                loading='lazy'
+                decoding='async'
                 className='h-8 w-auto shrink-0 object-contain opacity-30 grayscale transition-opacity duration-300 hover:opacity-70 dark:invert'
               />
               <img
                 src='/exchanges/okx/logo-light.svg'
                 alt='OKX'
+                loading='lazy'
+                decoding='async'
                 className='h-6 w-auto shrink-0 object-contain opacity-40 grayscale transition-opacity duration-300 hover:opacity-75 dark:invert'
               />
               <img
                 src='/exchanges/weex/logoweex_black.svg'
                 alt='Aster'
+                loading='lazy'
+                decoding='async'
                 className='h-7 w-auto shrink-0 object-contain opacity-80 grayscale transition-opacity duration-300 hover:opacity-90 dark:invert'
               />
             </Marquee>
@@ -187,7 +199,7 @@ const HeroSection = ({ avatarMotion }: { avatarMotion: AvatarProps[] }) => {
             >
               <Magnetic strength={0.5} range={120}>
                 <Avatar className={cn('ring-background ring-2', item.sizeClass)}>
-                  <AvatarImage src={item.src} alt={item.name} />
+                  <AvatarImage src={item.src} alt={item.name} loading='lazy' decoding='async' />
                   <AvatarFallback>{item.fallback}</AvatarFallback>
                 </Avatar>
               </Magnetic>

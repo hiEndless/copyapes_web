@@ -8,32 +8,32 @@ const EnterpriseCollaboration = () => {
       <div className='absolute flex size-88 flex-col items-center justify-center'>
         <Orbiting duration={30} radius={175} strokeWidth={1} startingAngle={45}>
           <span className='bg-background grid size-13 place-content-center rounded-full border shadow-sm'>
-            <img src='/exchanges/aster.png' alt='Aster Logo' className='size-7.5 object-contain' />
+            <img src='/exchanges/aster.png' alt='Aster Logo' loading='lazy' decoding='async' className='size-7.5 object-contain' />
           </span>
           <span className='bg-background grid size-13 place-content-center overflow-hidden rounded-full border shadow-sm'>
-            <img src='/exchanges/bicoin.png' alt='Bicoin Logo' className='size-full object-cover' />
+            <img src='/exchanges/bicoin.png' alt='Bicoin Logo' loading='lazy' decoding='async' className='size-full object-cover' />
           </span>
           <span className='bg-background grid size-13 place-content-center rounded-full border shadow-sm'>
-            <img src='/exchanges/binance.png' alt='Binance Logo' className='size-7.5 object-contain' />
+            <img src='/exchanges/binance.png' alt='Binance Logo' loading='lazy' decoding='async' className='size-7.5 object-contain' />
           </span>
           <span className='bg-background grid size-13 place-content-center overflow-hidden rounded-full border shadow-sm'>
-            <img src='/exchanges/bitget.png' alt='Bitget Logo' className='size-full object-cover' />
+            <img src='/exchanges/bitget.png' alt='Bitget Logo' loading='lazy' decoding='async' className='size-full object-cover' />
           </span>
         </Orbiting>
         <Orbiting duration={30} radius={135.5} strokeWidth={1} startingAngle={90}>
           <span className='bg-background grid size-13 place-content-center rounded-full border shadow-sm'>
-            <img src='/exchanges/gate.png' alt='Gate.io Logo' className='size-7.5 object-contain' />
+            <img src='/exchanges/gate.png' alt='Gate.io Logo' loading='lazy' decoding='async' className='size-7.5 object-contain' />
           </span>
           <span className='bg-background grid size-13 place-content-center overflow-hidden rounded-full border shadow-sm'>
-            <img src='/exchanges/hlq_logo.png' alt='HLQ Logo' className='size-full object-cover' />
+            <img src='/exchanges/hlq_logo.png' alt='HLQ Logo' loading='lazy' decoding='async' className='size-full object-cover' />
           </span>
         </Orbiting>
         <Orbiting duration={30} radius={90} strokeWidth={1}>
           <span className='bg-background grid size-13 place-content-center overflow-hidden rounded-full border shadow-sm'>
-            <img src='/exchanges/okx.png' alt='OKX Logo' className='size-full object-cover' />
+            <img src='/exchanges/okx.png' alt='OKX Logo' loading='lazy' decoding='async' className='size-full object-cover' />
           </span>
           <span className='bg-background grid size-13 place-content-center overflow-hidden rounded-full border shadow-sm'>
-            <img src='/exchanges/weex.png' alt='WEEX Logo' className='size-full object-cover' />
+            <img src='/exchanges/weex.png' alt='WEEX Logo' loading='lazy' decoding='async' className='size-full object-cover' />
           </span>
         </Orbiting>
 
@@ -42,6 +42,7 @@ const EnterpriseCollaboration = () => {
           alt='跟单猿 Logo'
           width={82}
           height={82}
+          loading='lazy'
           className='absolute top-1/2 left-1/2 z-10 size-20.5 -translate-x-1/2 -translate-y-1/2 object-contain'
         />
       </div>

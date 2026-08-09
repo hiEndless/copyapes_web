@@ -145,7 +145,7 @@ const ContactForm = () => {
       {siteKey ? (
         <Script
           src={TURNSTILE_SCRIPT}
-          strategy='afterInteractive'
+          strategy='lazyOnload'
           onLoad={onTurnstileScriptLoad}
           onError={onTurnstileScriptError}
         />
