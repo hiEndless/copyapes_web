@@ -17,7 +17,19 @@ function parseTimestampMs(value: unknown): number | null {
 function parseLegacyDateTime(value: unknown): number | null {
   if (typeof value !== 'string' || !value.trim()) return null
 
-  const timestamp = new Date(value).getTime()
+  const trimmed = value.trim()
+
+  // Date-only strings are UTC midnight in JS; use local midnight to avoid +8 → 08:00.
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) {
+    const [year, month, day] = trimmed.split('-').map(Number)
+    const localMidnight = new Date(year, month - 1, day).getTime()
+
+    if (!Number.isFinite(localMidnight)) return null
+
+    return localMidnight
+  }
+
+  const timestamp = new Date(trimmed).getTime()
 
   if (!Number.isFinite(timestamp)) return null
 
