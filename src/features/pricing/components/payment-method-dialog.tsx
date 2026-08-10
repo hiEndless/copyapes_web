@@ -148,10 +148,10 @@ export function PaymentMethodDialog({
       <DialogContent
         showCloseButton={false}
         className={cn(
-          'max-h-[min(90dvh,640px)] gap-0 overflow-hidden p-0 shadow-none sm:max-w-[532px]'
+          'flex max-h-[min(90dvh,640px)] flex-col gap-0 overflow-hidden p-0 shadow-none sm:max-w-[532px]'
         )}
       >
-        <DialogHeader className='border-border bg-muted/50 flex flex-row items-center justify-between gap-2 space-y-0 border-b px-4 py-3 text-left'>
+        <DialogHeader className='border-border bg-muted/50 flex shrink-0 flex-row items-center justify-between gap-2 space-y-0 border-b px-4 py-3 text-left'>
           <DialogTitle className='text-foreground text-base font-semibold'>{t('pay.title')}</DialogTitle>
           <DialogClose asChild>
             <Button type='button' variant='ghost' size='icon' className='size-8 shrink-0' aria-label={t('pay.closeAria')}>
@@ -160,7 +160,7 @@ export function PaymentMethodDialog({
           </DialogClose>
         </DialogHeader>
 
-        <div className='max-h-[calc(90dvh-200px)] overflow-y-auto px-4 py-4'>
+        <div className='min-h-0 flex-1 overflow-y-auto px-4 py-4'>
           <p className='text-foreground mb-2 text-sm font-medium'>{t('pay.selectExchange')}</p>
           <div className='mb-5 grid grid-cols-2 gap-2'>
             {(
@@ -248,7 +248,7 @@ export function PaymentMethodDialog({
           </div>
         </div>
 
-        <DialogFooter className='border-border bg-background gap-2 border-t px-4 py-3 sm:justify-end'>
+        <DialogFooter className='border-border bg-background shrink-0 gap-2 border-t px-4 py-3 sm:justify-end'>
           <DialogClose asChild>
             <Button type='button' variant='outline' size='sm' disabled={submitting}>
               {t('pay.close')}
