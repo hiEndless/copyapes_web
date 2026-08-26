@@ -2055,7 +2055,7 @@
         "title": "Binance delay notice:",
         "notice": "This delay is set by the exchange itself, not caused by the copy trading tool!",
         "publicLabel": "Copy public live trading:",
-        "publicDesc": "Recommended! 0 delay!",
+        "publicDesc": "No delay for opening; 3-5s delay for adding/reducing; about 10s delay for closing",
         "hiddenLabel": "Copy hidden live trading:",
         "hiddenDesc": "2-minute delay on opening, adding, reducing, and closing"
       }
