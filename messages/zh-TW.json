@@ -2863,7 +2863,18 @@
       "traderTypePlaceholder": "請選擇交易員類型",
       "invalidTraderUrl": "無效的跟單項目 ID",
       "selectExchangeFirst": "請先選擇交易所",
-      "submit": "建立跟單"
+      "submit": "建立跟單",
+      "projectIdHint": "輸入跟單項目 ID 或貼上主頁連結後點擊解析。",
+      "binanceProjectIdHint": "幣安跟單項目 ID 僅支援透過跟單猿瀏覽器外掛取得並自動回填，不支援手動輸入。",
+      "binanceProjectIdPlaceholder": "請使用外掛取得跟單項目 ID",
+      "binanceProjectIdEmpty": "尚未取得跟單項目 ID。請先開啟幣安跟單管理頁，點擊卡片上的「獲取跟單項目ID」，再選擇「帶回跟單猿」。",
+      "openBinanceCopyManagement": "開啟幣安跟單管理",
+      "installExtension": "安裝瀏覽器外掛",
+      "binanceManualToggle": "無法透過外掛取得？手動填寫",
+      "binanceManualWarning": "手動填寫可能導致跟單失敗，請優先使用外掛取得。",
+      "binanceManualPlaceholder": "輸入跟單項目 ID（純數字）",
+      "binanceManualConfirm": "確認使用",
+      "binanceManualCancel": "取消"
     },
     "traderType": {
       "okx": {

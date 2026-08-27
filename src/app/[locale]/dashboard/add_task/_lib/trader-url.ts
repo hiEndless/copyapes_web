@@ -41,6 +41,13 @@ function parseTraderIdFromUrl(urlStr: string, targetExchange: ExchangePlatform):
 
     if (leadId) return leadId
 
+    const portfolioId =
+      url.searchParams.get('portfolioId')?.trim() || url.searchParams.get('projectId')?.trim()
+
+    if (portfolioId && /^[A-Za-z0-9_-]+$/.test(portfolioId)) {
+      return portfolioId
+    }
+
     const smartMoneyIdx = segments.indexOf('smart-money')
 
     if (
@@ -64,6 +71,15 @@ export function parseTraderUrl(input: string, targetExchange: ExchangePlatform):
 
   if (looksLikeUrl(trimmed)) {
     return parseTraderIdFromUrl(trimmed, targetExchange)
+  }
+
+  // 兼容粘贴带 portfolioId 的请求片段 / JSON
+  const portfolioMatch =
+    trimmed.match(/[?&](?:portfolioId|projectId)=([A-Za-z0-9_-]+)/i) ||
+    trimmed.match(/"(?:portfolioId|projectId)"\s*:\s*"?([A-Za-z0-9_-]+)"?/i)
+
+  if (portfolioMatch?.[1]) {
+    return portfolioMatch[1]
   }
 
   return parseDirectTraderId(trimmed)

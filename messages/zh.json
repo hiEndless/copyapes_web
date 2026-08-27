@@ -2863,7 +2863,18 @@
       "traderTypePlaceholder": "请选择交易员类型",
       "invalidTraderUrl": "无效的跟单项目 ID",
       "selectExchangeFirst": "请先选择交易所",
-      "submit": "创建跟单"
+      "submit": "创建跟单",
+      "projectIdHint": "输入跟单项目 ID 或粘贴主页链接后点击解析。",
+      "binanceProjectIdHint": "币安跟单项目 ID 仅支持通过跟单猿浏览器插件获取并自动回填，不支持手动输入。",
+      "binanceProjectIdPlaceholder": "请使用插件获取跟单项目 ID",
+      "binanceProjectIdEmpty": "尚未获取到跟单项目 ID。请先打开币安跟单管理页，点击卡片上的「获取跟单项目ID」，再选择「带回跟单猿」。",
+      "openBinanceCopyManagement": "打开币安跟单管理",
+      "installExtension": "安装浏览器插件",
+      "binanceManualToggle": "无法通过插件获取？手动填写",
+      "binanceManualWarning": "手动填写可能导致跟单失败，优先使用插件获取。",
+      "binanceManualPlaceholder": "输入跟单项目 ID（纯数字）",
+      "binanceManualConfirm": "确认使用",
+      "binanceManualCancel": "取消"
     },
     "traderType": {
       "okx": {

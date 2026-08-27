@@ -2861,7 +2861,18 @@
       "traderTypePlaceholder": "트레이더 유형 선택",
       "invalidTraderUrl": "유효하지 않은 카피 프로젝트 ID",
       "selectExchangeFirst": "먼저 거래소를 선택하세요",
-      "submit": "카피 작업 생성"
+      "submit": "카피 작업 생성",
+      "projectIdHint": "카피 프로젝트 ID를 입력하거나 프로필 URL을 붙여넣은 뒤 파싱하세요.",
+      "binanceProjectIdHint": "바이낸스 카피 프로젝트 ID는 CopyApes 브라우저 확장 프로그램으로만 가져와 자동 입력할 수 있습니다. 수동 입력은 지원하지 않습니다.",
+      "binanceProjectIdPlaceholder": "확장 프로그램으로 카피 프로젝트 ID를 가져오세요",
+      "binanceProjectIdEmpty": "아직 ID가 없습니다. 바이낸스 카피 관리 페이지에서 “Get Copy Project ID”를 누른 뒤 “Open CopyApes”를 선택하세요.",
+      "openBinanceCopyManagement": "바이낸스 카피 관리 열기",
+      "installExtension": "확장 프로그램 설치",
+      "binanceManualToggle": "확장 프로그램을 사용할 수 없나요? 수동 입력",
+      "binanceManualWarning": "수동 입력은 카피 실패를 유발할 수 있습니다. 확장 프로그램 사용을 권장합니다.",
+      "binanceManualPlaceholder": "카피 프로젝트 ID 입력 (숫자만)",
+      "binanceManualConfirm": "확인",
+      "binanceManualCancel": "취소"
     },
     "traderType": {
       "okx": {

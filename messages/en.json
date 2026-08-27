@@ -2861,7 +2861,18 @@
       "traderTypePlaceholder": "Select trader type",
       "invalidTraderUrl": "Invalid copy project ID",
       "selectExchangeFirst": "Please select an exchange first",
-      "submit": "Create copy task"
+      "submit": "Create copy task",
+      "projectIdHint": "Enter the copy project ID or paste a profile URL, then click Parse.",
+      "binanceProjectIdHint": "Binance copy project IDs can only be filled via the CopyApes browser extension. Manual input is disabled.",
+      "binanceProjectIdPlaceholder": "Use the extension to get the copy project ID",
+      "binanceProjectIdEmpty": "No copy project ID yet. Open Binance Copy Management, click “Get Copy Project ID”, then choose “Open CopyApes”.",
+      "openBinanceCopyManagement": "Open Binance Copy Management",
+      "installExtension": "Install Extension",
+      "binanceManualToggle": "Cannot use the extension? Enter manually",
+      "binanceManualWarning": "Manual entry may cause copy failures. Prefer the extension.",
+      "binanceManualPlaceholder": "Enter copy project ID (digits only)",
+      "binanceManualConfirm": "Confirm",
+      "binanceManualCancel": "Cancel"
     },
     "traderType": {
       "okx": {

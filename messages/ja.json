@@ -2861,7 +2861,18 @@
       "traderTypePlaceholder": "トレーダータイプを選択",
       "invalidTraderUrl": "無効なフォロープロジェクト ID",
       "selectExchangeFirst": "先に取引所を選択してください",
-      "submit": "コピータスクを作成"
+      "submit": "コピータスクを作成",
+      "projectIdHint": "コピープロジェクト ID を入力するか、プロフィール URL を貼り付けて解析してください。",
+      "binanceProjectIdHint": "Binance のコピープロジェクト ID は CopyApes 拡張機能でのみ取得・自動入力できます。手入力はできません。",
+      "binanceProjectIdPlaceholder": "拡張機能でコピープロジェクト ID を取得してください",
+      "binanceProjectIdEmpty": "まだ ID がありません。Binance のコピー管理ページで「Get Copy Project ID」を押し、「Open CopyApes」を選択してください。",
+      "openBinanceCopyManagement": "Binance コピー管理を開く",
+      "installExtension": "拡張機能をインストール",
+      "binanceManualToggle": "拡張機能が使えない場合は手入力",
+      "binanceManualWarning": "手入力はコピー失敗の原因になることがあります。拡張機能の利用を推奨します。",
+      "binanceManualPlaceholder": "コピープロジェクト ID を入力（数字のみ）",
+      "binanceManualConfirm": "確認",
+      "binanceManualCancel": "キャンセル"
     },
     "traderType": {
       "okx": {

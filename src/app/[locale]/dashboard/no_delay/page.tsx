@@ -2,10 +2,11 @@
 
 import * as React from 'react'
 
-import { Zap, Search } from 'lucide-react'
+import { Zap, Search, ExternalLink } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
 import { useTranslations } from 'next-intl'
+import { useSearchParams } from 'next/navigation'
 
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -13,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { CopyTaskConfigSheet } from '../add_task/_components/copy-task-config-sheet'
@@ -29,8 +31,13 @@ type CookieTrader = {
   platform: 'okx' | 'binance' | 'bitget' | 'gate'
 }
 
+const BINANCE_COPY_MANAGEMENT_URL = 'https://www.binance.com/zh-CN/copy-trading/copy-management'
+const EXTENSION_STORE_URL =
+  'https://chromewebstore.google.com/detail/copyapes-assistant/affmjifigldmicnbgpghddaneomejmfo?hl=zh-CN'
+
 export default function NoDelayPage() {
   const t = useTranslations('DashboardNoDelay')
+  const searchParams = useSearchParams()
   const [myCookies, setMyCookies] = React.useState<CookieTrader[]>([])
   const [exchange, setExchange] = React.useState<'okx' | 'binance' | ''>('okx')
   const [traderUrl, setTraderUrl] = React.useState('')
@@ -41,6 +48,29 @@ export default function NoDelayPage() {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [searchResults, setSearchResults] = React.useState<CookieTrader[] | null>(null)
   const [selectedTrader, setSelectedTrader] = React.useState<CookieTrader | null>(null)
+  const [showBinanceManualInput, setShowBinanceManualInput] = React.useState(false)
+  const [binanceManualInput, setBinanceManualInput] = React.useState('')
+
+  React.useEffect(() => {
+    const projectId = (searchParams.get('projectId') || searchParams.get('portfolioId') || '').trim()
+    const exchangeParam = (searchParams.get('exchange') || '').trim().toLowerCase()
+
+    if (exchangeParam === 'binance' || exchangeParam === 'okx') {
+      setExchange(exchangeParam)
+      setTraderType('2')
+    }
+
+    if (projectId) {
+      setTraderUrl(projectId)
+      setUniqueName(projectId)
+      setShowBinanceManualInput(false)
+      setBinanceManualInput('')
+      if (!exchangeParam) {
+        setExchange('binance')
+        setTraderType('2')
+      }
+    }
+  }, [searchParams])
 
   React.useEffect(() => {
     const fetchMyCookies = async () => {
@@ -136,10 +166,41 @@ export default function NoDelayPage() {
 
   const handleExchangeChange = (value: 'okx' | 'binance') => {
     setExchange(value)
+    setTraderType('2')
+
+    if (value === 'binance') {
+      const projectId = (searchParams.get('projectId') || searchParams.get('portfolioId') || '').trim()
+      setTraderUrl(projectId)
+      setUniqueName(projectId)
+      setShowBinanceManualInput(false)
+      setBinanceManualInput('')
+      return
+    }
+
     setTraderUrl('')
     setUniqueName('')
-    setTraderType('2')
+    setShowBinanceManualInput(false)
+    setBinanceManualInput('')
   }
+
+  const openBinanceCopyManagement = () => {
+    window.open(BINANCE_COPY_MANAGEMENT_URL, '_blank', 'noopener,noreferrer')
+  }
+
+  const handleBinanceManualConfirm = () => {
+    const parsed = parseTraderUrl(binanceManualInput.trim(), 'binance')
+
+    if (!parsed) {
+      setUniqueName(invalidTraderUrlText)
+      return
+    }
+
+    setUniqueName(parsed)
+    setTraderUrl(parsed)
+    setShowBinanceManualInput(false)
+  }
+
+  const isBinanceExchange = exchange === 'binance'
 
   return (
     <div className='flex h-full items-start justify-center overflow-y-auto p-4 lg:p-8'>
@@ -231,6 +292,12 @@ export default function NoDelayPage() {
               <CardDescription>{t('card.description')}</CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
+              <Alert>
+                <AlertDescription className='text-sm'>
+                  {isBinanceExchange ? t('form.binanceProjectIdHint') : t('form.projectIdHint')}
+                </AlertDescription>
+              </Alert>
+
               {/* 0. 选择目标交易所 */}
               <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.cookieTaskExchange)}>
                 <Label>{t('form.selectExchange')}</Label>
@@ -449,32 +516,93 @@ export default function NoDelayPage() {
                 </TabsContent>
               </Tabs>
 
-              {/* 2. 提交交易员主页链接或 ID */}
+              {/* 2. 跟单项目 ID */}
               <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskTrader)}>
                 <Label className='flex items-center gap-1'>
                   <span className='text-destructive'>*</span>
                   {t('form.traderLabel')}
                 </Label>
-                <div className='flex gap-2'>
-                  <Input
-                    placeholder={
-                      exchange ? t('form.traderInputPlaceholder') : t('form.traderInputPlaceholderNoExchange')
-                    }
-                    value={traderUrl}
-                    onChange={e => setTraderUrl(e.target.value)}
-                  />
-                  <Button
-                    onClick={handleParseUrl}
-                    className='dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80 dark:border-border dark:border'
-                    variant='secondary'
-                  >
-                    {t('form.parse')}
-                  </Button>
-                </div>
+
+                {isBinanceExchange ? (
+                  <div className='space-y-3'>
+                    <Input
+                      readOnly
+                      placeholder={t('form.binanceProjectIdPlaceholder')}
+                      value={uniqueName}
+                      className='bg-muted font-mono'
+                    />
+                    <div className='flex flex-wrap gap-2'>
+                      <Button type='button' onClick={openBinanceCopyManagement}>
+                        <ExternalLink className='mr-2 h-4 w-4' />
+                        {t('form.openBinanceCopyManagement')}
+                      </Button>
+                      <Button type='button' variant='outline' asChild>
+                        <a href={EXTENSION_STORE_URL} target='_blank' rel='noopener noreferrer'>
+                          {t('form.installExtension')}
+                        </a>
+                      </Button>
+                    </div>
+                    {!uniqueName ? (
+                      <p className='text-muted-foreground text-xs'>{t('form.binanceProjectIdEmpty')}</p>
+                    ) : null}
+                    {!showBinanceManualInput ? (
+                      <button
+                        type='button'
+                        className='text-muted-foreground hover:text-foreground text-xs underline-offset-4 hover:underline'
+                        onClick={() => setShowBinanceManualInput(true)}
+                      >
+                        {t('form.binanceManualToggle')}
+                      </button>
+                    ) : (
+                      <div className='space-y-2 rounded-lg border border-dashed p-3'>
+                        <p className='text-xs text-amber-600 dark:text-amber-500'>{t('form.binanceManualWarning')}</p>
+                        <Input
+                          placeholder={t('form.binanceManualPlaceholder')}
+                          value={binanceManualInput}
+                          onChange={e => setBinanceManualInput(e.target.value)}
+                          className='font-mono'
+                        />
+                        <div className='flex flex-wrap gap-2'>
+                          <Button type='button' size='sm' onClick={handleBinanceManualConfirm}>
+                            {t('form.binanceManualConfirm')}
+                          </Button>
+                          <Button
+                            type='button'
+                            size='sm'
+                            variant='ghost'
+                            onClick={() => {
+                              setShowBinanceManualInput(false)
+                              setBinanceManualInput('')
+                            }}
+                          >
+                            {t('form.binanceManualCancel')}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className='flex gap-2'>
+                    <Input
+                      placeholder={
+                        exchange ? t('form.traderInputPlaceholder') : t('form.traderInputPlaceholderNoExchange')
+                      }
+                      value={traderUrl}
+                      onChange={e => setTraderUrl(e.target.value)}
+                    />
+                    <Button
+                      onClick={handleParseUrl}
+                      className='dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80 dark:border-border dark:border'
+                      variant='secondary'
+                    >
+                      {t('form.parse')}
+                    </Button>
+                  </div>
+                )}
               </div>
 
-              {/* 解析出的 UniqueName */}
-              {uniqueName && (
+              {/* 解析出的 UniqueName（OKX） */}
+              {!isBinanceExchange && uniqueName ? (
                 <div className='space-y-2'>
                   <Label className='flex items-center gap-1'>
                     <span className='text-destructive'>*</span>
@@ -482,7 +610,7 @@ export default function NoDelayPage() {
                   </Label>
                   <Input value={uniqueName} readOnly className='bg-muted' />
                 </div>
-              )}
+              ) : null}
 
               {/* 3. 选择交易员类型 */}
               {exchange && (
