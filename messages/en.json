@@ -510,6 +510,7 @@
       "studioTasks": "Advanced Tasks",
       "positions": "Positions",
       "addPositions": "Manual Top-up",
+      "noDelay": "No-Delay Copy",
       "api": "API Management",
       "account": "Account",
       "notifications": "Notifications"
@@ -2837,6 +2838,61 @@
       "toggleWechatFailed": "Failed to toggle WeChat notifications",
       "toggleQqEmailFailed": "Failed to toggle QQ Mail notifications",
       "toggleDingtalkFailed": "Failed to toggle DingTalk notifications"
+    }
+  },
+  "DashboardNoDelay": {
+    "hero": {
+      "title": "No-Delay Copy",
+      "subtitle": "For traders whose live positions are only visible after following on the exchange or after logging in, exchange Cookie enables no-delay copy trading.",
+      "getCookie": "Get Exchange Cookie"
+    },
+    "card": {
+      "title": "Create No-Delay Copy Task",
+      "description": "Configure your copy parameters to start monitoring and mirroring the target trader."
+    },
+    "form": {
+      "selectExchange": "Select target exchange",
+      "traderLabel": "Copy Project ID",
+      "traderInputPlaceholder": "Enter copy project ID",
+      "traderInputPlaceholderNoExchange": "Select an exchange first, then enter the copy project ID",
+      "parse": "Parse",
+      "uniqueNameLabel": "Copy Project ID",
+      "traderTypeLabel": "Trader type",
+      "traderTypePlaceholder": "Select trader type",
+      "invalidTraderUrl": "Invalid copy project ID",
+      "selectExchangeFirst": "Please select an exchange first",
+      "submit": "Create copy task"
+    },
+    "traderType": {
+      "okx": {
+        "contract": "Futures lead trading",
+        "project": "Lead trading project"
+      },
+      "binance": {
+        "project": "Lead trading project",
+        "smartMoney": "Smart money",
+        "followProject": "Copy Project"
+      }
+    },
+    "cookie": {
+      "myTab": "My Cookies",
+      "searchTab": "Discover Cookies",
+      "statusLabel": "Status:",
+      "statusActive": "Active",
+      "statusExpired": "Expired",
+      "creatorLabel": "Creator:",
+      "myEmpty": "No Cookie found for {exchange}. Please add one first",
+      "exchangeOkx": "OKX",
+      "exchangeBinance": "Binance",
+      "searchPlaceholder": "Search by Cookie name or keyword...",
+      "search": "Search",
+      "searchHint": "Enter a keyword and click search to discover other users' Cookie signals",
+      "searchEmpty": "No related Cookie signals found",
+      "anonymousFallback": "Anonymous user"
+    },
+    "errors": {
+      "invalidUrl": "Invalid copy project ID",
+      "selectExchangeFirst": "Please select an exchange first"
     }
   }
 }

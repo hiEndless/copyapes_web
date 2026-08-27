@@ -59,7 +59,11 @@ export function getRoleType(
   } else if (tp === '8') {
     if (rt === '1') return t('params.roleTypes.okxContract')
     if (rt === '2') return t('params.roleTypes.okxCookieProject')
-  } else if (tp === '2' || tp === '5' || tp === '7') {
+  } else if (tp === '7') {
+    if (rt === '1') return t('params.roleTypes.binancePublic')
+    if (rt === '2') return t('params.roleTypes.okxCookieProject')
+    if (rt === '3') return t('params.roleTypes.binanceSmart')
+  } else if (tp === '2' || tp === '5') {
     if (rt === '1') return t('params.roleTypes.binancePublic')
     if (rt === '2') return t('params.roleTypes.binanceHidden')
     if (rt === '3') return t('params.roleTypes.binanceSmart')

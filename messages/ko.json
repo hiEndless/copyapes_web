@@ -510,6 +510,7 @@
       "studioTasks": "고급 태스크",
       "positions": "포지션",
       "addPositions": "수동 추가 입금",
+      "noDelay": "무지연 카피",
       "api": "API 관리",
       "account": "계정",
       "notifications": "알림"
@@ -2837,6 +2838,61 @@
       "toggleWechatFailed": "WeChat 알림 전환 실패",
       "toggleQqEmailFailed": "QQ 메일 알림 전환 실패",
       "toggleDingtalkFailed": "DingTalk 알림 전환 실패"
+    }
+  },
+  "DashboardNoDelay": {
+    "hero": {
+      "title": "무지연 카피",
+      "subtitle": "거래소에서 팔로우한 뒤에야 실시간 포지션을 볼 수 있거나, 로그인해야 보유 정보가 보이는 트레이더를 위해 거래소 Cookie로 무지연 카피를 구현합니다.",
+      "getCookie": "거래소 Cookie 가져오기"
+    },
+    "card": {
+      "title": "무지연 카피 작업 생성",
+      "description": "카피 파라미터를 설정해 대상 트레이더 전략 모니터링과 복제를 시작합니다."
+    },
+    "form": {
+      "selectExchange": "대상 거래소 선택",
+      "traderLabel": "카피 프로젝트 ID",
+      "traderInputPlaceholder": "카피 프로젝트 ID 입력",
+      "traderInputPlaceholderNoExchange": "먼저 거래소를 선택한 후 카피 프로젝트 ID를 입력하세요",
+      "parse": "분석",
+      "uniqueNameLabel": "카피 프로젝트 ID",
+      "traderTypeLabel": "트레이더 유형",
+      "traderTypePlaceholder": "트레이더 유형 선택",
+      "invalidTraderUrl": "유효하지 않은 카피 프로젝트 ID",
+      "selectExchangeFirst": "먼저 거래소를 선택하세요",
+      "submit": "카피 작업 생성"
+    },
+    "traderType": {
+      "okx": {
+        "contract": "선물 리드 트레이딩",
+        "project": "리드 트레이딩 프로젝트"
+      },
+      "binance": {
+        "project": "리드 트레이딩 프로젝트",
+        "smartMoney": "스마트 머니",
+        "followProject": "카피 프로젝트"
+      }
+    },
+    "cookie": {
+      "myTab": "내 쿠키",
+      "searchTab": "쿠키 찾기",
+      "statusLabel": "상태:",
+      "statusActive": "유효",
+      "statusExpired": "만료됨",
+      "creatorLabel": "생성자:",
+      "myEmpty": "{exchange}에서 쿠키를 찾을 수 없습니다. 먼저 추가해주세요",
+      "exchangeOkx": "OKX",
+      "exchangeBinance": "바이낸스",
+      "searchPlaceholder": "쿠키 이름 또는 키워드로 검색...",
+      "search": "검색",
+      "searchHint": "키워드를 입력하고 검색을 클릭하여 다른 사용자의 쿠키 시그널을 찾아보세요",
+      "searchEmpty": "관련 쿠키 시그널을 찾을 수 없습니다",
+      "anonymousFallback": "익명 사용자"
+    },
+    "errors": {
+      "invalidUrl": "유효하지 않은 카피 프로젝트 ID",
+      "selectExchangeFirst": "먼저 거래소를 선택하세요"
     }
   }
 }

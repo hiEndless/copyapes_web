@@ -1,0 +1,540 @@
+'use client'
+
+import * as React from 'react'
+
+import { Zap, Search } from 'lucide-react'
+import Image from 'next/image'
+import { motion } from 'motion/react'
+import { useTranslations } from 'next-intl'
+
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { MotionPreset } from '@/components/ui/motion-preset'
+import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
+import { CopyTaskConfigSheet } from '../add_task/_components/copy-task-config-sheet'
+import { isInvalidUniqueName, parseTraderUrl } from '../add_task/_lib/trader-url'
+
+import { getCookies, searchCookie } from '@/api/cookie'
+import { cn } from '@/lib/utils'
+
+type CookieTrader = {
+  id: string
+  name: string
+  owner?: string
+  status: 'active' | 'expired'
+  platform: 'okx' | 'binance' | 'bitget' | 'gate'
+}
+
+export default function NoDelayPage() {
+  const t = useTranslations('DashboardNoDelay')
+  const [myCookies, setMyCookies] = React.useState<CookieTrader[]>([])
+  const [exchange, setExchange] = React.useState<'okx' | 'binance' | ''>('okx')
+  const [traderUrl, setTraderUrl] = React.useState('')
+  const [uniqueName, setUniqueName] = React.useState('')
+  const [traderType, setTraderType] = React.useState('2')
+  const [isConfigOpen, setIsConfigOpen] = React.useState(false)
+
+  const [searchQuery, setSearchQuery] = React.useState('')
+  const [searchResults, setSearchResults] = React.useState<CookieTrader[] | null>(null)
+  const [selectedTrader, setSelectedTrader] = React.useState<CookieTrader | null>(null)
+
+  React.useEffect(() => {
+    const fetchMyCookies = async () => {
+      try {
+        const res = await getCookies()
+
+        if (res.code === 0 && Array.isArray(res.data)) {
+          const mappedCookies: CookieTrader[] = res.data.map((c: any) => ({
+            id: String(c.curl_id),
+            name: c.curl_name,
+            status: c.available ? 'active' : 'expired',
+            platform: String(c.exchange) === '1' ? 'okx' : 'binance'
+          }))
+
+          setMyCookies(mappedCookies)
+        }
+      } catch (error) {
+        console.error('Failed to fetch cookies', error)
+      }
+    }
+
+    fetchMyCookies()
+  }, [])
+
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults(null)
+
+      return
+    }
+
+    try {
+      const res = await searchCookie(searchQuery)
+
+      if (res.code === 0 && Array.isArray(res.data)) {
+        const results: CookieTrader[] = res.data.map((c: any) => ({
+          id: String(c.curl_id),
+          name: c.curl_name,
+          owner: c.username || t('cookie.anonymousFallback'),
+          status: c.available ? 'active' : 'expired',
+          platform: String(c.exchange) === '1' ? 'okx' : 'binance'
+        }))
+
+        setSearchResults(results)
+      } else {
+        setSearchResults([])
+      }
+    } catch (error) {
+      console.error('Failed to search cookies', error)
+      setSearchResults([])
+    }
+  }
+
+  const handleCopy = (trader: CookieTrader) => {
+    setSelectedTrader(trader)
+  }
+
+  // 获取当前交易所的我自己的 Cookie
+  const currentMyCookies = myCookies.filter(c => c.platform === exchange)
+
+  React.useEffect(() => {
+    // 切换交易所或加载数据时，默认选中第一个有效的 Cookie
+    const firstActive = currentMyCookies.find(c => c.status === 'active')
+
+    if (firstActive) {
+      setSelectedTrader(firstActive)
+    } else {
+      setSelectedTrader(null)
+    }
+  }, [exchange, myCookies])
+
+  const invalidTraderUrlText = t('errors.invalidUrl')
+  const selectExchangeFirstText = t('errors.selectExchangeFirst')
+
+  // 解析交易员主页链接获取 uniqueName
+  const handleParseUrl = () => {
+    if (!traderUrl.trim()) {
+      setUniqueName('')
+
+      return
+    }
+
+    if (!exchange) {
+      setUniqueName(selectExchangeFirstText)
+
+      return
+    }
+
+    const parsed = parseTraderUrl(traderUrl, exchange)
+
+    setUniqueName(parsed ?? invalidTraderUrlText)
+  }
+
+  const handleExchangeChange = (value: 'okx' | 'binance') => {
+    setExchange(value)
+    setTraderUrl('')
+    setUniqueName('')
+    setTraderType('2')
+  }
+
+  return (
+    <div className='flex h-full items-start justify-center overflow-y-auto p-4 lg:p-8'>
+      <div className='w-full max-w-2xl space-y-6 pb-20'>
+        <MotionPreset fade blur slide={{ direction: 'down' }} delay={0.6} transition={{ duration: 0.5 }}>
+          <Card
+            className={`overflow-hidden rounded-xl border-none bg-blue-600 bg-[url('https://cdn.shadcnstudio.com/ss-assets/blocks/marketing/download/image-09.png')] bg-cover bg-center p-0 pt-6 shadow-lg sm:pt-8 lg:h-[216px]`}
+          >
+            <CardContent className='flex gap-6 px-6 max-sm:flex-col max-sm:gap-2 max-sm:text-center sm:px-10'>
+              <div className='space-y-3 pb-2 sm:flex-1 sm:pb-8'>
+                <h2 className='flex items-center gap-2 text-xl font-bold tracking-tighter text-white max-sm:mx-auto sm:text-xl md:text-xl'>
+                  <Zap className='h-6 w-6' />
+                  {t('hero.title')}
+                </h2>
+                <p className='mb-3 text-sm text-white/70'>{t('hero.subtitle')}</p>
+                <div className='flex items-center gap-3 max-sm:flex-wrap max-sm:justify-center'>
+                  <a
+                    href='/dashboard/cookie'
+                    rel='noopener noreferrer'
+                    className='flex h-8 items-center justify-center rounded-md bg-white px-3 text-xs font-medium text-black/90 sm:h-9 sm:text-sm'
+                  >
+                    {t('hero.getCookie')}
+                  </a>
+                </div>
+              </div>
+              <div className='flex items-center justify-center pb-6 sm:my-auto sm:min-w-56 sm:pb-0'>
+                {/* Logo 云布局：移动端一行四列，大屏两行两列错位 */}
+                <div className='flex flex-row gap-3 sm:flex-row sm:gap-4'>
+                  {/* 第一组：在移动端是前两个，大屏是第一列 */}
+                  <div className='flex flex-row gap-3 sm:flex-col sm:gap-4'>
+                    <motion.div
+                      className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-blue-600 shadow-lg backdrop-blur-sm sm:h-14 sm:w-14'
+                      animate={{ scale: [1, 1.08, 1], y: [0, -5, 0] }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <img
+                        src='/exchanges/binance.png'
+                        alt='binance'
+                        className='object-over h-full w-full transition-all duration-300 hover:scale-110 sm:h-10 sm:w-10'
+                      />
+                    </motion.div>
+                    <motion.div
+                      className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white shadow-lg backdrop-blur-sm sm:h-14 sm:w-14'
+                      animate={{ scale: [1, 1.08, 1], y: [0, 5, 0] }}
+                      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <img
+                        src='/exchanges/okx.png'
+                        alt='okx'
+                        className='h-full w-full object-cover transition-all duration-300 hover:scale-110'
+                      />
+                    </motion.div>
+                  </div>
+                  {/* 第二组：在移动端是后两个，大屏是第二列（错位排布） */}
+                  <div className='flex flex-row gap-3 sm:mt-8 sm:flex-col sm:gap-4'>
+                    <motion.div
+                      className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white shadow-lg backdrop-blur-sm sm:h-14 sm:w-14'
+                      animate={{ scale: [1, 1.08, 1], y: [0, 5, 0] }}
+                      transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <img
+                        src='/exchanges/bitget.png'
+                        alt='bitget'
+                        className='h-full w-full object-cover transition-all duration-300 hover:scale-110'
+                      />
+                    </motion.div>
+                    <motion.div
+                      className='flex h-12 w-12 items-center justify-center overflow-hidden rounded-full bg-white shadow-lg backdrop-blur-sm sm:h-14 sm:w-14'
+                      animate={{ scale: [1, 1.08, 1], y: [0, -5, 0] }}
+                      transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+                    >
+                      <img
+                        src='/exchanges/gate.png'
+                        alt='gate'
+                        className='h-full w-full object-cover transition-all duration-300 hover:scale-110'
+                      />
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </MotionPreset>
+
+        <MotionPreset fade blur slide={{ direction: 'down' }} delay={0.8} transition={{ duration: 0.5 }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>{t('card.title')}</CardTitle>
+              <CardDescription>{t('card.description')}</CardDescription>
+            </CardHeader>
+            <CardContent className='space-y-6'>
+              {/* 0. 选择目标交易所 */}
+              <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.cookieTaskExchange)}>
+                <Label>{t('form.selectExchange')}</Label>
+                <div className='grid grid-cols-2 gap-3 sm:gap-4'>
+                  <button
+                    type='button'
+                    onClick={() => handleExchangeChange('okx')}
+                    className={cn(
+                      'hover:bg-muted/50 flex h-16 items-center justify-center rounded-xl border-2 p-3 transition-all sm:h-20 sm:p-4',
+                      exchange === 'okx'
+                        ? 'border-primary bg-primary/5'
+                        : 'bg-muted/30 hover:border-primary/20 border-transparent'
+                    )}
+                  >
+                    <Image
+                      src='/exchanges/okx/logo-light.svg'
+                      alt='OKX'
+                      width={100}
+                      height={32}
+                      className='h-5 w-auto object-contain sm:h-6 dark:hidden'
+                    />
+                    <Image
+                      src='/exchanges/okx/logo-dark.png'
+                      alt='OKX'
+                      width={100}
+                      height={32}
+                      className='hidden h-6 w-auto object-contain sm:h-7 dark:block'
+                    />
+                  </button>
+
+                  <button
+                    type='button'
+                    onClick={() => handleExchangeChange('binance')}
+                    className={cn(
+                      'hover:bg-muted/50 flex h-16 items-center justify-center rounded-xl border-2 p-3 transition-all sm:h-20 sm:p-4',
+                      exchange === 'binance'
+                        ? 'border-primary bg-primary/5'
+                        : 'bg-muted/30 hover:border-primary/20 border-transparent'
+                    )}
+                  >
+                    <Image
+                      src='/exchanges/binance/logo.svg'
+                      alt='Binance'
+                      width={100}
+                      height={32}
+                      className='h-6 w-auto object-contain sm:h-7'
+                    />
+                  </button>
+                </div>
+              </div>
+
+              {/* 交易所延迟提示信息 */}
+              {/* {exchange === 'okx' && (
+                <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
+                  <Info className='mt-0.5 h-4 w-4 shrink-0' />
+                  <div className='flex flex-col gap-1'>
+                    <p className='mb-2 font-semibold'>欧易交易所 有效期提示：</p>
+                    <p className='mt-1 text-xs'>
+                      官方 Cookie 有效期为长期，建议每周更新一次，以免突然失效导致任务失败终止。
+                    </p>
+                  </div>
+                </div>
+              )}
+              {exchange === 'binance' && (
+                <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
+                  <Info className='mt-0.5 h-4 w-4 shrink-0' />
+                  <div className='flex flex-col gap-1'>
+                    <p className='mb-2 font-semibold'>币安交易所 Cookie 有效期提示：</p>
+                    <p className='mt-1 text-xs'>
+                      官方 Cookie 有效期为5天，建议每4天更新一次，否则可能会导致任务失败终止。
+                    </p>
+                  </div>
+                </div>
+              )} */}
+
+              {/* 1. 选择目标交易所的 Cookie */}
+              <Tabs defaultValue='my-cookie' className='w-full pt-4' {...tourAnchor(TOUR_ANCHORS.cookieTaskSource)}>
+                <TabsList className='mb-6 grid w-full grid-cols-2'>
+                  <TabsTrigger value='my-cookie'>{t('cookie.myTab')}</TabsTrigger>
+                  <TabsTrigger value='search-cookie'>{t('cookie.searchTab')}</TabsTrigger>
+                </TabsList>
+
+                {/* 1. 我的 Cookie */}
+                <TabsContent value='my-cookie' className='space-y-4'>
+                  {currentMyCookies.length > 0 ? (
+                    <div className='grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                      {currentMyCookies.map(cookie => (
+                        <Card
+                          key={cookie.id}
+                          className={cn(
+                            'relative flex cursor-pointer flex-col justify-between p-4 transition-colors',
+                            cookie.status === 'active'
+                              ? 'hover:border-primary/50'
+                              : 'cursor-not-allowed opacity-60',
+                            selectedTrader?.id === cookie.id ? 'border-primary bg-primary/5' : ''
+                          )}
+                          onClick={() => {
+                            if (cookie.status === 'active') {
+                              handleCopy(cookie)
+                            }
+                          }}
+                        >
+                          <div className='flex items-start gap-3'>
+                            <div className='bg-muted/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-2'>
+                              <img
+                                src={`/exchanges/${cookie.platform}.png`}
+                                alt={cookie.platform}
+                                className='h-full w-full object-contain'
+                              />
+                            </div>
+                            <div className='flex-1 overflow-hidden'>
+                              <h3 className='truncate text-sm font-semibold'>{cookie.name}</h3>
+                              <p className='text-muted-foreground mt-1 text-xs'>
+                                {t('cookie.statusLabel')}{' '}
+                                <span
+                                  className={cn(
+                                    'font-medium',
+                                    cookie.status === 'active' ? 'text-green-500' : 'text-destructive'
+                                  )}
+                                >
+                                  {cookie.status === 'active' ? t('cookie.statusActive') : t('cookie.statusExpired')}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className='text-muted-foreground py-8 text-center text-sm border border-dashed rounded-xl'>
+                      {t('cookie.myEmpty', {
+                        exchange:
+                          exchange === 'okx'
+                            ? t('cookie.exchangeOkx')
+                            : exchange === 'binance'
+                              ? t('cookie.exchangeBinance')
+                              : exchange
+                      })}
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* 2. 发现其他 Cookie (搜索) */}
+                <TabsContent value='search-cookie' className='space-y-4'>
+                  <div className='flex items-center gap-2'>
+                    <div className='relative flex-1'>
+                      <Search className='text-muted-foreground absolute top-2.5 left-2.5 h-4 w-4' />
+                      <Input
+                        type='text'
+                        placeholder={t('cookie.searchPlaceholder')}
+                        className='pl-9'
+                        value={searchQuery}
+                        onChange={e => setSearchQuery(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                      />
+                    </div>
+                    <Button onClick={handleSearch}>{t('cookie.search')}</Button>
+                  </div>
+
+                  <div className='mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2'>
+                    {searchResults === null ? (
+                      <div className='text-muted-foreground col-span-1 py-8 text-center text-sm sm:col-span-2'>
+                        {t('cookie.searchHint')}
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      searchResults.map(cookie => (
+                        <Card
+                          key={cookie.id}
+                          className={cn(
+                            'relative flex cursor-pointer flex-col justify-between p-4 transition-colors',
+                            cookie.status === 'active' ? 'hover:border-primary/50' : 'cursor-not-allowed opacity-60',
+                            selectedTrader?.id === cookie.id ? 'border-primary bg-primary/5' : ''
+                          )}
+                          onClick={() => {
+                            if (cookie.status === 'active') {
+                              handleCopy(cookie)
+                            }
+                          }}
+                        >
+                          <div className='flex items-start gap-3'>
+                            <div className='bg-muted/50 flex h-10 w-10 shrink-0 items-center justify-center rounded-full p-2'>
+                              <img
+                                src={`/exchanges/${cookie.platform}.png`}
+                                alt={cookie.platform}
+                                className='h-full w-full object-contain'
+                              />
+                            </div>
+                            <div className='flex-1 overflow-hidden'>
+                              <h3 className='truncate text-sm font-semibold'>{cookie.name}</h3>
+                              {cookie.owner && (
+                                <p className='text-muted-foreground mt-1 text-xs'>
+                                  {t('cookie.creatorLabel')} <span className='text-foreground'>{cookie.owner}</span>
+                                </p>
+                              )}
+                              <p className='text-muted-foreground mt-1 text-xs'>
+                                {t('cookie.statusLabel')}{' '}
+                                <span
+                                  className={cn(
+                                    'font-medium',
+                                    cookie.status === 'active' ? 'text-green-500' : 'text-destructive'
+                                  )}
+                                >
+                                  {cookie.status === 'active' ? t('cookie.statusActive') : t('cookie.statusExpired')}
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                        </Card>
+                      ))
+                    ) : (
+                      <div className='text-muted-foreground col-span-1 py-8 text-center text-sm sm:col-span-2'>
+                        {t('cookie.searchEmpty')}
+                      </div>
+                    )}
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              {/* 2. 提交交易员主页链接或 ID */}
+              <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskTrader)}>
+                <Label className='flex items-center gap-1'>
+                  <span className='text-destructive'>*</span>
+                  {t('form.traderLabel')}
+                </Label>
+                <div className='flex gap-2'>
+                  <Input
+                    placeholder={
+                      exchange ? t('form.traderInputPlaceholder') : t('form.traderInputPlaceholderNoExchange')
+                    }
+                    value={traderUrl}
+                    onChange={e => setTraderUrl(e.target.value)}
+                  />
+                  <Button
+                    onClick={handleParseUrl}
+                    className='dark:bg-secondary dark:text-secondary-foreground dark:hover:bg-secondary/80 dark:border-border dark:border'
+                    variant='secondary'
+                  >
+                    {t('form.parse')}
+                  </Button>
+                </div>
+              </div>
+
+              {/* 解析出的 UniqueName */}
+              {uniqueName && (
+                <div className='space-y-2'>
+                  <Label className='flex items-center gap-1'>
+                    <span className='text-destructive'>*</span>
+                    {t('form.uniqueNameLabel')}
+                  </Label>
+                  <Input value={uniqueName} readOnly className='bg-muted' />
+                </div>
+              )}
+
+              {/* 3. 选择交易员类型 */}
+              {exchange && (
+                <div className='space-y-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskType)}>
+                  <Label className='flex items-center gap-1'>
+                    <span className='text-destructive'>*</span>
+                    {t('form.traderTypeLabel')}
+                  </Label>
+                  <Select onValueChange={setTraderType} value={traderType}>
+                    <SelectTrigger className='w-full'>
+                      <SelectValue placeholder={t('form.traderTypePlaceholder')} />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {exchange === 'okx' ? (
+                        <SelectItem value='2'>{t('traderType.okx.project')}</SelectItem>
+                      ) : (
+                        <SelectItem value='2'>{t('traderType.binance.followProject')}</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+            </CardContent>
+            <CardFooter className='flex justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskSubmit)}>
+              <Button
+                disabled={
+                  !exchange ||
+                  isInvalidUniqueName(uniqueName, [invalidTraderUrlText, selectExchangeFirstText]) ||
+                  !traderType ||
+                  !selectedTrader
+                }
+                onClick={() => setIsConfigOpen(true)}
+              >
+                {t('form.submit')}
+              </Button>
+            </CardFooter>
+          </Card>
+        </MotionPreset>
+      </div>
+
+      <CopyTaskConfigSheet
+        isOpen={isConfigOpen}
+        onClose={() => {
+          setIsConfigOpen(false)
+        }}
+        traderId={uniqueName}
+        traderName={uniqueName}
+        platform={exchange}
+        traderPlatform={exchange === 'binance' ? 7 : 8}
+        roleType={traderType}
+        cookieId={selectedTrader?.id}
+      />
+    </div>
+  )
+}

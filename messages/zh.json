@@ -512,6 +512,7 @@
       "studioTasks": "高级任务管理",
       "positions": "持仓管理",
       "addPositions": "手动补仓",
+      "noDelay": "无延迟跟单",
       "api": "API 管理",
       "account": "账户设置",
       "notifications": "消息通知"
@@ -2839,6 +2840,61 @@
       "toggleWechatFailed": "切换微信通知失败",
       "toggleQqEmailFailed": "切换QQ邮箱通知失败",
       "toggleDingtalkFailed": "切换钉钉通知失败"
+    }
+  },
+  "DashboardNoDelay": {
+    "hero": {
+      "title": "无延迟跟单",
+      "subtitle": "针对需要在交易所进行跟单后才能看到实时仓位变化的交易员，以及需要登录交易所账号才能看到持仓信息的交易员，使用交易所的 Cookie 可以实现无延迟跟单。",
+      "getCookie": "获取交易所 Cookie"
+    },
+    "card": {
+      "title": "创建无延迟跟单任务",
+      "description": "配置您的跟单参数，以开始监听并复制目标交易员的策略。"
+    },
+    "form": {
+      "selectExchange": "选择目标交易所",
+      "traderLabel": "跟单项目 ID",
+      "traderInputPlaceholder": "输入跟单项目 ID",
+      "traderInputPlaceholderNoExchange": "请先选择交易所，再输入跟单项目 ID",
+      "parse": "解析",
+      "uniqueNameLabel": "跟单项目 ID",
+      "traderTypeLabel": "交易员类型",
+      "traderTypePlaceholder": "请选择交易员类型",
+      "invalidTraderUrl": "无效的跟单项目 ID",
+      "selectExchangeFirst": "请先选择交易所",
+      "submit": "创建跟单"
+    },
+    "traderType": {
+      "okx": {
+        "contract": "合约带单",
+        "project": "跟单项目"
+      },
+      "binance": {
+        "project": "带单项目",
+        "smartMoney": "聪明钱",
+        "followProject": "跟单项目"
+      }
+    },
+    "cookie": {
+      "myTab": "我的 Cookie",
+      "searchTab": "发现 Cookie",
+      "statusLabel": "状态:",
+      "statusActive": "有效",
+      "statusExpired": "已失效",
+      "creatorLabel": "创建者:",
+      "myEmpty": "未找到您在 {exchange} 的 Cookie，请先前往添加",
+      "exchangeOkx": "欧易",
+      "exchangeBinance": "币安",
+      "searchPlaceholder": "输入 Cookie 名称或关键词搜索...",
+      "search": "搜索",
+      "searchHint": "请输入关键词并点击搜索，发现平台其他用户的 Cookie 信号",
+      "searchEmpty": "未找到相关 Cookie 信号",
+      "anonymousFallback": "匿名用户"
+    },
+    "errors": {
+      "invalidUrl": "无效的跟单项目 ID",
+      "selectExchangeFirst": "请先选择交易所"
     }
   }
 }

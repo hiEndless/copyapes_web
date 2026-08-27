@@ -50,7 +50,11 @@ const getRoleTypeLabel = (t: TranslateFn, platform: number, roleType?: number | 
   } else if (platform === 8) {
     if (rt === '1') return t('roleType.okxContract')
     if (rt === '2') return t('roleType.okxCookieProject')
-  } else if (platform === 2 || platform === 5 || platform === 7) {
+  } else if (platform === 7) {
+    if (rt === '1') return t('roleType.binancePublic')
+    if (rt === '2') return t('roleType.okxCookieProject')
+    if (rt === '3') return t('roleType.binanceSmart')
+  } else if (platform === 2 || platform === 5) {
     if (rt === '1') return t('roleType.binancePublic')
     if (rt === '2') return t('roleType.binanceHidden')
     if (rt === '3') return t('roleType.binanceSmart')

@@ -27,7 +27,8 @@ import {
   MessageCircleWarning,
   ListChecks,
   ListCheck,
-  Boxes
+  Boxes,
+  Zap
 } from 'lucide-react'
 
 import NextTopLoader, { useTopLoader } from 'nextjs-toploader'
@@ -209,6 +210,12 @@ const toolsItemConfigs: MenuItemConfig[] = [
 ]
 
 const studioToolsItemConfigs: MenuItemConfig[] = [
+  {
+    id: 'noDelay',
+    icon: Zap,
+    labelKey: 'nav.noDelay',
+    href: '/dashboard/no_delay'
+  },
   {
     id: 'studioTasks',
     icon: Boxes,

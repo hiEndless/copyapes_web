@@ -510,6 +510,7 @@
       "studioTasks": "高度なタスク",
       "positions": "ポジション",
       "addPositions": "手動追加入金",
+      "noDelay": "無遅延コピー",
       "api": "API 管理",
       "account": "アカウント",
       "notifications": "通知"
@@ -2837,6 +2838,61 @@
       "toggleWechatFailed": "WeChat通知の切替に失敗しました",
       "toggleQqEmailFailed": "QQメール通知の切替に失敗しました",
       "toggleDingtalkFailed": "DingTalk通知の切替に失敗しました"
+    }
+  },
+  "DashboardNoDelay": {
+    "hero": {
+      "title": "無遅延コピー",
+      "subtitle": "取引所でフォロー後にしかリアルタイムポジションが見えないトレーダーや、ログイン後にしか保有状況が見えないトレーダー向けに、取引所 Cookie で無遅延コピーを実現します。",
+      "getCookie": "取引所 Cookie を取得"
+    },
+    "card": {
+      "title": "無遅延コピータスクを作成",
+      "description": "コピーパラメータを設定し、対象トレーダーの戦略の監視と複製を開始します。"
+    },
+    "form": {
+      "selectExchange": "対象取引所を選択",
+      "traderLabel": "フォロープロジェクト ID",
+      "traderInputPlaceholder": "フォロープロジェクト ID を入力",
+      "traderInputPlaceholderNoExchange": "先に取引所を選択し、フォロープロジェクト ID を入力してください",
+      "parse": "解析",
+      "uniqueNameLabel": "フォロープロジェクト ID",
+      "traderTypeLabel": "トレーダータイプ",
+      "traderTypePlaceholder": "トレーダータイプを選択",
+      "invalidTraderUrl": "無効なフォロープロジェクト ID",
+      "selectExchangeFirst": "先に取引所を選択してください",
+      "submit": "コピータスクを作成"
+    },
+    "traderType": {
+      "okx": {
+        "contract": "先物リードトレーディング",
+        "project": "リードトレーディングプロジェクト"
+      },
+      "binance": {
+        "project": "リードトレーディングプロジェクト",
+        "smartMoney": "スマートマネー",
+        "followProject": "フォロープロジェクト"
+      }
+    },
+    "cookie": {
+      "myTab": "マイ Cookie",
+      "searchTab": "Cookie を発見",
+      "statusLabel": "状態:",
+      "statusActive": "有効",
+      "statusExpired": "失効済み",
+      "creatorLabel": "作成者:",
+      "myEmpty": "{exchange} の Cookie が見つかりません。先に追加してください",
+      "exchangeOkx": "OKX",
+      "exchangeBinance": "Binance",
+      "searchPlaceholder": "Cookie 名またはキーワードで検索...",
+      "search": "検索",
+      "searchHint": "キーワードを入力して検索し、他のユーザーの Cookie シグナルを見つけましょう",
+      "searchEmpty": "関連する Cookie シグナルが見つかりません",
+      "anonymousFallback": "匿名ユーザー"
+    },
+    "errors": {
+      "invalidUrl": "無効なフォロープロジェクト ID",
+      "selectExchangeFirst": "先に取引所を選択してください"
     }
   }
 }
