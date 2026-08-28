@@ -2904,6 +2904,11 @@
     "errors": {
       "invalidUrl": "無効なフォロープロジェクト ID",
       "selectExchangeFirst": "先に取引所を選択してください"
+    },
+    "page": {
+      "studioVipOnly": "Studio VIP 限定",
+      "studioVipHint": "ノーディレイコピー作成には Studio VIP が必要です。",
+      "upgradeStudioVip": "Studio VIP にアップグレード"
     }
   }
 }

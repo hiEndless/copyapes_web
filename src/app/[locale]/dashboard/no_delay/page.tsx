@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { Zap, Search, ExternalLink } from 'lucide-react'
+import { Zap, Search, ExternalLink, Lock } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
 import { useTranslations } from 'next-intl'
@@ -21,6 +21,7 @@ import { CopyTaskConfigSheet } from '../add_task/_components/copy-task-config-sh
 import { isInvalidUniqueName, parseTraderUrl } from '../add_task/_lib/trader-url'
 
 import { getCookies, searchCookie } from '@/api/cookie'
+import type { EntitlementProfileResponse } from '@/api/settings'
 import { cn } from '@/lib/utils'
 
 type CookieTrader = {
@@ -50,6 +51,35 @@ export default function NoDelayPage() {
   const [selectedTrader, setSelectedTrader] = React.useState<CookieTrader | null>(null)
   const [showBinanceManualInput, setShowBinanceManualInput] = React.useState(false)
   const [binanceManualInput, setBinanceManualInput] = React.useState('')
+  const [isStudioVip, setIsStudioVip] = React.useState(false)
+
+  React.useEffect(() => {
+    const syncEntitlementProfile = () => {
+      try {
+        const stored = localStorage.getItem('entitlementProfile')
+
+        if (!stored) {
+          setIsStudioVip(false)
+
+          return
+        }
+
+        const profile = JSON.parse(stored) as EntitlementProfileResponse
+
+        setIsStudioVip(Boolean(profile?.is_studio_vip))
+      } catch (error) {
+        console.error('Failed to parse entitlement profile:', error)
+        setIsStudioVip(false)
+      }
+    }
+
+    syncEntitlementProfile()
+    window.addEventListener('entitlementProfileUpdated', syncEntitlementProfile)
+
+    return () => {
+      window.removeEventListener('entitlementProfileUpdated', syncEntitlementProfile)
+    }
+  }, [])
 
   React.useEffect(() => {
     const projectId = (searchParams.get('projectId') || searchParams.get('portfolioId') || '').trim()
@@ -292,6 +322,18 @@ export default function NoDelayPage() {
               <CardDescription>{t('card.description')}</CardDescription>
             </CardHeader>
             <CardContent className='space-y-6'>
+              {!isStudioVip ? (
+                <Alert className='border-amber-500/40 bg-amber-50 text-amber-900 dark:bg-amber-950/30 dark:text-amber-100'>
+                  <Lock className='text-amber-600 dark:text-amber-400' />
+                  <AlertDescription className='flex flex-wrap items-center gap-x-2 gap-y-1 text-amber-900 dark:text-amber-100'>
+                    <span>{t('page.studioVipHint')}</span>
+                    <Button variant='link' className='h-auto p-0 text-amber-700 dark:text-amber-300' asChild>
+                      <a href='/dashboard/pricing'>{t('page.upgradeStudioVip')}</a>
+                    </Button>
+                  </AlertDescription>
+                </Alert>
+              ) : null}
+
               <Alert>
                 <AlertDescription className='text-sm'>
                   {isBinanceExchange ? t('form.binanceProjectIdHint') : t('form.projectIdHint')}
@@ -637,12 +679,16 @@ export default function NoDelayPage() {
             <CardFooter className='flex justify-end gap-2' {...tourAnchor(TOUR_ANCHORS.cookieTaskSubmit)}>
               <Button
                 disabled={
+                  !isStudioVip ||
                   !exchange ||
                   isInvalidUniqueName(uniqueName, [invalidTraderUrlText, selectExchangeFirstText]) ||
                   !traderType ||
                   !selectedTrader
                 }
-                onClick={() => setIsConfigOpen(true)}
+                onClick={() => {
+                  if (!isStudioVip) return
+                  setIsConfigOpen(true)
+                }}
               >
                 {t('form.submit')}
               </Button>
@@ -652,7 +698,7 @@ export default function NoDelayPage() {
       </div>
 
       <CopyTaskConfigSheet
-        isOpen={isConfigOpen}
+        isOpen={isConfigOpen && isStudioVip}
         onClose={() => {
           setIsConfigOpen(false)
         }}

@@ -322,41 +322,40 @@ const DashboardPage = () => {
           </CardHeader>
           <CardContent className='px-4'>
             <div className='text-muted-foreground text-xs leading-relaxed'>
-              <p>当前版本更新时间：2026-06-10</p>
+              <p>当前版本更新时间：2026-08-28</p>
               <p className='mt-1'>更新内容：</p>
               <ul className='list-inside list-disc'>
-                <li>全新产品界面设计</li>
+                <li>最新币安无延迟跟单上线</li>
                 <li>全新的跟单系统架构，稳定性升级，跟单性能大幅提升</li>
-                <li>新增了工作室功能，更适合做自己的私域客户管理</li>
-                <li>新增了币安聪明钱跟单任务</li>
+                <li>普通币安公开跟单和cookie现在均有3-8秒延迟，可视情况选择无延迟跟单</li>
+                <li>更新了浏览器插件</li>
               </ul>
               <p className='mt-3 font-medium text-red-500'>注意事项：</p>
               <ul className='list-inside list-disc'>
-                <li>此次更新影响面较大，7月之前需要多留意自己的跟单任务状态，避免造成不必要的损失</li>
                 <li>如遇问题请及时联系客服，提供跟单任务ID，我们会尽快解决</li>
               </ul>
             </div>
           </CardContent>
         </Card>
 
-        <Card className='gap-3 py-4 shadow-none'>
-          <CardHeader className='px-4 pb-0'>
-            <CardTitle className='text-sm'>{t('sponsorTitle')}</CardTitle>
-          </CardHeader>
-          <CardContent className='grid grid-cols-2 gap-2 px-4'>
-            <a
-              href='https://panel.supaboard.cc/#/register?code=tgL9ZBbV'
-              target='_blank'
-              rel='noopener noreferrer'
-              className='block aspect-video w-full overflow-hidden rounded-md border'
-            >
-              <img src='/sponsor/supaboard.png' alt='Supaboard' className='h-full w-full object-cover' />
-            </a>
-            <div className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed px-2'>
-              <span className='text-muted-foreground text-center text-xs leading-tight'>{t('sponsorSlot')}</span>
-            </div>
-          </CardContent>
-        </Card>
+        {/*<Card className='gap-3 py-4 shadow-none'>*/}
+        {/*  <CardHeader className='px-4 pb-0'>*/}
+        {/*    <CardTitle className='text-sm'>{t('sponsorTitle')}</CardTitle>*/}
+        {/*  </CardHeader>*/}
+        {/*  <CardContent className='grid grid-cols-2 gap-2 px-4'>*/}
+        {/*    <a*/}
+        {/*      href='https://panel.supaboard.cc/#/register?code=tgL9ZBbV'*/}
+        {/*      target='_blank'*/}
+        {/*      rel='noopener noreferrer'*/}
+        {/*      className='block aspect-video w-full overflow-hidden rounded-md border'*/}
+        {/*    >*/}
+        {/*      <img src='/sponsor/supaboard.png' alt='Supaboard' className='h-full w-full object-cover' />*/}
+        {/*    </a>*/}
+        {/*    <div className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed px-2'>*/}
+        {/*      <span className='text-muted-foreground text-center text-xs leading-tight'>{t('sponsorSlot')}</span>*/}
+        {/*    </div>*/}
+        {/*  </CardContent>*/}
+        {/*</Card>*/}
       </div>
     </div>
   )

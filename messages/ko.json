@@ -2904,6 +2904,11 @@
     "errors": {
       "invalidUrl": "유효하지 않은 카피 프로젝트 ID",
       "selectExchangeFirst": "먼저 거래소를 선택하세요"
+    },
+    "page": {
+      "studioVipOnly": "Studio VIP 전용",
+      "studioVipHint": "무지연 카피 작업 생성에는 Studio VIP가 필요합니다.",
+      "upgradeStudioVip": "Studio VIP 업그레이드"
     }
   }
 }

@@ -2906,6 +2906,11 @@
     "errors": {
       "invalidUrl": "无效的跟单项目 ID",
       "selectExchangeFirst": "请先选择交易所"
+    },
+    "page": {
+      "studioVipOnly": "工作室 VIP 专享",
+      "studioVipHint": "创建无延迟跟单任务需开通工作室 VIP。",
+      "upgradeStudioVip": "去开通"
     }
   }
 }

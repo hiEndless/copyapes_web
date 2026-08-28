@@ -2904,6 +2904,11 @@
     "errors": {
       "invalidUrl": "Invalid copy project ID",
       "selectExchangeFirst": "Please select an exchange first"
+    },
+    "page": {
+      "studioVipOnly": "Studio VIP only",
+      "studioVipHint": "Studio VIP is required to create no-delay copy tasks.",
+      "upgradeStudioVip": "Upgrade to Studio VIP"
     }
   }
 }
