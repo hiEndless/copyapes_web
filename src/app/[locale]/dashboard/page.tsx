@@ -338,24 +338,21 @@ const DashboardPage = () => {
           </CardContent>
         </Card>
 
-        {/*<Card className='gap-3 py-4 shadow-none'>*/}
-        {/*  <CardHeader className='px-4 pb-0'>*/}
-        {/*    <CardTitle className='text-sm'>{t('sponsorTitle')}</CardTitle>*/}
-        {/*  </CardHeader>*/}
-        {/*  <CardContent className='grid grid-cols-2 gap-2 px-4'>*/}
-        {/*    <a*/}
-        {/*      href='https://panel.supaboard.cc/#/register?code=tgL9ZBbV'*/}
-        {/*      target='_blank'*/}
-        {/*      rel='noopener noreferrer'*/}
-        {/*      className='block aspect-video w-full overflow-hidden rounded-md border'*/}
-        {/*    >*/}
-        {/*      <img src='/sponsor/supaboard.png' alt='Supaboard' className='h-full w-full object-cover' />*/}
-        {/*    </a>*/}
-        {/*    <div className='bg-muted flex aspect-video w-full items-center justify-center rounded-md border border-dashed px-2'>*/}
-        {/*      <span className='text-muted-foreground text-center text-xs leading-tight'>{t('sponsorSlot')}</span>*/}
-        {/*    </div>*/}
-        {/*  </CardContent>*/}
-        {/*</Card>*/}
+        <Card className='gap-3 border-0 py-4 shadow-none'>
+          <CardHeader className='px-4 pb-0'>
+            <CardTitle className='text-sm'>产品推荐</CardTitle>
+          </CardHeader>
+          <CardContent className='px-4'>
+            <a
+              href='https://umaker.org'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='block w-full overflow-hidden rounded-md'
+            >
+              <img src='/sponsor/umaker.png' alt='UMaker' className='w-full object-cover' />
+            </a>
+          </CardContent>
+        </Card>
       </div>
     </div>
   )
