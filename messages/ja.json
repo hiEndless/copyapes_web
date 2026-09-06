@@ -2056,7 +2056,7 @@
         "title": "Binance 遅延に関する注意：",
         "notice": "この遅延は取引所側の公式設定によるもので、コピーツールが原因ではありません！",
         "publicLabel": "公開実盤のコピー：",
-        "publicDesc": "建玉は遅延なし、増減は3-5秒遅延、決済は約10秒遅延",
+        "publicDesc": "Binance側のリスク管理の影響により、20秒〜3分程度のランダムな遅延が発生します。本番のコピーはcookieコピーまたはノーディレイコピーをご利用ください",
         "hiddenLabel": "非公開実盤のコピー：",
         "hiddenDesc": "建玉・増減・決済すべてに2分の遅延"
       }
@@ -2221,6 +2221,12 @@
     "errors": {
       "invalidUrl": "無効なリンクまたは ID 形式です",
       "selectExchangeFirst": "先に取引所を選択してください"
+    },
+    "delayTips": {
+      "binance": {
+        "title": "Binance 遅延に関する注意：",
+        "desc": "Binance側のリスク管理の影響により、3〜8秒程度の遅延が発生する場合があります。完全に遅延なしにしたい場合は、ノーディレイコピーモードをご利用ください。"
+      }
     }
   },
   "DashboardCopyTaskConfig": {

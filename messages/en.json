@@ -2056,7 +2056,7 @@
         "title": "Binance delay notice:",
         "notice": "This delay is set by the exchange itself, not caused by the copy trading tool!",
         "publicLabel": "Copy public live trading:",
-        "publicDesc": "No delay for opening; 3-5s delay for adding/reducing; about 10s delay for closing",
+        "publicDesc": "Due to Binance risk controls, there may be a random delay of 20s to 3 minutes. For live copy trading, please use cookie copy or no-delay copy",
         "hiddenLabel": "Copy hidden live trading:",
         "hiddenDesc": "2-minute delay on opening, adding, reducing, and closing"
       }
@@ -2221,6 +2221,12 @@
     "errors": {
       "invalidUrl": "Invalid link or ID format",
       "selectExchangeFirst": "Please select an exchange first"
+    },
+    "delayTips": {
+      "binance": {
+        "title": "Binance delay notice:",
+        "desc": "Due to Binance risk controls, there may be a delay of 3 to 8 seconds. For zero delay, please use no-delay copy mode."
+      }
     }
   },
   "DashboardCopyTaskConfig": {

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { Cookie, Search } from 'lucide-react'
+import { Cookie, Info, Search } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
 import { useTranslations } from 'next-intl'
@@ -282,29 +282,15 @@ export default function CookieTaskPage() {
                 </div>
               </div>
 
-              {/* 交易所延迟提示信息 */}
-              {/* {exchange === 'okx' && (
-                <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
-                  <Info className='mt-0.5 h-4 w-4 shrink-0' />
-                  <div className='flex flex-col gap-1'>
-                    <p className='mb-2 font-semibold'>欧易交易所 有效期提示：</p>
-                    <p className='mt-1 text-xs'>
-                      官方 Cookie 有效期为长期，建议每周更新一次，以免突然失效导致任务失败终止。
-                    </p>
-                  </div>
-                </div>
-              )}
               {exchange === 'binance' && (
                 <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
                   <Info className='mt-0.5 h-4 w-4 shrink-0' />
                   <div className='flex flex-col gap-1'>
-                    <p className='mb-2 font-semibold'>币安交易所 Cookie 有效期提示：</p>
-                    <p className='mt-1 text-xs'>
-                      官方 Cookie 有效期为5天，建议每4天更新一次，否则可能会导致任务失败终止。
-                    </p>
+                    <p className='font-semibold'>{t('delayTips.binance.title')}</p>
+                    <p className='text-xs text-blue-700/80 dark:text-blue-300/80'>{t('delayTips.binance.desc')}</p>
                   </div>
                 </div>
-              )} */}
+              )}
 
               {/* 1. 选择目标交易所的 Cookie */}
               <Tabs defaultValue='my-cookie' className='w-full pt-4' {...tourAnchor(TOUR_ANCHORS.cookieTaskSource)}>
