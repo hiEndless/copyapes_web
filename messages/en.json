@@ -2915,6 +2915,17 @@
       "studioVipOnly": "Studio VIP only",
       "studioVipHint": "Studio VIP is required to create no-delay copy tasks.",
       "upgradeStudioVip": "Upgrade to Studio VIP"
+    },
+    "modeTips": {
+      "title": "No-delay copy tip:",
+      "base": "No-delay copy mode calculates based on the positions opened when you copy the trader inside the exchange.",
+      "formula": "Formula: Your order size = (Copy amount ÷ Exchange copy margin) × Exchange copy account order size × Multiplier.",
+      "latency": "Latency: usually within 1 second.",
+      "pros": "Pros: Stable latency.",
+      "consTitle": "Cons:",
+      "cons1": "① Cannot fully bypass the exchange copy mechanism, so position ratios may not match the trader;",
+      "cons2": "② If the exchange copy account equity differs greatly from the trader’s capital, position differences are amplified (e.g. trader capital 100,000 vs copy account 1,000; trader orders 0.01 BTC, theory says copy should be 0.0001, but exchange min size 0.001 amplifies the position 10x and affects off-exchange copy);",
+      "cons3": "③ Due to risk controls, opens may fail from position limits, price limits, IOC cancellations, etc., affecting off-exchange copy."
     }
   }
 }

@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { Zap, Search, ExternalLink, Lock } from 'lucide-react'
+import { Zap, Search, ExternalLink, Lock, Info } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'motion/react'
 import { useTranslations } from 'next-intl'
@@ -334,12 +334,6 @@ export default function NoDelayPage() {
                 </Alert>
               ) : null}
 
-              <Alert>
-                <AlertDescription className='text-sm'>
-                  {isBinanceExchange ? t('form.binanceProjectIdHint') : t('form.projectIdHint')}
-                </AlertDescription>
-              </Alert>
-
               {/* 0. 选择目标交易所 */}
               <div className='space-y-3' {...tourAnchor(TOUR_ANCHORS.cookieTaskExchange)}>
                 <Label>{t('form.selectExchange')}</Label>
@@ -388,6 +382,25 @@ export default function NoDelayPage() {
                       className='h-6 w-auto object-contain sm:h-7'
                     />
                   </button>
+                </div>
+              </div>
+
+              <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
+                <Info className='mt-0.5 h-4 w-4 shrink-0' />
+                <div className='flex flex-col gap-1.5'>
+                  <p className='font-semibold'>{t('modeTips.title')}</p>
+                  <p className='text-xs text-blue-700/80 dark:text-blue-300/80'>{t('modeTips.base')}</p>
+                  <p className='text-xs text-blue-700/80 dark:text-blue-300/80'>{t('modeTips.formula')}</p>
+                  <p className='text-xs text-blue-700/80 dark:text-blue-300/80'>{t('modeTips.latency')}</p>
+                  <p className='text-xs text-blue-700/80 dark:text-blue-300/80'>{t('modeTips.pros')}</p>
+                  <div className='text-xs text-blue-700/80 dark:text-blue-300/80'>
+                    <p>{t('modeTips.consTitle')}</p>
+                    <ul className='mt-1 list-inside space-y-1'>
+                      <li>{t('modeTips.cons1')}</li>
+                      <li>{t('modeTips.cons2')}</li>
+                      <li>{t('modeTips.cons3')}</li>
+                    </ul>
+                  </div>
                 </div>
               </div>
 
