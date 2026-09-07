@@ -2954,7 +2954,7 @@
       "selectExchange": "信号来源",
       "traderLabel": "交易员 ID",
       "projectIdPlaceholder": "请使用插件获取交易员 ID",
-      "projectIdEmpty": "尚未获取到交易员 ID。插件能力稍后上线，可先手动填写 UUID。",
+      "projectIdEmpty": "尚未获取到交易员 ID。可在 Fomo 资料页用插件带回，或手动填写 UUID。",
       "openFomo": "打开 Fomo",
       "installExtension": "安装浏览器插件",
       "manualToggle": "无法通过插件获取？手动填写",

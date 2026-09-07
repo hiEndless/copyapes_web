@@ -2952,7 +2952,7 @@
       "selectExchange": "Signal source",
       "traderLabel": "Trader ID",
       "projectIdPlaceholder": "Get trader ID via the browser extension",
-      "projectIdEmpty": "No trader ID yet. Extension support is coming; you can enter the UUID manually for now.",
+      "projectIdEmpty": "No trader ID yet. Use the extension on a Fomo profile page to bring it back, or enter the UUID manually.",
       "openFomo": "Open Fomo",
       "installExtension": "Install extension",
       "manualToggle": "Cannot get via extension? Enter manually",

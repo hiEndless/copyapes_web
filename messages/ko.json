@@ -2952,7 +2952,7 @@
       "selectExchange": "시그널 소스",
       "traderLabel": "트레이더 ID",
       "projectIdPlaceholder": "확장 프로그램으로 트레이더 ID를 가져오세요",
-      "projectIdEmpty": "아직 트레이더 ID가 없습니다. 확장 지원은 곧 제공되며, 지금은 UUID를 수동 입력할 수 있습니다.",
+      "projectIdEmpty": "아직 트레이더 ID가 없습니다. Fomo 프로필 페이지에서 확장 프로그램으로 가져오거나 UUID를 수동 입력하세요.",
       "openFomo": "Fomo 열기",
       "installExtension": "브라우저 확장 설치",
       "manualToggle": "확장으로 가져올 수 없나요? 수동 입력",

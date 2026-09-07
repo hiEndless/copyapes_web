@@ -2954,7 +2954,7 @@
       "selectExchange": "訊號來源",
       "traderLabel": "交易員 ID",
       "projectIdPlaceholder": "請使用外掛取得交易員 ID",
-      "projectIdEmpty": "尚未取得交易員 ID。外掛能力稍後上線，可先手動填寫 UUID。",
+      "projectIdEmpty": "尚未取得交易員 ID。可在 Fomo 資料頁用外掛帶回，或手動填寫 UUID。",
       "openFomo": "開啟 Fomo",
       "installExtension": "安裝瀏覽器外掛",
       "manualToggle": "無法透過外掛取得？手動填寫",
