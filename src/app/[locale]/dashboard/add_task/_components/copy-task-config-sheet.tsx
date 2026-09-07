@@ -49,7 +49,7 @@ function buildUniqueName(
   traderPlatform: number | string | undefined
 ): string {
   const tp = Number(traderPlatform)
-  if (tp !== 7 && tp !== 8) {
+  if (tp !== 7 && tp !== 8 && tp !== 99) {
     return traderId
   }
 
@@ -479,7 +479,7 @@ export interface CopyTaskConfigSheetProps {
   traderId: string | null
   traderName?: string
   platform: 'binance' | 'okx' | 'cookie' | 'exchange' | 'hyper' | 'hot' | string
-  traderPlatform?: number | string // 交易员平台 ID (1: OKX, 2: Binance, 3: 币coin, 4: 热门, 5: Cookie, 6: API, 7: 币安带单, 8: OKX带单, 9: Hyperliquid, 10: Bitget)
+  traderPlatform?: number | string // 交易员平台 ID (1: OKX, 2: Binance, 3: 币coin, 4: 热门, 5: Cookie, 6: API, 7: 币安带单, 8: OKX带单, 9: Hyperliquid, 10: Bitget, 99: Fomo)
   roleType?: string // 交易员实盘类型，由上一级页面传入
   cookieId?: string
   initialBenchMark?: string | number // 初始本金，如已有则优先使用该值
@@ -556,7 +556,11 @@ export function CopyTaskConfigSheet({
     (String(traderPlatform) === '3' && mappedRoleType === '1') ||
     (String(traderPlatform) === '2' && mappedRoleType === '2')
 
-  const disableIntervalOpen = hideFollowLeverage
+  const isFomoFollow =
+    String(traderPlatform) === '99' || String(platform || '').toLowerCase() === 'fomo'
+
+  // Fomo 不支持区间委托
+  const disableIntervalOpen = hideFollowLeverage || isFomoFollow
 
   // Form State
   const [formData, setFormData] = useState({
@@ -694,7 +698,10 @@ export function CopyTaskConfigSheet({
           margin_mode_set: Number(initialTaskData.margin_mode_set ?? 0),
           first_open_type: disableIntervalOpen ? 1 : initialTaskData.first_open_type || 1,
           uplRatio: initialTaskData.uplRatio ? String(initialTaskData.uplRatio) : prev.uplRatio,
-          first_order_set: initialTaskData.first_order_set || 1
+          first_order_set:
+            isFomoFollow && Number(initialTaskData.first_order_set) === 3
+              ? 1
+              : initialTaskData.first_order_set || 1
         }))
 
         setToggles({
@@ -836,7 +843,8 @@ export function CopyTaskConfigSheet({
         margin_mode_set: String(formData.margin_mode_set),
         first_open_type: disableIntervalOpen ? '1' : String(formData.first_open_type),
         uplRatio: formData.uplRatio,
-        first_order_set: String(formData.first_order_set),
+        first_order_set:
+          isFomoFollow && Number(formData.first_order_set) === 3 ? '1' : String(formData.first_order_set),
         posSide_set: toggles.posSide_set_visible ? '2' : '1',
         role_type: mappedRoleType,
         reduce_ratio: '0',
@@ -937,9 +945,12 @@ export function CopyTaskConfigSheet({
     isHyperliquidFollow ||
     isOkxFollow ||
     isCookieFollow ||
+    isFomoFollow ||
     (isBinanceFollow && !isRoleTypeTwo) ||
     (isBicoinFollow && normalizedRoleType !== '1')
   )
+  // Fomo 不支持「仅复制当前亏损仓位」
+  const allowCopyLossOnly = allCopyApi && !isFomoFollow
 
   return (
     <Sheet open={isOpen} onOpenChange={open => !open && onClose()}>
@@ -1350,11 +1361,11 @@ export function CopyTaskConfigSheet({
                     <span className='text-sm'>{t('firstOrder.copyCurrent')}</span>
                   </label>
                   <label
-                    className={`flex items-center gap-2 ${!allCopyApi ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
+                    className={`flex items-center gap-2 ${!allowCopyLossOnly ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
                   >
                     <Checkbox
                       checked={formData.first_order_set === 3}
-                      disabled={!allCopyApi}
+                      disabled={!allowCopyLossOnly}
                       onCheckedChange={checked => {
                         if (checked) updateForm('first_order_set', 3)
                       }}

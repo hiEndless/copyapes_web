@@ -50,8 +50,21 @@ export default function CookiePage() {
   const [editingCookie, setEditingCookie] = useState<CookieItem | null>(null)
   const [newCookieName, setNewCookieName] = useState('')
 
-  const exchangeLabel = (exchange: number | string) =>
-    String(exchange) === '2' ? t('manual.binance') : t('manual.okx')
+  const exchangeKey = (exchange: number | string) => {
+    const value = String(exchange)
+    if (value === '2') return 'binance'
+    if (value === '99') return 'fomo'
+    return 'okx'
+  }
+
+  const exchangeLabel = (exchange: number | string) => {
+    const key = exchangeKey(exchange)
+    if (key === 'binance') return t('manual.binance')
+    if (key === 'fomo') return 'Fomo'
+    return t('manual.okx')
+  }
+
+  const exchangeLogo = (exchange: number | string) => `/exchanges/${exchangeKey(exchange)}.png`
 
   const fetchCookies = async () => {
     setIsLoading(true)
@@ -444,8 +457,8 @@ export default function CookiePage() {
                   <div className='flex items-start justify-between'>
                     <div className='flex items-center gap-3'>
                       <img
-                        src={`/exchanges/${String(cookie.exchange) === '2' ? 'binance' : 'okx'}.png`}
-                        alt={String(cookie.exchange) === '2' ? 'Binance' : 'OKX'}
+                        src={exchangeLogo(cookie.exchange)}
+                        alt={exchangeLabel(cookie.exchange)}
                         className='h-6 w-6 object-contain'
                       />
                       <div className='flex flex-col gap-1'>

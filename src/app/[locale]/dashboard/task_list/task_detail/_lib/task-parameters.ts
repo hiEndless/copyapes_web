@@ -74,6 +74,8 @@ export function getRoleType(
     return t('params.roleTypes.aiModel')
   } else if (tp === '10') {
     return t('params.roleTypes.wallet')
+  } else if (tp === '99') {
+    if (rt === '1') return t('params.roleTypes.fomoContract')
   }
 
   return t('params.roleTypes.unknown')

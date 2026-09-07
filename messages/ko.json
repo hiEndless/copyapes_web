@@ -513,7 +513,8 @@
       "noDelay": "무지연 카피",
       "api": "API 관리",
       "account": "계정",
-      "notifications": "알림"
+      "notifications": "알림",
+      "fomo": "Fomo 워치리스트"
     },
     "badges": {
       "grabHit": "4일 내 확보"
@@ -1643,7 +1644,8 @@
     "platforms": {
       "3": "BiCoin",
       "4": "인기",
-      "9": "NOF1 / AI 모델"
+      "9": "NOF1 / AI 모델",
+      "99": "Fomo"
     },
     "roleType": {
       "okxContract": "선물 리드",
@@ -1653,7 +1655,8 @@
       "binanceHidden": "비공개 리드",
       "binanceSmart": "스마트 머니",
       "bicoinOps": "조작 기록",
-      "bicoinPosition": "선물 포지션"
+      "bicoinPosition": "선물 포지션",
+      "fomoContract": "선물만"
     },
     "actions": {
       "view": "상세 보기",
@@ -1833,7 +1836,8 @@
       "3": "BiCoin",
       "4": "인기",
       "9": "NOF1 / AI 모델",
-      "unknown": "알 수 없음"
+      "unknown": "알 수 없음",
+      "99": "Fomo"
     },
     "roleType": {
       "okxContract": "선물 리드",
@@ -1843,7 +1847,8 @@
       "binanceHidden": "비공개 리드",
       "binanceSmart": "스마트 머니",
       "bicoinOps": "조작 기록",
-      "bicoinPosition": "선물 포지션"
+      "bicoinPosition": "선물 포지션",
+      "fomoContract": "선물만"
     },
     "utils": {
       "unknownExchange": "알 수 없음"
@@ -2556,7 +2561,8 @@
         "8": "OKX",
         "9": "NOF1",
         "10": "HyperLiquid",
-        "unknown": "알 수 없음"
+        "unknown": "알 수 없음",
+        "99": "Fomo"
       },
       "roleTypes": {
         "okxContract": "선물 리드",
@@ -2569,7 +2575,8 @@
         "bicoinPosition": "선물 포지션",
         "aiModel": "AI 모델",
         "wallet": "지갑 주소",
-        "unknown": "알 수 없음"
+        "unknown": "알 수 없음",
+        "fomoContract": "선물만"
       },
       "firstOrder": {
         "newOnly": "신규 진입만 복사",
@@ -2926,6 +2933,58 @@
       "cons1": "① 거래소 카피 메커니즘을 완전히 우회할 수 없어 포지션 비율이 트레이더와 일치하지 않을 수 있음;",
       "cons2": "② 거래소 카피 계정과 트레이더 원금 차이가 크면 포지션 차이가 확대됨(예: 트레이더 원금 10만, 카피 계정 1000일 때 트레이더가 0.01 BTC를 주문하면 이론상 0.0001이지만 최소 주문 0.001로 실제 포지션이 10배 확대되어 장외 카피에도 영향);",
       "cons3": "③ 리스크 관리로 포지션 규모 초과, 가격 제한, IOC 주문 취소 등으로 진입 실패가 발생해 장외 카피에 영향을 줄 수 있음."
+    }
+  },
+  "DashboardFomo": {
+    "hero": {
+      "title": "Fomo 워치리스트 카피",
+      "subtitle": "Fomo 워치리스트 트레이더를 카피합니다. Cookie에는 JWT / Refresh Token을 저장합니다.",
+      "getCookie": "Cookie 가져오기",
+      "goFomo": "FOMO로 이동"
+    },
+    "card": {
+      "title": "Fomo 워치리스트 카피 작업 생성",
+      "description": "카피 파라미터를 설정하고 대상 트레이더 전략 복제를 시작합니다."
+    },
+    "form": {
+      "selectExchange": "시그널 소스",
+      "traderLabel": "트레이더 ID",
+      "projectIdPlaceholder": "확장 프로그램으로 트레이더 ID를 가져오세요",
+      "projectIdEmpty": "아직 트레이더 ID가 없습니다. 확장 지원은 곧 제공되며, 지금은 UUID를 수동 입력할 수 있습니다.",
+      "openFomo": "Fomo 열기",
+      "installExtension": "브라우저 확장 설치",
+      "manualToggle": "확장으로 가져올 수 없나요? 수동 입력",
+      "manualWarning": "올바른 Fomo 트레이더 UUID를 입력하세요. 형식이 잘못되면 생성할 수 없습니다.",
+      "manualPlaceholder": "트레이더 UUID 입력",
+      "manualConfirm": "사용 확인",
+      "manualCancel": "취소",
+      "traderTypeLabel": "트레이더 유형",
+      "traderTypePlaceholder": "트레이더 유형 선택",
+      "submit": "카피 생성"
+    },
+    "traderType": {
+      "contract": "선물만"
+    },
+    "cookie": {
+      "myTab": "내 Cookie",
+      "searchTab": "Cookie 찾기",
+      "statusLabel": "상태:",
+      "statusActive": "유효",
+      "statusExpired": "만료",
+      "creatorLabel": "생성자:",
+      "myEmpty": "사용 가능한 Cookie가 없습니다. 먼저 추가하세요(Fomo는 Cookie 명목으로 JWT / Refresh Token 저장).",
+      "searchPlaceholder": "Cookie 이름 또는 키워드 검색...",
+      "search": "검색",
+      "searchHint": "키워드를 입력하고 검색하여 다른 사용자의 Cookie 시그널을 찾으세요",
+      "searchEmpty": "관련 Cookie 시그널을 찾지 못했습니다",
+      "anonymousFallback": "익명 사용자"
+    },
+    "errors": {
+      "invalidId": "잘못된 Fomo 트레이더 ID"
+    },
+    "page": {
+      "studioVipHint": "Fomo 워치리스트 카피 생성에는 Studio VIP가 필요합니다.",
+      "upgradeStudioVip": "Studio VIP 업그레이드"
     }
   }
 }

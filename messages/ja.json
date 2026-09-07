@@ -513,7 +513,8 @@
       "noDelay": "無遅延コピー",
       "api": "API 管理",
       "account": "アカウント",
-      "notifications": "通知"
+      "notifications": "通知",
+      "fomo": "Fomo ウォッチリスト"
     },
     "badges": {
       "grabHit": "4 日で成功"
@@ -1643,7 +1644,8 @@
     "platforms": {
       "3": "BiCoin",
       "4": "人気",
-      "9": "NOF1 / AIモデル"
+      "9": "NOF1 / AIモデル",
+      "99": "Fomo"
     },
     "roleType": {
       "okxContract": "先物リード",
@@ -1653,7 +1655,8 @@
       "binanceHidden": "非公開リード",
       "binanceSmart": "スマートマネー",
       "bicoinOps": "操作履歴",
-      "bicoinPosition": "先物建玉"
+      "bicoinPosition": "先物建玉",
+      "fomoContract": "先物のみ"
     },
     "actions": {
       "view": "詳細を見る",
@@ -1833,7 +1836,8 @@
       "3": "BiCoin",
       "4": "人気",
       "9": "NOF1 / AIモデル",
-      "unknown": "不明"
+      "unknown": "不明",
+      "99": "Fomo"
     },
     "roleType": {
       "okxContract": "先物リード",
@@ -1843,7 +1847,8 @@
       "binanceHidden": "非公開リード",
       "binanceSmart": "スマートマネー",
       "bicoinOps": "操作履歴",
-      "bicoinPosition": "先物建玉"
+      "bicoinPosition": "先物建玉",
+      "fomoContract": "先物のみ"
     },
     "utils": {
       "unknownExchange": "不明"
@@ -2556,7 +2561,8 @@
         "8": "OKX",
         "9": "NOF1",
         "10": "HyperLiquid",
-        "unknown": "不明"
+        "unknown": "不明",
+        "99": "Fomo"
       },
       "roleTypes": {
         "okxContract": "先物リード",
@@ -2569,7 +2575,8 @@
         "bicoinPosition": "先物建玉",
         "aiModel": "AIモデル",
         "wallet": "ウォレットアドレス",
-        "unknown": "不明"
+        "unknown": "不明",
+        "fomoContract": "先物のみ"
       },
       "firstOrder": {
         "newOnly": "新規建のみコピー",
@@ -2926,6 +2933,58 @@
       "cons1": "①取引所のコピー仕組みを完全には回避できず、ポジション比率がトレーダーと一致しない場合がある；",
       "cons2": "②取引所コピー口座とトレーダーの元本差が大きいとポジション差が拡大する（例：トレーダー元本10万・コピー口座1000のとき、トレーダーが0.01 BTCを発注すると理論上は0.0001だが、最小発注0.001により実際は10倍になり、場外コピーにも影響）；",
       "cons3": "③リスク管理により、ポジション規模制限・価格制限・IOC注文取消などで建玉に失敗し、場外コピーに影響する場合がある。"
+    }
+  },
+  "DashboardFomo": {
+    "hero": {
+      "title": "Fomo ウォッチリストコピー",
+      "subtitle": "Fomo のウォッチリストトレーダーをコピーします。Cookie には JWT / Refresh Token を格納します。",
+      "getCookie": "Cookie を取得",
+      "goFomo": "FOMO へ"
+    },
+    "card": {
+      "title": "Fomo ウォッチリストコピータスクを作成",
+      "description": "コピー設定を行い、対象トレーダーの戦略を監視・複製します。"
+    },
+    "form": {
+      "selectExchange": "シグナルソース",
+      "traderLabel": "トレーダー ID",
+      "projectIdPlaceholder": "拡張機能でトレーダー ID を取得してください",
+      "projectIdEmpty": "まだトレーダー ID がありません。拡張機能は後日対応予定のため、当面は UUID を手動入力できます。",
+      "openFomo": "Fomo を開く",
+      "installExtension": "ブラウザ拡張をインストール",
+      "manualToggle": "拡張機能で取得できない場合は手動入力",
+      "manualWarning": "正しい Fomo トレーダー UUID を入力してください。形式が誤っていると作成できません。",
+      "manualPlaceholder": "トレーダー UUID を入力",
+      "manualConfirm": "使用する",
+      "manualCancel": "キャンセル",
+      "traderTypeLabel": "トレーダータイプ",
+      "traderTypePlaceholder": "トレーダータイプを選択",
+      "submit": "コピーを作成"
+    },
+    "traderType": {
+      "contract": "先物のみ"
+    },
+    "cookie": {
+      "myTab": "自分の Cookie",
+      "searchTab": "Cookie を探す",
+      "statusLabel": "状態:",
+      "statusActive": "有効",
+      "statusExpired": "失効",
+      "creatorLabel": "作成者:",
+      "myEmpty": "利用可能な Cookie がありません。先に追加してください（Fomo は Cookie 名目で JWT / Refresh Token を保存）",
+      "searchPlaceholder": "Cookie 名またはキーワードで検索...",
+      "search": "検索",
+      "searchHint": "キーワードを入力して検索し、他ユーザーの Cookie シグナルを見つけます",
+      "searchEmpty": "関連する Cookie シグナルが見つかりません",
+      "anonymousFallback": "匿名ユーザー"
+    },
+    "errors": {
+      "invalidId": "無効な Fomo トレーダー ID"
+    },
+    "page": {
+      "studioVipHint": "Fomo ウォッチリストコピーの作成には Studio VIP が必要です。",
+      "upgradeStudioVip": "Studio VIP にアップグレード"
     }
   }
 }

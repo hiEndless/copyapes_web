@@ -513,7 +513,8 @@
       "noDelay": "No-Delay Copy",
       "api": "API Management",
       "account": "Account",
-      "notifications": "Notifications"
+      "notifications": "Notifications",
+      "fomo": "Fomo Watchlist"
     },
     "badges": {
       "grabHit": "Hit in 4 days"
@@ -1643,7 +1644,8 @@
     "platforms": {
       "3": "BiCoin",
       "4": "Hot",
-      "9": "NOF1 / AI Model"
+      "9": "NOF1 / AI Model",
+      "99": "Fomo"
     },
     "roleType": {
       "okxContract": "Futures lead",
@@ -1653,7 +1655,8 @@
       "binanceHidden": "Hidden lead",
       "binanceSmart": "Smart money",
       "bicoinOps": "Operations",
-      "bicoinPosition": "Futures positions"
+      "bicoinPosition": "Futures positions",
+      "fomoContract": "Contracts only"
     },
     "actions": {
       "view": "View details",
@@ -1833,7 +1836,8 @@
       "3": "BiCoin",
       "4": "Hot",
       "9": "NOF1 / AI Model",
-      "unknown": "Unknown"
+      "unknown": "Unknown",
+      "99": "Fomo"
     },
     "roleType": {
       "okxContract": "Futures lead",
@@ -1843,7 +1847,8 @@
       "binanceHidden": "Hidden lead",
       "binanceSmart": "Smart money",
       "bicoinOps": "Operations",
-      "bicoinPosition": "Futures positions"
+      "bicoinPosition": "Futures positions",
+      "fomoContract": "Contracts only"
     },
     "utils": {
       "unknownExchange": "Unknown"
@@ -2556,7 +2561,8 @@
         "8": "OKX",
         "9": "NOF1",
         "10": "HyperLiquid",
-        "unknown": "Unknown"
+        "unknown": "Unknown",
+        "99": "Fomo"
       },
       "roleTypes": {
         "okxContract": "Futures lead",
@@ -2569,7 +2575,8 @@
         "bicoinPosition": "Futures positions",
         "aiModel": "AI Model",
         "wallet": "Wallet address",
-        "unknown": "Unknown"
+        "unknown": "Unknown",
+        "fomoContract": "Contracts only"
       },
       "firstOrder": {
         "newOnly": "New opens only",
@@ -2926,6 +2933,58 @@
       "cons1": "① Cannot fully bypass the exchange copy mechanism, so position ratios may not match the trader;",
       "cons2": "② If the exchange copy account equity differs greatly from the trader’s capital, position differences are amplified (e.g. trader capital 100,000 vs copy account 1,000; trader orders 0.01 BTC, theory says copy should be 0.0001, but exchange min size 0.001 amplifies the position 10x and affects off-exchange copy);",
       "cons3": "③ Due to risk controls, opens may fail from position limits, price limits, IOC cancellations, etc., affecting off-exchange copy."
+    }
+  },
+  "DashboardFomo": {
+    "hero": {
+      "title": "Fomo watchlist copy",
+      "subtitle": "Follow Fomo watchlist traders. Cookies here store JWT / Refresh Token for authorization.",
+      "getCookie": "Get Cookie",
+      "goFomo": "Go to FOMO"
+    },
+    "card": {
+      "title": "Create Fomo watchlist copy task",
+      "description": "Configure copy parameters to start mirroring the target trader."
+    },
+    "form": {
+      "selectExchange": "Signal source",
+      "traderLabel": "Trader ID",
+      "projectIdPlaceholder": "Get trader ID via the browser extension",
+      "projectIdEmpty": "No trader ID yet. Extension support is coming; you can enter the UUID manually for now.",
+      "openFomo": "Open Fomo",
+      "installExtension": "Install extension",
+      "manualToggle": "Cannot get via extension? Enter manually",
+      "manualWarning": "Enter a valid Fomo trader UUID; invalid IDs cannot create tasks.",
+      "manualPlaceholder": "Enter trader UUID",
+      "manualConfirm": "Confirm",
+      "manualCancel": "Cancel",
+      "traderTypeLabel": "Trader type",
+      "traderTypePlaceholder": "Select trader type",
+      "submit": "Create copy task"
+    },
+    "traderType": {
+      "contract": "Contracts only"
+    },
+    "cookie": {
+      "myTab": "My Cookie",
+      "searchTab": "Discover Cookie",
+      "statusLabel": "Status:",
+      "statusActive": "Active",
+      "statusExpired": "Expired",
+      "creatorLabel": "Creator:",
+      "myEmpty": "No Cookie found. Please add one first (Fomo stores JWT / Refresh Token as Cookie).",
+      "searchPlaceholder": "Search by Cookie name or keyword...",
+      "search": "Search",
+      "searchHint": "Enter a keyword and search to discover other users’ Cookie signals",
+      "searchEmpty": "No Cookie signals found",
+      "anonymousFallback": "Anonymous"
+    },
+    "errors": {
+      "invalidId": "Invalid Fomo trader ID"
+    },
+    "page": {
+      "studioVipHint": "Studio VIP is required to create Fomo watchlist copy tasks.",
+      "upgradeStudioVip": "Upgrade to Studio VIP"
     }
   }
 }

@@ -28,7 +28,8 @@ import {
   ListChecks,
   ListCheck,
   Boxes,
-  Zap
+  Zap,
+  Sparkles
 } from 'lucide-react'
 
 import NextTopLoader, { useTopLoader } from 'nextjs-toploader'
@@ -215,6 +216,12 @@ const studioToolsItemConfigs: MenuItemConfig[] = [
     icon: Zap,
     labelKey: 'nav.noDelay',
     href: '/dashboard/no_delay'
+  },
+  {
+    id: 'fomo',
+    icon: Sparkles,
+    labelKey: 'nav.fomo',
+    href: '/dashboard/fomo'
   },
   {
     id: 'studioTasks',

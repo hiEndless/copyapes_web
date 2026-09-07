@@ -515,7 +515,8 @@
       "noDelay": "無延遲跟單",
       "api": "API 管理",
       "account": "賬戶設置",
-      "notifications": "消息通知"
+      "notifications": "消息通知",
+      "fomo": "Fomo 自選"
     },
     "badges": {
       "grabHit": "4天必中"
@@ -1645,7 +1646,8 @@
     "platforms": {
       "3": "幣coin",
       "4": "熱門",
-      "9": "NOF1 / AI模型"
+      "9": "NOF1 / AI模型",
+      "99": "Fomo"
     },
     "roleType": {
       "okxContract": "合約帶單",
@@ -1655,7 +1657,8 @@
       "binanceHidden": "隱藏帶單",
       "binanceSmart": "聰明錢",
       "bicoinOps": "操作記錄",
-      "bicoinPosition": "合約倉位"
+      "bicoinPosition": "合約倉位",
+      "fomoContract": "只跟合約"
     },
     "actions": {
       "view": "查看詳情",
@@ -1835,7 +1838,8 @@
       "3": "幣coin",
       "4": "熱門",
       "9": "NOF1 / AI模型",
-      "unknown": "未知"
+      "unknown": "未知",
+      "99": "Fomo"
     },
     "roleType": {
       "okxContract": "合約帶單",
@@ -1845,7 +1849,8 @@
       "binanceHidden": "隱藏帶單",
       "binanceSmart": "聰明錢",
       "bicoinOps": "操作記錄",
-      "bicoinPosition": "合約倉位"
+      "bicoinPosition": "合約倉位",
+      "fomoContract": "只跟合約"
     },
     "utils": {
       "unknownExchange": "未知"
@@ -2558,7 +2563,8 @@
         "8": "OKX",
         "9": "NOF1",
         "10": "HyperLiquid",
-        "unknown": "未知"
+        "unknown": "未知",
+        "99": "Fomo"
       },
       "roleTypes": {
         "okxContract": "合約帶單",
@@ -2571,7 +2577,8 @@
         "bicoinPosition": "合約倉位",
         "aiModel": "AI模型",
         "wallet": "錢包地址",
-        "unknown": "未知"
+        "unknown": "未知",
+        "fomoContract": "只跟合約"
       },
       "firstOrder": {
         "newOnly": "僅複製新開倉",
@@ -2928,6 +2935,58 @@
       "cons1": "①無法完全規避交易所跟單機制，倉位比例無法與交易員一致；",
       "cons2": "②若交易所跟單帳戶與交易員本金相差懸殊，倉位差異將被放大（如交易員本金10萬，跟單帳戶僅1000，交易員下0.01 BTC，跟單帳戶理論應下0.0001，但交易所最小下單限制0.001，實際倉位放大10倍，連帶影響場外跟單）；",
       "cons3": "③受風控限制，可能因倉位規模超限、價格超限、IOC訂單取消等原因導致開倉失敗，影響場外跟單。"
+    }
+  },
+  "DashboardFomo": {
+    "hero": {
+      "title": "Fomo 自選跟單",
+      "subtitle": "跟隨 Fomo 平台自選交易員，使用 Cookie（JWT / Refresh Token）授權後建立跟單任務。",
+      "getCookie": "取得 Cookie",
+      "goFomo": "前往FOMO"
+    },
+    "card": {
+      "title": "建立 Fomo 自選跟單任務",
+      "description": "設定跟單參數，開始監聽並複製目標交易員策略。"
+    },
+    "form": {
+      "selectExchange": "訊號來源",
+      "traderLabel": "交易員 ID",
+      "projectIdPlaceholder": "請使用外掛取得交易員 ID",
+      "projectIdEmpty": "尚未取得交易員 ID。外掛能力稍後上線，可先手動填寫 UUID。",
+      "openFomo": "開啟 Fomo",
+      "installExtension": "安裝瀏覽器外掛",
+      "manualToggle": "無法透過外掛取得？手動填寫",
+      "manualWarning": "請填寫正確的 Fomo 交易員 UUID，格式錯誤將無法建立任務。",
+      "manualPlaceholder": "輸入交易員 UUID",
+      "manualConfirm": "確認使用",
+      "manualCancel": "取消",
+      "traderTypeLabel": "交易員類型",
+      "traderTypePlaceholder": "請選擇交易員類型",
+      "submit": "建立跟單"
+    },
+    "traderType": {
+      "contract": "只跟合約"
+    },
+    "cookie": {
+      "myTab": "我的 Cookie",
+      "searchTab": "發現 Cookie",
+      "statusLabel": "狀態:",
+      "statusActive": "有效",
+      "statusExpired": "已失效",
+      "creatorLabel": "建立者:",
+      "myEmpty": "未找到可用 Cookie，請先前往新增（Fomo 以 Cookie 名義存放 JWT / Refresh Token）",
+      "searchPlaceholder": "輸入 Cookie 名稱或關鍵詞搜尋...",
+      "search": "搜尋",
+      "searchHint": "請輸入關鍵詞並點擊搜尋，發現平台其他用戶的 Cookie 訊號",
+      "searchEmpty": "未找到相關 Cookie 訊號",
+      "anonymousFallback": "匿名用戶"
+    },
+    "errors": {
+      "invalidId": "無效的 Fomo 交易員 ID"
+    },
+    "page": {
+      "studioVipHint": "建立 Fomo 自選跟單任務需開通工作室 VIP。",
+      "upgradeStudioVip": "去開通"
     }
   }
 }

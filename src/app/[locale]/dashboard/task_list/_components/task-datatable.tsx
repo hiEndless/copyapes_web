@@ -84,7 +84,8 @@ const getPlatformMap = (t: TranslateFn): Record<number, { name: string; logo: st
   7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
   8: { name: 'OKX Cookie', logo: '/exchanges/okx.png' },
   9: { name: t('platforms.9'), logo: '/exchanges/default.png' },
-  10: { name: 'Hyperliquid', logo: '/exchanges/hlq_logo.png' }
+  10: { name: 'Hyperliquid', logo: '/exchanges/hlq_logo.png' },
+  99: { name: 'Fomo', logo: '/exchanges/fomo.png' }
 })
 
 const getRoleTypeLabel = (t: TranslateFn, platform: number, roleType?: number | string) => {
@@ -108,6 +109,8 @@ const getRoleTypeLabel = (t: TranslateFn, platform: number, roleType?: number | 
   } else if (platform === 3) {
     if (rt === '1') return t('roleType.bicoinOps')
     if (rt === '2') return t('roleType.bicoinPosition')
+  } else if (platform === 99) {
+    if (rt === '1') return t('roleType.fomoContract')
   }
 
   return null
