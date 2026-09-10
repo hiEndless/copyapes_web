@@ -22,6 +22,7 @@ import { isInvalidUniqueName, parseTraderUrl } from '../add_task/_lib/trader-url
 
 import { getCookies, searchCookie } from '@/api/cookie'
 import type { EntitlementProfileResponse } from '@/api/settings'
+import { mapCookieExchangeToPlatform } from '@/lib/cookie-platform'
 import { cn } from '@/lib/utils'
 
 type CookieTrader = {
@@ -108,12 +109,20 @@ export default function NoDelayPage() {
         const res = await getCookies()
 
         if (res.code === 0 && Array.isArray(res.data)) {
-          const mappedCookies: CookieTrader[] = res.data.map((c: any) => ({
-            id: String(c.curl_id),
-            name: c.curl_name,
-            status: c.available ? 'active' : 'expired',
-            platform: String(c.exchange) === '1' ? 'okx' : 'binance'
-          }))
+          const mappedCookies: CookieTrader[] = res.data.flatMap((c: any) => {
+            const platform = mapCookieExchangeToPlatform(c.exchange)
+
+            if (platform !== 'okx' && platform !== 'binance') return []
+
+            return [
+              {
+                id: String(c.curl_id),
+                name: c.curl_name,
+                status: (c.available ? 'active' : 'expired') as CookieTrader['status'],
+                platform
+              }
+            ]
+          })
 
           setMyCookies(mappedCookies)
         }
@@ -136,13 +145,22 @@ export default function NoDelayPage() {
       const res = await searchCookie(searchQuery)
 
       if (res.code === 0 && Array.isArray(res.data)) {
-        const results: CookieTrader[] = res.data.map((c: any) => ({
-          id: String(c.curl_id),
-          name: c.curl_name,
-          owner: c.username || t('cookie.anonymousFallback'),
-          status: c.available ? 'active' : 'expired',
-          platform: String(c.exchange) === '1' ? 'okx' : 'binance'
-        }))
+        const results: CookieTrader[] = res.data.flatMap((c: any) => {
+          const platform = mapCookieExchangeToPlatform(c.exchange)
+
+          if (platform !== 'okx' && platform !== 'binance') return []
+          if (exchange && platform !== exchange) return []
+
+          return [
+            {
+              id: String(c.curl_id),
+              name: c.curl_name,
+              owner: c.username || t('cookie.anonymousFallback'),
+              status: (c.available ? 'active' : 'expired') as CookieTrader['status'],
+              platform
+            }
+          ]
+        })
 
         setSearchResults(results)
       } else {
