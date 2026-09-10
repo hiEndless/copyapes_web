@@ -2986,7 +2986,8 @@
     },
     "page": {
       "studioVipHint": "Studio VIP is required to create Fomo watchlist copy tasks.",
-      "upgradeStudioVip": "Upgrade to Studio VIP"
+      "upgradeStudioVip": "Upgrade to Studio VIP",
+      "copyTip": "FOMO may ban accounts from time to time. Stay alert and prepare extra Google email accounts."
     }
   }
 }

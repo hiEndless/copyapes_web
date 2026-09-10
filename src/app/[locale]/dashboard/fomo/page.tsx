@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 
-import { ExternalLink, Lock, Search, Sparkles } from 'lucide-react'
+import { ExternalLink, Info, Lock, Search, Sparkles } from 'lucide-react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useSearchParams } from 'next/navigation'
@@ -263,6 +263,10 @@ export default function FomoPage() {
                       className='h-8 w-auto object-contain sm:h-10'
                     />
                   </div>
+                </div>
+                <div className='flex items-start gap-2 rounded-xl bg-blue-600/10 p-3 text-sm text-blue-800/80 dark:text-blue-300/80'>
+                  <Info className='mt-0.5 h-4 w-4 shrink-0' />
+                  <p className='text-xs text-blue-700/80 dark:text-blue-300/80'>{t('page.copyTip')}</p>
                 </div>
               </div>
 

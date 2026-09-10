@@ -2988,7 +2988,8 @@
     },
     "page": {
       "studioVipHint": "建立 Fomo 自選跟單任務需開通工作室 VIP。",
-      "upgradeStudioVip": "去開通"
+      "upgradeStudioVip": "去開通",
+      "copyTip": "FOMO會不定時進行封號，請時刻留意，多準備一些 Google 郵箱帳號"
     }
   }
 }

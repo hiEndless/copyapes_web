@@ -2986,7 +2986,8 @@
     },
     "page": {
       "studioVipHint": "Fomo 워치리스트 카피 생성에는 Studio VIP가 필요합니다.",
-      "upgradeStudioVip": "Studio VIP 업그레이드"
+      "upgradeStudioVip": "Studio VIP 업그레이드",
+      "copyTip": "FOMO는 비정기적으로 계정을 제재할 수 있습니다. 항상 주의하고 Google 이메일 계정을 여분으로 준비하세요."
     }
   }
 }

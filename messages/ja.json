@@ -2986,7 +2986,8 @@
     },
     "page": {
       "studioVipHint": "Fomo ウォッチリストコピーの作成には Studio VIP が必要です。",
-      "upgradeStudioVip": "Studio VIP にアップグレード"
+      "upgradeStudioVip": "Studio VIP にアップグレード",
+      "copyTip": "FOMOは不定期にアカウントをBANする場合があります。常に注意し、予備のGoogleメールアカウントを用意してください。"
     }
   }
 }
