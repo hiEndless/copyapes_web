@@ -27,6 +27,16 @@ type ApiTrader = {
   isDemo?: boolean
 }
 
+function isSupportedApiFollowPlatform(platform: ApiTrader['platform']) {
+  return platform === 'okx' || platform === 'gate'
+}
+
+function resolveApiTraderPlatform(platform: ApiTrader['platform'] | undefined) {
+  if (platform === 'binance') return 5
+  if (platform === 'gate') return 11
+  return 6
+}
+
 export default function ApiTaskPage() {
   const t = useTranslations('DashboardApiTask')
   const [selectedTrader, setSelectedTrader] = useState<ApiTrader | null>(null)
@@ -265,9 +275,13 @@ export default function ApiTaskPage() {
                             </div>
                           </div>
                           {/* <Button className='w-full' disabled={api.platform !== 'okx' && api.platform !== 'binance'} onClick={() => handleCopy(api)}> */}
-                          <Button className='w-full' disabled={api.platform !== 'okx'} onClick={() => handleCopy(api)}>
+                          <Button
+                            className='w-full'
+                            disabled={!isSupportedApiFollowPlatform(api.platform)}
+                            onClick={() => handleCopy(api)}
+                          >
                             {/* {api.platform !== 'okx' && api.platform !== 'binance' ? '暂不支持该平台' : '发起跟单'} */}
-                            {api.platform !== 'okx' ? t('list.unsupported') : t('list.follow')}
+                            {!isSupportedApiFollowPlatform(api.platform) ? t('list.unsupported') : t('list.follow')}
                           </Button>
                         </Card>
                       ))}
@@ -338,8 +352,12 @@ export default function ApiTaskPage() {
                               </p>
                             </div>
                           </div>
-                          <Button className='w-full' disabled={api.platform !== 'okx'} onClick={() => handleCopy(api)}>
-                            {api.platform !== 'okx' ? t('list.unsupported') : t('list.follow')}
+                          <Button
+                            className='w-full'
+                            disabled={!isSupportedApiFollowPlatform(api.platform)}
+                            onClick={() => handleCopy(api)}
+                          >
+                            {!isSupportedApiFollowPlatform(api.platform) ? t('list.unsupported') : t('list.follow')}
                           </Button>
                         </Card>
                       ))
@@ -362,7 +380,7 @@ export default function ApiTaskPage() {
         traderId={selectedTrader?.id || ''}
         traderName={selectedTrader?.name || ''}
         platform={selectedTrader?.platform || ''}
-        traderPlatform={selectedTrader?.platform === 'binance' ? 5 : 6}
+        traderPlatform={resolveApiTraderPlatform(selectedTrader?.platform)}
         roleType='1'
       />
     </div>
