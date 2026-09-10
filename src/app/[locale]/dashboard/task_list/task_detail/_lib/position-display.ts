@@ -57,9 +57,26 @@ export function formatPositionAmount(value?: string | number | null) {
   return text || '0'
 }
 
-export function formatPositionAmountWithUnit(value?: string | number | null, unit?: string | null) {
-  const amount = formatPositionAmount(value)
+export function resolvePositionDisplayUnit(
+  unit?: string | null,
+  traderPlatform?: number | string | null
+) {
   const unitText = String(unit ?? '').trim()
+  if (unitText) return unitText
+
+  // Gate API 跟单：后端单位落地前，前端默认按张展示
+  if (String(traderPlatform ?? '').trim() === '11') return '张'
+
+  return ''
+}
+
+export function formatPositionAmountWithUnit(
+  value?: string | number | null,
+  unit?: string | null,
+  traderPlatform?: number | string | null
+) {
+  const amount = formatPositionAmount(value)
+  const unitText = resolvePositionDisplayUnit(unit, traderPlatform)
   return unitText ? `${amount} ${unitText}` : amount
 }
 

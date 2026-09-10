@@ -36,6 +36,7 @@ type PositionTableProps = {
   positions: TaskPositionItem[]
   showLeaderColumn?: boolean
   emptyText?: string
+  traderPlatform?: number | string | null
 }
 
 const tableShellClass = 'overflow-hidden rounded-xl border border-border/60 bg-background/80'
@@ -71,7 +72,8 @@ function EmptyState({ text }: { text: string }) {
 function PositionTable({
   positions,
   showLeaderColumn = true,
-  emptyText
+  emptyText,
+  traderPlatform
 }: PositionTableProps) {
   const t = useTranslations('DashboardTaskDetail')
 
@@ -131,13 +133,13 @@ function PositionTable({
                 {showLeaderColumn ? (
                   <TableCell className='bg-blue-500/[0.03] px-4 py-3 text-right dark:bg-blue-500/[0.06]'>
                     <span className='font-mono text-sm font-semibold tabular-nums text-blue-600 dark:text-blue-400'>
-                      {formatPositionAmountWithUnit(item.leader_pos, item.leader_pos_unit)}
+                      {formatPositionAmountWithUnit(item.leader_pos, item.leader_pos_unit, traderPlatform)}
                     </span>
                   </TableCell>
                 ) : null}
                 <TableCell className='bg-emerald-500/[0.03] px-4 py-3 text-right dark:bg-emerald-500/[0.06]'>
                   <span className='font-mono text-sm font-semibold tabular-nums text-emerald-600 dark:text-emerald-400'>
-                    {formatPositionAmountWithUnit(item.follow_pos, item.follow_pos_unit)}
+                    {formatPositionAmountWithUnit(item.follow_pos, item.follow_pos_unit, traderPlatform)}
                   </span>
                 </TableCell>
               </TableRow>
@@ -163,6 +165,7 @@ export function TaskPositionSummaryCard({
   const positions = summary?.positions ?? []
   const followOnlyPositions = summary?.follow_only_positions ?? []
   const snapshotTime = formatSnapshotTime(summary?.leader_snapshot_saved_at_ms, locale)
+  const traderPlatform = task?.trader_platform as number | string | undefined
 
   return (
     <section className='space-y-2'>
@@ -245,7 +248,7 @@ export function TaskPositionSummaryCard({
         <PositionSkeleton />
       ) : (
         <>
-          <PositionTable positions={positions} />
+          <PositionTable positions={positions} traderPlatform={traderPlatform} />
 
           {followOnlyPositions.length > 0 ? (
             <Collapsible open={followOnlyOpen} onOpenChange={setFollowOnlyOpen} className='pt-1'>
@@ -271,6 +274,7 @@ export function TaskPositionSummaryCard({
                   positions={followOnlyPositions}
                   showLeaderColumn={false}
                   emptyText={t('positions.emptyAbnormal')}
+                  traderPlatform={traderPlatform}
                 />
               </CollapsibleContent>
             </Collapsible>

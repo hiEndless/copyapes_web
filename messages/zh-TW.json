@@ -1649,7 +1649,8 @@
       "3": "幣coin",
       "4": "熱門",
       "9": "NOF1 / AI模型",
-      "99": "Fomo"
+      "99": "Fomo",
+      "11": "Gate API"
     },
     "roleType": {
       "okxContract": "合約帶單",
@@ -1660,7 +1661,8 @@
       "binanceSmart": "聰明錢",
       "bicoinOps": "操作記錄",
       "bicoinPosition": "合約倉位",
-      "fomoContract": "只跟合約"
+      "fomoContract": "只跟合約",
+      "gateContract": "只跟合約"
     },
     "actions": {
       "view": "查看詳情",
@@ -1841,7 +1843,8 @@
       "4": "熱門",
       "9": "NOF1 / AI模型",
       "unknown": "未知",
-      "99": "Fomo"
+      "99": "Fomo",
+      "11": "Gate API"
     },
     "roleType": {
       "okxContract": "合約帶單",
@@ -1852,7 +1855,8 @@
       "binanceSmart": "聰明錢",
       "bicoinOps": "操作記錄",
       "bicoinPosition": "合約倉位",
-      "fomoContract": "只跟合約"
+      "fomoContract": "只跟合約",
+      "gateContract": "只跟合約"
     },
     "utils": {
       "unknownExchange": "未知"
@@ -2566,7 +2570,8 @@
         "9": "NOF1",
         "10": "HyperLiquid",
         "unknown": "未知",
-        "99": "Fomo"
+        "99": "Fomo",
+        "11": "Gate API"
       },
       "roleTypes": {
         "okxContract": "合約帶單",
@@ -2580,7 +2585,8 @@
         "aiModel": "AI模型",
         "wallet": "錢包地址",
         "unknown": "未知",
-        "fomoContract": "只跟合約"
+        "fomoContract": "只跟合約",
+        "gateContract": "只跟合約"
       },
       "firstOrder": {
         "newOnly": "僅複製新開倉",

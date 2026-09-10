@@ -1647,7 +1647,8 @@
       "3": "BiCoin",
       "4": "Hot",
       "9": "NOF1 / AI Model",
-      "99": "Fomo"
+      "99": "Fomo",
+      "11": "Gate API"
     },
     "roleType": {
       "okxContract": "Futures lead",
@@ -1658,7 +1659,8 @@
       "binanceSmart": "Smart money",
       "bicoinOps": "Operations",
       "bicoinPosition": "Futures positions",
-      "fomoContract": "Contracts only"
+      "fomoContract": "Contracts only",
+      "gateContract": "Contracts only"
     },
     "actions": {
       "view": "View details",
@@ -1839,7 +1841,8 @@
       "4": "Hot",
       "9": "NOF1 / AI Model",
       "unknown": "Unknown",
-      "99": "Fomo"
+      "99": "Fomo",
+      "11": "Gate API"
     },
     "roleType": {
       "okxContract": "Futures lead",
@@ -1850,7 +1853,8 @@
       "binanceSmart": "Smart money",
       "bicoinOps": "Operations",
       "bicoinPosition": "Futures positions",
-      "fomoContract": "Contracts only"
+      "fomoContract": "Contracts only",
+      "gateContract": "Contracts only"
     },
     "utils": {
       "unknownExchange": "Unknown"
@@ -2564,7 +2568,8 @@
         "9": "NOF1",
         "10": "HyperLiquid",
         "unknown": "Unknown",
-        "99": "Fomo"
+        "99": "Fomo",
+        "11": "Gate API"
       },
       "roleTypes": {
         "okxContract": "Futures lead",
@@ -2578,7 +2583,8 @@
         "aiModel": "AI Model",
         "wallet": "Wallet address",
         "unknown": "Unknown",
-        "fomoContract": "Contracts only"
+        "fomoContract": "Contracts only",
+        "gateContract": "Contracts only"
       },
       "firstOrder": {
         "newOnly": "New opens only",

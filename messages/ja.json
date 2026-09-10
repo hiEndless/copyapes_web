@@ -1647,7 +1647,8 @@
       "3": "BiCoin",
       "4": "人気",
       "9": "NOF1 / AIモデル",
-      "99": "Fomo"
+      "99": "Fomo",
+      "11": "Gate API"
     },
     "roleType": {
       "okxContract": "先物リード",
@@ -1658,7 +1659,8 @@
       "binanceSmart": "スマートマネー",
       "bicoinOps": "操作履歴",
       "bicoinPosition": "先物建玉",
-      "fomoContract": "先物のみ"
+      "fomoContract": "先物のみ",
+      "gateContract": "契約のみ"
     },
     "actions": {
       "view": "詳細を見る",
@@ -1839,7 +1841,8 @@
       "4": "人気",
       "9": "NOF1 / AIモデル",
       "unknown": "不明",
-      "99": "Fomo"
+      "99": "Fomo",
+      "11": "Gate API"
     },
     "roleType": {
       "okxContract": "先物リード",
@@ -1850,7 +1853,8 @@
       "binanceSmart": "スマートマネー",
       "bicoinOps": "操作履歴",
       "bicoinPosition": "先物建玉",
-      "fomoContract": "先物のみ"
+      "fomoContract": "先物のみ",
+      "gateContract": "契約のみ"
     },
     "utils": {
       "unknownExchange": "不明"
@@ -2564,7 +2568,8 @@
         "9": "NOF1",
         "10": "HyperLiquid",
         "unknown": "不明",
-        "99": "Fomo"
+        "99": "Fomo",
+        "11": "Gate API"
       },
       "roleTypes": {
         "okxContract": "先物リード",
@@ -2578,7 +2583,8 @@
         "aiModel": "AIモデル",
         "wallet": "ウォレットアドレス",
         "unknown": "不明",
-        "fomoContract": "先物のみ"
+        "fomoContract": "先物のみ",
+        "gateContract": "契約のみ"
       },
       "firstOrder": {
         "newOnly": "新規建のみコピー",

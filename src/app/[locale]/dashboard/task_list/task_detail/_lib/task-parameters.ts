@@ -7,7 +7,7 @@ export type TaskDetailTranslate = (
 ) => string
 
 export function getPlatformName(val: number, t: TaskDetailTranslate) {
-  const known = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
+  const known = new Set([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 99])
   if (known.has(val)) {
     return t(`params.platforms.${val}`)
   }
@@ -74,6 +74,8 @@ export function getRoleType(
     return t('params.roleTypes.aiModel')
   } else if (tp === '10') {
     return t('params.roleTypes.wallet')
+  } else if (tp === '11') {
+    if (rt === '1') return t('params.roleTypes.gateContract')
   } else if (tp === '99') {
     if (rt === '1') return t('params.roleTypes.fomoContract')
   }
