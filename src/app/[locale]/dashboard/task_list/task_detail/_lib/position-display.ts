@@ -57,27 +57,57 @@ export function formatPositionAmount(value?: string | number | null) {
   return text || '0'
 }
 
-export function resolvePositionDisplayUnit(
-  unit?: string | null,
+/** 展示用绝对值，去掉符号（方向由 side 标签表达） */
+export function formatAbsolutePositionAmount(value?: string | number | null) {
+  const text = formatPositionAmount(value)
+  return text.startsWith('-') ? text.slice(1) || '0' : text
+}
+
+export function resolvePositionDisplayUnit(unit?: string | null) {
+  return String(unit ?? '').trim()
+}
+
+/** Gate API(11)：交易员仓位优先展示爬虫原始张数 */
+export function resolveLeaderPositionDisplay(
+  item: Pick<TaskPositionItem, 'leader_pos' | 'leader_pos_unit' | 'leader_position'>,
   traderPlatform?: number | string | null
 ) {
-  const unitText = String(unit ?? '').trim()
-  if (unitText) return unitText
+  if (String(traderPlatform ?? '').trim() === '11') {
+    const rawPos = item.leader_position?.raw_pos
+    if (rawPos !== undefined && rawPos !== null && String(rawPos).trim() !== '') {
+      return {
+        amount: formatAbsolutePositionAmount(rawPos as string | number),
+        unit: '张'
+      }
+    }
 
-  // Gate API 跟单：后端单位落地前，前端默认按张展示
-  if (String(traderPlatform ?? '').trim() === '11') return '张'
+    return {
+      amount: formatAbsolutePositionAmount(item.leader_pos),
+      unit: '张'
+    }
+  }
 
-  return ''
+  return {
+    amount: formatPositionAmount(item.leader_pos),
+    unit: resolvePositionDisplayUnit(item.leader_pos_unit)
+  }
 }
 
 export function formatPositionAmountWithUnit(
   value?: string | number | null,
-  unit?: string | null,
-  traderPlatform?: number | string | null
+  unit?: string | null
 ) {
   const amount = formatPositionAmount(value)
-  const unitText = resolvePositionDisplayUnit(unit, traderPlatform)
+  const unitText = resolvePositionDisplayUnit(unit)
   return unitText ? `${amount} ${unitText}` : amount
+}
+
+export function formatLeaderPositionAmountWithUnit(
+  item: Pick<TaskPositionItem, 'leader_pos' | 'leader_pos_unit' | 'leader_position'>,
+  traderPlatform?: number | string | null
+) {
+  const { amount, unit } = resolveLeaderPositionDisplay(item, traderPlatform)
+  return unit ? `${amount} ${unit}` : amount
 }
 
 export function formatPositionSymbol(item: Pick<TaskPositionItem, 'raw_symbol' | 'instId'>) {
