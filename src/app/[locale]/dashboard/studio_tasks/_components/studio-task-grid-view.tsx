@@ -1,6 +1,6 @@
 'use client'
 
-import { BanIcon, EyeIcon, Flame, LockIcon, Unplug } from 'lucide-react'
+import { BanIcon, EyeIcon, Flame, LockIcon } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 import { Badge } from '@/components/ui/badge'
@@ -32,17 +32,21 @@ const getPlatformMap = (t: TranslateFn): Record<number, { name: string; logo: st
   2: { name: 'Binance', logo: '/exchanges/binance.png' },
   3: { name: t('platforms.3'), logo: '/exchanges/bicoin.png' },
   4: { name: t('platforms.4'), logo: <Flame className='text-orange-500 h-full w-full' /> },
-  5: { name: 'Binance API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
-  6: { name: 'OKX API', logo: <Unplug className='text-blue-500 h-full w-full p-0.5' /> },
+  5: { name: t('platforms.api'), logo: '/exchanges/binance.png' },
+  6: { name: t('platforms.api'), logo: '/exchanges/okx.png' },
   7: { name: 'Binance Cookie', logo: '/exchanges/binance.png' },
   8: { name: 'OKX Cookie', logo: '/exchanges/okx.png' },
   9: { name: t('platforms.9'), logo: '/exchanges/default.png' },
   10: { name: 'Hyperliquid', logo: '/exchanges/hlq_logo.png' },
-  11: { name: 'Gate API', logo: '/exchanges/gate.png' },
+  11: { name: t('platforms.api'), logo: '/exchanges/gate.png' },
   99: { name: 'Fomo', logo: '/exchanges/fomo.png' }
 })
 
 const getRoleTypeLabel = (t: TranslateFn, platform: number, roleType?: number | string) => {
+  if (platform === 5 || platform === 6 || platform === 11) {
+    return t('platforms.api')
+  }
+
   if (!roleType) return null
   const rt = String(roleType)
 
@@ -56,15 +60,13 @@ const getRoleTypeLabel = (t: TranslateFn, platform: number, roleType?: number | 
     if (rt === '1') return t('roleType.binancePublic')
     if (rt === '2') return t('roleType.okxCookieProject')
     if (rt === '3') return t('roleType.binanceSmart')
-  } else if (platform === 2 || platform === 5) {
+  } else if (platform === 2) {
     if (rt === '1') return t('roleType.binancePublic')
     if (rt === '2') return t('roleType.binanceHidden')
     if (rt === '3') return t('roleType.binanceSmart')
   } else if (platform === 3) {
     if (rt === '1') return t('roleType.bicoinOps')
     if (rt === '2') return t('roleType.bicoinPosition')
-  } else if (platform === 11) {
-    if (rt === '1') return t('roleType.gateContract')
   } else if (platform === 99) {
     if (rt === '1') return t('roleType.fomoContract')
   }

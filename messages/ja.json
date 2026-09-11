@@ -1648,7 +1648,8 @@
       "4": "人気",
       "9": "NOF1 / AIモデル",
       "99": "Fomo",
-      "11": "Gate API"
+      "11": "API-to-API コピー",
+      "api": "API-to-API コピー"
     },
     "roleType": {
       "okxContract": "先物リード",
@@ -1842,7 +1843,8 @@
       "9": "NOF1 / AIモデル",
       "unknown": "不明",
       "99": "Fomo",
-      "11": "Gate API"
+      "11": "API-to-API コピー",
+      "api": "API-to-API コピー"
     },
     "roleType": {
       "okxContract": "先物リード",
@@ -2561,8 +2563,8 @@
         "2": "Binance",
         "3": "BiCoin",
         "4": "人気トレーダー",
-        "5": "API",
-        "6": "API",
+        "5": "Binance API",
+        "6": "OKX API",
         "7": "Binance",
         "8": "OKX",
         "9": "NOF1",

@@ -1648,7 +1648,8 @@
       "4": "Hot",
       "9": "NOF1 / AI Model",
       "99": "Fomo",
-      "11": "Gate API"
+      "11": "API-to-API Copy",
+      "api": "API-to-API Copy"
     },
     "roleType": {
       "okxContract": "Futures lead",
@@ -1842,7 +1843,8 @@
       "9": "NOF1 / AI Model",
       "unknown": "Unknown",
       "99": "Fomo",
-      "11": "Gate API"
+      "11": "API-to-API Copy",
+      "api": "API-to-API Copy"
     },
     "roleType": {
       "okxContract": "Futures lead",
@@ -2561,8 +2563,8 @@
         "2": "Binance",
         "3": "BiCoin",
         "4": "Hot Traders",
-        "5": "API",
-        "6": "API",
+        "5": "Binance API",
+        "6": "OKX API",
         "7": "Binance",
         "8": "OKX",
         "9": "NOF1",

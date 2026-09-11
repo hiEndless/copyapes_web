@@ -1650,7 +1650,8 @@
       "4": "热门",
       "9": "NOF1 / AI模型",
       "99": "Fomo",
-      "11": "Gate API"
+      "11": "API跟单",
+      "api": "API跟单"
     },
     "roleType": {
       "okxContract": "合约带单",
@@ -1844,7 +1845,8 @@
       "9": "NOF1 / AI模型",
       "unknown": "未知",
       "99": "Fomo",
-      "11": "Gate API"
+      "11": "API跟单",
+      "api": "API跟单"
     },
     "roleType": {
       "okxContract": "合约带单",
@@ -2563,8 +2565,8 @@
         "2": "Binance",
         "3": "币coin",
         "4": "热门交易员",
-        "5": "API",
-        "6": "API",
+        "5": "Binance API",
+        "6": "OKX API",
         "7": "Binance",
         "8": "OKX",
         "9": "NOF1",

@@ -1648,7 +1648,8 @@
       "4": "인기",
       "9": "NOF1 / AI 모델",
       "99": "Fomo",
-      "11": "Gate API"
+      "11": "API-to-API 카피",
+      "api": "API-to-API 카피"
     },
     "roleType": {
       "okxContract": "선물 리드",
@@ -1842,7 +1843,8 @@
       "9": "NOF1 / AI 모델",
       "unknown": "알 수 없음",
       "99": "Fomo",
-      "11": "Gate API"
+      "11": "API-to-API 카피",
+      "api": "API-to-API 카피"
     },
     "roleType": {
       "okxContract": "선물 리드",
@@ -2561,8 +2563,8 @@
         "2": "Binance",
         "3": "BiCoin",
         "4": "인기 트레이더",
-        "5": "API",
-        "6": "API",
+        "5": "Binance API",
+        "6": "OKX API",
         "7": "Binance",
         "8": "OKX",
         "9": "NOF1",
