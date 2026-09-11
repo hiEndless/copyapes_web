@@ -382,6 +382,7 @@ export default function ApiTaskPage() {
         platform={selectedTrader?.platform || ''}
         traderPlatform={resolveApiTraderPlatform(selectedTrader?.platform)}
         roleType='1'
+        initialBenchMark={selectedTrader?.balance}
       />
     </div>
   )
