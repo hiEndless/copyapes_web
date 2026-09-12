@@ -103,12 +103,14 @@ export function ApiAddButton({ onSuccess }: { onSuccess?: () => void }) {
       const validateRes = await validateApiAdd(payload)
 
       if (validateRes.code !== 0) {
+        toast.error(validateRes.error || 'Request failed')
         return
       }
 
       const addRes = await addApi(payload)
 
       if (addRes.code !== 0) {
+        toast.error(addRes.error || 'Request failed')
         return
       }
 

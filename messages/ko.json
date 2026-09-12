@@ -193,8 +193,8 @@
       "title": "무료 플랜",
       "description": "기본 카피 트레이딩을 무료로 체험",
       "button": "무료로 시작",
-      "f1": "거래소 API 인증 1개",
-      "f2": "카피 트레이딩 태스크 1개",
+      "f1": "거래 API 1개",
+      "f2": "작업 1개",
       "f3": "인증 API 누적 거래 자금 500 USDT 이하",
       "f4": "OKX, Gate, Bitget API만 지원"
     },
@@ -204,8 +204,8 @@
       "button": "지금 시작",
       "f1": "리드 트레이더 API Key 연동 지원",
       "f2": "Binance 거래소 API 지원",
-      "f3": "거래소 API 인증 5개",
-      "f4": "카피 트레이딩 태스크 15개",
+      "f3": "거래 API 3개(리드 1 포함)",
+      "f4": "작업 10개",
       "f5": "인증 API 누적 거래 자금 5,000 USDT 이하",
       "ef1": "카피 트레이딩 알림",
       "ef2": "초고속 거래"
@@ -214,8 +214,8 @@
       "title": "Studio VIP 플랜",
       "description": "더 전문적인 카피 트레이딩 서비스",
       "button": "지금 시작",
-      "f1": "거래소 API 인증 10개",
-      "f2": "카피 트레이딩 태스크 50개",
+      "f1": "거래 API 5개(리드 2 포함)",
+      "f2": "작업 25개",
       "f3": "인증 API 누적 거래 자금 20,000 USDT 이하",
       "f5": "리드 트레이더 API Key 연동 지원",
       "ef1": "전용 스튜디오 관리 기능",
@@ -545,7 +545,8 @@
       "account": "계정",
       "notifications": "알림",
       "logout": "로그아웃",
-      "logoutSuccess": "로그아웃됨"
+      "logoutSuccess": "로그아웃됨",
+      "leaderApiSlots": "리드 API"
     }
   },
   "Auth": {
@@ -1416,7 +1417,8 @@
     "badges": {
       "rebateExclusive": "리베이트 전용 혜택",
       "renewInDays": "{days}일 후 할인 갱신 가능",
-      "renewWindowClosed": "할인 갱신 기간이 아닙니다"
+      "renewWindowClosed": "할인 갱신 기간이 아닙니다",
+      "vipToStudioUpgradeHalf": "VIP 업그레이드 반값"
     },
     "ui": {
       "monthly": "월간",
@@ -1469,7 +1471,7 @@
       "free_vip": {
         "name": "무료 체험",
         "subtitle": "개인 트레이더용",
-        "accounts": "거래 API 1개, 카피 작업 1개",
+        "accounts": "거래 API 1개 · 작업 1개",
         "buttonText": "VIP 개통",
         "features": [
           "거래 API 1개",
@@ -1484,11 +1486,11 @@
       "vip_month": {
         "name": "VIP",
         "subtitle": "개인 트레이더용",
-        "accounts": "거래 API 5개, 카피 작업 15개",
+        "accounts": "거래 API 3개(리드 1 포함) · 작업 10개",
         "buttonText": "VIP 개통",
         "features": [
-          "거래 API 5개",
-          "카피 작업 15개",
+          "거래 API 3개(리드 API 1개 포함)",
+          "카피 작업 10개",
           "거래 API 누적 자금 한도 5,000 USDT",
           "모든 거래소 API 추가 가능",
           "리드 API 지원",
@@ -1496,8 +1498,8 @@
           "24시간 전문 고객지원"
         ],
         "yearlyFeatures": [
-          "거래 API 5개",
-          "카피 작업 15개",
+          "거래 API 3개(리드 API 1개 포함)",
+          "카피 작업 10개",
           "거래 API 누적 자금 한도 5,000 USDT",
           "모든 거래소 API 추가 가능",
           "리드 API 지원",
@@ -1510,11 +1512,11 @@
       "studio_vip_month": {
         "name": "Studio VIP",
         "subtitle": "소규모 카피 스튜디오용",
-        "accounts": "거래 API 10개, 카피 작업 50개",
+        "accounts": "거래 API 5개(리드 2 포함) · 작업 25개",
         "buttonText": "Studio VIP 개통",
         "features": [
-          "거래 API 10개",
-          "카피 작업 50개",
+          "거래 API 5개(리드 API 2개 포함)",
+          "카피 작업 25개",
           "거래 API 누적 자금 한도 20,000 USDT",
           "모든 거래소 API 추가 가능",
           "리드 API 지원",
@@ -1524,8 +1526,8 @@
           "기능 커스터마이징 지원"
         ],
         "yearlyFeatures": [
-          "거래 API 10개",
-          "카피 작업 50개",
+          "거래 API 5개(리드 API 2개 포함)",
+          "카피 작업 25개",
           "거래 API 누적 자금 한도 20,000 USDT",
           "모든 거래소 API 추가 가능",
           "리드 API 지원",
@@ -1539,11 +1541,11 @@
       "vip_permanent": {
         "name": "영구 VIP",
         "subtitle": "개인 트레이더용",
-        "accounts": "거래 API 5개, 카피 작업 15개",
+        "accounts": "거래 API 3개(리드 1 포함) · 작업 10개",
         "buttonText": "영구 VIP 개통",
         "features": [
-          "거래 API 5개",
-          "카피 작업 15개",
+          "거래 API 3개(리드 API 1개 포함)",
+          "카피 작업 10개",
           "거래 API 누적 자금 한도 5,000 USDT",
           "모든 거래소 API 추가 가능",
           "리드 API 지원",
@@ -1563,13 +1565,13 @@
           "개인 VIP 사용자 전용"
         ]
       },
-      "studio_limit_pack_50000": {
+      "studio_limit_pack_40000": {
         "name": "Studio VIP 자금 한도 상향",
-        "subtitle": "자금 한도 50,000 USDT 상향",
-        "accounts": "자금 한도 50,000 USDT 상향",
+        "subtitle": "자금 한도 40,000 USDT 상향",
+        "accounts": "자금 한도 40,000 USDT 상향",
         "buttonText": "Studio VIP 자금 상향 구매",
         "features": [
-          "Studio VIP 유효 기간 동안 자금 한도 50,000 USDT 영구 상향",
+          "Studio VIP 유효 기간 동안 자금 한도 40,000 USDT 영구 상향",
           "Studio VIP 만료 시 상향 혜택 종료",
           "Studio VIP 사용자 전용"
         ]
@@ -1577,13 +1579,34 @@
       "studio_api_slot_pack_5": {
         "name": "Studio VIP API 슬롯 상향",
         "subtitle": "API 권한 수량 증가",
-        "accounts": "거래 API 권한 5개 추가",
+        "accounts": "거래 API +5(리드 +2 포함) · 작업 +25",
         "buttonText": "Studio VIP API 슬롯 구매",
         "features": [
           "Studio VIP 유효 기간 동안 거래 API 슬롯 5개 영구 추가(누적 가능)",
+          "리드 API 슬롯 2개 포함",
           "Studio VIP 유효 기간 동안 카피 작업 25개 영구 추가(누적 가능)",
           "Studio VIP 만료 시 추가 슬롯 종료",
           "Studio VIP 사용자 전용"
+        ]
+      },
+      "vip_capacity_month": {
+        "name": "VIP 용량 확장",
+        "subtitle": "VIP 기간 동안 API와 카피 작업 한도 확장",
+        "accounts": "거래 API +2(리드 +1 포함) · 작업 +10",
+        "buttonText": "VIP 용량 확장 구매",
+        "features": [
+          "거래 API +2(리드 API 1개 포함)",
+          "카피 작업 +10",
+          "월 25 USDT, 연 270 USDT",
+          "중복 불가, 갱신 시 기간만 연장",
+          "유효한 개인 VIP 전용"
+        ],
+        "yearlyFeatures": [
+          "거래 API +2(리드 API 1개 포함)",
+          "카피 작업 +10",
+          "연 270 USDT, 360일 유효",
+          "중복 불가, 갱신 시 기간만 연장",
+          "유효한 개인 VIP 전용"
         ]
       }
     }
@@ -2009,7 +2032,7 @@
       "inProgress": "진행 중",
       "pending": "대기",
       "milestoneTitle": "유효 초대 {count}명",
-      "reward3": "API 슬롯 +1, 카피 작업 한도 +1",
+      "reward3": "카피 작업 한도 +1",
       "reward5": "계좌 자금 한도 +500U",
       "reward10": "API 슬롯 +1, 카피 작업 한도 +1, 계좌 자금 한도 +1000U"
     },

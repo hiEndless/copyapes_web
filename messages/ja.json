@@ -193,8 +193,8 @@
       "title": "無料プラン",
       "description": "基本的なコピートレードを無料で体験",
       "button": "無料で始める",
-      "f1": "取引所 API 認可 1 件",
-      "f2": "コピートレードタスク 1 件",
+      "f1": "取引 API 1件",
+      "f2": "タスク 1件",
       "f3": "認可 API の累計取引資金 500 USDT まで",
       "f4": "OKX、Gate、Bitget API のみ対応"
     },
@@ -204,8 +204,8 @@
       "button": "今すぐ始める",
       "f1": "リードトレーダー API Key 連携対応",
       "f2": "Binance 取引所 API 対応",
-      "f3": "取引所 API 認可 5 件",
-      "f4": "コピートレードタスク 15 件",
+      "f3": "取引 API 3件（うちリード 1）",
+      "f4": "タスク 10件",
       "f5": "認可 API の累計取引資金 5,000 USDT まで",
       "ef1": "コピートレード通知",
       "ef2": "超高速取引"
@@ -214,8 +214,8 @@
       "title": "Studio VIP プラン",
       "description": "よりプロフェッショナルなコピートレードサービス",
       "button": "今すぐ始める",
-      "f1": "取引所 API 認可 10 件",
-      "f2": "コピートレードタスク 50 件",
+      "f1": "取引 API 5件（うちリード 2）",
+      "f2": "タスク 25件",
       "f3": "認可 API の累計取引資金 20,000 USDT まで",
       "f5": "リードトレーダー API Key 連携対応",
       "ef1": "スタジオ専用管理機能",
@@ -545,7 +545,8 @@
       "account": "アカウント",
       "notifications": "通知",
       "logout": "ログアウト",
-      "logoutSuccess": "ログアウトしました"
+      "logoutSuccess": "ログアウトしました",
+      "leaderApiSlots": "リード API"
     }
   },
   "Auth": {
@@ -1416,7 +1417,8 @@
     "badges": {
       "rebateExclusive": "リベート限定特典",
       "renewInDays": "{days}日後に割引更新可能",
-      "renewWindowClosed": "割引更新期間外です"
+      "renewWindowClosed": "割引更新期間外です",
+      "vipToStudioUpgradeHalf": "VIP アップグレード半額"
     },
     "ui": {
       "monthly": "月額",
@@ -1469,7 +1471,7 @@
       "free_vip": {
         "name": "無料体験",
         "subtitle": "個人トレーダー向け",
-        "accounts": "取引 API 1件、コピー任務 1件",
+        "accounts": "取引 API 1件 · タスク 1件",
         "buttonText": "VIP を開通",
         "features": [
           "取引 API 1件",
@@ -1484,11 +1486,11 @@
       "vip_month": {
         "name": "VIP",
         "subtitle": "個人トレーダー向け",
-        "accounts": "取引 API 5件、コピー任務 15件",
+        "accounts": "取引 API 3件（うちリード 1）· タスク 10件",
         "buttonText": "VIP を開通",
         "features": [
-          "取引 API 5件",
-          "コピー任務 15件",
+          "取引 API 3件（うちリード API 1件）",
+          "コピー任務 10件",
           "取引 API 合計資金上限 5,000 USDT",
           "任意の取引所 API を追加可能",
           "リード API 対応",
@@ -1496,8 +1498,8 @@
           "24時間専門サポート"
         ],
         "yearlyFeatures": [
-          "取引 API 5件",
-          "コピー任務 15件",
+          "取引 API 3件（うちリード API 1件）",
+          "コピー任務 10件",
           "取引 API 合計資金上限 5,000 USDT",
           "任意の取引所 API を追加可能",
           "リード API 対応",
@@ -1510,11 +1512,11 @@
       "studio_vip_month": {
         "name": "Studio VIP",
         "subtitle": "小規模コピースタジオ向け",
-        "accounts": "取引 API 10件、コピー任務 50件",
+        "accounts": "取引 API 5件（うちリード 2）· タスク 25件",
         "buttonText": "Studio VIP を開通",
         "features": [
-          "取引 API 10件",
-          "コピー任務 50件",
+          "取引 API 5件（うちリード API 2件）",
+          "コピー任務 25件",
           "取引 API 合計資金上限 20,000 USDT",
           "任意の取引所 API を追加可能",
           "リード API 対応",
@@ -1524,8 +1526,8 @@
           "機能カスタム対応"
         ],
         "yearlyFeatures": [
-          "取引 API 10件",
-          "コピー任務 50件",
+          "取引 API 5件（うちリード API 2件）",
+          "コピー任務 25件",
           "取引 API 合計資金上限 20,000 USDT",
           "任意の取引所 API を追加可能",
           "リード API 対応",
@@ -1539,11 +1541,11 @@
       "vip_permanent": {
         "name": "永久 VIP",
         "subtitle": "個人トレーダー向け",
-        "accounts": "取引 API 5件、コピー任務 15件",
+        "accounts": "取引 API 3件（うちリード 1）· タスク 10件",
         "buttonText": "永久 VIP を開通",
         "features": [
-          "取引 API 5件",
-          "コピー任務 15件",
+          "取引 API 3件（うちリード API 1件）",
+          "コピー任務 10件",
           "取引 API 合計資金上限 5,000 USDT",
           "任意の取引所 API を追加可能",
           "リード API 対応",
@@ -1563,13 +1565,13 @@
           "個人 VIP ユーザー限定"
         ]
       },
-      "studio_limit_pack_50000": {
+      "studio_limit_pack_40000": {
         "name": "Studio VIP 資金上限アップ",
-        "subtitle": "資金上限を 50,000 USDT 引き上げ",
-        "accounts": "資金上限を 50,000 USDT 引き上げ",
+        "subtitle": "資金上限を 40,000 USDT 引き上げ",
+        "accounts": "資金上限を 40,000 USDT 引き上げ",
         "buttonText": "Studio VIP 資金アップを購入",
         "features": [
-          "Studio VIP 有効期間中、資金上限を 50,000 USDT 永久引き上げ",
+          "Studio VIP 有効期間中、資金上限を 40,000 USDT 永久引き上げ",
           "Studio VIP 期限後は引き上げが無効",
           "Studio VIP ユーザー限定"
         ]
@@ -1577,13 +1579,34 @@
       "studio_api_slot_pack_5": {
         "name": "Studio VIP API 枠アップ",
         "subtitle": "API 認可数を増加",
-        "accounts": "取引 API 認可数を 5 件追加",
+        "accounts": "取引 API +5（うちリード +2）· タスク +25",
         "buttonText": "Studio VIP API 枠を購入",
         "features": [
           "Studio VIP 有効期間中、取引 API 枠を 5 件永久追加（積み上げ可）",
+          "うちリード API 枠 2 件",
           "Studio VIP 有効期間中、コピー任務を 25 件永久追加（積み上げ可）",
           "Studio VIP 期限後は追加枠が無効",
           "Studio VIP ユーザー限定"
+        ]
+      },
+      "vip_capacity_month": {
+        "name": "VIP 容量アップ",
+        "subtitle": "VIP 有効期間中の API とコピー任務枠を拡張",
+        "accounts": "取引 API +2（うちリード +1）· タスク +10",
+        "buttonText": "VIP 容量アップを購入",
+        "features": [
+          "取引 API +2（うちリード API 1件）",
+          "コピー任務 +10",
+          "月額 25 USDT、年額 270 USDT",
+          "重複不可、更新は有効期間のみ延長",
+          "有効な個人 VIP ユーザー限定"
+        ],
+        "yearlyFeatures": [
+          "取引 API +2（うちリード API 1件）",
+          "コピー任務 +10",
+          "年額 270 USDT、360日有効",
+          "重複不可、更新は有効期間のみ延長",
+          "有効な個人 VIP ユーザー限定"
         ]
       }
     }
@@ -2009,7 +2032,7 @@
       "inProgress": "進行中",
       "pending": "未完了",
       "milestoneTitle": "有効招待 {count} 人",
-      "reward3": "API 枠 +1、コピータスク枠 +1",
+      "reward3": "コピータスク枠 +1",
       "reward5": "口座資金上限 +500U",
       "reward10": "API 枠 +1、コピータスク枠 +1、口座資金上限 +1000U"
     },

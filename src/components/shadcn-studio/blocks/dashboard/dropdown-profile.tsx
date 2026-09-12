@@ -171,6 +171,16 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
 
           <DropdownMenuItem className='px-3 py-2 text-sm flex-col items-start gap-1'>
             <div className='flex w-full items-center'>
+              <UserStar className='text-muted-foreground mr-2 size-4' />
+              <span className='text-muted-foreground flex-1'>{t('leaderApiSlots')}</span>
+              <span className='text-foreground font-medium'>
+                {profile?.leader_api_slot_used ?? 0} / {profile?.leader_api_slot_limit ?? 0}
+              </span>
+            </div>
+          </DropdownMenuItem>
+
+          <DropdownMenuItem className='px-3 py-2 text-sm flex-col items-start gap-1'>
+            <div className='flex w-full items-center'>
               <ListTodo className='text-muted-foreground mr-2 size-4' />
               <span className='text-muted-foreground flex-1'>{t('taskSlots')}</span>
               <span className='text-foreground font-medium'>

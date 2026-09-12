@@ -195,8 +195,8 @@
       "title": "免费套餐",
       "description": "免费体验基础跟单功能",
       "button": "免费体验",
-      "f1": "1 个交易所API授权",
-      "f2": "1 个跟单任务",
+      "f1": "1 个交易 API",
+      "f2": "1 个任务",
       "f3": "授权API累计交易资金不超过 500 USDT",
       "f4": "仅支持添加欧意、Gate、Bitget交易所 API"
     },
@@ -206,8 +206,8 @@
       "button": "立即开始",
       "f1": "支持带单员 API Key 接入",
       "f2": "支持添加币安交易所 API",
-      "f3": "5 个交易所API授权",
-      "f4": "15 个跟单任务",
+      "f3": "3 个交易 API（含 1 带单）",
+      "f4": "10 个任务",
       "f5": "授权API累计交易资金不超过 5000 USDT",
       "ef1": "跟单消息通知",
       "ef2": "极速交易"
@@ -216,8 +216,8 @@
       "title": "工作室 VIP 套餐",
       "description": "更专业的跟单服务",
       "button": "立即开始",
-      "f1": "10 个交易所API授权",
-      "f2": "50 个跟单任务",
+      "f1": "5 个交易 API（含 2 带单）",
+      "f2": "25 个任务",
       "f3": "授权API累计交易资金不超过 20,000 USDT",
       "f5": "支持带单员 API Key 接入",
       "ef1": "专属工作室管理功能",
@@ -547,7 +547,8 @@
       "account": "账户设置",
       "notifications": "消息通知",
       "logout": "退出登录",
-      "logoutSuccess": "已退出登录"
+      "logoutSuccess": "已退出登录",
+      "leaderApiSlots": "带单 API"
     }
   },
   "Auth": {
@@ -1418,7 +1419,8 @@
     "badges": {
       "rebateExclusive": "返佣专属优惠",
       "renewInDays": "{days}天后可优惠续费",
-      "renewWindowClosed": "未到优惠续费窗口"
+      "renewWindowClosed": "未到优惠续费窗口",
+      "vipToStudioUpgradeHalf": "VIP 升级半价"
     },
     "ui": {
       "monthly": "月付",
@@ -1471,7 +1473,7 @@
       "free_vip": {
         "name": "免费体验",
         "subtitle": "适合个人交易",
-        "accounts": "1 个交易 API，1 个跟单任务",
+        "accounts": "1 个交易 API · 1 个任务",
         "buttonText": "开通 VIP",
         "features": [
           "1 个交易 API",
@@ -1486,11 +1488,11 @@
       "vip_month": {
         "name": "VIP",
         "subtitle": "适合个人交易",
-        "accounts": "5 个交易 API，15 个跟单任务",
+        "accounts": "3 个交易 API（含 1 带单）· 10 个任务",
         "buttonText": "开通 VIP",
         "features": [
-          "5 个交易 API",
-          "15 个跟单任务",
+          "3 个交易 API，其中 1 个可为带单 API",
+          "10 个跟单任务",
           "授权交易 API 累计资金不超过 5,000 USDT",
           "可添加任意交易所 API",
           "支持带单 API",
@@ -1498,8 +1500,8 @@
           "7 * 24 小时专业客服支持"
         ],
         "yearlyFeatures": [
-          "5 个交易 API",
-          "15 个跟单任务",
+          "3 个交易 API，其中 1 个可为带单 API",
+          "10 个跟单任务",
           "授权交易 API 累计资金不超过 5,000 USDT",
           "可添加任意交易所 API",
           "支持带单 API",
@@ -1512,11 +1514,11 @@
       "studio_vip_month": {
         "name": "工作室 VIP",
         "subtitle": "适合小型跟单工作室",
-        "accounts": "10 个交易 API，50 个跟单任务",
+        "accounts": "5 个交易 API（含 2 带单）· 25 个任务",
         "buttonText": "开通工作室 VIP",
         "features": [
-          "10 个交易 API",
-          "50 个跟单任务",
+          "5 个交易 API，其中 2 个可为带单 API",
+          "25 个跟单任务",
           "授权交易 API 累计资金不超过 20,000 USDT",
           "可添加任意交易所 API",
           "支持带单 API",
@@ -1526,8 +1528,8 @@
           "支持功能定制"
         ],
         "yearlyFeatures": [
-          "10 个交易 API",
-          "50 个跟单任务",
+          "5 个交易 API，其中 2 个可为带单 API",
+          "25 个跟单任务",
           "授权交易 API 累计资金不超过 20,000 USDT",
           "可添加任意交易所 API",
           "支持带单 API",
@@ -1541,11 +1543,11 @@
       "vip_permanent": {
         "name": "永久 VIP",
         "subtitle": "适合个人交易",
-        "accounts": "5 个交易 API，15 个跟单任务",
+        "accounts": "3 个交易 API（含 1 带单）· 10 个任务",
         "buttonText": "开通永久 VIP",
         "features": [
-          "5 个交易 API",
-          "15 个跟单任务",
+          "3 个交易 API，其中 1 个可为带单 API",
+          "10 个跟单任务",
           "授权交易 API 累计资金不超过 5,000 USDT",
           "可添加任意交易所 API",
           "支持带单 API",
@@ -1565,13 +1567,13 @@
           "仅限个人 VIP 用户购买"
         ]
       },
-      "studio_limit_pack_50000": {
+      "studio_limit_pack_40000": {
         "name": "工作室 VIP 资金限额提额",
-        "subtitle": "资金限额提升 50,000 USDT",
-        "accounts": "资金限额提升 50,000 USDT",
+        "subtitle": "资金限额提升 40,000 USDT",
+        "accounts": "资金限额提升 40,000 USDT",
         "buttonText": "购买工作室 VIP 资金提额",
         "features": [
-          "工作室VIP 有效期内，永久提升资金限额 50,000 USDT",
+          "工作室VIP 有效期内，永久提升资金限额 40,000 USDT",
           "工作室VIP 到期后，资金额度提升失效",
           "仅限工作室 VIP 用户购买"
         ]
@@ -1579,13 +1581,34 @@
       "studio_api_slot_pack_5": {
         "name": "工作室 VIP 提升 API 授权数量",
         "subtitle": "提升 API 授权数量",
-        "accounts": "提升交易 API 授权数量 5个",
+        "accounts": "交易 API +5（含带单 +2）· 任务 +25",
         "buttonText": "购买工作室 VIP API 授权数量",
         "features": [
           "工作室VIP 有效期内，永久提升交易 API 授权数量 5 个，可叠加",
+          "其中 2 个可为带单 API",
           "工作室VIP 有效期内，永久提升跟单任务数量 25 个，可叠加",
           "工作室VIP 到期后，额外提升失效",
           "仅限工作室 VIP 用户购买"
+        ]
+      },
+      "vip_capacity_month": {
+        "name": "VIP 容量提升",
+        "subtitle": "VIP 期间扩展 API 与跟单额度",
+        "accounts": "交易 API +2（含带单 +1）· 任务 +10",
+        "buttonText": "购买 VIP 容量提升",
+        "features": [
+          "交易 API 授权数量 +2，其中 1 个可为带单 API",
+          "跟单任务数量 +10",
+          "月付 25 USDT，年付 270 USDT",
+          "不可叠加，续费仅延长有效期",
+          "仅限有效个人 VIP 用户购买"
+        ],
+        "yearlyFeatures": [
+          "交易 API 授权数量 +2，其中 1 个可为带单 API",
+          "跟单任务数量 +10",
+          "年付 270 USDT，360 天有效期",
+          "不可叠加，续费仅延长有效期",
+          "仅限有效个人 VIP 用户购买"
         ]
       }
     }
@@ -2011,7 +2034,7 @@
       "inProgress": "进行中",
       "pending": "待完成",
       "milestoneTitle": "有效邀请 {count} 人",
-      "reward3": "API 授权资格 +1，跟单任务额度 +1",
+      "reward3": "跟单任务额度 +1",
       "reward5": "账户资金上限提升 500U",
       "reward10": "API 授权资格 +1，跟单任务额度 +1，账户资金上限提升 1000U"
     },

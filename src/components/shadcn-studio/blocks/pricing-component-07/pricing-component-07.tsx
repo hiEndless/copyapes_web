@@ -23,6 +23,9 @@ export type Plan = {
   /** Monthly subscription price (USDT); one-time plans may be 0 */
   priceMonthly: number
 
+  /** Undiscounted monthly list price for strikethrough when a monthly promo applies */
+  listPriceMonthly?: number
+
   /** Yearly subscription price (USDT) */
   priceYearly?: number
 
@@ -85,13 +88,26 @@ export function getPaymentAmountUsdt(plan: Plan, billing: BillingCycle): number 
   return plan.priceYearly ?? yearlyTotal(plan.priceMonthly)
 }
 
+function listMonthlyPrice(plan: Plan) {
+  return plan.listPriceMonthly != null && plan.listPriceMonthly > 0 ? plan.listPriceMonthly : plan.priceMonthly
+}
+
+function hasMonthlyListDiscount(plan: Plan) {
+  return (
+    plan.oneTimePrice == null &&
+    plan.listPriceMonthly != null &&
+    plan.listPriceMonthly > plan.priceMonthly &&
+    plan.priceMonthly > 0
+  )
+}
+
 /** Original USDT amount without discount */
 export function getOriginalPriceUsdt(plan: Plan, billing: BillingCycle): number {
   if (plan.oneTimePrice != null) return plan.oneTimePrice
   if (plan.priceMonthly <= 0) return 0
-  if (billing === 'month') return plan.priceMonthly
+  if (billing === 'month') return listMonthlyPrice(plan)
 
-  return yearlyOriginalTotal(plan.priceMonthly)
+  return yearlyOriginalTotal(listMonthlyPrice(plan))
 }
 
 function priceLabel(
@@ -316,9 +332,15 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                           <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
                         </div>
                         <div className='flex shrink-0 flex-col items-end gap-0'>
+                          {billing === 'month' && hasMonthlyListDiscount(plan) && (
+                            <span className='text-muted-foreground text-[11px] line-through tabular-nums'>
+                              {formatYuan(listMonthlyPrice(plan))}
+                              {suffixes.perMonth}
+                            </span>
+                          )}
                           {billing === 'year' && plan.oneTimePrice == null && plan.priceMonthly > 0 && (
                             <span className='text-muted-foreground text-[11px] line-through tabular-nums'>
-                              {formatYuan(yearlyOriginalTotal(plan.priceMonthly))}
+                              {formatYuan(yearlyOriginalTotal(listMonthlyPrice(plan)))}
                               {suffixes.perYear}
                             </span>
                           )}
@@ -391,9 +413,15 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                           <p className='text-muted-foreground text-xs leading-tight'>{plan.accounts}</p>
                         </div>
                         <div className='flex shrink-0 flex-col items-end gap-0'>
+                          {billing === 'month' && hasMonthlyListDiscount(plan) && (
+                            <span className='text-muted-foreground text-[11px] line-through tabular-nums'>
+                              {formatYuan(listMonthlyPrice(plan))}
+                              {suffixes.perMonth}
+                            </span>
+                          )}
                           {billing === 'year' && plan.oneTimePrice == null && plan.priceMonthly > 0 && (
                             <span className='text-muted-foreground text-[11px] line-through tabular-nums'>
-                              {formatYuan(yearlyOriginalTotal(plan.priceMonthly))}
+                              {formatYuan(yearlyOriginalTotal(listMonthlyPrice(plan)))}
                               {suffixes.perYear}
                             </span>
                           )}
@@ -411,7 +439,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
           <MotionPreset
             key={`${selectedPlan}-${billing}`}
-            className='bg-primary flex-1 rounded-xl p-4 lg:min-w-0'
+            className='bg-primary flex flex-1 flex-col rounded-xl p-4 lg:min-w-0'
             fade
             blur
             zoom={{ initialScale: 0.95 }}
@@ -443,15 +471,21 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
               <p className='text-primary-foreground/90 text-xs'>{selectedPlanData.subtitle}</p>
             </div>
 
-            <Card className='gap-0 py-0 shadow-none '>
-              <CardContent className='flex flex-col justify-between gap-3 px-4 py-3 min-h-[460px] h-full'>
+            <Card className='flex min-h-0 flex-1 flex-col gap-0 py-0 shadow-none'>
+              <CardContent className='flex flex-1 flex-col justify-between gap-3 px-4 py-3'>
                 <div className='flex flex-col gap-3'>
                   <div className='flex flex-col gap-0.5'>
+                    {billing === 'month' && hasMonthlyListDiscount(selectedPlanData) && (
+                      <span className='text-muted-foreground text-sm line-through tabular-nums'>
+                        {formatYuan(listMonthlyPrice(selectedPlanData))}
+                        {suffixes.perMonth}
+                      </span>
+                    )}
                     {billing === 'year' &&
                       selectedPlanData.oneTimePrice == null &&
                       selectedPlanData.priceMonthly > 0 && (
                         <span className='text-muted-foreground text-sm line-through tabular-nums'>
-                          {formatYuan(yearlyOriginalTotal(selectedPlanData.priceMonthly))}
+                          {formatYuan(yearlyOriginalTotal(listMonthlyPrice(selectedPlanData)))}
                           {suffixes.perYear}
                         </span>
                       )}

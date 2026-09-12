@@ -21,6 +21,9 @@ export interface EntitlementProfileResponse {
   task_slot_limit: number;
   task_slot_used: number;
   task_slot_available: number;
+  leader_api_slot_limit: number;
+  leader_api_slot_used: number;
+  leader_api_slot_available: number;
   api_slot_extra_perm: number;
   task_slot_extra: number;
 }
@@ -35,6 +38,7 @@ export interface PlanPriceItem {
   price_source: string;
   currency: string;
   rebate_vip_discount_eligible?: boolean;
+  studio_vip_upgrade_discount_eligible?: boolean;
 }
 
 export interface RebateVipDiscountInfo {
@@ -54,6 +58,11 @@ export interface PriceInfoResponse {
   plans: PlanPriceItem[];
   price_priority: string[];
   rebate_vip_discount?: RebateVipDiscountInfo;
+  studio_vip_upgrade_discount?: {
+    eligible: boolean;
+    rate: number;
+    reason_code: string;
+  };
 }
 
 export interface NoticeResponse {

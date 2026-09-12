@@ -10,6 +10,7 @@ import Pricing, { type Plan } from '@/components/shadcn-studio/blocks/pricing-co
 import { settingsApi, type RebateVipDiscountInfo } from '@/api/settings'
 
 const REBATE_VIP_DISCOUNT_PRICE_SOURCE = 'rebate_vip_discount_price'
+const STUDIO_VIP_UPGRADE_PRICE_SOURCE = 'vip_to_studio_upgrade_price'
 
 const PLAN_DEFS: Array<{
   id: Plan['id']
@@ -20,10 +21,11 @@ const PLAN_DEFS: Array<{
   { id: 'free_vip', priceMonthly: 0 },
   { id: 'vip_month', priceMonthly: 50, hasYearlyFeatures: true },
   { id: 'studio_vip_month', priceMonthly: 100, hasYearlyFeatures: true },
-  { id: 'vip_permanent', priceMonthly: 0, oneTimePrice: 1200 },
+  { id: 'vip_permanent', priceMonthly: 0, oneTimePrice: 1400 },
   { id: 'vip_limit_pack_20000', priceMonthly: 0, oneTimePrice: 100 },
-  { id: 'studio_limit_pack_50000', priceMonthly: 0, oneTimePrice: 300 },
-  { id: 'studio_api_slot_pack_5', priceMonthly: 0, oneTimePrice: 300 }
+  { id: 'studio_limit_pack_40000', priceMonthly: 0, oneTimePrice: 300 },
+  { id: 'studio_api_slot_pack_5', priceMonthly: 0, oneTimePrice: 300 },
+  { id: 'vip_capacity_month', priceMonthly: 25, hasYearlyFeatures: true }
 ]
 
 function getRebateRenewalInfoBadge(
@@ -91,6 +93,7 @@ export default function PricingPage() {
         const items = res?.plans || []
         const rebateRenewalInfoBadge = getRebateRenewalInfoBadge(t, res?.rebate_vip_discount)
         const rebateBadge = t('badges.rebateExclusive')
+        const studioUpgradeBadge = t('badges.vipToStudioUpgradeHalf')
 
         const updatedPlans = defaultPlans.map(plan => {
           if (plan.id === 'vip_month') {
@@ -117,15 +120,25 @@ export default function PricingPage() {
           if (plan.id === 'studio_vip_month') {
             const monthPlan = items.find(item => item.plan_code === 'studio_vip_month')
             const yearPlan = items.find(item => item.plan_code === 'studio_vip_year')
+            const studioUpgradeEligible =
+              monthPlan?.price_source === STUDIO_VIP_UPGRADE_PRICE_SOURCE ||
+              monthPlan?.studio_vip_upgrade_discount_eligible === true
 
             return {
               ...plan,
               priceMonthly: monthPlan ? Number(monthPlan.effective_price) : plan.priceMonthly,
               priceYearly: yearPlan ? Number(yearPlan.effective_price) : undefined,
+              // Keep list price for strikethrough; yearly must not inherit the monthly upgrade half-price.
+              listPriceMonthly: studioUpgradeEligible
+                ? Number(monthPlan?.preset_price ?? plan.priceMonthly)
+                : undefined,
               monthPlanCode: 'studio_vip_month',
               yearPlanCode: 'studio_vip_year',
-              monthBadge:
-                monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined,
+              monthBadge: studioUpgradeEligible
+                ? studioUpgradeBadge
+                : monthPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE
+                  ? rebateBadge
+                  : undefined,
               yearBadge:
                 yearPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
             }
@@ -155,18 +168,6 @@ export default function PricingPage() {
             }
           }
 
-          if (plan.id === 'studio_limit_pack_100000') {
-            const serverPlan = items.find(item => item.plan_code === 'studio_limit_pack_100000')
-
-            return {
-              ...plan,
-              oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
-              oneTimePlanCode: 'studio_limit_pack_100000',
-              oneTimeBadge:
-                serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
-            }
-          }
-
           if (plan.id === 'vip_api_slot_pack_5') {
             const serverPlan = items.find(item => item.plan_code === 'vip_api_slot_pack_5')
 
@@ -191,18 +192,28 @@ export default function PricingPage() {
             }
           }
 
-          // Keep studio_limit_pack_50000 price merge aligned with plan id in UI defaults
-          if (plan.id === 'studio_limit_pack_50000') {
-            const serverPlan =
-              items.find(item => item.plan_code === 'studio_limit_pack_50000') ||
-              items.find(item => item.plan_code === 'studio_limit_pack_100000')
+          if (plan.id === 'studio_limit_pack_40000') {
+            const serverPlan = items.find(item => item.plan_code === 'studio_limit_pack_40000')
 
             return {
               ...plan,
               oneTimePrice: serverPlan ? Number(serverPlan.effective_price) : plan.oneTimePrice,
-              oneTimePlanCode: serverPlan?.plan_code || 'studio_limit_pack_50000',
+              oneTimePlanCode: serverPlan?.plan_code || 'studio_limit_pack_40000',
               oneTimeBadge:
                 serverPlan?.price_source === REBATE_VIP_DISCOUNT_PRICE_SOURCE ? rebateBadge : undefined
+            }
+          }
+
+          if (plan.id === 'vip_capacity_month') {
+            const monthPlan = items.find(item => item.plan_code === 'vip_capacity_month')
+            const yearPlan = items.find(item => item.plan_code === 'vip_capacity_year')
+
+            return {
+              ...plan,
+              priceMonthly: monthPlan ? Number(monthPlan.effective_price) : plan.priceMonthly,
+              priceYearly: yearPlan ? Number(yearPlan.effective_price) : 270,
+              monthPlanCode: 'vip_capacity_month',
+              yearPlanCode: 'vip_capacity_year'
             }
           }
 

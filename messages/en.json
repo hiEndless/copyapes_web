@@ -193,8 +193,8 @@
       "title": "Free Plan",
       "description": "Experience basic copy trading for free",
       "button": "Start for Free",
-      "f1": "1 Exchange API Authorization",
-      "f2": "1 Copy Trading Task",
+      "f1": "1 trading API",
+      "f2": "1 task",
       "f3": "Authorized API cumulative trading funds not exceeding 500 USDT",
       "f4": "Only supports OKX, Gate, Bitget APIs"
     },
@@ -204,8 +204,8 @@
       "button": "Start Now",
       "f1": "Supports Lead Trader API Key Integration",
       "f2": "Supports Binance Exchange API",
-      "f3": "5 Exchange API Authorizations",
-      "f4": "15 Copy Trading Tasks",
+      "f3": "3 trading APIs (incl. 1 lead)",
+      "f4": "10 tasks",
       "f5": "Authorized API cumulative trading funds not exceeding 5000 USDT",
       "ef1": "Copy Trading Notifications",
       "ef2": "Lightning Fast Trading"
@@ -214,8 +214,8 @@
       "title": "Studio VIP Plan",
       "description": "More professional copy trading services",
       "button": "Start Now",
-      "f1": "10 Exchange API Authorizations",
-      "f2": "50 Copy Trading Tasks",
+      "f1": "5 trading APIs (incl. 2 lead)",
+      "f2": "25 tasks",
       "f3": "Authorized API cumulative trading funds not exceeding 20,000 USDT",
       "f5": "Supports Lead Trader API Key Integration",
       "ef1": "Exclusive studio management features",
@@ -545,7 +545,8 @@
       "account": "Account",
       "notifications": "Notifications",
       "logout": "Log out",
-      "logoutSuccess": "Logged out"
+      "logoutSuccess": "Logged out",
+      "leaderApiSlots": "Lead-trader APIs"
     }
   },
   "Auth": {
@@ -1416,7 +1417,8 @@
     "badges": {
       "rebateExclusive": "Rebate exclusive offer",
       "renewInDays": "Discount renewal in {days} days",
-      "renewWindowClosed": "Discount renewal window not open yet"
+      "renewWindowClosed": "Discount renewal window not open yet",
+      "vipToStudioUpgradeHalf": "VIP upgrade 50% off"
     },
     "ui": {
       "monthly": "Monthly",
@@ -1469,7 +1471,7 @@
       "free_vip": {
         "name": "Free Trial",
         "subtitle": "For individual traders",
-        "accounts": "1 trading API, 1 copy task",
+        "accounts": "1 trading API · 1 task",
         "buttonText": "Upgrade to VIP",
         "features": [
           "1 trading API",
@@ -1484,11 +1486,11 @@
       "vip_month": {
         "name": "VIP",
         "subtitle": "For individual traders",
-        "accounts": "5 trading APIs, 15 copy tasks",
+        "accounts": "3 trading APIs (incl. 1 lead) · 10 tasks",
         "buttonText": "Get VIP",
         "features": [
-          "5 trading APIs",
-          "15 copy tasks",
+          "3 trading APIs, including 1 lead-trader API",
+          "10 copy tasks",
           "Authorized trading API assets up to 5,000 USDT",
           "Any exchange API",
           "Lead-trader API supported",
@@ -1496,8 +1498,8 @@
           "24/7 professional support"
         ],
         "yearlyFeatures": [
-          "5 trading APIs",
-          "15 copy tasks",
+          "3 trading APIs, including 1 lead-trader API",
+          "10 copy tasks",
           "Authorized trading API assets up to 5,000 USDT",
           "Any exchange API",
           "Lead-trader API supported",
@@ -1510,11 +1512,11 @@
       "studio_vip_month": {
         "name": "Studio VIP",
         "subtitle": "For small copy-trading studios",
-        "accounts": "10 trading APIs, 50 copy tasks",
+        "accounts": "5 trading APIs (incl. 2 lead) · 25 tasks",
         "buttonText": "Get Studio VIP",
         "features": [
-          "10 trading APIs",
-          "50 copy tasks",
+          "5 trading APIs, including 2 lead-trader APIs",
+          "25 copy tasks",
           "Authorized trading API assets up to 20,000 USDT",
           "Any exchange API",
           "Lead-trader API supported",
@@ -1524,8 +1526,8 @@
           "Custom feature support"
         ],
         "yearlyFeatures": [
-          "10 trading APIs",
-          "50 copy tasks",
+          "5 trading APIs, including 2 lead-trader APIs",
+          "25 copy tasks",
           "Authorized trading API assets up to 20,000 USDT",
           "Any exchange API",
           "Lead-trader API supported",
@@ -1539,11 +1541,11 @@
       "vip_permanent": {
         "name": "Lifetime VIP",
         "subtitle": "For individual traders",
-        "accounts": "5 trading APIs, 15 copy tasks",
+        "accounts": "3 trading APIs (incl. 1 lead) · 10 tasks",
         "buttonText": "Get Lifetime VIP",
         "features": [
-          "5 trading APIs",
-          "15 copy tasks",
+          "3 trading APIs, including 1 lead-trader API",
+          "10 copy tasks",
           "Authorized trading API assets up to 5,000 USDT",
           "Any exchange API",
           "Lead-trader API supported",
@@ -1563,13 +1565,13 @@
           "Personal VIP users only"
         ]
       },
-      "studio_limit_pack_50000": {
+      "studio_limit_pack_40000": {
         "name": "Studio VIP Asset Limit Boost",
-        "subtitle": "Raise asset limit by 50,000 USDT",
-        "accounts": "Raise asset limit by 50,000 USDT",
+        "subtitle": "Raise asset limit by 40,000 USDT",
+        "accounts": "Raise asset limit by 40,000 USDT",
         "buttonText": "Buy Studio VIP asset boost",
         "features": [
-          "Permanently raise asset limit by 50,000 USDT while Studio VIP is active",
+          "Permanently raise asset limit by 40,000 USDT while Studio VIP is active",
           "Boost expires when Studio VIP expires",
           "Studio VIP users only"
         ]
@@ -1577,13 +1579,34 @@
       "studio_api_slot_pack_5": {
         "name": "Studio VIP API Slot Boost",
         "subtitle": "Increase API authorization slots",
-        "accounts": "Add 5 trading API slots",
+        "accounts": "Trading APIs +5 (incl. lead +2) · tasks +25",
         "buttonText": "Buy Studio VIP API slots",
         "features": [
           "Permanently add 5 trading API slots while Studio VIP is active (stackable)",
+          "Including 2 lead-trader API slots",
           "Permanently add 25 copy tasks while Studio VIP is active (stackable)",
           "Extra boosts expire when Studio VIP expires",
           "Studio VIP users only"
+        ]
+      },
+      "vip_capacity_month": {
+        "name": "VIP Capacity Boost",
+        "subtitle": "Expand API and copy-task capacity while VIP is active",
+        "accounts": "Trading APIs +2 (incl. lead +1) · tasks +10",
+        "buttonText": "Buy VIP capacity boost",
+        "features": [
+          "Add 2 trading APIs, including 1 lead-trader API",
+          "Add 10 copy tasks",
+          "25 USDT monthly or 270 USDT yearly",
+          "Does not stack; renewal only extends validity",
+          "Available to active personal VIP users only"
+        ],
+        "yearlyFeatures": [
+          "Add 2 trading APIs, including 1 lead-trader API",
+          "Add 10 copy tasks",
+          "270 USDT for 360 days",
+          "Does not stack; renewal only extends validity",
+          "Available to active personal VIP users only"
         ]
       }
     }
@@ -2009,7 +2032,7 @@
       "inProgress": "In progress",
       "pending": "Pending",
       "milestoneTitle": "{count} effective invites",
-      "reward3": "API slot +1, copy-task quota +1",
+      "reward3": "Copy-task quota +1",
       "reward5": "Account fund limit +500U",
       "reward10": "API slot +1, copy-task quota +1, account fund limit +1000U"
     },
