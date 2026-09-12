@@ -2,7 +2,8 @@
 
 import { useTranslations } from 'next-intl'
 
-import { Link } from '@/i18n/routing'
+import { Link, usePathname } from '@/i18n/routing'
+import { handleHomeHashNavigation } from '@/lib/in-page-hash'
 
 import { Separator } from '@/components/ui/separator'
 
@@ -13,13 +14,19 @@ import HoverText from '@/components/blocks/footer/hover-text'
 const Footer = () => {
   const t = useTranslations('Footer')
   const tn = useTranslations('Navigation')
+  const pathname = usePathname()
 
   return (
     <footer>
       <SectionSeparator />
       <div className='mx-auto grid max-w-7xl grid-cols-6 gap-6 px-4 py-8 sm:gap-8 sm:px-6 sm:pt-16 md:pt-24 lg:px-8'>
         <div className='col-span-full flex flex-col items-start gap-4 lg:col-span-2'>
-          <Link href='/#home'>
+          <Link
+            href='/#home'
+            onClick={event => {
+              handleHomeHashNavigation(event, '/#home', pathname)
+            }}
+          >
             <Logo />
           </Link>
           <p className='text-muted-foreground'>{t('desc')}</p>
@@ -74,22 +81,46 @@ const Footer = () => {
             <div className='text-lg font-medium'>{t('product')}</div>
             <ul className='text-muted-foreground space-y-3'>
               <li>
-                <Link href='/#testimonials' className='hover:text-foreground transition-colors duration-300'>
+                <Link
+                  href='/#testimonials'
+                  className='hover:text-foreground transition-colors duration-300'
+                  onClick={event => {
+                    handleHomeHashNavigation(event, '/#testimonials', pathname)
+                  }}
+                >
                   {tn('testimonials')}
                 </Link>
               </li>
               <li>
-                <Link href='/#features' className='hover:text-foreground transition-colors duration-300'>
+                <Link
+                  href='/#features'
+                  className='hover:text-foreground transition-colors duration-300'
+                  onClick={event => {
+                    handleHomeHashNavigation(event, '/#features', pathname)
+                  }}
+                >
                   {tn('features')}
                 </Link>
               </li>
               <li>
-                <Link href='/#benefits' className='hover:text-foreground transition-colors duration-300'>
+                <Link
+                  href='/#benefits'
+                  className='hover:text-foreground transition-colors duration-300'
+                  onClick={event => {
+                    handleHomeHashNavigation(event, '/#benefits', pathname)
+                  }}
+                >
                   {tn('benefits')}
                 </Link>
               </li>
               <li>
-                <Link href='/#pricing' className='hover:text-foreground transition-colors duration-300'>
+                <Link
+                  href='/#pricing'
+                  className='hover:text-foreground transition-colors duration-300'
+                  onClick={event => {
+                    handleHomeHashNavigation(event, '/#pricing', pathname)
+                  }}
+                >
                   {tn('pricing')}
                 </Link>
               </li>

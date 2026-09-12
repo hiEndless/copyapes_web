@@ -11,6 +11,7 @@ import { usePathname } from '@/i18n/routing'
 import { Link } from '@/i18n/routing'
 
 import { useActiveSection } from '@/hooks/use-active-section'
+import { getHashSectionId, handleHomeHashNavigation } from '@/lib/in-page-hash'
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible'
 import {
@@ -78,7 +79,7 @@ const ListItem = (props: {
   const { title, href, icon, badge, description, splitItems, activeSection, pathname } = props
 
   // Extract section id from href (e.g., '#home' -> 'home')
-  const sectionId = href.startsWith('/#') ? href.slice(2) : href.startsWith('#') ? href.slice(1) : ''
+  const sectionId = getHashSectionId(href)
   const isActive = sectionId ? activeSection === sectionId : pathname?.startsWith(href)
 
   return (
@@ -89,7 +90,12 @@ const ListItem = (props: {
         className={cn({ 'flex flex-row items-start gap-2': icon })}
         asChild
       >
-        <Link href={href}>
+        <Link
+          href={href}
+          onClick={event => {
+            handleHomeHashNavigation(event, href, pathname)
+          }}
+        >
           {icon && (
             <span className='bg-popover [&>svg]:text-popover-foreground! flex aspect-square size-7 shrink-0 items-center justify-center rounded-sm border [&>svg]:size-4'>
               {icon}
@@ -177,11 +183,7 @@ const HeaderNavigation = ({
         {navigationData.map(navItem => {
           if (navItem.href) {
             // Root link item
-            const sectionId = navItem.href.startsWith('/#')
-              ? navItem.href.slice(2)
-              : navItem.href.startsWith('#')
-                ? navItem.href.slice(1)
-                : ''
+            const sectionId = getHashSectionId(navItem.href)
 
             const isActive = sectionId ? activeSection === sectionId : pathname?.startsWith(navItem.href)
 
@@ -194,8 +196,16 @@ const HeaderNavigation = ({
                     navigationMenuTriggerStyle(),
                     'text-muted-foreground! hover:text-foreground! data-[active=true]:text-foreground! bg-transparent! p-0! text-base'
                   )}
+                  asChild
                 >
-                  {navItem.title}
+                  <Link
+                    href={navItem.href}
+                    onClick={event => {
+                      handleHomeHashNavigation(event, navItem.href, pathname)
+                    }}
+                  >
+                    {navItem.title}
+                  </Link>
                 </NavigationMenuLink>
               </NavigationMenuItem>
             )
@@ -260,6 +270,7 @@ const HeaderNavigation = ({
                               badge={item.badge}
                               splitItems={navItem.splitItems}
                               activeSection={activeSection}
+                              pathname={pathname}
                             />
                           ))}
                         </ul>
@@ -404,7 +415,10 @@ const HeaderNavigationSmallScreen = ({
                   href={navItem.href}
                   data-active={isActive}
                   className='hover:bg-accent data-[active=true]:bg-accent flex items-center gap-2 rounded-sm px-3 py-2 text-sm data-[active=true]:font-medium'
-                  onClick={handleLinkClick}
+                  onClick={event => {
+                    handleHomeHashNavigation(event, navItem.href, pathname)
+                    handleLinkClick()
+                  }}
                 >
                   {navItem.title}
                 </Link>
@@ -471,7 +485,10 @@ const HeaderNavigationSmallScreen = ({
                                 href={subItem.href}
                                 data-active={isActive}
                                 className='hover:bg-accent data-[active=true]:text-primary ml-4.5 flex items-center gap-2 rounded-sm px-3 py-2 text-sm data-[active=true]:font-medium'
-                                onClick={handleLinkClick}
+                                onClick={event => {
+                                  handleHomeHashNavigation(event, subItem.href, pathname)
+                                  handleLinkClick()
+                                }}
                               >
                                 {subItem.icon ? subItem.icon : <CircleSmallIcon className='size-4' />}
                                 {subItem.title}
@@ -495,7 +512,10 @@ const HeaderNavigationSmallScreen = ({
                             href={item.href}
                             data-active={isActive}
                             className='hover:bg-accent data-[active=true]:text-primary ml-3 flex items-center gap-2 rounded-sm px-3 py-2 text-sm data-[active=true]:font-medium'
-                            onClick={handleLinkClick}
+                            onClick={event => {
+                              handleHomeHashNavigation(event, item.href, pathname)
+                              handleLinkClick()
+                            }}
                           >
                             {item.icon ? item.icon : <CircleSmallIcon className='size-4' />}
                             {item.title}

@@ -3,6 +3,44 @@
 import { useEffect, useState } from 'react'
 
 import { usePathname } from '@/i18n/routing'
+import { scrollToSectionId } from '@/lib/in-page-hash'
+
+function scrollToHashWhenReady(hash: string, sectionIds: string[], timeoutMs = 5000) {
+  if (!hash || !sectionIds.includes(hash)) return () => {}
+
+  let cancelled = false
+  let timer: ReturnType<typeof setTimeout> | null = null
+  let observer: MutationObserver | null = null
+
+  const tryScroll = () => {
+    if (cancelled) return true
+    if (!scrollToSectionId(hash)) return false
+    return true
+  }
+
+  if (tryScroll()) return () => {}
+
+  observer = new MutationObserver(() => {
+    if (tryScroll()) {
+      observer?.disconnect()
+      observer = null
+      if (timer) clearTimeout(timer)
+    }
+  })
+  observer.observe(document.body, { childList: true, subtree: true })
+
+  timer = setTimeout(() => {
+    observer?.disconnect()
+    observer = null
+    tryScroll()
+  }, timeoutMs)
+
+  return () => {
+    cancelled = true
+    observer?.disconnect()
+    if (timer) clearTimeout(timer)
+  }
+}
 
 export const useActiveSection = (sectionIds: string[]) => {
   const [activeSection, setActiveSection] = useState<string>('')
@@ -14,22 +52,25 @@ export const useActiveSection = (sectionIds: string[]) => {
     setActiveSection('')
   }, [pathname])
 
-  // Scroll to hash on mount if present
+  // Scroll to hash on load, route change, browser back/forward, and hashchange.
   useEffect(() => {
-    const hash = window.location.hash.slice(1) // Remove the '#'
+    let cleanup = scrollToHashWhenReady(window.location.hash.slice(1), sectionIds)
 
-    if (hash && sectionIds.includes(hash)) {
-      const element = document.getElementById(hash)
+    const onHashOrHistory = () => {
+      cleanup()
+      cleanup = scrollToHashWhenReady(window.location.hash.slice(1), sectionIds)
+    }
 
-      if (element) {
-        // Small delay to ensure page is fully loaded
-        setTimeout(() => {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-        }, 100)
-      }
+    window.addEventListener('hashchange', onHashOrHistory)
+    window.addEventListener('popstate', onHashOrHistory)
+
+    return () => {
+      cleanup()
+      window.removeEventListener('hashchange', onHashOrHistory)
+      window.removeEventListener('popstate', onHashOrHistory)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []) // Run only once on mount
+  }, [pathname])
 
   useEffect(() => {
     const observer = new IntersectionObserver(

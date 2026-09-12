@@ -219,6 +219,13 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
   const effectiveTier = profile?.is_studio_vip ? 'studio_vip' : profile?.is_vip ? 'vip' : 'free'
 
+  const isSubscriptionPlan = (plan: Plan) => {
+    const id = plan.id.toLowerCase()
+    return id.includes('month') || id.includes('year') || id === 'free_vip'
+  }
+  const subscriptionPlans = plans.filter(isSubscriptionPlan)
+  const featurePlans = plans.filter(plan => !isSubscriptionPlan(plan))
+
   let buttonDisabled = false
   let buttonLabel = selectedPlanData.buttonText
 
@@ -284,14 +291,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
         <div className='flex flex-col gap-4 lg:flex-row lg:items-stretch'>
           <div className='flex flex-1 flex-col gap-2.5'>
             <div className='mb-2 text-sm font-medium text-muted-foreground'>{t('ui.subscriptionPaid')}</div>
-            {plans
-              .filter(
-                plan =>
-                  plan.id.toLowerCase().includes('month') ||
-                  plan.id.toLowerCase().includes('year') ||
-                  plan.id.toLowerCase() === 'free_vip'
-              )
-              .map((plan, index) => {
+            {subscriptionPlans.map((plan, index) => {
                 const { main, suffix } = priceLabel(plan, billing, suffixes)
                 const badgeText = planBadge(plan, billing)
                 const infoBadgeText = planInfoBadge(plan, billing)
@@ -304,6 +304,7 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                     slide={{ direction: 'up', offset: 50 }}
                     delay={0.6 + index * 0.15}
                     transition={{ duration: 0.7 }}
+                    inView={false}
                   >
                     <Card
                       className={cn(
@@ -365,17 +366,11 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
 
             <div className='my-2 border-t border-dashed border-border' />
             <div className='mb-2 text-sm font-medium text-muted-foreground'>{t('ui.featurePaid')}</div>
-            {plans
-              .filter(
-                plan =>
-                  !plan.id.toLowerCase().includes('month') &&
-                  !plan.id.toLowerCase().includes('year') &&
-                  plan.id.toLowerCase() !== 'free_vip'
-              )
-              .map((plan, index) => {
+            {featurePlans.map((plan, index) => {
                 const { main, suffix } = priceLabel(plan, billing, suffixes)
                 const badgeText = planBadge(plan, billing)
                 const infoBadgeText = planInfoBadge(plan, billing)
+                const staggerIndex = subscriptionPlans.length + index
 
                 return (
                   <MotionPreset
@@ -383,8 +378,9 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                     fade
                     blur
                     slide={{ direction: 'up', offset: 50 }}
-                    delay={0.6 + (plans.length + index) * 0.15}
+                    delay={0.6 + staggerIndex * 0.15}
                     transition={{ duration: 0.7 }}
+                    inView={false}
                   >
                     <Card
                       className={cn(
