@@ -548,7 +548,10 @@
       "notifications": "消息通知",
       "logout": "退出登录",
       "logoutSuccess": "已退出登录",
-      "leaderApiSlots": "带单 API"
+      "leaderApiSlots": "带单 API",
+      "vipApiBoostExpires": "API 增量剩余 {days} 天",
+      "temporaryGrantExpires": "临时权益剩余 {days} 天",
+      "temporaryGrantDetail": "API +{api} / 带单 +{leader} / 任务 +{task}"
     }
   },
   "Auth": {
@@ -1438,7 +1441,8 @@
       "needStudioVip": "需先开通工作室 VIP",
       "needVip": "需先开通 VIP",
       "studioNoNeedThisPack": "工作室 VIP 无需购买此包",
-      "assetLimitReached": "已达资金上限"
+      "assetLimitReached": "已达资金上限",
+      "vipApiBoostExpires": "已购 API 增量剩余 {days} 天"
     },
     "pay": {
       "title": "选择支付方式",
@@ -1592,10 +1596,10 @@
         ]
       },
       "vip_capacity_month": {
-        "name": "VIP 容量提升",
+        "name": "VIP 提升 API 授权数量",
         "subtitle": "VIP 期间扩展 API 与跟单额度",
         "accounts": "交易 API +2（含带单 +1）· 任务 +10",
-        "buttonText": "购买 VIP 容量提升",
+        "buttonText": "购买 VIP 提升 API 授权数量",
         "features": [
           "交易 API 授权数量 +2，其中 1 个可为带单 API",
           "跟单任务数量 +10",

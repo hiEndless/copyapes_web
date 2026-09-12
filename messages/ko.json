@@ -546,7 +546,10 @@
       "notifications": "알림",
       "logout": "로그아웃",
       "logoutSuccess": "로그아웃됨",
-      "leaderApiSlots": "리드 API"
+      "leaderApiSlots": "리드 API",
+      "vipApiBoostExpires": "API 증분 남은 {days}일",
+      "temporaryGrantExpires": "임시 권한 남은 {days}일",
+      "temporaryGrantDetail": "API +{api} / 리딩 +{leader} / 작업 +{task}"
     }
   },
   "Auth": {
@@ -1436,7 +1439,8 @@
       "needStudioVip": "먼저 Studio VIP가 필요합니다",
       "needVip": "먼저 VIP가 필요합니다",
       "studioNoNeedThisPack": "Studio VIP는 이 패키지가 필요 없습니다",
-      "assetLimitReached": "자금 한도에 도달했습니다"
+      "assetLimitReached": "자금 한도에 도달했습니다",
+      "vipApiBoostExpires": "구매한 API 증분 남은 {days}일"
     },
     "pay": {
       "title": "결제 방식 선택",
@@ -1590,10 +1594,10 @@
         ]
       },
       "vip_capacity_month": {
-        "name": "VIP 용량 확장",
+        "name": "VIP API 인가 수량 확장",
         "subtitle": "VIP 기간 동안 API와 카피 작업 한도 확장",
         "accounts": "거래 API +2(리드 +1 포함) · 작업 +10",
-        "buttonText": "VIP 용량 확장 구매",
+        "buttonText": "VIP API 인가 수량 확장 구매",
         "features": [
           "거래 API +2(리드 API 1개 포함)",
           "카피 작업 +10",

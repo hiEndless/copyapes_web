@@ -26,6 +26,13 @@ export interface EntitlementProfileResponse {
   leader_api_slot_available: number;
   api_slot_extra_perm: number;
   task_slot_extra: number;
+  vip_capacity_active?: boolean;
+  vip_capacity_expires_at?: string | null;
+  temporary_entitlement_active?: boolean;
+  temporary_api_slots_delta?: number;
+  temporary_leader_api_slots_delta?: number;
+  temporary_task_slots_delta?: number;
+  temporary_entitlement_expires_at?: string | null;
 }
 
 export interface PlanPriceItem {

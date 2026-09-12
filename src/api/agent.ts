@@ -56,6 +56,8 @@ export interface AdminUserManagementProfileResponse {
   membership: {
     vip_days: number;
     studio_vip_days: number;
+    vip_capacity_active?: boolean;
+    vip_capacity_expires_at?: string | null;
   };
   permissions: {
     asset_limit_usdt: number;
@@ -237,4 +239,9 @@ export const agentApi = {
     otp_token: string;
     otp_code: string;
   }) => request<any>('/admin/user-management/batch/apply/', { method: 'POST', body: data }),
+  adminTemporaryApiGrantList: (params: { username: string }) => request<any>('/admin/user-management/temporary-api-grants/', { method: 'GET', params }),
+  adminTemporaryApiGrantRequestOtp: (data: { username: string; reason: string; api_slots_delta: number; leader_api_slots_delta: number; task_slots_delta?: number; start_at: string; end_at: string }) => request<any>('/admin/user-management/temporary-api-grants/request-otp/', { method: 'POST', body: data }),
+  adminTemporaryApiGrantCreate: (data: { username: string; reason: string; api_slots_delta: number; leader_api_slots_delta: number; task_slots_delta?: number; start_at: string; end_at: string; otp_token: string; otp_code: string }) => request<any>('/admin/user-management/temporary-api-grants/', { method: 'POST', body: data }),
+  adminTemporaryApiGrantRevokeRequestOtp: (data: any) => request<any>('/admin/user-management/temporary-api-grants/revoke/request-otp/', { method: 'POST', body: data }),
+  adminTemporaryApiGrantRevoke: (grantId: number, data: any) => request<any>(`/admin/user-management/temporary-api-grants/${grantId}/`, { method: 'DELETE', body: data }),
 };

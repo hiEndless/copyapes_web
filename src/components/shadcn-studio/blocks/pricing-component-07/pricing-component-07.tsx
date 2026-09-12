@@ -14,6 +14,7 @@ import { PaymentMethodDialog } from '@/features/pricing/components/payment-metho
 import { cn } from '@/lib/utils'
 import { MotionPreset } from '@/components/ui/motion-preset'
 import { type EntitlementProfileResponse } from '@/api/settings'
+import { remainingVipCapacityDays } from '@/lib/format-vip-capacity-expiry'
 
 export type Plan = {
   id: string
@@ -208,6 +209,13 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
     billing === 'year' && selectedPlanData.yearlyFeatures
       ? selectedPlanData.yearlyFeatures
       : selectedPlanData.features
+
+  const vipCapacityRemainingDays = remainingVipCapacityDays(profile?.vip_capacity_expires_at)
+  const showVipCapacityExpiry =
+    vipCapacityRemainingDays != null &&
+    (selectedPlanData.id === 'vip_capacity_month' ||
+      selectedPlanData.monthPlanCode === 'vip_capacity_month' ||
+      selectedPlanData.yearPlanCode === 'vip_capacity_year')
 
   const effectiveTier = profile?.is_studio_vip ? 'studio_vip' : profile?.is_vip ? 'vip' : 'free'
 
@@ -469,6 +477,11 @@ const Pricing = ({ plans }: { plans: Plan[] }) => {
                 )}
               </div>
               <p className='text-primary-foreground/90 text-xs'>{selectedPlanData.subtitle}</p>
+              {showVipCapacityExpiry && (
+                <p className='text-primary-foreground/90 text-xs'>
+                  {t('ui.vipApiBoostExpires', { days: vipCapacityRemainingDays })}
+                </p>
+              )}
             </div>
 
             <Card className='flex min-h-0 flex-1 flex-col gap-0 py-0 shadow-none'>

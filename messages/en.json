@@ -546,7 +546,10 @@
       "notifications": "Notifications",
       "logout": "Log out",
       "logoutSuccess": "Logged out",
-      "leaderApiSlots": "Lead-trader APIs"
+      "leaderApiSlots": "Lead-trader APIs",
+      "vipApiBoostExpires": "API boost remaining {days} days",
+      "temporaryGrantExpires": "Temporary grant remaining {days} days",
+      "temporaryGrantDetail": "API +{api} / Leader +{leader} / Tasks +{task}"
     }
   },
   "Auth": {
@@ -1436,7 +1439,8 @@
       "needStudioVip": "Studio VIP required first",
       "needVip": "VIP required first",
       "studioNoNeedThisPack": "Not needed for Studio VIP",
-      "assetLimitReached": "Asset limit already reached"
+      "assetLimitReached": "Asset limit already reached",
+      "vipApiBoostExpires": "Purchased API boost remaining {days} days"
     },
     "pay": {
       "title": "Choose payment method",
@@ -1590,10 +1594,10 @@
         ]
       },
       "vip_capacity_month": {
-        "name": "VIP Capacity Boost",
+        "name": "VIP API Authorization Boost",
         "subtitle": "Expand API and copy-task capacity while VIP is active",
         "accounts": "Trading APIs +2 (incl. lead +1) · tasks +10",
-        "buttonText": "Buy VIP capacity boost",
+        "buttonText": "Buy VIP API authorization boost",
         "features": [
           "Add 2 trading APIs, including 1 lead-trader API",
           "Add 10 copy tasks",

@@ -1,6 +1,7 @@
 "use client"
 
 import { useMemo, useState } from "react"
+import { toast } from "sonner"
 
 import { agentApi, type AdminUserManagementAuditItem, type AdminUserManagementProfileResponse } from "@/api/agent"
 import { Button } from "@/components/ui/button"
@@ -10,11 +11,37 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { remainingVipCapacityDays } from "@/lib/format-vip-capacity-expiry"
 
 function tierText(tier: string) {
   if (tier === "studio_vip") return "工作室VIP"
   if (tier === "vip") return "VIP"
   return "免费用户"
+}
+
+function buildTemporaryGrantEndAt(validDays: number): string {
+  const days = Math.max(1, Math.floor(Number(validDays) || 0))
+  return new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString()
+}
+
+function temporaryGrantSummary(grant: {
+  api_slots_delta?: number
+  leader_api_slots_delta?: number
+  task_slots_delta?: number
+  status?: string
+  start_at?: string | null
+  end_at?: string | null
+  revoked_at?: string | null
+}): string {
+  const remaining = remainingVipCapacityDays(grant.end_at)
+  const remainingText = remaining == null ? "已到期/无效" : `剩余 ${remaining} 天`
+  const formatTime = (value?: string | null) => {
+    if (!value) return "-"
+    const date = new Date(value)
+    return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString("zh-CN", { hour12: false })
+  }
+  const revokedText = grant.revoked_at ? `，撤销：${formatTime(grant.revoked_at)}` : ""
+  return `API +${Number(grant.api_slots_delta || 0)}，带单 API +${Number(grant.leader_api_slots_delta || 0)}，任务 +${Number(grant.task_slots_delta || 0)}，${grant.status || "-"}，生效：${formatTime(grant.start_at)}，到期：${formatTime(grant.end_at)}，${remainingText}${revokedText}`
 }
 
 function formatAuditJson(value: unknown): string {
@@ -68,10 +95,37 @@ export function UserManagementTab() {
   const [otpSubmitting, setOtpSubmitting] = useState(false)
   const [otpToken, setOtpToken] = useState("")
   const [otpCode, setOtpCode] = useState("")
-  const [otpActionType, setOtpActionType] = useState<"identity" | "permissions" | "batch" | null>(null)
+  const [otpActionType, setOtpActionType] = useState<"identity" | "permissions" | "batch" | "temporary" | "temporary_revoke" | null>(null)
+  const [pendingTemporaryRevokeId, setPendingTemporaryRevokeId] = useState<number | null>(null)
+  const [temporaryApiSlots, setTemporaryApiSlots] = useState("0")
+  const [temporaryLeaderSlots, setTemporaryLeaderSlots] = useState("0")
+  const [temporaryTaskSlots, setTemporaryTaskSlots] = useState("0")
+  const [temporaryValidDays, setTemporaryValidDays] = useState("30")
+  const [temporaryReason, setTemporaryReason] = useState("")
+  const [pendingTemporaryGrant, setPendingTemporaryGrant] = useState<{
+    reason: string
+    api_slots_delta: number
+    leader_api_slots_delta: number
+    task_slots_delta: number
+    start_at: string
+    end_at: string
+  } | null>(null)
+  const [temporaryGrants, setTemporaryGrants] = useState<any[]>([])
 
   const canNextAuditPage = useMemo(() => auditPage * auditLimit < auditTotal, [auditPage, auditTotal])
   const leaderApiLimitExceedsTotal = Number(leaderApiLimit || "0") > Number(apiLimit || "0")
+  const temporaryApiSlotsNum = Number(temporaryApiSlots || "0")
+  const temporaryLeaderSlotsNum = Number(temporaryLeaderSlots || "0")
+  const temporaryTaskSlotsNum = Number(temporaryTaskSlots || "0")
+  const temporaryValidDaysNum = Math.floor(Number(temporaryValidDays || "0"))
+  const canSubmitTemporaryGrant =
+    Boolean(temporaryReason.trim()) &&
+    temporaryValidDaysNum >= 1 &&
+    temporaryApiSlotsNum >= 0 &&
+    temporaryLeaderSlotsNum >= 0 &&
+    temporaryTaskSlotsNum >= 0 &&
+    temporaryLeaderSlotsNum <= temporaryApiSlotsNum &&
+    temporaryApiSlotsNum + temporaryLeaderSlotsNum + temporaryTaskSlotsNum > 0
 
   const loadProfile = async (queryName?: string) => {
     const q = (queryName ?? username).trim()
@@ -87,6 +141,11 @@ export function UserManagementTab() {
         setLeaderApiLimit(String(data.permissions.leader_api_slot_limit))
         setTaskLimit(String(data.permissions.task_slot_limit))
         setTargetTier("auto")
+        const grants = await agentApi.adminTemporaryApiGrantList({ username: q })
+        if (grants.code === 0) {
+          const items = Array.isArray(grants.data) ? grants.data : []
+          setTemporaryGrants(items.filter((grant) => grant?.status === "active"))
+        }
       }
     } finally {
       setLoadingProfile(false)
@@ -306,6 +365,23 @@ export function UserManagementTab() {
         await handlePermissionsUpdate()
       } else if (otpActionType === "batch") {
         await handleBatchApply()
+      } else if (otpActionType === "temporary" && profile && pendingTemporaryGrant) {
+        await agentApi.adminTemporaryApiGrantCreate({
+          username: profile.username,
+          ...pendingTemporaryGrant,
+          otp_token: otpToken,
+          otp_code: otpCode,
+        })
+        await loadProfile(profile.username)
+        setPendingTemporaryGrant(null)
+      } else if (otpActionType === "temporary_revoke" && profile && pendingTemporaryRevokeId) {
+        await agentApi.adminTemporaryApiGrantRevoke(pendingTemporaryRevokeId, {
+          grant_id: pendingTemporaryRevokeId,
+          reason: temporaryReason.trim(),
+          otp_token: otpToken,
+          otp_code: otpCode,
+        })
+        await loadProfile(profile.username)
       }
       setOtpModalOpen(false)
     } finally {
@@ -392,6 +468,13 @@ export function UserManagementTab() {
               <div>身份：{tierText(profile.identity.membership_tier)}</div>
               <div>VIP剩余天数：{profile.membership.vip_days}</div>
               <div>工作室VIP剩余天数：{profile.membership.studio_vip_days}</div>
+              <div>
+                VIP API 增量剩余天数：
+                {remainingVipCapacityDays(profile.membership.vip_capacity_expires_at) ?? "无"}
+                {profile.membership.vip_capacity_active === false && profile.membership.vip_capacity_expires_at
+                  ? "（当前未生效）"
+                  : ""}
+              </div>
               <div>资金上限：{profile.permissions.asset_limit_usdt}</div>
               <div>API 配额：{profile.permissions.api_slot_used}/{profile.permissions.api_slot_limit}</div>
               <div>带单 API 配额：{profile.permissions.leader_api_slot_used}/{profile.permissions.leader_api_slot_limit}（可用 {profile.permissions.leader_api_slot_available}）</div>
@@ -442,6 +525,134 @@ export function UserManagementTab() {
                 <Button onClick={handleIdentityRequestOtp} disabled={otpLoading || updatingIdentity || !identityReason.trim()}>
                   {otpLoading || updatingIdentity ? "提交中..." : "提交身份修改"}
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60 rounded-xl">
+              <CardHeader>
+                <CardTitle>临时 API 权益</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>API 数量</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={temporaryApiSlots}
+                      onChange={(e) => setTemporaryApiSlots(e.target.value)}
+                      placeholder="例如 2"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>带单 API 配额</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={temporaryLeaderSlots}
+                      onChange={(e) => setTemporaryLeaderSlots(e.target.value)}
+                      placeholder="例如 1"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>跟单任务增量</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={temporaryTaskSlots}
+                      onChange={(e) => setTemporaryTaskSlots(e.target.value)}
+                      placeholder="例如 10"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>有效天数</Label>
+                    <Input
+                      type="number"
+                      min="1"
+                      value={temporaryValidDays}
+                      onChange={(e) => setTemporaryValidDays(e.target.value)}
+                      placeholder="例如 30"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label>派发/撤销原因</Label>
+                  <Input
+                    value={temporaryReason}
+                    onChange={(e) => setTemporaryReason(e.target.value)}
+                    placeholder="必填，例如：活动临时授权"
+                  />
+                </div>
+                <p className="text-muted-foreground text-xs">
+                  带单配额 ≤ API 数量；至少一项增量大于 0；有效期从派发时刻起算。
+                </p>
+                <Button
+                  disabled={otpLoading || !canSubmitTemporaryGrant}
+                  onClick={async () => {
+                    const validDays = Math.max(1, temporaryValidDaysNum)
+                    const grant = {
+                      username: profile.username,
+                      reason: temporaryReason.trim(),
+                      api_slots_delta: temporaryApiSlotsNum,
+                      leader_api_slots_delta: temporaryLeaderSlotsNum,
+                      task_slots_delta: temporaryTaskSlotsNum,
+                      start_at: new Date().toISOString(),
+                      end_at: buildTemporaryGrantEndAt(validDays),
+                    }
+                    const res = await agentApi.adminTemporaryApiGrantRequestOtp(grant)
+                    if (res.code === 0 && res.data?.otp_token) {
+                      setPendingTemporaryGrant({
+                        reason: grant.reason,
+                        api_slots_delta: grant.api_slots_delta,
+                        leader_api_slots_delta: grant.leader_api_slots_delta,
+                        task_slots_delta: grant.task_slots_delta,
+                        start_at: grant.start_at,
+                        end_at: grant.end_at,
+                      })
+                      setOtpActionType("temporary")
+                      setOtpToken(res.data.otp_token)
+                      setOtpCode("")
+                      setOtpModalOpen(true)
+                    }
+                  }}
+                >
+                  派发临时权益
+                </Button>
+                <div className="space-y-2">
+                  {temporaryGrants.length === 0 ? (
+                    <div className="text-muted-foreground text-sm">暂无临时授权</div>
+                  ) : (
+                    temporaryGrants.map((grant) => (
+                      <div key={grant.id} className="flex items-center justify-between gap-3 text-sm">
+                        <span>{temporaryGrantSummary(grant)}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={grant.status !== "active"}
+                          onClick={async () => {
+                            if (!temporaryReason.trim()) {
+                              toast.error("请先填写撤销原因")
+                              return
+                            }
+                            const res = await agentApi.adminTemporaryApiGrantRevokeRequestOtp({
+                              grant_id: grant.id,
+                              reason: temporaryReason.trim(),
+                            })
+                            if (res.code === 0 && res.data?.otp_token) {
+                              setPendingTemporaryRevokeId(grant.id)
+                              setOtpActionType("temporary_revoke")
+                              setOtpToken(res.data.otp_token)
+                              setOtpCode("")
+                              setOtpModalOpen(true)
+                            }
+                          }}
+                        >
+                          撤销
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
               </CardContent>
             </Card>
 

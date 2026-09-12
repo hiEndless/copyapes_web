@@ -546,7 +546,10 @@
       "notifications": "通知",
       "logout": "ログアウト",
       "logoutSuccess": "ログアウトしました",
-      "leaderApiSlots": "リード API"
+      "leaderApiSlots": "リード API",
+      "vipApiBoostExpires": "API 増分 残り {days} 日",
+      "temporaryGrantExpires": "臨時権限 残り {days} 日",
+      "temporaryGrantDetail": "API +{api} / 帯単 +{leader} / タスク +{task}"
     }
   },
   "Auth": {
@@ -1436,7 +1439,8 @@
       "needStudioVip": "先に Studio VIP が必要です",
       "needVip": "先に VIP が必要です",
       "studioNoNeedThisPack": "Studio VIP では不要です",
-      "assetLimitReached": "資金上限に達しています"
+      "assetLimitReached": "資金上限に達しています",
+      "vipApiBoostExpires": "購入済み API 増分 残り {days} 日"
     },
     "pay": {
       "title": "支払い方法を選択",
@@ -1590,10 +1594,10 @@
         ]
       },
       "vip_capacity_month": {
-        "name": "VIP 容量アップ",
+        "name": "VIP API 認可数アップ",
         "subtitle": "VIP 有効期間中の API とコピー任務枠を拡張",
         "accounts": "取引 API +2（うちリード +1）· タスク +10",
-        "buttonText": "VIP 容量アップを購入",
+        "buttonText": "VIP API 認可数アップを購入",
         "features": [
           "取引 API +2（うちリード API 1件）",
           "コピー任務 +10",
