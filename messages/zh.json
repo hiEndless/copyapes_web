@@ -1231,11 +1231,16 @@
         "balance": "USDT 余额",
         "createdAt": "创建时间",
         "permission": "权限",
+        "leaderApi": "带单 API",
         "actions": "操作"
       },
       "permission": {
         "readOnly": "只读 (信号)",
         "trade": "交易 (跟单)"
+      },
+      "leaderApi": {
+        "yes": "是",
+        "no": "否"
       },
       "editLabelAria": "修改标签",
       "empty": "暂无交易所 API，请点击右上角按钮添加",

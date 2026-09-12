@@ -1229,7 +1229,8 @@
         "balance": "USDT 잔액",
         "createdAt": "생성일",
         "permission": "권한",
-        "actions": "작업"
+        "actions": "작업",
+        "leaderApi": "리딩 API"
       },
       "permission": {
         "readOnly": "읽기 전용(신호)",
@@ -1260,6 +1261,10 @@
         "deleteSuccess": "API 삭제됨",
         "deleteFailed": "API 삭제 실패",
         "deleteRetry": "삭제에 실패했습니다. 다시 시도해 주세요."
+      },
+      "leaderApi": {
+        "yes": "예",
+        "no": "아니오"
       }
     }
   },

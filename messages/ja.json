@@ -1229,7 +1229,8 @@
         "balance": "USDT 残高",
         "createdAt": "作成日",
         "permission": "権限",
-        "actions": "操作"
+        "actions": "操作",
+        "leaderApi": "リーダートレード API"
       },
       "permission": {
         "readOnly": "読み取り専用（シグナル）",
@@ -1260,6 +1261,10 @@
         "deleteSuccess": "API を削除しました",
         "deleteFailed": "API の削除に失敗しました",
         "deleteRetry": "削除に失敗しました。もう一度お試しください。"
+      },
+      "leaderApi": {
+        "yes": "はい",
+        "no": "いいえ"
       }
     }
   },

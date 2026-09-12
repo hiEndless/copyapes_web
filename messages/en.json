@@ -1229,7 +1229,8 @@
         "balance": "USDT Balance",
         "createdAt": "Created",
         "permission": "Permission",
-        "actions": "Actions"
+        "actions": "Actions",
+        "leaderApi": "Leader API"
       },
       "permission": {
         "readOnly": "Read-only (signal)",
@@ -1260,6 +1261,10 @@
         "deleteSuccess": "API deleted",
         "deleteFailed": "Failed to delete API",
         "deleteRetry": "Delete failed. Please try again."
+      },
+      "leaderApi": {
+        "yes": "Yes",
+        "no": "No"
       }
     }
   },

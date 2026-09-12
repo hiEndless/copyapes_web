@@ -102,7 +102,6 @@ export function PaymentMethodDialog({
       })
 
       if (res.code === 0) {
-        toast.success(t('pay.submitSuccess'))
         onOpenChange(false)
         setReferenceId('')
 

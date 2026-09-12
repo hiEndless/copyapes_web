@@ -49,6 +49,7 @@ import { usePagination } from '@/hooks/use-pagination'
 import { cn } from '@/lib/utils'
 
 import { ApiEditLabelDialog } from './api-edit-label-dialog'
+import { isLeaderApi } from '@/lib/api-role'
 
 export type ApiItem = {
   id: number
@@ -62,6 +63,7 @@ export type ApiItem = {
   flag?: number
   status: number // 1 for ok, else error
   role_type?: number | any
+  roleType?: string | number | null
   exchange?: string
 }
 
@@ -155,6 +157,19 @@ const getColumns = (
           className={cn('text-xs font-medium', isReadOnly ? 'text-green-600 dark:text-green-400' : 'text-foreground')}
         >
           {isReadOnly ? t('table.permission.readOnly') : t('table.permission.trade')}
+        </span>
+      )
+    }
+  },
+  {
+    header: t('table.columns.leaderApi'),
+    id: 'leaderApi',
+    cell: ({ row }) => {
+      const leader = isLeaderApi(row.original.platform, row.original.roleType ?? row.original.role_type)
+
+      return (
+        <span className={cn('text-xs font-medium', leader ? 'text-sky-600 dark:text-sky-400' : 'text-muted-foreground')}>
+          {leader ? t('table.leaderApi.yes') : t('table.leaderApi.no')}
         </span>
       )
     }
