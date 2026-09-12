@@ -61,6 +61,9 @@ export interface AdminUserManagementProfileResponse {
     asset_limit_usdt: number;
     api_slot_limit: number;
     api_slot_used: number;
+    leader_api_slot_limit: number;
+    leader_api_slot_used: number;
+    leader_api_slot_available: number;
     task_slot_limit: number;
     task_slot_used: number;
     partner_level: number;
@@ -190,6 +193,7 @@ export const agentApi = {
     target_tier?: "free" | "vip" | "studio_vip";
     asset_limit_usdt: number;
     api_slot_limit: number;
+    leader_api_slot_limit?: number;
     task_slot_limit: number;
     otp_token?: string;
     otp_code?: string;
@@ -205,6 +209,7 @@ export const agentApi = {
     target_tier?: "free" | "vip" | "studio_vip";
     asset_limit_usdt?: number;
     api_slot_limit?: number;
+    leader_api_slot_limit?: number;
     task_slot_limit?: number;
   }) => request<any>('/admin/user-management/request-otp/', { method: 'POST', body: data }),
   adminUserManagementAudit: (params: { username: string; limit: number; offset: number }) =>

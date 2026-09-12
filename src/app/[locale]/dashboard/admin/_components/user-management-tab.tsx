@@ -54,6 +54,7 @@ export function UserManagementTab() {
   const [targetTier, setTargetTier] = useState<"auto" | "free" | "vip" | "studio_vip">("auto")
   const [assetLimit, setAssetLimit] = useState("")
   const [apiLimit, setApiLimit] = useState("")
+  const [leaderApiLimit, setLeaderApiLimit] = useState("")
   const [taskLimit, setTaskLimit] = useState("")
   const [batchReason, setBatchReason] = useState("")
   const [batchUserIdsText, setBatchUserIdsText] = useState("")
@@ -70,6 +71,7 @@ export function UserManagementTab() {
   const [otpActionType, setOtpActionType] = useState<"identity" | "permissions" | "batch" | null>(null)
 
   const canNextAuditPage = useMemo(() => auditPage * auditLimit < auditTotal, [auditPage, auditTotal])
+  const leaderApiLimitExceedsTotal = Number(leaderApiLimit || "0") > Number(apiLimit || "0")
 
   const loadProfile = async (queryName?: string) => {
     const q = (queryName ?? username).trim()
@@ -82,6 +84,7 @@ export function UserManagementTab() {
         setProfile(data)
         setAssetLimit(String(data.permissions.asset_limit_usdt))
         setApiLimit(String(data.permissions.api_slot_limit))
+        setLeaderApiLimit(String(data.permissions.leader_api_slot_limit))
         setTaskLimit(String(data.permissions.task_slot_limit))
         setTargetTier("auto")
       }
@@ -175,6 +178,7 @@ export function UserManagementTab() {
         reason: permReason.trim(),
         asset_limit_usdt: Number(assetLimit || "0"),
         api_slot_limit: Number(apiLimit || "0"),
+        leader_api_slot_limit: Number(leaderApiLimit || "0"),
         task_slot_limit: Number(taskLimit || "0"),
         otp_token: otpToken.trim(),
         otp_code: otpCode.trim(),
@@ -202,6 +206,7 @@ export function UserManagementTab() {
         reason: permReason.trim(),
         asset_limit_usdt: Number(assetLimit || "0"),
         api_slot_limit: Number(apiLimit || "0"),
+        leader_api_slot_limit: Number(leaderApiLimit || "0"),
         task_slot_limit: Number(taskLimit || "0"),
       }
       if (targetTier !== "auto") payload.target_tier = targetTier
@@ -389,6 +394,7 @@ export function UserManagementTab() {
               <div>工作室VIP剩余天数：{profile.membership.studio_vip_days}</div>
               <div>资金上限：{profile.permissions.asset_limit_usdt}</div>
               <div>API 配额：{profile.permissions.api_slot_used}/{profile.permissions.api_slot_limit}</div>
+              <div>带单 API 配额：{profile.permissions.leader_api_slot_used}/{profile.permissions.leader_api_slot_limit}（可用 {profile.permissions.leader_api_slot_available}）</div>
               <div>任务配额：{profile.permissions.task_slot_used}/{profile.permissions.task_slot_limit}</div>
               <div>合伙人等级：{profile.permissions.partner_level}</div>
               <div>邀请人数：{profile.invitation.invited_user_count}</div>
@@ -456,7 +462,7 @@ export function UserManagementTab() {
                     </SelectContent>
                   </Select>
                 </div>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                   <div className="space-y-2">
                     <Label>资金上限</Label>
                     <Input value={assetLimit} onChange={(e) => setAssetLimit(e.target.value)} />
@@ -464,6 +470,15 @@ export function UserManagementTab() {
                   <div className="space-y-2">
                     <Label>API上限</Label>
                     <Input value={apiLimit} onChange={(e) => setApiLimit(e.target.value)} />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>带单API上限</Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={leaderApiLimit}
+                      onChange={(e) => setLeaderApiLimit(e.target.value)}
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label>任务上限</Label>
@@ -474,7 +489,7 @@ export function UserManagementTab() {
                   <Label>修改原因</Label>
                   <Input value={permReason} onChange={(e) => setPermReason(e.target.value)} placeholder="必填" />
                 </div>
-                <Button onClick={handlePermissionsRequestOtp} disabled={otpLoading || updatingPermissions || !permReason.trim()}>
+                <Button onClick={handlePermissionsRequestOtp} disabled={otpLoading || updatingPermissions || !permReason.trim() || leaderApiLimitExceedsTotal}>
                   {otpLoading || updatingPermissions ? "提交中..." : "提交权限修改"}
                 </Button>
               </CardContent>
