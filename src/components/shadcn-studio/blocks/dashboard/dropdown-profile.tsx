@@ -155,19 +155,19 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
 
         {temporaryActive && temporaryRemainingDays != null && (
           <DropdownMenuGroup>
-            <DropdownMenuItem className='px-3 py-2 text-sm flex-col items-start gap-1'>
-              <div className='flex w-full items-center'>
-                <Timer className='mr-2 size-4 text-sky-500' />
+            <DropdownMenuItem className='px-3 py-2 text-sm items-start'>
+              <Timer className='mt-0.5 mr-2 size-4 shrink-0 text-sky-500' />
+              <div className='flex min-w-0 flex-col gap-0.5'>
                 <span className='text-sky-700 dark:text-sky-400'>
                   {t('temporaryGrantExpires', { days: temporaryRemainingDays })}
                 </span>
-              </div>
-              <div className='text-muted-foreground pl-6 text-xs'>
-                {t('temporaryGrantDetail', {
-                  api: profile?.temporary_api_slots_delta ?? 0,
-                  leader: profile?.temporary_leader_api_slots_delta ?? 0,
-                  task: profile?.temporary_task_slots_delta ?? 0,
-                })}
+                <span className='text-muted-foreground text-xs'>
+                  {t('temporaryGrantDetail', {
+                    api: profile?.temporary_api_slots_delta ?? 0,
+                    leader: profile?.temporary_leader_api_slots_delta ?? 0,
+                    task: profile?.temporary_task_slots_delta ?? 0,
+                  })}
+                </span>
               </div>
             </DropdownMenuItem>
           </DropdownMenuGroup>
