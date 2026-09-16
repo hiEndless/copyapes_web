@@ -20,6 +20,7 @@ import { useRouter } from '@/i18n/routing'
 import { type UserInfo } from '@/api/auth'
 import { type EntitlementProfileResponse } from '@/api/settings'
 import { remainingVipCapacityDays } from '@/lib/format-vip-capacity-expiry'
+import { clearIncubatorAuthState } from '@/lib/incubator-auth'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -90,6 +91,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
     localStorage.removeItem('token')
     localStorage.removeItem('userInfo')
     localStorage.removeItem('entitlementProfile')
+    clearIncubatorAuthState()
     document.cookie = 'token=; path=/; max-age=0;'
     toast.success(t('logoutSuccess'))
     router.push('/login')

@@ -484,6 +484,26 @@
     "versionLabel": "版本 {version}"
   },
   "DashboardShell": {
+    "systemSwitch": {
+      "label": "系统切换",
+      "copy": "跟单系统",
+      "incubator": "带单系统",
+      "lockTitle": "需要工作室 VIP",
+      "lockDesc": "带单系统仅对工作室 VIP 开放，开通后即可使用。",
+      "lockCancel": "稍后再说",
+      "lockUpgrade": "去开通",
+      "authTitle": "授权进入带单系统",
+      "authDesc": "带单系统通过 CopyApes SSO 登录。首次进入前请确认以下说明：",
+      "authPoint1": "跟单系统与带单系统相互独立，账户空间互不共用",
+      "authPoint2": "两边的 API 配置也相互独立，不会自动同步",
+      "authPoint3": "确认后将使用当前 CopyApes 账号在带单系统完成注册/登录",
+      "authConfirm": "确认授权",
+      "authCancel": "取消",
+      "authSubmitting": "授权中...",
+      "authSuccess": "已登录带单系统",
+      "authSuccessCreated": "已在带单系统开通账户",
+      "authFailed": "授权失败，请稍后重试"
+    },
     "groups": {
       "system": "系统服务",
       "copy": "跟单服务",
@@ -1083,6 +1103,19 @@
     "disclaimerBody": "跟单猿（以下称为\"本软件\"）为第三方辅助工具，不能完全替代手动交易和人工盯盘。本软件不是交易所，不做任何数字货币承兑，不触碰任何用户的资产，无法对用户的账户进行转账操作。使用本软件，需要提供交易所 API，使用跟单功能，默认授权本软件可以通过 API 对您的交易所账户进行合约交易，采用的交易参数为您设置的任务参数。本软件会尽力保证服务的正常使用，因外部不可抗力因素，如网络攻击、交易所接口发生变更等，导致本软件无法提供正常服务，或因用户的交易参数设置导致无法进行交易，本软件不承担任何责任。使用本软件提供的跟单服务，默认知晓以上信息。",
     "sponsorTitle": "赞助商广告",
     "sponsorSlot": "赞助商广告位，请联系客服"
+  },
+  "IncubatorDashboardHome": {
+    "welcomeTitle": "带单系统",
+    "welcomeDesc": "带单账户管理与运营工作台",
+    "welcomeBody": "这里是带单系统首页。当前页面沿用跟单系统的整体布局与样式，后续功能将逐步接入。",
+    "statusTitle": "系统状态",
+    "statusDesc": "当前为脚手架阶段",
+    "statusBody": "侧边栏、顶栏与系统切换 TAB 已就绪。你可以通过左上角 TAB 在跟单系统与带单系统之间切换。",
+    "guideTitle": "快速指引",
+    "guideIntro": "后续可在此扩展带单相关能力：",
+    "guideItem1": "带单账号池与任务管理",
+    "guideItem2": "带单策略与执行监控",
+    "guideItem3": "风控与结果统计"
   },
   "DashboardApi": {
     "page": {

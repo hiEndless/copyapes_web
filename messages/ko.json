@@ -482,6 +482,26 @@
     "versionLabel": "버전 {version}"
   },
   "DashboardShell": {
+    "systemSwitch": {
+      "label": "시스템 전환",
+      "copy": "카피 트레이딩",
+      "incubator": "리딩 트레이딩",
+      "lockTitle": "스튜디오 VIP 필요",
+      "lockDesc": "리딩 트레이딩은 스튜디오 VIP만 이용할 수 있습니다. 업그레이드 후 사용해 주세요.",
+      "lockCancel": "나중에",
+      "lockUpgrade": "업그레이드",
+      "authTitle": "리딩 시스템 인가",
+      "authDesc": "리딩 시스템은 CopyApes SSO로 로그인합니다. 최초 진입 전 확인해 주세요:",
+      "authPoint1": "카피와 리딩은 독립적이며 계정 데이터는 공유되지 않습니다.",
+      "authPoint2": "API 정보도 독립적이며 자동 동기화되지 않습니다.",
+      "authPoint3": "확인 시 리딩 시스템에서 등록/로그인이 완료됩니다.",
+      "authConfirm": "인가하기",
+      "authCancel": "취소",
+      "authSubmitting": "인가 중...",
+      "authSuccessCreated": "리딩 계정이 개설되었습니다",
+      "authSuccess": "리딩 시스템에 로그인했습니다",
+      "authFailed": "인가에 실패했습니다. 잠시 후 다시 시도해 주세요."
+    },
     "groups": {
       "system": "시스템",
       "copy": "카피 트레이딩",
@@ -1081,6 +1101,19 @@
     "disclaimerBody": "CopyApes(\"본 소프트웨어\")는 서드파티 보조 도구이며 수동 거래나 모니터링을 완전히 대체할 수 없습니다. 거래소가 아니며, 자산을 보관하지 않고 계정에서 자금을 이체할 수 없습니다. 본 소프트웨어 사용에는 거래소 API가 필요하며, 카피 트레이딩 사용 시 설정한 파라미터로 API를 통해 거래소 계정에 선물 주문을 내도록 본 소프트웨어에 권한을 부여합니다. 서비스 가용성 유지에 노력하지만, 불가항력(네트워크 공격, 거래소 API 변경 등)으로 인한 중단 또는 파라미터 설정으로 인한 체결 실패에 대해 책임지지 않습니다. 카피 트레이딩 서비스 사용은 위 내용을 인지함을 의미합니다.",
     "sponsorTitle": "스폰서",
     "sponsorSlot": "스폰서 슬롯 — 고객 지원 문의"
+  },
+  "IncubatorDashboardHome": {
+    "welcomeTitle": "리딩 트레이딩",
+    "welcomeDesc": "리딩 계정 운영 워크스페이스",
+    "welcomeBody": "리딩 트레이딩 홈입니다. 카피 트레이딩과 동일한 레이아웃·UI를 재사용하며, 기능은 단계적으로 추가됩니다.",
+    "statusTitle": "시스템 상태",
+    "statusDesc": "스캐폴드 단계",
+    "statusBody": "사이드바, 헤더, 시스템 전환 TAB이 준비되었습니다. 로고 아래 TAB으로 카피와 리딩을 전환할 수 있습니다.",
+    "guideTitle": "빠른 안내",
+    "guideIntro": "이후 추가될 기능:",
+    "guideItem1": "리딩 계정 풀 및 작업 관리",
+    "guideItem2": "리딩 전략 및 실행 모니터링",
+    "guideItem3": "리스크 관리 및 결과 통계"
   },
   "DashboardApi": {
     "page": {

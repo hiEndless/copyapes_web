@@ -1,4 +1,6 @@
-import { toast } from 'sonner';
+import { toast } from 'sonner'
+
+import { clearIncubatorAuthState } from '@/lib/incubator-auth';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 let isHandlingAuthExpired = false;
@@ -44,6 +46,7 @@ function handleAuthExpired(message?: string) {
   localStorage.removeItem('token');
   localStorage.removeItem('userInfo');
   localStorage.removeItem('entitlementProfile');
+  clearIncubatorAuthState();
   document.cookie = 'token=; path=/; max-age=0;';
   window.dispatchEvent(new Event('userInfoUpdated'));
   window.dispatchEvent(new Event('entitlementProfileUpdated'));

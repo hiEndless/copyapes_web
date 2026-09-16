@@ -482,6 +482,26 @@
     "versionLabel": "Version {version}"
   },
   "DashboardShell": {
+    "systemSwitch": {
+      "label": "Switch system",
+      "copy": "Copy OS",
+      "incubator": "Leader OS",
+      "lockTitle": "Studio VIP required",
+      "lockDesc": "Leader OS is available to Studio VIP members only. Upgrade to unlock it.",
+      "lockCancel": "Not now",
+      "lockUpgrade": "Upgrade",
+      "authTitle": "Authorize Leader OS access",
+      "authDesc": "Leader OS signs in via CopyApes SSO. Please confirm before first access:",
+      "authPoint1": "Copy OS and Leader OS are independent and do not share account space",
+      "authPoint2": "API credentials are also independent and will not sync automatically",
+      "authPoint3": "Confirming will register/sign you into Leader OS with your current CopyApes account",
+      "authConfirm": "Authorize",
+      "authCancel": "Cancel",
+      "authSubmitting": "Authorizing...",
+      "authSuccess": "Signed in to Leader OS",
+      "authSuccessCreated": "Leader OS account created",
+      "authFailed": "Authorization failed. Please try again later."
+    },
     "groups": {
       "system": "System",
       "copy": "Copy Trading",
@@ -1081,6 +1101,19 @@
     "disclaimerBody": "CopyApes (\"the Software\") is a third-party assistant and cannot fully replace manual trading or monitoring. It is not an exchange, does not custody assets, and cannot transfer funds from your account. Using the Software requires exchange APIs; by using copy trading you authorize the Software to place futures orders on your exchange account via API with the parameters you configure. We strive to keep the service available, but we are not liable for outages caused by force majeure (e.g. network attacks, exchange API changes) or for failed trades due to your parameter settings. Using the copy-trading service means you acknowledge the above.",
     "sponsorTitle": "Sponsors",
     "sponsorSlot": "Sponsor slot — contact support"
+  },
+  "IncubatorDashboardHome": {
+    "welcomeTitle": "Leader OS",
+    "welcomeDesc": "Lead-trader account operations workspace",
+    "welcomeBody": "This is the Leader OS home. It reuses the Copy OS dashboard layout and styles; features will be added step by step.",
+    "statusTitle": "System status",
+    "statusDesc": "Scaffold stage",
+    "statusBody": "Sidebar, header, and system switcher are ready. Use the TAB under the logo to switch between Copy OS and Leader OS.",
+    "guideTitle": "Quick guide",
+    "guideIntro": "Coming features may include:",
+    "guideItem1": "Lead-trader account pool and task management",
+    "guideItem2": "Lead strategies and execution monitoring",
+    "guideItem3": "Risk control and result analytics"
   },
   "DashboardApi": {
     "page": {

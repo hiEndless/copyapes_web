@@ -64,6 +64,7 @@ import SupportDialog from '@/components/shadcn-studio/blocks/dashboard/dialog-su
 import Alert10 from '@/components/shadcn-studio/alert/alert-10'
 
 import Logo from '@/components/logo'
+import SystemSwitcher, { type DashboardSystem } from '@/components/dashboard/system-switcher'
 import { settingsApi } from '@/api/settings'
 import { isChineseLocale } from '@/i18n/locales'
 import { TOUR_ANCHORS, tourAnchor, type TourAnchor } from '@/features/tour/anchors'
@@ -266,6 +267,15 @@ const settingsItemConfigs: MenuItemConfig[] = [
   }
 ]
 
+const incubatorMenuItemConfigs: MenuItemConfig[] = [
+  {
+    id: 'incubatorHome',
+    icon: LayoutGridIcon,
+    labelKey: 'nav.home',
+    href: '/incubator/dashboard'
+  }
+]
+
 function localizeMenuItems(
   configs: MenuItemConfig[],
   t: (key: string) => string
@@ -319,15 +329,17 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
       <SidebarGroupContent>
         <SidebarMenu>
           {data.map(item => {
+            const isRootHref = (href: string) => href === '/dashboard' || href === '/incubator/dashboard'
+
             const isActiveItem =
               !item.items &&
               (pathnameWithoutLocale === item.href ||
-                (item.href !== '/dashboard' && pathnameWithoutLocale.startsWith(`${item.href}/`)))
+                (!isRootHref(item.href) && pathnameWithoutLocale.startsWith(`${item.href}/`)))
 
             const isSubMenuActive = item.items?.some(
               subItem =>
                 pathnameWithoutLocale === subItem.href ||
-                (subItem.href !== '/dashboard' && pathnameWithoutLocale.startsWith(`${subItem.href}/`))
+                (!isRootHref(subItem.href) && pathnameWithoutLocale.startsWith(`${subItem.href}/`))
             )
 
             const anchorProps = item.anchor ? tourAnchor(item.anchor) : undefined
@@ -350,7 +362,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
                             className='justify-between'
                             isActive={
                               pathnameWithoutLocale === subItem.href ||
-                              (subItem.href !== '/dashboard' && pathnameWithoutLocale.startsWith(`${subItem.href}/`))
+                              (!isRootHref(subItem.href) && pathnameWithoutLocale.startsWith(`${subItem.href}/`))
                             }
                             asChild
                           >
@@ -387,7 +399,13 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
   )
 }
 
-const DashboardShell = ({ children }: { children: React.ReactNode }) => {
+const DashboardShell = ({
+  children,
+  system = 'copy'
+}: {
+  children: React.ReactNode
+  system?: DashboardSystem
+}) => {
   const t = useTranslations('DashboardShell')
   const locale = useLocale()
   const [mounted, setMounted] = useState(false)
@@ -398,10 +416,12 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
   const completedInitialLoadsRef = useRef(0)
   const [isAdmin, setIsAdmin] = useState(false)
   const [isPartner, setIsPartner] = useState(false)
+  const isIncubator = system === 'incubator'
 
   topLoaderRef.current = topLoader
 
   const menuItems = useMemo(() => localizeMenuItems(menuItemConfigs, t), [t])
+  const incubatorMenuItems = useMemo(() => localizeMenuItems(incubatorMenuItemConfigs, t), [t])
   const adminItems = useMemo(() => localizeMenuItems(adminItemConfigs, t), [t])
   const copyItems = useMemo(() => localizeMenuItems(copyItemConfigs, t), [t])
   const toolsItems = useMemo(() => localizeMenuItems(toolsItemConfigs, t), [t])
@@ -540,28 +560,39 @@ const DashboardShell = ({ children }: { children: React.ReactNode }) => {
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 </SidebarMenu>
+                <div className='px-2 pb-1'>
+                  <SystemSwitcher active={system} />
+                </div>
               </SidebarHeader>
               <SidebarContent>
-                <SidebarGroupedMenuItems data={menuItems} />
-                <SidebarGroupedMenuItems data={filteredAdminItems} groupLabel={t('groups.system')} />
-                <SidebarGroupedMenuItems data={copyItems} groupLabel={t('groups.copy')} />
-                <SidebarGroupedMenuItems data={studioToolsItems} groupLabel={t('groups.studio')} />
-                <SidebarGroupedMenuItems data={toolsItems} groupLabel={t('groups.tools')} />
-                <SidebarGroupedMenuItems data={settingsItems} groupLabel={t('groups.settings')} />
+                {isIncubator ? (
+                  <SidebarGroupedMenuItems data={incubatorMenuItems} />
+                ) : (
+                  <>
+                    <SidebarGroupedMenuItems data={menuItems} />
+                    <SidebarGroupedMenuItems data={filteredAdminItems} groupLabel={t('groups.system')} />
+                    <SidebarGroupedMenuItems data={copyItems} groupLabel={t('groups.copy')} />
+                    <SidebarGroupedMenuItems data={studioToolsItems} groupLabel={t('groups.studio')} />
+                    <SidebarGroupedMenuItems data={toolsItems} groupLabel={t('groups.tools')} />
+                    <SidebarGroupedMenuItems data={settingsItems} groupLabel={t('groups.settings')} />
+                  </>
+                )}
               </SidebarContent>
-              <SidebarFooter className='group-data-[collapsible=icon]:hidden'>
-                <Link
-                  href='https://chromewebstore.google.com/detail/copyapes-assistant/affmjifigldmicnbgpghddaneomejmfo'
-                  className='block overflow-hidden rounded-lg transition-opacity hover:opacity-90'
-                  target='_blank'
-                >
-                  <img
-                    src={isChineseLocale(locale) ? '/images/copyapes-chrome-zh.png' : '/images/copyapes-chrome-en.png'}
-                    alt={t('extensionAlt')}
-                    className='w-full'
-                  />
-                </Link>
-              </SidebarFooter>
+              {!isIncubator && (
+                <SidebarFooter className='group-data-[collapsible=icon]:hidden'>
+                  <Link
+                    href='https://chromewebstore.google.com/detail/copyapes-assistant/affmjifigldmicnbgpghddaneomejmfo'
+                    className='block overflow-hidden rounded-lg transition-opacity hover:opacity-90'
+                    target='_blank'
+                  >
+                    <img
+                      src={isChineseLocale(locale) ? '/images/copyapes-chrome-zh.png' : '/images/copyapes-chrome-en.png'}
+                      alt={t('extensionAlt')}
+                      className='w-full'
+                    />
+                  </Link>
+                </SidebarFooter>
+              )}
             </Sidebar>
             <div className='flex flex-1 flex-col'>
               <div className='bg-background sticky top-0 z-10 pb-1'>
