@@ -4,11 +4,11 @@ type PageProps = {
   params: Promise<{ locale: string }>
 }
 
-const IncubatorDashboardIndexPage = async ({ params }: PageProps) => {
+const LegacyCostRedirectPage = async ({ params }: PageProps) => {
   const { locale } = await params
   const prefix = locale === 'en' ? '' : `/${locale}`
 
-  redirect(`${prefix}/incubator/dashboard/board`)
+  redirect(`${prefix}/incubator/dashboard/history`)
 }
 
-export default IncubatorDashboardIndexPage
+export default LegacyCostRedirectPage

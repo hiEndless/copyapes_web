@@ -29,7 +29,9 @@ import {
   ListCheck,
   Boxes,
   Zap,
-  Sparkles
+  Sparkles,
+  LayoutDashboard,
+  History
 } from 'lucide-react'
 
 import NextTopLoader, { useTopLoader } from 'nextjs-toploader'
@@ -267,12 +269,36 @@ const settingsItemConfigs: MenuItemConfig[] = [
   }
 ]
 
-const incubatorMenuItemConfigs: MenuItemConfig[] = [
+const incubatorMenuItems: MenuItem[] = [
   {
-    id: 'incubatorHome',
-    icon: LayoutGridIcon,
-    labelKey: 'nav.home',
-    href: '/incubator/dashboard'
+    id: 'board',
+    icon: LayoutDashboard,
+    label: '项目看板',
+    href: '/incubator/dashboard/board'
+  },
+  {
+    id: 'history',
+    icon: History,
+    label: '历史项目',
+    href: '/incubator/dashboard/history'
+  },
+  {
+    id: 'api',
+    icon: Unplug,
+    label: 'API 管理',
+    href: '/incubator/dashboard/api'
+  },
+  {
+    id: 'pricing',
+    icon: Crown,
+    label: '订阅服务',
+    href: '/incubator/dashboard/pricing'
+  },
+  {
+    id: 'notifications',
+    icon: MessageCircleWarning,
+    label: '消息通知',
+    href: '/incubator/dashboard/notifications'
   }
 ]
 
@@ -421,7 +447,6 @@ const DashboardShell = ({
   topLoaderRef.current = topLoader
 
   const menuItems = useMemo(() => localizeMenuItems(menuItemConfigs, t), [t])
-  const incubatorMenuItems = useMemo(() => localizeMenuItems(incubatorMenuItemConfigs, t), [t])
   const adminItems = useMemo(() => localizeMenuItems(adminItemConfigs, t), [t])
   const copyItems = useMemo(() => localizeMenuItems(copyItemConfigs, t), [t])
   const toolsItems = useMemo(() => localizeMenuItems(toolsItemConfigs, t), [t])

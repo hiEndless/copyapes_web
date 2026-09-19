@@ -24,7 +24,7 @@ export type DashboardSystem = 'copy' | 'incubator'
 
 const SYSTEM_HREFS: Record<DashboardSystem, string> = {
   copy: '/dashboard',
-  incubator: '/incubator/dashboard'
+  incubator: '/incubator/dashboard/board'
 }
 
 type SystemSwitcherProps = {
