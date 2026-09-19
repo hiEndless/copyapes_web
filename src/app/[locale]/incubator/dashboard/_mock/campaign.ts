@@ -329,6 +329,29 @@ export const MOCK_ACTIVE_CAMPAIGNS: Campaign[] = [
   MOCK_ACTIVE_CAMPAIGN_ETH
 ]
 
+/** 看板模拟演示开关（localStorage） */
+export const INCUBATOR_BOARD_DEMO_MODE_KEY = 'incubator.board.demoMode'
+
+export function readBoardDemoMode(): boolean {
+  if (typeof window === 'undefined') return true
+  const raw = window.localStorage.getItem(INCUBATOR_BOARD_DEMO_MODE_KEY)
+  if (raw === null) return true
+  return raw === '1' || raw === 'true'
+}
+
+export function writeBoardDemoMode(enabled: boolean) {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(INCUBATOR_BOARD_DEMO_MODE_KEY, enabled ? '1' : '0')
+}
+
+/** 深拷贝载入模拟看板数据，避免运行时改到静态常量 */
+export function cloneDemoBoardData(): { campaigns: Campaign[]; idleApis: IdleApi[] } {
+  return {
+    campaigns: JSON.parse(JSON.stringify(MOCK_ACTIVE_CAMPAIGNS)) as Campaign[],
+    idleApis: JSON.parse(JSON.stringify(MOCK_IDLE_APIS)) as IdleApi[]
+  }
+}
+
 export const MOCK_HISTORY_CAMPAIGNS: Campaign[] = [
   {
     ...MOCK_ACTIVE_CAMPAIGN,

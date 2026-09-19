@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type DragEvent, type ReactNode } from 'react'
 
-import { ChartColumn, Crown, GripVertical, Plus, Shuffle, Waypoints, X } from 'lucide-react'
+import { ChartColumn, Crown, GripVertical, Plus, Waypoints, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -37,11 +37,10 @@ import { cn } from '@/lib/utils'
 
 import {
   EXCHANGES,
-  MOCK_ACTIVE_CAMPAIGNS,
-  MOCK_IDLE_APIS,
   campaignStatusLabel,
   confidenceLabel,
   confirmLeader,
+  cloneDemoBoardData,
   createCampaignFromApis,
   endCampaignEarly,
   formatPnl,
@@ -55,13 +54,14 @@ import {
   isLowBalance,
   memberBalance,
   mockBalanceForApi,
+  readBoardDemoMode,
   relationLabel,
-  reshuffleRoundMembers,
   resultLabel,
   roundPhaseLabel,
   startRound,
   terminateRound,
   updateMemberRelation,
+  writeBoardDemoMode,
   type Campaign,
   type ClosedPosition,
   type ExchangeId,
@@ -290,9 +290,12 @@ function MemberCard({
 }
 
 export default function IncubatorBoardPage() {
-  const [campaigns, setCampaigns] = useState<Campaign[]>(MOCK_ACTIVE_CAMPAIGNS)
-  const [activeCampaignId, setActiveCampaignId] = useState(MOCK_ACTIVE_CAMPAIGNS[0]?.id ?? '')
-  const [idleApis, setIdleApis] = useState(MOCK_IDLE_APIS)
+  const [demoMode, setDemoMode] = useState(true)
+  const [campaigns, setCampaigns] = useState<Campaign[]>(() => cloneDemoBoardData().campaigns)
+  const [activeCampaignId, setActiveCampaignId] = useState(
+    () => cloneDemoBoardData().campaigns[0]?.id ?? ''
+  )
+  const [idleApis, setIdleApis] = useState(() => cloneDemoBoardData().idleApis)
   const campaign = useMemo(
     () => campaigns.find(item => item.id === activeCampaignId) ?? campaigns[0] ?? null,
     [campaigns, activeCampaignId]
@@ -318,6 +321,55 @@ export default function IncubatorBoardPage() {
   const [pendingLeaderId, setPendingLeaderId] = useState<string | null>(null)
   const [pendingWinner, setPendingWinner] = useState<MemberRelation>('SAME')
   const [dragOverRelation, setDragOverRelation] = useState<MemberRelation | null>(null)
+
+  useEffect(() => {
+    const enabled = readBoardDemoMode()
+    setDemoMode(enabled)
+    if (!enabled) {
+      setCampaigns([])
+      setIdleApis([])
+      setActiveCampaignId('')
+      setSelectedMemberId(null)
+      setPromoteResult(null)
+    }
+  }, [])
+
+  const applyDemoMode = (enabled: boolean) => {
+    writeBoardDemoMode(enabled)
+    setDemoMode(enabled)
+    setPromoteResult(null)
+    setPromoteDetailOpen(false)
+    setInspectorOpen(false)
+    setCreateOpen(false)
+    setLeaderOpen(false)
+    setTerminateOpen(false)
+    setEndProjectOpen(false)
+    setSelectedApiIds([])
+
+    if (enabled) {
+      const demo = cloneDemoBoardData()
+      setCampaigns(demo.campaigns)
+      setIdleApis(demo.idleApis)
+      const first = demo.campaigns[0]
+      if (first) {
+        setActiveCampaignId(first.id)
+        setRoundIndex(first.currentRound)
+        const current = first.rounds.find(round => round.index === first.currentRound)
+        setSelectedMemberId(
+          current?.members.find(m => m.isLeader)?.id ?? current?.members[0]?.id ?? null
+        )
+      } else {
+        setActiveCampaignId('')
+        setSelectedMemberId(null)
+      }
+      return
+    }
+
+    setCampaigns([])
+    setIdleApis([])
+    setActiveCampaignId('')
+    setSelectedMemberId(null)
+  }
 
   useEffect(() => {
     if (campaigns.length === 0) {
@@ -528,22 +580,6 @@ export default function IncubatorBoardPage() {
     setTerminateOpen(false)
   }
 
-  const handleReshuffle = () => {
-    if (!isPreparing || !campaign || !activeRound) return
-    patchActiveCampaign(prev => ({
-      ...prev,
-      rounds: prev.rounds.map(round =>
-        round.index === prev.currentRound
-          ? {
-              ...round,
-              leaderConfirmed: false,
-              members: reshuffleRoundMembers(round.members)
-            }
-          : round
-      )
-    }))
-  }
-
   const handleEndProject = () => {
     if (!campaign) return
     const freed = getCampaignApiIds(campaign)
@@ -607,15 +643,51 @@ export default function IncubatorBoardPage() {
         <div className='flex flex-col gap-2'>
           <h1 className='text-2xl font-bold tracking-tight'>项目看板</h1>
           <p className='text-muted-foreground text-sm'>
-            {isPreparing
-              ? '准备中：可拖拽调整分组，确认领单后开始本轮'
-              : '演示数据 · 点击账号打开详情'}
+            {demoMode
+              ? isPreparing
+                ? '模拟演示 · 准备中：可拖拽调整分组，确认领单后开始本轮'
+                : '模拟演示 · 点击账号打开详情'
+              : '真实模式 · 接口未接入，开启模拟演示可载入样例数据'}
           </p>
         </div>
-        <Button type='button' size='sm' onClick={() => setCreateOpen(true)}>
-          <Plus className='size-4' />
-          创建项目
-        </Button>
+        <div className='flex shrink-0 items-center gap-2'>
+          <button
+            type='button'
+            role='switch'
+            aria-checked={demoMode}
+            onClick={() => applyDemoMode(!demoMode)}
+            className={cn(
+              'inline-flex h-8 items-center gap-2 rounded-full border px-2.5 text-xs transition-colors',
+              demoMode
+                ? 'border-primary/40 bg-primary/10 text-primary'
+                : 'border-border/70 text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <span
+              className={cn(
+                'relative h-4 w-7 rounded-full transition-colors',
+                demoMode ? 'bg-primary' : 'bg-muted'
+              )}
+            >
+              <span
+                className={cn(
+                  'bg-background absolute top-0.5 size-3 rounded-full transition-transform',
+                  demoMode ? 'left-3.5' : 'left-0.5'
+                )}
+              />
+            </span>
+            模拟演示
+          </button>
+          <Button
+            type='button'
+            size='sm'
+            disabled={!demoMode}
+            onClick={() => setCreateOpen(true)}
+          >
+            <Plus className='size-4' />
+            创建项目
+          </Button>
+        </div>
       </div>
 
       <div className='flex flex-wrap gap-2'>
@@ -667,12 +739,24 @@ export default function IncubatorBoardPage() {
       {!campaign || !activeRound ? (
         <Card className='border-dashed py-16 shadow-none'>
           <CardContent className='flex flex-col items-center justify-center text-center'>
-            <p className='text-sm font-medium'>暂无进行中的项目</p>
-            <p className='text-muted-foreground mt-1 text-xs'>创建项目后可在此并行切换查看</p>
-            <Button type='button' size='sm' className='mt-4' onClick={() => setCreateOpen(true)}>
-              <Plus className='size-4' />
-              创建项目
-            </Button>
+            <p className='text-sm font-medium'>
+              {demoMode ? '暂无进行中的项目' : '真实模式暂无数据'}
+            </p>
+            <p className='text-muted-foreground mt-1 text-xs'>
+              {demoMode
+                ? '创建项目后可在此并行切换查看'
+                : '接口尚未接入。开启右上角「模拟演示」可载入样例项目。'}
+            </p>
+            {demoMode ? (
+              <Button type='button' size='sm' className='mt-4' onClick={() => setCreateOpen(true)}>
+                <Plus className='size-4' />
+                创建项目
+              </Button>
+            ) : (
+              <Button type='button' size='sm' className='mt-4' onClick={() => applyDemoMode(true)}>
+                开启模拟演示
+              </Button>
+            )}
           </CardContent>
         </Card>
       ) : (
@@ -896,18 +980,6 @@ export default function IncubatorBoardPage() {
                   </CardDescription>
                 </div>
               <div className='flex max-w-full items-center gap-2'>
-                {isPreparing && (
-                  <Button
-                    type='button'
-                    size='sm'
-                    variant='outline'
-                    className='h-8 shrink-0 text-xs'
-                    onClick={handleReshuffle}
-                  >
-                    <Shuffle className='size-3.5' />
-                    重新均分
-                  </Button>
-                )}
                 <div className='flex max-w-full flex-nowrap gap-1.5 overflow-x-auto pb-0.5'>
                 {campaign.rounds.map(round => (
                   <button
