@@ -803,6 +803,58 @@ export function splitIntoRelations(apis: Array<{ id: string; label: string }>): 
   }))
 }
 
+/** 准备态：将当前轮成员重新均分到同向 / 反向，并清空领单 */
+export function reshuffleRoundMembers(members: RoundMember[]): RoundMember[] {
+  if (members.length < 2) return members
+
+  const pool = [...members]
+  for (let i = pool.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
+  }
+
+  const half = pool.length / 2
+  return pool.map((member, index) => ({
+    ...member,
+    relation: (index < half ? 'SAME' : 'INVERSE') as MemberRelation,
+    isLeader: false,
+    result: 'ACTIVE' as const
+  }))
+}
+
+export type PromoteResultSummary = {
+  roundIndex: number
+  winner: MemberRelation
+  promoted: Array<Pick<RoundMember, 'apiId' | 'apiLabel' | 'pnl'>>
+  eliminated: Array<Pick<RoundMember, 'apiId' | 'apiLabel' | 'pnl'>>
+  nextRoundIndex: number | null
+  projectCompleted: boolean
+}
+
+export function buildPromoteResultSummary(
+  members: RoundMember[],
+  roundIndex: number,
+  winner: MemberRelation,
+  nextRoundIndex: number | null,
+  projectCompleted: boolean
+): PromoteResultSummary {
+  const promoted = members
+    .filter(member => member.relation === winner)
+    .map(member => ({ apiId: member.apiId, apiLabel: member.apiLabel, pnl: member.pnl }))
+  const eliminated = members
+    .filter(member => member.relation !== winner)
+    .map(member => ({ apiId: member.apiId, apiLabel: member.apiLabel, pnl: member.pnl }))
+
+  return {
+    roundIndex,
+    winner,
+    promoted,
+    eliminated,
+    nextRoundIndex,
+    projectCompleted
+  }
+}
+
 export function memberBalance(member: RoundMember) {
   return member.balanceUsdt ?? mockBalanceForApi(member.apiId)
 }

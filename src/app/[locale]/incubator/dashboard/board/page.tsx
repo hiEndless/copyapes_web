@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type DragEvent, type ReactNode } from 'react'
 
-import { ChartColumn, Crown, GripVertical, Plus, Waypoints } from 'lucide-react'
+import { ChartColumn, Crown, GripVertical, Plus, Shuffle, Waypoints, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -50,11 +50,13 @@ import {
   getLeaderClosedPositions,
   getLeaderOpenPositions,
   getMemberTradeTimeline,
+  buildPromoteResultSummary,
   isPowerOfTwo,
   isLowBalance,
   memberBalance,
   mockBalanceForApi,
   relationLabel,
+  reshuffleRoundMembers,
   resultLabel,
   roundPhaseLabel,
   startRound,
@@ -65,6 +67,7 @@ import {
   type ExchangeId,
   type MemberRelation,
   type OpenPosition,
+  type PromoteResultSummary,
   type RoundMember
 } from '../_mock/campaign'
 import { TradeTimeline } from '../_components/trade-timeline'
@@ -306,6 +309,8 @@ export default function IncubatorBoardPage() {
   const [leaderOpen, setLeaderOpen] = useState(false)
   const [terminateOpen, setTerminateOpen] = useState(false)
   const [endProjectOpen, setEndProjectOpen] = useState(false)
+  const [promoteResult, setPromoteResult] = useState<PromoteResultSummary | null>(null)
+  const [promoteDetailOpen, setPromoteDetailOpen] = useState(false)
 
   const [createName, setCreateName] = useState('')
   const [createExchange, setCreateExchange] = useState<ExchangeId>('Binance')
@@ -493,9 +498,24 @@ export default function IncubatorBoardPage() {
     const eliminatedApiIds = new Set(
       activeRound.members.filter(member => member.relation !== pendingWinner).map(member => member.apiId)
     )
+    const summary = buildPromoteResultSummary(
+      activeRound.members,
+      activeRound.index,
+      pendingWinner,
+      null,
+      false
+    )
     const next = terminateRound(campaign, pendingWinner)
     const remaining = campaigns.filter(item => item.id !== campaign.id)
-    if (next.status === 'COMPLETED') {
+    const projectCompleted = next.status === 'COMPLETED'
+    setPromoteResult({
+      ...summary,
+      nextRoundIndex: projectCompleted ? null : next.currentRound,
+      projectCompleted
+    })
+    setPromoteDetailOpen(true)
+
+    if (projectCompleted) {
       const freed = getCampaignApiIds(campaign)
       setIdleApis(prev => prev.map(api => (freed.has(api.id) ? { ...api, busy: false } : api)))
       syncRoundView(next, remaining)
@@ -506,6 +526,22 @@ export default function IncubatorBoardPage() {
       syncRoundView(next)
     }
     setTerminateOpen(false)
+  }
+
+  const handleReshuffle = () => {
+    if (!isPreparing || !campaign || !activeRound) return
+    patchActiveCampaign(prev => ({
+      ...prev,
+      rounds: prev.rounds.map(round =>
+        round.index === prev.currentRound
+          ? {
+              ...round,
+              leaderConfirmed: false,
+              members: reshuffleRoundMembers(round.members)
+            }
+          : round
+      )
+    }))
   }
 
   const handleEndProject = () => {
@@ -808,6 +844,44 @@ export default function IncubatorBoardPage() {
             </Card>
           </div>
 
+          {promoteResult && (
+            <div className='border-border/60 bg-primary/5 flex flex-col gap-2 rounded-lg border px-4 py-3 sm:flex-row sm:items-center sm:justify-between'>
+              <div className='min-w-0 space-y-0.5'>
+                <p className='text-sm font-medium'>
+                  第 {promoteResult.roundIndex} 轮已结束 · 晋级 {promoteResult.promoted.length} · 淘汰{' '}
+                  {promoteResult.eliminated.length}
+                </p>
+                <p className='text-muted-foreground text-[11px]'>
+                  晋级{relationLabel(promoteResult.winner)}
+                  {promoteResult.projectCompleted
+                    ? ' · 项目已完结，账号已释放回空闲池'
+                    : ` · 已自动均分并进入第 ${promoteResult.nextRoundIndex} 轮准备；淘汰账号已释放`}
+                </p>
+              </div>
+              <div className='flex shrink-0 items-center gap-2'>
+                <Button
+                  type='button'
+                  size='sm'
+                  variant='outline'
+                  className='h-8 text-xs'
+                  onClick={() => setPromoteDetailOpen(true)}
+                >
+                  查看名单
+                </Button>
+                <Button
+                  type='button'
+                  size='sm'
+                  variant='ghost'
+                  className='h-8 px-2'
+                  onClick={() => setPromoteResult(null)}
+                  aria-label='关闭晋级结果'
+                >
+                  <X className='size-3.5' />
+                </Button>
+              </div>
+            </div>
+          )}
+
           <Card className='gap-0 overflow-hidden py-0 shadow-sm'>
             <CardHeader className='border-border/60 flex flex-col gap-3 border-b px-4 py-4 sm:flex-row sm:items-center sm:justify-between'>
               <div className='min-w-0'>
@@ -817,11 +891,24 @@ export default function IncubatorBoardPage() {
                   </CardTitle>
                   <CardDescription className='mt-1 text-xs'>
                     {isPreparing
-                      ? '拖拽账号到同向 / 反向；两边数量必须一致后才能开始。'
+                      ? '已按晋级结果自动均分同向 / 反向；可拖拽微调，两边数量须一致。'
                       : '账号位置固定；同向 / 反向是每轮分配，不永久挂在 API 上。'}
                   </CardDescription>
                 </div>
-              <div className='flex max-w-full flex-nowrap gap-1.5 overflow-x-auto pb-0.5'>
+              <div className='flex max-w-full items-center gap-2'>
+                {isPreparing && (
+                  <Button
+                    type='button'
+                    size='sm'
+                    variant='outline'
+                    className='h-8 shrink-0 text-xs'
+                    onClick={handleReshuffle}
+                  >
+                    <Shuffle className='size-3.5' />
+                    重新均分
+                  </Button>
+                )}
+                <div className='flex max-w-full flex-nowrap gap-1.5 overflow-x-auto pb-0.5'>
                 {campaign.rounds.map(round => (
                   <button
                     key={round.id}
@@ -842,6 +929,7 @@ export default function IncubatorBoardPage() {
                     第 {round.index} 轮 · {round.memberCount}
                   </button>
                 ))}
+                </div>
               </div>
             </CardHeader>
 
@@ -1323,6 +1411,84 @@ export default function IncubatorBoardPage() {
             </Button>
             <Button type='button' onClick={handleTerminate}>
               确认终止
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={promoteDetailOpen && Boolean(promoteResult)}
+        onOpenChange={open => {
+          setPromoteDetailOpen(open)
+          if (!open && promoteResult?.projectCompleted) {
+            setPromoteResult(null)
+          }
+        }}
+      >
+        <DialogContent className='sm:max-w-lg'>
+          <DialogHeader>
+            <DialogTitle>
+              第 {promoteResult?.roundIndex ?? '-'} 轮晋级结果
+            </DialogTitle>
+            <DialogDescription>
+              {promoteResult
+                ? promoteResult.projectCompleted
+                  ? '项目已完结。晋级侧决出最终结果，全部账号已释放回空闲池。'
+                  : `晋级${relationLabel(promoteResult.winner)}已自动均分进入第 ${promoteResult.nextRoundIndex} 轮；淘汰账号已释放。`
+                : ''}
+            </DialogDescription>
+          </DialogHeader>
+          {promoteResult && (
+            <div className='grid grid-cols-2 gap-2'>
+              <div className='rounded-md border border-sky-500/20 bg-sky-500/[0.04] p-2.5'>
+                <p className='text-[11px] font-medium text-sky-800 dark:text-sky-200'>
+                  晋级 · {promoteResult.promoted.length}
+                </p>
+                <p className='text-muted-foreground mt-0.5 text-[10px]'>
+                  {promoteResult.projectCompleted
+                    ? '项目完结'
+                    : `进入第 ${promoteResult.nextRoundIndex} 轮`}
+                </p>
+                <ul className='mt-2 max-h-48 space-y-1 overflow-y-auto'>
+                  {promoteResult.promoted.map(member => (
+                    <li
+                      key={member.apiId}
+                      className='flex items-center justify-between gap-2 text-xs'
+                    >
+                      <span className='truncate'>{member.apiLabel}</span>
+                      <PnlText value={member.pnl} className='shrink-0 text-[11px]' />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className='rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-2.5'>
+                <p className='text-[11px] font-medium text-rose-800 dark:text-rose-200'>
+                  淘汰 · {promoteResult.eliminated.length}
+                </p>
+                <p className='text-muted-foreground mt-0.5 text-[10px]'>释放回空闲 API</p>
+                <ul className='mt-2 max-h-48 space-y-1 overflow-y-auto'>
+                  {promoteResult.eliminated.map(member => (
+                    <li
+                      key={member.apiId}
+                      className='flex items-center justify-between gap-2 text-xs'
+                    >
+                      <span className='truncate'>{member.apiLabel}</span>
+                      <PnlText value={member.pnl} className='shrink-0 text-[11px]' />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button
+              type='button'
+              onClick={() => {
+                setPromoteDetailOpen(false)
+                if (promoteResult?.projectCompleted) setPromoteResult(null)
+              }}
+            >
+              知道了
             </Button>
           </DialogFooter>
         </DialogContent>
