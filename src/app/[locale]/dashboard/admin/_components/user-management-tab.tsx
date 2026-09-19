@@ -144,7 +144,14 @@ export function UserManagementTab() {
         const grants = await agentApi.adminTemporaryApiGrantList({ username: q })
         if (grants.code === 0) {
           const items = Array.isArray(grants.data) ? grants.data : []
-          setTemporaryGrants(items.filter((grant) => grant?.status === "active"))
+          const now = Date.now()
+          setTemporaryGrants(
+            items.filter((grant) => {
+              if (grant?.status !== "active") return false
+              const endAt = grant?.end_at ? new Date(grant.end_at).getTime() : NaN
+              return Number.isFinite(endAt) && endAt > now
+            })
+          )
         }
       }
     } finally {
