@@ -58,6 +58,24 @@ export type CopyRecord = {
   status: 'FILLED' | 'PARTIAL' | 'CANCELED'
 }
 
+export type OpenPosition = {
+  id: string
+  symbol: string
+  side: 'LONG' | 'SHORT'
+  marginMode: '全仓' | '逐仓'
+  leverage: number
+  pnlUsdt: number
+  roiPct: number
+  qty: number
+  qtyAsset: string
+  entryPrice: number
+  openedAt: string
+}
+
+export type ClosedPosition = OpenPosition & {
+  closedAt: string
+}
+
 export type Campaign = {
   id: string
   code: string
@@ -162,7 +180,7 @@ export const MOCK_ACTIVE_CAMPAIGN: Campaign = {
       phase: 'PREPARING',
       leaderConfirmed: false,
       members: [
-        { id: 'r3-a04', apiId: 'api-04', apiLabel: 'A04', relation: 'SAME', result: 'ACTIVE', pnl: 0, trades: 0 },
+        { id: 'r3-a04', apiId: 'api-04', apiLabel: 'A04', relation: 'SAME', result: 'ACTIVE', pnl: 0, trades: 0, isLeader: true },
         { id: 'r3-a05', apiId: 'api-05', apiLabel: 'A05', relation: 'INVERSE', result: 'ACTIVE', pnl: 0, trades: 0 }
       ]
     }
@@ -267,6 +285,7 @@ function buildLargeDemoCampaign(initialAccounts = 64): Campaign {
     result: 'ACTIVE' as const,
     pnl: 0,
     trades: 0,
+    isLeader: i === 0,
     balanceUsdt: mockBalanceForApi(apiIds[srcIndex])
   }))
 
@@ -396,6 +415,284 @@ export const MOCK_COPY_RECORDS: Record<string, CopyRecord[]> = {
     { id: 't7', time: '2026-09-19 13:05:44', side: 'BUY', symbol: 'BTCUSDT', qty: 0.02, price: 63885, pnl: 5.1, status: 'FILLED' },
     { id: 't8', time: '2026-09-19 11:48:22', side: 'SELL', symbol: 'BTCUSDT', qty: 0.015, price: 64100, pnl: -8.4, status: 'FILLED' }
   ]
+}
+
+export type TradeTimelineAction = 'open' | 'add' | 'reduce' | 'close'
+
+export type TradeTimelineEvent = {
+  id: string
+  eventAt: string
+  action: TradeTimelineAction
+  side: 'buy' | 'sell'
+  posSide: 'long' | 'short'
+  symbol: string
+  quantity: number
+  price?: number
+  apiLabel?: string
+  error?: { code: number | string; msg: string }
+}
+
+/** 演示用：领单成交时间轴 */
+export const MOCK_LEADER_TIMELINE: TradeTimelineEvent[] = [
+  {
+    id: 'tl-l1',
+    eventAt: '2026-09-19 15:32:46',
+    action: 'open',
+    side: 'sell',
+    posSide: 'short',
+    symbol: 'ETHUSDT',
+    quantity: 0.6,
+    price: 2524.8
+  },
+  {
+    id: 'tl-l2',
+    eventAt: '2026-09-19 14:05:11',
+    action: 'open',
+    side: 'sell',
+    posSide: 'short',
+    symbol: 'BTCUSDT',
+    quantity: 0.04,
+    price: 64180
+  },
+  {
+    id: 'tl-l3',
+    eventAt: '2026-09-19 12:18:03',
+    action: 'add',
+    side: 'buy',
+    posSide: 'long',
+    symbol: 'SOLUSDT',
+    quantity: 12.5,
+    price: 178.2
+  },
+  {
+    id: 'tl-l4',
+    eventAt: '2026-09-19 10:18:22',
+    action: 'open',
+    side: 'buy',
+    posSide: 'long',
+    symbol: 'SOLUSDT',
+    quantity: 30,
+    price: 176.42
+  },
+  {
+    id: 'tl-l5',
+    eventAt: '2026-09-18 21:45:18',
+    action: 'close',
+    side: 'sell',
+    posSide: 'long',
+    symbol: 'BTCUSDT',
+    quantity: 0.03,
+    price: 63880
+  },
+  {
+    id: 'tl-l6',
+    eventAt: '2026-09-18 16:28:03',
+    action: 'close',
+    side: 'buy',
+    posSide: 'short',
+    symbol: 'SOLUSDT',
+    quantity: 28,
+    price: 180.6
+  },
+  {
+    id: 'tl-l7',
+    eventAt: '2026-09-18 11:05:22',
+    action: 'open',
+    side: 'sell',
+    posSide: 'short',
+    symbol: 'SOLUSDT',
+    quantity: 28,
+    price: 182.1
+  }
+]
+
+/** 演示用：跟单成交时间轴（相对领单略延迟） */
+export const MOCK_FOLLOWER_TIMELINE: TradeTimelineEvent[] = [
+  {
+    id: 'tl-f1',
+    eventAt: '2026-09-19 15:32:49',
+    action: 'open',
+    side: 'sell',
+    posSide: 'short',
+    symbol: 'ETHUSDT',
+    quantity: 0.6,
+    price: 2525.1
+  },
+  {
+    id: 'tl-f2',
+    eventAt: '2026-09-19 14:05:14',
+    action: 'open',
+    side: 'sell',
+    posSide: 'short',
+    symbol: 'BTCUSDT',
+    quantity: 0.04,
+    price: 64172,
+    error: {
+      code: -4164,
+      msg: "Order's notional must be no smaller than 20 (unless you choose reduce only)."
+    }
+  },
+  {
+    id: 'tl-f3',
+    eventAt: '2026-09-19 12:18:07',
+    action: 'add',
+    side: 'buy',
+    posSide: 'long',
+    symbol: 'SOLUSDT',
+    quantity: 12.5,
+    price: 178.15,
+    error: {
+      code: -2019,
+      msg: 'Margin is insufficient.'
+    }
+  },
+  {
+    id: 'tl-f4',
+    eventAt: '2026-09-19 10:18:26',
+    action: 'open',
+    side: 'buy',
+    posSide: 'long',
+    symbol: 'SOLUSDT',
+    quantity: 30,
+    price: 176.5
+  },
+  {
+    id: 'tl-f5',
+    eventAt: '2026-09-18 21:45:22',
+    action: 'close',
+    side: 'sell',
+    posSide: 'long',
+    symbol: 'BTCUSDT',
+    quantity: 0.03,
+    price: 63875
+  }
+]
+
+export function getMemberTradeTimeline(options: {
+  apiId?: string | null
+  apiLabel?: string | null
+  isLeader: boolean
+}): TradeTimelineEvent[] {
+  if (!options.apiId) return []
+  const source = options.isLeader ? MOCK_LEADER_TIMELINE : MOCK_FOLLOWER_TIMELINE
+  return source.map(item => ({
+    ...item,
+    id: `${options.apiId}-${item.id}`,
+    apiLabel: options.apiLabel ?? undefined
+  }))
+}
+
+/** 演示用：领单 API 当前持仓（跟单源） */
+export const MOCK_LEADER_OPEN_POSITIONS: OpenPosition[] = [
+  {
+    id: 'pos-leader-1',
+    symbol: 'SOLUSDT',
+    side: 'LONG',
+    marginMode: '全仓',
+    leverage: 10,
+    pnlUsdt: 128.46,
+    roiPct: 18.32,
+    qty: 42.5,
+    qtyAsset: 'SOL',
+    entryPrice: 176.42,
+    openedAt: '2026-09-19 10:18:22'
+  },
+  {
+    id: 'pos-leader-2',
+    symbol: 'BTCUSDT',
+    side: 'SHORT',
+    marginMode: '全仓',
+    leverage: 5,
+    pnlUsdt: -24.8,
+    roiPct: -3.15,
+    qty: 0.04,
+    qtyAsset: 'BTC',
+    entryPrice: 64180,
+    openedAt: '2026-09-19 14:05:11'
+  },
+  {
+    id: 'pos-leader-3',
+    symbol: 'ETHUSDT',
+    side: 'SHORT',
+    marginMode: '逐仓',
+    leverage: 8,
+    pnlUsdt: -12.6,
+    roiPct: -2.48,
+    qty: 0.6,
+    qtyAsset: 'ETH',
+    entryPrice: 2524.8,
+    openedAt: '2026-09-19 15:32:46'
+  }
+]
+
+export function getLeaderOpenPositions(leaderApiId: string | null | undefined): OpenPosition[] {
+  if (!leaderApiId) return []
+  return MOCK_LEADER_OPEN_POSITIONS
+}
+
+/** 演示用：领单 API 历史持仓 */
+export const MOCK_LEADER_CLOSED_POSITIONS: ClosedPosition[] = [
+  {
+    id: 'pos-closed-1',
+    symbol: 'BTCUSDT',
+    side: 'LONG',
+    marginMode: '全仓',
+    leverage: 5,
+    pnlUsdt: 86.2,
+    roiPct: 12.4,
+    qty: 0.03,
+    qtyAsset: 'BTC',
+    entryPrice: 63210,
+    openedAt: '2026-09-18 09:12:40',
+    closedAt: '2026-09-18 21:45:18'
+  },
+  {
+    id: 'pos-closed-2',
+    symbol: 'SOLUSDT',
+    side: 'SHORT',
+    marginMode: '全仓',
+    leverage: 10,
+    pnlUsdt: -18.5,
+    roiPct: -4.2,
+    qty: 28,
+    qtyAsset: 'SOL',
+    entryPrice: 182.1,
+    openedAt: '2026-09-18 11:05:22',
+    closedAt: '2026-09-18 16:28:03'
+  },
+  {
+    id: 'pos-closed-3',
+    symbol: 'ETHUSDT',
+    side: 'LONG',
+    marginMode: '逐仓',
+    leverage: 8,
+    pnlUsdt: 41.7,
+    roiPct: 7.8,
+    qty: 1.1,
+    qtyAsset: 'ETH',
+    entryPrice: 2465.3,
+    openedAt: '2026-09-17 14:33:09',
+    closedAt: '2026-09-18 08:11:55'
+  },
+  {
+    id: 'pos-closed-4',
+    symbol: 'BNBUSDT',
+    side: 'SHORT',
+    marginMode: '全仓',
+    leverage: 5,
+    pnlUsdt: 9.3,
+    roiPct: 2.1,
+    qty: 6,
+    qtyAsset: 'BNB',
+    entryPrice: 598.4,
+    openedAt: '2026-09-17 20:02:14',
+    closedAt: '2026-09-17 23:40:41'
+  }
+]
+
+export function getLeaderClosedPositions(leaderApiId: string | null | undefined): ClosedPosition[] {
+  if (!leaderApiId) return []
+  return MOCK_LEADER_CLOSED_POSITIONS
 }
 
 export function formatPnl(value: number) {

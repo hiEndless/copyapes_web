@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, type DragEvent, type ReactNode } from 'react'
 
-import { ChartColumn, Crown, GripVertical, History as HistoryIcon, Plus, Waypoints } from 'lucide-react'
+import { ChartColumn, Crown, GripVertical, Plus, Waypoints } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -25,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { Separator } from '@/components/ui/separator'
 import {
   Sheet,
   SheetContent,
@@ -33,22 +32,24 @@ import {
   SheetHeader,
   SheetTitle
 } from '@/components/ui/sheet'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { cn } from '@/lib/utils'
 
 import {
   EXCHANGES,
   MOCK_ACTIVE_CAMPAIGNS,
-  MOCK_COPY_RECORDS,
   MOCK_IDLE_APIS,
   campaignStatusLabel,
   confidenceLabel,
   confirmLeader,
   createCampaignFromApis,
   endCampaignEarly,
-  fillStatusLabel,
   formatPnl,
   getAvailableApis,
   getCampaignApiIds,
+  getLeaderClosedPositions,
+  getLeaderOpenPositions,
+  getMemberTradeTimeline,
   isPowerOfTwo,
   isLowBalance,
   memberBalance,
@@ -56,15 +57,17 @@ import {
   relationLabel,
   resultLabel,
   roundPhaseLabel,
-  sideLabel,
   startRound,
   terminateRound,
   updateMemberRelation,
   type Campaign,
+  type ClosedPosition,
   type ExchangeId,
   type MemberRelation,
+  type OpenPosition,
   type RoundMember
 } from '../_mock/campaign'
+import { TradeTimeline } from '../_components/trade-timeline'
 
 function PnlText({ value, className }: { value: number; className?: string }) {
   return (
@@ -98,6 +101,95 @@ function ExchangeLogo({ exchange, className }: { exchange: string; className?: s
         ;(event.target as HTMLImageElement).style.display = 'none'
       }}
     />
+  )
+}
+
+function shortOpenedAt(value: string) {
+  const match = value.match(/(\d{2})-(\d{2})\s+(\d{2}:\d{2}:\d{2})/)
+  return match ? `${match[1]}-${match[2]} ${match[3]}` : value
+}
+
+function PositionCard({
+  position
+}: {
+  position: OpenPosition | ClosedPosition
+}) {
+  const long = position.side === 'LONG'
+  const closedAt = 'closedAt' in position ? position.closedAt : undefined
+
+  return (
+    <div className='border-border/60 rounded-md border bg-card px-2 py-1.5'>
+      <div className='flex min-w-0 flex-wrap items-center gap-1'>
+        <span
+          className={cn(
+            'flex size-3.5 shrink-0 items-center justify-center rounded-[2px] text-[8px] font-bold text-white',
+            long ? 'bg-emerald-500' : 'bg-rose-500'
+          )}
+        >
+          {long ? '多' : '空'}
+        </span>
+        <span className='truncate text-[11px] font-semibold'>{position.symbol}</span>
+        <span className='bg-muted text-muted-foreground rounded px-1 py-px text-[9px]'>
+          {position.marginMode}
+        </span>
+        <span className='bg-muted text-muted-foreground rounded px-1 py-px text-[9px]'>
+          {position.leverage}x
+        </span>
+      </div>
+
+      <div className='mt-1.5 grid grid-cols-2 gap-1'>
+        <div>
+          <p className='text-muted-foreground text-[9px]'>盈亏</p>
+          <p
+            className={cn(
+              'text-[11px] font-semibold tabular-nums leading-tight',
+              position.pnlUsdt > 0 && 'text-emerald-600 dark:text-emerald-400',
+              position.pnlUsdt < 0 && 'text-red-600 dark:text-red-400'
+            )}
+          >
+            {position.pnlUsdt > 0 ? '+' : ''}
+            {position.pnlUsdt.toLocaleString(undefined, {
+              minimumFractionDigits: 1,
+              maximumFractionDigits: 1
+            })}
+          </p>
+        </div>
+        <div className='text-right'>
+          <p className='text-muted-foreground text-[9px]'>收益率</p>
+          <p
+            className={cn(
+              'text-[11px] font-semibold tabular-nums leading-tight',
+              position.roiPct > 0 && 'text-emerald-600 dark:text-emerald-400',
+              position.roiPct < 0 && 'text-red-600 dark:text-red-400'
+            )}
+          >
+            {position.roiPct > 0 ? '+' : ''}
+            {position.roiPct.toFixed(1)}%
+          </p>
+        </div>
+      </div>
+
+      <div className='mt-1.5 grid grid-cols-2 gap-1'>
+        <div>
+          <p className='text-muted-foreground text-[9px]'>数量</p>
+          <p className='truncate text-[10px] font-medium tabular-nums leading-tight'>
+            {position.qty.toLocaleString(undefined, { maximumFractionDigits: 4 })}{' '}
+            {position.qtyAsset}
+          </p>
+        </div>
+        <div className='text-right'>
+          <p className='text-muted-foreground text-[9px]'>开仓价</p>
+          <p className='truncate text-[10px] font-medium tabular-nums leading-tight'>
+            {position.entryPrice.toLocaleString(undefined, { maximumFractionDigits: 4 })}
+          </p>
+        </div>
+      </div>
+
+      <div className={cn('text-muted-foreground mt-1 text-[9px] tabular-nums', closedAt && 'space-y-0.5')}>
+        <p>开仓 {shortOpenedAt(position.openedAt)}</p>
+        {closedAt && <p>平仓 {shortOpenedAt(closedAt)}</p>}
+      </div>
+    </div>
   )
 }
 
@@ -209,6 +301,7 @@ export default function IncubatorBoardPage() {
       null
   )
   const [inspectorOpen, setInspectorOpen] = useState(false)
+  const [inspectorTab, setInspectorTab] = useState('copies')
   const [createOpen, setCreateOpen] = useState(false)
   const [leaderOpen, setLeaderOpen] = useState(false)
   const [terminateOpen, setTerminateOpen] = useState(false)
@@ -255,7 +348,17 @@ export default function IncubatorBoardPage() {
   const inverseNet = inverseMembers.reduce((sum, member) => sum + member.pnl, 0)
   const leader = activeRound?.members.find(member => member.isLeader)
   const unsettled = campaign ? Math.max(campaign.cycles - campaign.settled, 0) : 0
-  const copyRecords = selectedMember ? (MOCK_COPY_RECORDS[selectedMember.apiId] ?? []) : []
+  const openPositions = getLeaderOpenPositions(leader?.apiId)
+  const closedPositions = getLeaderClosedPositions(leader?.apiId)
+  const inspectingLeader = Boolean(
+    selectedMember && leader && (selectedMember.isLeader || selectedMember.id === leader.id)
+  )
+  const recordsTabLabel = inspectingLeader ? '领单记录' : '跟单记录'
+  const tradeTimeline = getMemberTradeTimeline({
+    apiId: selectedMember?.apiId,
+    apiLabel: selectedMember?.apiLabel,
+    isLeader: inspectingLeader
+  })
 
   const isPreparing =
     Boolean(campaign && activeRound) &&
@@ -297,6 +400,7 @@ export default function IncubatorBoardPage() {
 
   const openInspector = (member: RoundMember) => {
     setSelectedMemberId(member.id)
+    setInspectorTab('copies')
     setInspectorOpen(true)
   }
 
@@ -469,7 +573,7 @@ export default function IncubatorBoardPage() {
           <p className='text-muted-foreground text-sm'>
             {isPreparing
               ? '准备中：可拖拽调整分组，确认领单后开始本轮'
-              : '演示数据 · 点击账号打开跟单记录'}
+              : '演示数据 · 点击账号打开详情'}
           </p>
         </div>
         <Button type='button' size='sm' onClick={() => setCreateOpen(true)}>
@@ -854,76 +958,106 @@ export default function IncubatorBoardPage() {
       )}
 
       <Sheet open={inspectorOpen} onOpenChange={setInspectorOpen}>
-        <SheetContent className='w-full sm:max-w-lg'>
-          <SheetHeader>
-            <SheetTitle>跟单记录 · {selectedMember?.apiLabel}</SheetTitle>
-            <SheetDescription>
-              {selectedMember ? relationLabel(selectedMember.relation) : '-'} · 第{' '}
-              {activeRound?.index ?? '-'} 轮 ·{' '}
-              {selectedMember ? resultLabel(selectedMember.result) : '-'}
-            </SheetDescription>
-          </SheetHeader>
+        <SheetContent className='flex w-full flex-col gap-0 p-0 sm:max-w-lg'>
+          <Tabs
+            value={inspectorTab}
+            onValueChange={setInspectorTab}
+            className='flex min-h-0 flex-1 flex-col gap-0'
+          >
+            <SheetHeader className='space-y-1 border-b-0 px-4 pb-0 pt-4 text-left'>
+              <SheetTitle className='text-sm font-semibold tracking-tight'>
+                {selectedMember?.apiLabel ?? '账号详情'}
+              </SheetTitle>
+              <SheetDescription className='text-[11px]'>
+                {selectedMember
+                  ? `${inspectingLeader ? '领单' : '跟单'} · ${relationLabel(selectedMember.relation)}`
+                  : '-'}{' '}
+                · 第 {activeRound?.index ?? '-'} 轮 ·{' '}
+                {selectedMember ? resultLabel(selectedMember.result) : '-'}
+              </SheetDescription>
 
-          <div className='mt-4 space-y-4 px-1'>
-            <div className='grid grid-cols-2 gap-2'>
-              <Metric label='本轮收益' value={<PnlText value={selectedMember?.pnl ?? 0} />} bordered />
-              <Metric
-                label='成交笔数'
-                value={<span className='tabular-nums'>{selectedMember?.trades ?? 0}</span>}
-                bordered
-              />
-              <Metric
-                label='可用资金'
-                value={
-                  <span
-                    className={cn(
-                      'tabular-nums',
-                      selectedMember && isLowBalance(memberBalance(selectedMember))
-                        ? 'font-medium text-amber-700 dark:text-amber-300'
-                        : undefined
-                    )}
-                  >
-                    {selectedMember
-                      ? `${memberBalance(selectedMember).toLocaleString(undefined, { maximumFractionDigits: 1 })} U`
-                      : '-'}
-                  </span>
-                }
-                bordered
-              />
-            </div>
-
-            <Separator />
-
-            <div className='space-y-2'>
-              <div className='text-muted-foreground flex items-center gap-1.5 text-xs'>
-                <HistoryIcon className='size-3.5' />
-                最近跟单记录
-              </div>
-              {copyRecords.length === 0 ? (
-                <p className='text-muted-foreground text-sm'>暂无记录</p>
-              ) : (
-                <div className='space-y-2'>
-                  {copyRecords.map(record => (
-                    <div key={record.id} className='border-border/60 rounded-md border px-3 py-2.5'>
-                      <div className='flex items-center justify-between gap-2'>
-                        <div className='flex items-center gap-2'>
-                          <Badge variant='outline' className='text-[10px]'>
-                            {sideLabel(record.side)}
-                          </Badge>
-                          <span className='text-sm font-medium'>{record.symbol}</span>
-                        </div>
-                        <PnlText value={record.pnl} className='text-sm' />
-                      </div>
-                      <p className='text-muted-foreground mt-1 text-xs'>
-                        {record.time} · 数量 {record.qty} · @{record.price} ·{' '}
-                        {fillStatusLabel(record.status)}
-                      </p>
+              <div className='mt-3 space-y-1.5'>
+                <p className='text-muted-foreground text-[10px] font-medium'>
+                  领单仓位
+                  {leader ? ` · ${leader.apiLabel}` : ' · 未确认'}
+                </p>
+                <div className='max-h-48 overflow-y-auto pr-0.5'>
+                  {!leader ? (
+                    <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-[11px]'>
+                      尚未确认领单，暂无仓位
+                    </p>
+                  ) : openPositions.length === 0 ? (
+                    <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-[11px]'>
+                      领单暂无当前持仓
+                    </p>
+                  ) : (
+                    <div className='grid grid-cols-2 gap-1.5'>
+                      {openPositions.map(position => (
+                        <PositionCard key={position.id} position={position} />
+                      ))}
                     </div>
+                  )}
+                </div>
+              </div>
+
+              <TabsList
+                variant='line'
+                className='mt-3 h-8 w-full justify-start gap-4 rounded-none border-b border-border/60 bg-transparent p-0'
+              >
+                <TabsTrigger
+                  value='copies'
+                  className='h-8 flex-none rounded-none px-0 text-xs font-medium data-[state=active]:shadow-none'
+                >
+                  {recordsTabLabel}
+                </TabsTrigger>
+                <TabsTrigger
+                  value='positions'
+                  className='h-8 flex-none rounded-none px-0 text-xs font-medium data-[state=active]:shadow-none'
+                >
+                  当前持仓
+                </TabsTrigger>
+                <TabsTrigger
+                  value='history'
+                  className='h-8 flex-none rounded-none px-0 text-xs font-medium data-[state=active]:shadow-none'
+                >
+                  历史持仓
+                </TabsTrigger>
+              </TabsList>
+            </SheetHeader>
+
+            <TabsContent value='copies' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
+              <TradeTimeline
+                items={tradeTimeline}
+                emptyText={inspectingLeader ? '暂无领单记录' : '暂无跟单记录'}
+              />
+            </TabsContent>
+            <TabsContent value='positions' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
+              {!leader ? (
+                <p className='text-muted-foreground text-center text-[11px]'>尚未确认领单，暂无仓位</p>
+              ) : openPositions.length === 0 ? (
+                <p className='text-muted-foreground text-center text-[11px]'>领单暂无当前持仓</p>
+              ) : (
+                <div className='grid grid-cols-2 gap-1.5'>
+                  {openPositions.map(position => (
+                    <PositionCard key={position.id} position={position} />
                   ))}
                 </div>
               )}
-            </div>
-          </div>
+            </TabsContent>
+            <TabsContent value='history' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
+              {!leader ? (
+                <p className='text-muted-foreground text-center text-[11px]'>尚未确认领单，暂无历史仓位</p>
+              ) : closedPositions.length === 0 ? (
+                <p className='text-muted-foreground text-center text-[11px]'>暂无历史持仓</p>
+              ) : (
+                <div className='grid grid-cols-2 gap-1.5'>
+                  {closedPositions.map(position => (
+                    <PositionCard key={position.id} position={position} />
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+          </Tabs>
         </SheetContent>
       </Sheet>
 
