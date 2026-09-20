@@ -119,6 +119,7 @@ function fromApiCampaign(item: IncubatorCampaign): Campaign {
       setupVersion: round.setup_version,
       canStart: round.can_start,
       startBlockers: round.start_blockers,
+      runtimeClaimed: ['STARTING', 'RUNNING', 'PAUSING'].includes(round.status),
       members: round.members.map(member => ({
         id: member.id,
         apiId: member.api_account_id,
@@ -643,17 +644,30 @@ export default function IncubatorBoardPage() {
     const ids = new Set<string>()
     for (const item of campaigns) {
       if (item.status === 'COMPLETED') continue
-      for (const member of item.rounds[item.currentRound - 1]?.members ?? []) {
-        ids.add(member.apiId)
+      for (const round of item.rounds) {
+        if (!demoMode && !round.runtimeClaimed) continue
+        if (demoMode && round.index !== item.currentRound) continue
+        for (const member of round.members) ids.add(member.apiId)
       }
     }
     return ids
-  }, [campaigns])
+  }, [campaigns, demoMode])
 
   const availableApis = useMemo(
-    () => getAvailableApis(idleApis, createExchange, demoMode ? busyApiIds : new Set<string>()),
-    [idleApis, createExchange, busyApiIds, demoMode]
+    () => getAvailableApis(idleApis, createExchange, busyApiIds),
+    [idleApis, createExchange, busyApiIds]
   )
+  const runtimeClaimedCount = idleApis.filter(
+    api => api.exchange === createExchange && busyApiIds.has(api.id)
+  ).length
+
+  useEffect(() => {
+    const availableIds = new Set(availableApis.map(api => api.id))
+    setSelectedApiIds(previous => {
+      const next = previous.filter(id => availableIds.has(id))
+      return next.length === previous.length ? previous : next
+    })
+  }, [availableApis])
 
   const selectionValid = isPowerOfTwo(selectedApiIds.length) && createName.trim().length > 0
   const selectedBalanceTotal = useMemo(() => {
@@ -1592,6 +1606,7 @@ export default function IncubatorBoardPage() {
                   )}
                 >
                   已选 {selectedApiIds.length}
+                  {runtimeClaimedCount > 0 ? ` · ${runtimeClaimedCount} 个运行占用已隐藏` : ''}
                   {!selectionValid && selectedApiIds.length > 0 ? ' · 须为 2 的幂' : ''}
                   {selectedApiIds.length > 0
                     ? ` · 合计可用 ${selectedBalanceTotal.toLocaleString(undefined, { maximumFractionDigits: 1 })} U`

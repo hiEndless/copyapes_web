@@ -47,6 +47,7 @@ export type RoundSnapshot = {
   setupVersion?: number
   canStart?: boolean
   startBlockers?: string[]
+  runtimeClaimed?: boolean
   members: RoundMember[]
 }
 
