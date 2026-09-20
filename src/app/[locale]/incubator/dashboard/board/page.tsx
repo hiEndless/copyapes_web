@@ -405,7 +405,21 @@ export default function IncubatorBoardPage() {
   const inverseNet = inverseMembers.reduce((sum, member) => sum + member.pnl, 0)
   const leader = activeRound?.members.find(member => member.isLeader)
   const unsettled = campaign ? Math.max(campaign.cycles - campaign.settled, 0) : 0
-  const openPositions = getLeaderOpenPositions(leader?.apiId)
+  const openPositions = getLeaderOpenPositions(leader?.apiId, activeRound?.phase)
+  const endProjectBlockReason = (() => {
+    if (!campaign || campaign.status === 'COMPLETED') return null
+    if (activeRound?.phase === 'RUNNING') {
+      return '本轮运行中，请先终止本轮并完成平仓结算'
+    }
+    if (openPositions.length > 0) {
+      return '领单仍有未平仓位，请先全部平仓'
+    }
+    if (unsettled > 0) {
+      return '仍有未结算周期，收益统计未完成'
+    }
+    return null
+  })()
+  const canEndProject = !endProjectBlockReason
   const closedPositions = getLeaderClosedPositions(leader?.apiId)
   const inspectingLeader = Boolean(
     selectedMember && leader && (selectedMember.isLeader || selectedMember.id === leader.id)
@@ -581,7 +595,7 @@ export default function IncubatorBoardPage() {
   }
 
   const handleEndProject = () => {
-    if (!campaign) return
+    if (!campaign || !canEndProject) return
     const freed = getCampaignApiIds(campaign)
     const remaining = campaigns.filter(item => item.id !== campaign.id)
     const next = endCampaignEarly(campaign)
@@ -811,13 +825,14 @@ export default function IncubatorBoardPage() {
                 <CardFooter className='border-border/60 border-t px-4 py-3'>
                   <div className='flex w-full items-center justify-between gap-3'>
                     <p className='text-muted-foreground min-w-0 flex-1 text-[11px] leading-snug'>
-                      提前结束将释放账号，本轮数据保留在历史
+                      {endProjectBlockReason ?? '提前结束将释放账号，本轮数据保留在历史'}
                     </p>
                     <Button
                       type='button'
                       size='sm'
                       variant='outline'
-                      className='h-8 shrink-0 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300'
+                      disabled={!canEndProject}
+                      className='h-8 shrink-0 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
                       onClick={() => setEndProjectOpen(true)}
                     >
                       结束项目
@@ -1571,14 +1586,21 @@ export default function IncubatorBoardPage() {
           <DialogHeader>
             <DialogTitle>结束项目</DialogTitle>
             <DialogDescription>
-              确认后项目将立即结束，当前轮账号释放回空闲池。此操作不可撤销。
+              {endProjectBlockReason
+                ? endProjectBlockReason
+                : '确认后项目将立即结束，当前轮账号释放回空闲池。此操作不可撤销。须领单已全部平仓且收益统计完成。'}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button type='button' variant='outline' onClick={() => setEndProjectOpen(false)}>
               取消
             </Button>
-            <Button type='button' variant='destructive' onClick={handleEndProject}>
+            <Button
+              type='button'
+              variant='destructive'
+              disabled={!canEndProject}
+              onClick={handleEndProject}
+            >
               确认结束
             </Button>
           </DialogFooter>
