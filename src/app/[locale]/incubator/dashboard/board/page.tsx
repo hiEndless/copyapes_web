@@ -779,6 +779,10 @@ export default function IncubatorBoardPage() {
   }
 
   const handleTerminate = () => {
+    if (!demoMode) {
+      toast.error('真实模式暂不支持终止与晋级，请等待后端接口接入')
+      return
+    }
     if (!campaign || !activeRound) return
     const eliminatedApiIds = new Set(
       activeRound.members.filter(member => member.relation !== pendingWinner).map(member => member.apiId)
@@ -814,6 +818,10 @@ export default function IncubatorBoardPage() {
   }
 
   const handleEndProject = () => {
+    if (!demoMode) {
+      toast.error('真实模式暂不支持结束项目，请等待后端接口接入')
+      return
+    }
     if (!campaign || !canEndProject) return
     const freed = getCampaignApiIds(campaign)
     const remaining = campaigns.filter(item => item.id !== campaign.id)
@@ -1037,17 +1045,19 @@ export default function IncubatorBoardPage() {
                 <CardFooter className='border-border/60 border-t px-4 py-3'>
                   <div className='flex w-full items-center justify-between gap-3'>
                     <p className='text-muted-foreground min-w-0 flex-1 text-[11px] leading-snug'>
-                      {endProjectBlockReason ?? '提前结束将释放账号，本轮数据保留在历史'}
+                      {!demoMode
+                        ? '真实模式结束项目接口尚未接入'
+                        : endProjectBlockReason ?? '提前结束将释放账号，本轮数据保留在历史'}
                     </p>
                     <Button
                       type='button'
                       size='sm'
                       variant='outline'
-                      disabled={!canEndProject}
+                      disabled={!demoMode || !canEndProject}
                       className='h-8 shrink-0 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
                       onClick={() => setEndProjectOpen(true)}
                     >
-                      结束项目
+                      {demoMode ? '结束项目' : '结束项目（待接入）'}
                     </Button>
                   </div>
                 </CardFooter>
@@ -1131,13 +1141,13 @@ export default function IncubatorBoardPage() {
                       size='sm'
                       variant='outline'
                       className='h-8 w-full border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
-                      disabled={!isRunning}
+                      disabled={!demoMode || !isRunning}
                       onClick={() => {
                         setPendingWinner(sameNet >= inverseNet ? 'SAME' : 'INVERSE')
                         setTerminateOpen(true)
                       }}
                     >
-                      终止本轮
+                      {demoMode ? '终止本轮' : '终止本轮（待接入）'}
                     </Button>
                   </div>
                 ) : (
