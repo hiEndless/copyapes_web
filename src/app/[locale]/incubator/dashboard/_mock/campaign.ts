@@ -331,6 +331,7 @@ export const MOCK_ACTIVE_CAMPAIGNS: Campaign[] = [
 
 /** 看板模拟演示开关（localStorage） */
 export const INCUBATOR_BOARD_DEMO_MODE_KEY = 'incubator.board.demoMode'
+export const INCUBATOR_DEMO_MODE_EVENT = 'incubator-demo-mode-change'
 
 export function readBoardDemoMode(): boolean {
   if (typeof window === 'undefined') return true
@@ -342,13 +343,23 @@ export function readBoardDemoMode(): boolean {
 export function writeBoardDemoMode(enabled: boolean) {
   if (typeof window === 'undefined') return
   window.localStorage.setItem(INCUBATOR_BOARD_DEMO_MODE_KEY, enabled ? '1' : '0')
+  window.dispatchEvent(
+    new CustomEvent(INCUBATOR_DEMO_MODE_EVENT, {
+      detail: { enabled }
+    })
+  )
 }
 
-/** 深拷贝载入模拟看板数据，避免运行时改到静态常量 */
-export function cloneDemoBoardData(): { campaigns: Campaign[]; idleApis: IdleApi[] } {
+/** 深拷贝载入模拟看板 + 历史数据，避免运行时改到静态常量 */
+export function cloneDemoBoardData(): {
+  campaigns: Campaign[]
+  idleApis: IdleApi[]
+  historyCampaigns: Campaign[]
+} {
   return {
     campaigns: JSON.parse(JSON.stringify(MOCK_ACTIVE_CAMPAIGNS)) as Campaign[],
-    idleApis: JSON.parse(JSON.stringify(MOCK_IDLE_APIS)) as IdleApi[]
+    idleApis: JSON.parse(JSON.stringify(MOCK_IDLE_APIS)) as IdleApi[],
+    historyCampaigns: JSON.parse(JSON.stringify(MOCK_HISTORY_CAMPAIGNS)) as Campaign[]
   }
 }
 
@@ -358,6 +369,7 @@ export const MOCK_HISTORY_CAMPAIGNS: Campaign[] = [
     id: 'c-a012',
     code: 'A012',
     name: 'ETH 养号项目',
+    exchange: 'OKX',
     status: 'COMPLETED',
     confidence: 'FINAL',
     campaignNet: 286.5,
@@ -402,6 +414,7 @@ export const MOCK_HISTORY_CAMPAIGNS: Campaign[] = [
     id: 'c-a009',
     code: 'A009',
     name: 'BTC 养号项目',
+    exchange: 'Binance',
     status: 'COMPLETED',
     confidence: 'FINAL',
     campaignNet: -92.3,
@@ -415,6 +428,7 @@ export const MOCK_HISTORY_CAMPAIGNS: Campaign[] = [
     id: 'c-a005',
     code: 'A005',
     name: 'SOL 养号项目',
+    exchange: 'Gate',
     status: 'COMPLETED',
     confidence: 'FINAL',
     campaignNet: 141.8,
@@ -648,8 +662,13 @@ export const MOCK_LEADER_OPEN_POSITIONS: OpenPosition[] = [
   }
 ]
 
-export function getLeaderOpenPositions(leaderApiId: string | null | undefined): OpenPosition[] {
+export function getLeaderOpenPositions(
+  leaderApiId: string | null | undefined,
+  phase?: RoundPhase | null
+): OpenPosition[] {
   if (!leaderApiId) return []
+  // 模拟：仅运行中有未平仓；准备/已结算视为已平完并可统计收益
+  if (phase && phase !== 'RUNNING') return []
   return MOCK_LEADER_OPEN_POSITIONS
 }
 

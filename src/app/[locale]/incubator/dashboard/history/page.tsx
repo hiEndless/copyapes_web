@@ -1,93 +1,139 @@
 'use client'
 
-import type { ReactNode } from 'react'
-import Link from 'next/link'
+import { useEffect, useState, type ReactNode } from 'react'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
-import { MOCK_HISTORY_CAMPAIGNS, campaignStatusLabel, confidenceLabel, formatPnl } from '../_mock/campaign'
+import {
+  INCUBATOR_DEMO_MODE_EVENT,
+  cloneDemoBoardData,
+  formatPnl,
+  readBoardDemoMode,
+  type Campaign
+} from '../_mock/campaign'
+
+function PnlText({ value }: { value: number }) {
+  return (
+    <span
+      className={cn(
+        'font-semibold tabular-nums tracking-tight',
+        value > 0 && 'text-emerald-600 dark:text-emerald-400',
+        value < 0 && 'text-red-600 dark:text-red-400'
+      )}
+    >
+      {formatPnl(value)}
+    </span>
+  )
+}
 
 export default function IncubatorHistoryPage() {
+  const [demoMode, setDemoMode] = useState(true)
+  const [historyCampaigns, setHistoryCampaigns] = useState<Campaign[]>(
+    () => cloneDemoBoardData().historyCampaigns
+  )
+
+  useEffect(() => {
+    const syncFromDemoMode = (enabled: boolean) => {
+      setDemoMode(enabled)
+      setHistoryCampaigns(enabled ? cloneDemoBoardData().historyCampaigns : [])
+    }
+
+    syncFromDemoMode(readBoardDemoMode())
+
+    const onDemoModeChange = (event: Event) => {
+      const enabled = Boolean((event as CustomEvent<{ enabled: boolean }>).detail?.enabled)
+      syncFromDemoMode(enabled)
+    }
+    const onFocus = () => syncFromDemoMode(readBoardDemoMode())
+
+    window.addEventListener(INCUBATOR_DEMO_MODE_EVENT, onDemoModeChange)
+    window.addEventListener('focus', onFocus)
+    return () => {
+      window.removeEventListener(INCUBATOR_DEMO_MODE_EVENT, onDemoModeChange)
+      window.removeEventListener('focus', onFocus)
+    }
+  }, [])
+
   return (
-    <div className='flex h-full flex-col gap-6 overflow-y-auto p-4 lg:p-8'>
+    <div className='bg-background text-foreground flex h-full flex-col gap-4 overflow-y-auto p-4 lg:p-6'>
       <div className='flex flex-col gap-2'>
         <h1 className='text-2xl font-bold tracking-tight'>历史项目</h1>
-        <p className='text-muted-foreground text-sm'>已结束的项目 · 只读查看（演示数据）</p>
+        <p className='text-muted-foreground text-sm'>
+          {demoMode
+            ? '已结束项目 · 只读查看（模拟演示数据）'
+            : '真实模式 · 接口未接入，开启看板「模拟演示」可载入历史样例'}
+        </p>
       </div>
 
-      <div className='grid gap-3'>
-        {MOCK_HISTORY_CAMPAIGNS.map(campaign => (
-          <Card key={campaign.id} className='shadow-none'>
-            <CardHeader className='flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between'>
-              <div className='space-y-1.5'>
-                <div className='flex flex-wrap items-center gap-2'>
-                  <CardTitle className='text-base'>
-                    {campaign.code} · {campaign.name}
-                  </CardTitle>
-                  <Badge variant='outline' className='text-[10px]'>
-                    {campaignStatusLabel(campaign.status)}
-                  </Badge>
-                  <Badge variant='secondary' className='text-[10px]'>
-                    {confidenceLabel(campaign.confidence)}
-                  </Badge>
-                </div>
-                <CardDescription>
-                  {campaign.exchange} · 初始 {campaign.initialAccounts} 账号 · 共 {campaign.totalRounds} 轮 · 结算{' '}
+      {historyCampaigns.length === 0 ? (
+        <Card className='border-dashed py-16 shadow-none'>
+          <CardContent className='flex flex-col items-center justify-center text-center'>
+            <p className='text-sm font-medium'>
+              {demoMode ? '暂无历史项目' : '真实模式暂无历史数据'}
+            </p>
+            <p className='text-muted-foreground mt-1 text-xs'>
+              {demoMode
+                ? '结束后的项目会出现在这里'
+                : '请到项目看板开启「模拟演示」同步载入历史 mock'}
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className='grid gap-4'>
+          {historyCampaigns.map(campaign => (
+            <Card key={campaign.id} className='relative gap-0 overflow-hidden border py-0 shadow-sm'>
+              <img
+                src={`/exchanges/${campaign.exchange.toLowerCase()}.png`}
+                alt=''
+                aria-hidden
+                className='pointer-events-none absolute -right-4 -bottom-6 size-36 object-contain opacity-[0.08] select-none dark:opacity-[0.12] sm:size-44'
+                onError={event => {
+                  ;(event.target as HTMLImageElement).style.display = 'none'
+                }}
+              />
+
+              <CardHeader className='relative z-10 gap-1 border-b-0 px-4 pb-1 pt-4'>
+                <CardTitle className='text-sm font-semibold tracking-tight'>
+                  {campaign.code} · {campaign.name}
+                </CardTitle>
+                <CardDescription className='text-xs'>
+                  初始 {campaign.initialAccounts} 账号 · 共 {campaign.totalRounds} 轮 · 结算{' '}
                   {campaign.settled}/{campaign.cycles}
                 </CardDescription>
-              </div>
-              <Button asChild size='sm' variant='outline'>
-                <Link href='/incubator/dashboard/board'>在看板查看结构</Link>
-              </Button>
-            </CardHeader>
-            <CardContent className='grid grid-cols-2 gap-3 sm:grid-cols-4'>
-              <Metric
-                label='项目净收益'
-                value={
-                  <span
-                    className={cn(
-                      'font-semibold tabular-nums',
-                      campaign.campaignNet > 0
-                        ? 'text-emerald-600 dark:text-emerald-400'
-                        : 'text-red-500'
-                    )}
-                  >
-                    {formatPnl(campaign.campaignNet)}
-                  </span>
-                }
-              />
-              <Metric
-                label='手续费'
-                value={<span className='font-semibold tabular-nums text-red-500'>{formatPnl(campaign.fees)}</span>}
-              />
-              <Metric
-                label='交易周期'
-                value={<span className='font-semibold tabular-nums'>{campaign.cycles}</span>}
-              />
-              <Metric
-                label='最终轮次'
-                value={
-                  <span className='font-semibold tabular-nums'>
-                    R{campaign.currentRound}/{campaign.totalRounds}
-                  </span>
-                }
-              />
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardHeader>
+
+              <CardContent className='relative z-10 grid grid-cols-2 border-t-0 p-0 sm:grid-cols-4'>
+                <Metric label='项目净收益' value={<PnlText value={campaign.campaignNet} />} />
+                <Metric label='手续费' value={<PnlText value={campaign.fees} />} />
+                <Metric
+                  label='交易周期'
+                  value={<span className='tabular-nums'>{campaign.cycles}</span>}
+                />
+                <Metric
+                  label='最终轮次'
+                  value={
+                    <span className='tabular-nums'>
+                      {campaign.currentRound} / {campaign.totalRounds}
+                    </span>
+                  }
+                />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
 
 function Metric({ label, value }: { label: string; value: ReactNode }) {
   return (
-    <div className='border-border/70 rounded-lg border px-3 py-2.5'>
-      <p className='text-muted-foreground text-[11px]'>{label}</p>
-      <div className='mt-1 text-sm'>{value}</div>
+    <div className='bg-transparent px-4 pb-4 pt-2'>
+      <p className='text-muted-foreground/90 text-[11px] font-medium dark:text-muted-foreground/80'>
+        {label}
+      </p>
+      <div className='text-foreground mt-1.5 text-sm font-semibold tabular-nums'>{value}</div>
     </div>
   )
 }
