@@ -59,7 +59,7 @@ const EXCHANGES: ExchangeMeta[] = [
     exchange: 'OKX',
     label: 'OKX',
     logo: '/exchanges/okx.png',
-    unitPriceUsdt: 10,
+    unitPriceUsdt: 12,
     giftSlots: GIFT_SLOTS_PER_EXCHANGE,
     usedSlots: 5
   },
@@ -67,7 +67,7 @@ const EXCHANGES: ExchangeMeta[] = [
     exchange: 'GATE',
     label: 'Gate',
     logo: '/exchanges/gate.png',
-    unitPriceUsdt: 10,
+    unitPriceUsdt: 12,
     giftSlots: GIFT_SLOTS_PER_EXCHANGE,
     usedSlots: 1
   }
@@ -258,12 +258,12 @@ export default function IncubatorPricingPage() {
   const adjustApiQty = (exchange: ExchangeId, delta: number) => {
     setApiQty(prev => ({
       ...prev,
-      [exchange]: Math.min(20, Math.max(1, prev[exchange] + delta))
+      [exchange]: Math.max(1, prev[exchange] + delta)
     }))
   }
 
   const adjustIpQty = (delta: number) => {
-    setIpQty(prev => Math.min(20, Math.max(1, prev + delta)))
+    setIpQty(prev => Math.max(1, prev + delta))
   }
 
   const toggleSeat = (id: string, checked: boolean) => {
