@@ -1,10 +1,25 @@
 import 'server-only'
 
-const REQUEST_TIMEOUT_MS = 8_000
+const REQUEST_TIMEOUT_MS = 20_000
 const MAX_BODY_BYTES = 1_048_576
 
 const ROUTE_METHODS: Readonly<Record<string, readonly string[]>> = {
   'auth/sso/login': ['POST'],
+  'api-accounts': ['GET', 'POST'],
+  'campaigns': ['GET', 'POST'],
+}
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+
+function allowedRouteMethods(path: string[]): readonly string[] | undefined {
+  const exact = ROUTE_METHODS[path.join('/')]
+  if (exact) return exact
+  if (path[0] === 'rounds' && UUID_PATTERN.test(path[1] || '') && path.length === 3 && path[2] === 'setup') {
+    return ['PUT']
+  }
+  if (path[0] !== 'api-accounts' || !UUID_PATTERN.test(path[1] || '')) return undefined
+  if (path.length === 2) return ['PATCH', 'DELETE']
+  if (path.length === 3 && path[2] === 'health-check') return ['POST']
+  return undefined
 }
 
 const ALLOWED_BODY_TYPES = ['application/json', 'application/x-www-form-urlencoded']
@@ -59,8 +74,7 @@ export async function proxyIncubator(request: Request, path: string[]): Promise<
     return Response.json({ detail: 'Invalid Incubator path' }, { status: 400 })
   }
 
-  const targetPath = path.join('/')
-  const allowedMethods = ROUTE_METHODS[targetPath]
+  const allowedMethods = allowedRouteMethods(path)
 
   if (!allowedMethods || !allowedMethods.includes(request.method)) {
     return Response.json({ detail: 'Incubator route is not allowed' }, { status: 404 })

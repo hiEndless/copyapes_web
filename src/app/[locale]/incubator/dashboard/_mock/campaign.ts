@@ -1,6 +1,6 @@
 export type MemberRelation = 'SAME' | 'INVERSE'
 export type MemberResult = 'ACTIVE' | 'PROMOTED' | 'ELIMINATED' | 'WINNER'
-export type CampaignStatus = 'RUNNING' | 'COMPLETED' | 'PAUSED'
+export type CampaignStatus = 'READY' | 'RUNNING' | 'COMPLETED' | 'PAUSED'
 export type DataConfidence = 'LIVE' | 'PROVISIONAL' | 'FINAL'
 export type RoundPhase = 'PREPARING' | 'RUNNING' | 'SETTLED'
 export type ExchangeId = 'Binance' | 'OKX' | 'Gate'
@@ -44,6 +44,9 @@ export type RoundSnapshot = {
   netPnl: number
   phase: RoundPhase
   leaderConfirmed: boolean
+  setupVersion?: number
+  canStart?: boolean
+  startBlockers?: string[]
   members: RoundMember[]
 }
 
@@ -764,6 +767,8 @@ export function resultLabel(result: MemberResult) {
 
 export function campaignStatusLabel(status: CampaignStatus) {
   switch (status) {
+    case 'READY':
+      return '准备中'
     case 'RUNNING':
       return '进行中'
     case 'COMPLETED':

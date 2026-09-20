@@ -1,5 +1,5 @@
 export type ApiItem = {
-  id: number
+  id: string
   platform: string
   api_name: string
   uid: string | null
@@ -11,7 +11,7 @@ export type ApiItem = {
 
 export const MOCK_API_LIST: ApiItem[] = [
   {
-    id: 101,
+    id: '101',
     platform: 'binance',
     api_name: 'B11',
     uid: '88421001',
@@ -21,7 +21,7 @@ export const MOCK_API_LIST: ApiItem[] = [
     roleType: null
   },
   {
-    id: 102,
+    id: '102',
     platform: 'binance',
     api_name: 'B12',
     uid: '88421002',
@@ -31,7 +31,7 @@ export const MOCK_API_LIST: ApiItem[] = [
     roleType: null
   },
   {
-    id: 103,
+    id: '103',
     platform: 'binance',
     api_name: 'B13',
     uid: '88421003',
@@ -41,7 +41,7 @@ export const MOCK_API_LIST: ApiItem[] = [
     roleType: 'leader'
   },
   {
-    id: 104,
+    id: '104',
     platform: 'okx',
     api_name: 'O21',
     uid: 'okx-5521',
@@ -51,7 +51,7 @@ export const MOCK_API_LIST: ApiItem[] = [
     roleType: null
   },
   {
-    id: 105,
+    id: '105',
     platform: 'gate',
     api_name: 'G31',
     uid: 'gate-3310',
@@ -71,7 +71,7 @@ export function createMockApi(input: {
   const stamp = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
 
   return {
-    id: Date.now(),
+    id: String(Date.now()),
     platform: input.exchange,
     api_name: input.api_name,
     uid: `${input.exchange.slice(0, 3)}-${Math.floor(Math.random() * 90000 + 10000)}`,

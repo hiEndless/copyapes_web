@@ -55,9 +55,11 @@ const PLATFORM_MAP: Record<string, { name: string; logo: string }> = {
 
 const getColumns = (
   onEditLabel: (item: ApiItem) => void,
-  onDelete: (id: number) => void,
-  onRefreshBalance: (id: number) => void
-): ColumnDef<ApiItem>[] => [
+  onDelete: (id: string) => Promise<void>,
+  onRefreshBalance: (id: string) => Promise<void>,
+  actionsEnabled: boolean
+): ColumnDef<ApiItem>[] => {
+  const columns: ColumnDef<ApiItem>[] = [
   {
     header: 'API 标签',
     accessorKey: 'api_name',
@@ -83,15 +85,17 @@ const getColumns = (
             ) : null}
           </div>
           <span className='font-medium'>{row.getValue('api_name') || '-'}</span>
-          <Button
-            variant='ghost'
-            size='icon'
-            className='text-muted-foreground hover:text-foreground h-6 w-6'
-            onClick={() => onEditLabel(row.original)}
-            aria-label='修改标签'
-          >
-            <SquarePen className='h-2 w-2' />
-          </Button>
+          {actionsEnabled && (
+            <Button
+              variant='ghost'
+              size='icon'
+              className='text-muted-foreground hover:text-foreground h-6 w-6'
+              onClick={() => onEditLabel(row.original)}
+              aria-label='修改标签'
+            >
+              <SquarePen className='h-2 w-2' />
+            </Button>
+          )}
         </div>
       )
     }
@@ -133,15 +137,23 @@ const getColumns = (
 
       const handleRefreshBalance = async () => {
         setBalanceBusy(true)
-        await new Promise(resolve => setTimeout(resolve, 250))
-        onRefreshBalance(row.original.id)
-        toast.success('余额已更新')
-        setBalanceBusy(false)
+        try {
+          await onRefreshBalance(row.original.id)
+          toast.success('账号状态与余额已更新')
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : '健康检查失败')
+        } finally {
+          setBalanceBusy(false)
+        }
       }
 
-      const handleDelete = () => {
-        onDelete(row.original.id)
-        toast.success('删除 API 成功')
+      const handleDelete = async () => {
+        try {
+          await onDelete(row.original.id)
+          toast.success('删除 API 成功')
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : '删除 API 失败')
+        }
       }
 
       return (
@@ -199,18 +211,23 @@ const getColumns = (
     },
     enableHiding: false
   }
-]
+  ]
+
+  return columns.filter(column => actionsEnabled || column.id !== 'actions')
+}
 
 const ApiDatatable = ({
   data,
   onDelete,
   onRename,
-  onRefreshBalance
+  onRefreshBalance,
+  actionsEnabled = true
 }: {
   data: ApiItem[]
-  onDelete: (id: number) => void
-  onRename: (id: number, api_name: string) => void
-  onRefreshBalance: (id: number) => void
+  onDelete: (id: string) => Promise<void>
+  onRename: (id: string, api_name: string) => Promise<void>
+  onRefreshBalance: (id: string) => Promise<void>
+  actionsEnabled?: boolean
 }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [editLabelOpen, setEditLabelOpen] = useState(false)
@@ -222,8 +239,8 @@ const ApiDatatable = ({
   }
 
   const columns = useMemo(
-    () => getColumns(handleEditLabel, onDelete, onRefreshBalance),
-    [onDelete, onRefreshBalance]
+    () => getColumns(handleEditLabel, onDelete, onRefreshBalance, actionsEnabled),
+    [onDelete, onRefreshBalance, actionsEnabled]
   )
 
   const pageSize = 10
@@ -383,14 +400,14 @@ const ApiDatatable = ({
         </div>
       </div>
 
-      <ApiEditLabelDialog
-        open={editLabelOpen}
-        onOpenChange={setEditLabelOpen}
-        item={editingItem}
-        onSave={(id, api_name) => {
-          onRename(id, api_name)
-        }}
-      />
+      {actionsEnabled && (
+        <ApiEditLabelDialog
+          open={editLabelOpen}
+          onOpenChange={setEditLabelOpen}
+          item={editingItem}
+          onSave={onRename}
+        />
+      )}
     </div>
   )
 }

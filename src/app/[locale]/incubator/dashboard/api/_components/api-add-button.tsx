@@ -24,7 +24,7 @@ const INITIAL_FORM_DATA: ApiFormData = {
 export function ApiAddButton({
   onAdd
 }: {
-  onAdd?: (input: { exchange: string; api_name: string }) => void
+  onAdd: (input: ApiFormData) => Promise<void>
 }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -60,15 +60,12 @@ export function ApiAddButton({
     setLoading(true)
 
     try {
-      // 演示：本地写入，不请求后端
-      await new Promise(resolve => setTimeout(resolve, 300))
-      onAdd?.({
-        exchange: formData.exchange,
-        api_name: formData.api_label.trim()
-      })
+      await onAdd({ ...formData, api_label: formData.api_label.trim() })
       toast.success('添加成功')
       setOpen(false)
       resetDialog()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '添加失败')
     } finally {
       setLoading(false)
     }

@@ -23,7 +23,7 @@ interface ApiEditLabelDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   item: ApiItem | null
-  onSave?: (id: number, api_name: string) => void
+  onSave?: (id: string, api_name: string) => Promise<void>
 }
 
 export function ApiEditLabelDialog({ open, onOpenChange, item, onSave }: ApiEditLabelDialogProps) {
@@ -54,11 +54,15 @@ export function ApiEditLabelDialog({ open, onOpenChange, item, onSave }: ApiEdit
     }
 
     setLoading(true)
-    await new Promise(resolve => setTimeout(resolve, 200))
-    onSave?.(item.id, label.trim())
-    toast.success('修改成功')
-    handleClose()
-    setLoading(false)
+    try {
+      await onSave?.(item.id, label.trim())
+      toast.success('修改成功')
+      handleClose()
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '修改失败')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (

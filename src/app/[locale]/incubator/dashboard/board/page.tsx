@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useState, type DragEvent, type ReactNode } from 'react'
+import { useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react'
+import { toast } from 'sonner'
 
 import { ChartColumn, Crown, GripVertical, Plus, Waypoints, X } from 'lucide-react'
 
@@ -71,6 +72,53 @@ import {
   type RoundMember
 } from '../_mock/campaign'
 import { TradeTimeline } from '../_components/trade-timeline'
+import { listIncubatorApiAccounts } from '@/lib/incubator-api-accounts'
+import {
+  createIncubatorCampaign,
+  listIncubatorCampaigns,
+  updateIncubatorRoundSetup,
+  type IncubatorCampaign
+} from '@/lib/incubator-campaigns'
+
+function fromApiCampaign(item: IncubatorCampaign): Campaign {
+  const exchange = item.exchange === 'BINANCE' ? 'Binance' : item.exchange === 'GATE' ? 'Gate' : 'OKX'
+  return {
+    id: item.id,
+    code: item.code,
+    name: item.name,
+    exchange,
+    status: item.status === 'READY' ? 'READY' : item.status === 'COMPLETED' ? 'COMPLETED' : 'RUNNING',
+    confidence: item.status === 'COMPLETED' ? 'FINAL' : 'LIVE',
+    initialAccounts: item.initial_account_count,
+    currentRound: item.current_round,
+    totalRounds: item.total_rounds,
+    campaignNet: 0,
+    fees: 0,
+    cycles: 0,
+    settled: 0,
+    rounds: item.rounds.map(round => ({
+      id: round.id,
+      index: round.round_number,
+      memberCount: round.expected_member_count,
+      netPnl: 0,
+      phase: round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : 'PREPARING',
+      leaderConfirmed: round.leader_member_id !== null,
+      setupVersion: round.setup_version,
+      canStart: round.can_start,
+      startBlockers: round.start_blockers,
+      members: round.members.map(member => ({
+        id: member.id,
+        apiId: member.api_account_id,
+        apiLabel: member.api_label,
+        relation: member.relation,
+        result: member.result,
+        pnl: 0,
+        trades: 0,
+        isLeader: member.id === round.leader_member_id
+      }))
+    }))
+  }
+}
 
 function PnlText({ value, className }: { value: number; className?: string }) {
   return (
@@ -309,6 +357,8 @@ export default function IncubatorBoardPage() {
   const [inspectorOpen, setInspectorOpen] = useState(false)
   const [inspectorTab, setInspectorTab] = useState('copies')
   const [createOpen, setCreateOpen] = useState(false)
+  const [createBusy, setCreateBusy] = useState(false)
+  const [setupBusy, setSetupBusy] = useState(false)
   const [leaderOpen, setLeaderOpen] = useState(false)
   const [terminateOpen, setTerminateOpen] = useState(false)
   const [endProjectOpen, setEndProjectOpen] = useState(false)
@@ -321,16 +371,56 @@ export default function IncubatorBoardPage() {
   const [pendingLeaderId, setPendingLeaderId] = useState<string | null>(null)
   const [pendingWinner, setPendingWinner] = useState<MemberRelation>('SAME')
   const [dragOverRelation, setDragOverRelation] = useState<MemberRelation | null>(null)
+  const realLoadGeneration = useRef(0)
+
+  const loadRealData = async () => {
+    const generation = ++realLoadGeneration.current
+    setCampaigns([])
+    setIdleApis([])
+    setActiveCampaignId('')
+    setSelectedMemberId(null)
+    let campaignItems: IncubatorCampaign[]
+    let accountItems: Awaited<ReturnType<typeof listIncubatorApiAccounts>>
+    try {
+      ;[campaignItems, accountItems] = await Promise.all([
+        listIncubatorCampaigns(),
+        listIncubatorApiAccounts()
+      ])
+    } catch (error) {
+      if (generation === realLoadGeneration.current && !readBoardDemoMode()) throw error
+      return
+    }
+    if (generation !== realLoadGeneration.current || readBoardDemoMode()) return
+    const nextCampaigns = campaignItems.map(fromApiCampaign)
+    setCampaigns(nextCampaigns)
+    setIdleApis(
+      accountItems
+        .filter(account => account.status === 'ACTIVE')
+        .map(account => ({
+          id: account.id,
+          label: account.label,
+          exchange: account.exchange === 'BINANCE' ? 'Binance' : account.exchange === 'GATE' ? 'Gate' : 'OKX',
+          busy: false,
+          balanceUsdt: account.available_balance == null ? undefined : Number(account.available_balance)
+        }))
+    )
+    const first = nextCampaigns[0]
+    if (first) {
+      setActiveCampaignId(first.id)
+      setRoundIndex(first.currentRound)
+      const current = first.rounds.find(round => round.index === first.currentRound)
+      setSelectedMemberId(current?.members.find(member => member.isLeader)?.id ?? current?.members[0]?.id ?? null)
+    }
+  }
 
   useEffect(() => {
     const enabled = readBoardDemoMode()
     setDemoMode(enabled)
     if (!enabled) {
-      setCampaigns([])
-      setIdleApis([])
-      setActiveCampaignId('')
-      setSelectedMemberId(null)
       setPromoteResult(null)
+      void loadRealData().catch(error =>
+        toast.error(error instanceof Error ? error.message : '项目数据加载失败')
+      )
     }
   }, [])
 
@@ -347,6 +437,7 @@ export default function IncubatorBoardPage() {
     setSelectedApiIds([])
 
     if (enabled) {
+      realLoadGeneration.current += 1
       const demo = cloneDemoBoardData()
       setCampaigns(demo.campaigns)
       setIdleApis(demo.idleApis)
@@ -365,10 +456,9 @@ export default function IncubatorBoardPage() {
       return
     }
 
-    setCampaigns([])
-    setIdleApis([])
-    setActiveCampaignId('')
-    setSelectedMemberId(null)
+    void loadRealData().catch(error =>
+      toast.error(error instanceof Error ? error.message : '项目数据加载失败')
+    )
   }
 
   useEffect(() => {
@@ -444,7 +534,7 @@ export default function IncubatorBoardPage() {
   const groupsBalanced = sameMembers.length === inverseMembers.length && sameMembers.length > 0
   const leaderIsSame = Boolean(leader?.isLeader && leader.relation === 'SAME')
   const canStart =
-    Boolean(activeRound) && isPreparing && activeRound!.leaderConfirmed && leaderIsSame && groupsBalanced
+    demoMode && Boolean(activeRound) && isPreparing && activeRound!.leaderConfirmed && leaderIsSame && groupsBalanced
 
   const busyApiIds = useMemo(() => {
     const ids = new Set<string>()
@@ -458,11 +548,11 @@ export default function IncubatorBoardPage() {
   }, [campaigns])
 
   const availableApis = useMemo(
-    () => getAvailableApis(idleApis, createExchange, busyApiIds),
-    [idleApis, createExchange, busyApiIds]
+    () => getAvailableApis(idleApis, createExchange, demoMode ? busyApiIds : new Set<string>()),
+    [idleApis, createExchange, busyApiIds, demoMode]
   )
 
-  const selectionValid = isPowerOfTwo(selectedApiIds.length)
+  const selectionValid = isPowerOfTwo(selectedApiIds.length) && createName.trim().length > 0
   const selectedBalanceTotal = useMemo(() => {
     return availableApis
       .filter(api => selectedApiIds.includes(api.id))
@@ -509,53 +599,107 @@ export default function IncubatorBoardPage() {
     }
   }
 
-  const handleCreateCampaign = () => {
+  const handleCreateCampaign = async () => {
     if (!selectionValid) return
+    const submittedInDemo = demoMode
+    const submittedGeneration = realLoadGeneration.current
     const apis = availableApis
       .filter(api => selectedApiIds.includes(api.id))
       .map(api => ({ id: api.id, label: api.label }))
     if (apis.length !== selectedApiIds.length) return
 
-    const next = createCampaignFromApis({
-      name: createName,
-      exchange: createExchange,
-      apis
-    })
+    setCreateBusy(true)
+    try {
+      const next = submittedInDemo
+        ? createCampaignFromApis({ name: createName, exchange: createExchange, apis })
+        : fromApiCampaign(await createIncubatorCampaign(createName.trim(), selectedApiIds))
 
-    setIdleApis(prev =>
-      prev.map(api => (selectedApiIds.includes(api.id) ? { ...api, busy: true } : api))
-    )
-    upsertCampaign(next)
-    focusCampaign(next)
-    setCreateOpen(false)
-    setCreateName('')
-    setSelectedApiIds([])
+      if (!submittedInDemo && submittedGeneration !== realLoadGeneration.current) {
+        if (!readBoardDemoMode()) {
+          void loadRealData().catch(error =>
+            toast.error(error instanceof Error ? error.message : '项目数据加载失败')
+          )
+        }
+        return
+      }
+
+      if (submittedInDemo) {
+        setIdleApis(prev =>
+          prev.map(api => (selectedApiIds.includes(api.id) ? { ...api, busy: true } : api))
+        )
+      }
+      upsertCampaign(next)
+      focusCampaign(next)
+      setCreateOpen(false)
+      setCreateName('')
+      setSelectedApiIds([])
+      toast.success('项目创建成功')
+    } catch (error) {
+      if (!submittedInDemo && submittedGeneration !== realLoadGeneration.current) return
+      toast.error(error instanceof Error ? error.message : '项目创建失败')
+    } finally {
+      setCreateBusy(false)
+    }
   }
 
-  const handleConfirmLeader = () => {
+  const handleConfirmLeader = async () => {
     if (!pendingLeaderId || !campaign) return
     const candidate = sameMembers.find(member => member.id === pendingLeaderId)
     if (!candidate) {
       setPendingLeaderId(sameMembers[0]?.id ?? null)
       return
     }
-    patchActiveCampaign(prev => ({
-      ...prev,
-      rounds: prev.rounds.map(round =>
-        round.index === prev.currentRound
-          ? {
-              ...round,
-              leaderConfirmed: true,
-              members: confirmLeader(round.members, pendingLeaderId)
-            }
-          : round
+    if (demoMode) {
+      patchActiveCampaign(prev => ({
+        ...prev,
+        rounds: prev.rounds.map(round =>
+          round.index === prev.currentRound
+            ? { ...round, leaderConfirmed: true, members: confirmLeader(round.members, pendingLeaderId) }
+            : round
+        )
+      }))
+      setLeaderOpen(false)
+      return
+    }
+    if (!activeRound?.setupVersion || !groupsBalanced) {
+      toast.error('请先保持 SAME / INVERSE 人数一致')
+      return
+    }
+    const submittedGeneration = realLoadGeneration.current
+    setSetupBusy(true)
+    try {
+      const updated = fromApiCampaign(await updateIncubatorRoundSetup({
+        roundId: activeRound.id,
+        setupVersion: activeRound.setupVersion,
+        leaderMemberId: pendingLeaderId,
+        assignments: activeRound.members.map(member => ({ member_id: member.id, relation: member.relation }))
+      }))
+      if (submittedGeneration !== realLoadGeneration.current) {
+        if (!readBoardDemoMode()) {
+          void loadRealData().catch(loadError =>
+            toast.error(loadError instanceof Error ? loadError.message : '项目数据加载失败')
+          )
+        }
+        return
+      }
+      if (readBoardDemoMode()) return
+      upsertCampaign(updated)
+      focusCampaign(updated)
+      setLeaderOpen(false)
+      toast.success('本轮配置已保存')
+    } catch (error) {
+      if (submittedGeneration !== realLoadGeneration.current || readBoardDemoMode()) return
+      toast.error(error instanceof Error ? error.message : '本轮配置保存失败')
+      void loadRealData().catch(loadError =>
+        toast.error(loadError instanceof Error ? loadError.message : '项目数据加载失败')
       )
-    }))
-    setLeaderOpen(false)
+    } finally {
+      setSetupBusy(false)
+    }
   }
 
   const handleStartRound = () => {
-    if (!canStart || !campaign) return
+    if (!demoMode || !canStart || !campaign) return
     patchActiveCampaign(prev => startRound(prev))
   }
 
@@ -661,7 +805,7 @@ export default function IncubatorBoardPage() {
               ? isPreparing
                 ? '模拟演示 · 准备中：可拖拽调整分组，确认领单后开始本轮'
                 : '模拟演示 · 点击账号打开详情'
-              : '真实模式 · 接口未接入，开启模拟演示可载入样例数据'}
+              : '真实模式 · 数据来自 Incubator 服务'}
           </p>
         </div>
         <div className='flex shrink-0 items-center gap-2'>
@@ -695,7 +839,6 @@ export default function IncubatorBoardPage() {
           <Button
             type='button'
             size='sm'
-            disabled={!demoMode}
             onClick={() => setCreateOpen(true)}
           >
             <Plus className='size-4' />
@@ -759,18 +902,12 @@ export default function IncubatorBoardPage() {
             <p className='text-muted-foreground mt-1 text-xs'>
               {demoMode
                 ? '创建项目后可在此并行切换查看'
-                : '接口尚未接入。开启右上角「模拟演示」可载入样例项目。'}
+                : '选择可用 API 创建第一个养号项目。'}
             </p>
-            {demoMode ? (
-              <Button type='button' size='sm' className='mt-4' onClick={() => setCreateOpen(true)}>
-                <Plus className='size-4' />
-                创建项目
-              </Button>
-            ) : (
-              <Button type='button' size='sm' className='mt-4' onClick={() => applyDemoMode(true)}>
-                开启模拟演示
-              </Button>
-            )}
+            <Button type='button' size='sm' className='mt-4' onClick={() => setCreateOpen(true)}>
+              <Plus className='size-4' />
+              创建项目
+            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -911,7 +1048,7 @@ export default function IncubatorBoardPage() {
                       disabled={!canStart}
                       onClick={handleStartRound}
                     >
-                      开始本轮
+                      {demoMode ? '开始本轮' : activeRound.canStart ? '已具备启动条件' : '尚未具备条件'}
                     </Button>
                     <Button
                       type='button'
@@ -1285,7 +1422,7 @@ export default function IncubatorBoardPage() {
 
             <div className='space-y-2'>
               <div className='flex items-center justify-between gap-2'>
-                <Label>空闲 API</Label>
+              <Label>可用 API</Label>
                 <span
                   className={cn(
                     'text-xs',
@@ -1302,7 +1439,7 @@ export default function IncubatorBoardPage() {
               <div className='border-border/60 max-h-56 space-y-1 overflow-y-auto rounded-md border p-2'>
                 {availableApis.length === 0 ? (
                   <p className='text-muted-foreground px-2 py-6 text-center text-xs'>
-                    该交易所暂无空闲 API
+                    该交易所暂无可用 API
                   </p>
                 ) : (
                   availableApis.map(api => {
@@ -1349,8 +1486,8 @@ export default function IncubatorBoardPage() {
             <Button type='button' variant='outline' onClick={() => setCreateOpen(false)}>
               取消
             </Button>
-            <Button type='button' disabled={!selectionValid} onClick={handleCreateCampaign}>
-              创建并进入准备
+            <Button type='button' disabled={!selectionValid || createBusy} onClick={handleCreateCampaign}>
+              {createBusy ? '创建中…' : '创建并进入准备'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -1390,10 +1527,10 @@ export default function IncubatorBoardPage() {
             </Button>
             <Button
               type='button'
-              disabled={!pendingLeaderId || sameMembers.length === 0}
+              disabled={!pendingLeaderId || sameMembers.length === 0 || setupBusy}
               onClick={handleConfirmLeader}
             >
-              确认领单
+              {setupBusy ? '保存中…' : '确认并保存配置'}
             </Button>
           </DialogFooter>
         </DialogContent>
