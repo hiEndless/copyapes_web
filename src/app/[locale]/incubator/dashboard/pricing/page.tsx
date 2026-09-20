@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
 import { toast } from 'sonner'
-import { ExternalLink, Minus, Plus, ShieldCheck } from 'lucide-react'
+import { ChevronLeft, ChevronRight, ExternalLink, Minus, Plus, ShieldCheck } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -30,16 +30,21 @@ type AddonSeat = {
   expiresAt: string
 }
 
-type EgressIp = {
+type ProxyIp = {
   id: string
   ip: string
+  hostId: 1 | 2
   source: 'included' | 'addon'
+  /** 加购按「份」成对分配，同 pack 共到期、共续费 */
+  packId: string | null
   expiresAt: string | null
 }
 
 const GIFT_SLOTS_PER_EXCHANGE = 4
 const DAY_MS = 24 * 60 * 60 * 1000
-const IP_UNIT_PRICE_USDT = 20
+/** 1 份 = host_id 1/2 各 1 个 IP */
+const IP_PACK_PRICE_USDT = 10
+const IP_PER_PACK = 2
 
 const EXCHANGES: ExchangeMeta[] = [
   {
@@ -69,14 +74,39 @@ const EXCHANGES: ExchangeMeta[] = [
 ]
 
 const INITIAL_SEATS: AddonSeat[] = [
-  { id: 'seat-okx-1', exchange: 'OKX', expiresAt: shiftDays(12) },
-  { id: 'seat-okx-2', exchange: 'OKX', expiresAt: shiftDays(90) }
+  { id: 'seat-okx-1', exchange: 'OKX', expiresAt: shiftDays(3) },
+  { id: 'seat-bn-1', exchange: 'BINANCE', expiresAt: shiftDays(5) },
+  { id: 'seat-gate-1', exchange: 'GATE', expiresAt: shiftDays(7) },
+  { id: 'seat-okx-2', exchange: 'OKX', expiresAt: shiftDays(12) },
+  { id: 'seat-bn-2', exchange: 'BINANCE', expiresAt: shiftDays(15) },
+  { id: 'seat-okx-3', exchange: 'OKX', expiresAt: shiftDays(20) },
+  { id: 'seat-gate-2', exchange: 'GATE', expiresAt: shiftDays(25) },
+  { id: 'seat-bn-3', exchange: 'BINANCE', expiresAt: shiftDays(30) },
+  { id: 'seat-okx-4', exchange: 'OKX', expiresAt: shiftDays(40) },
+  { id: 'seat-bn-4', exchange: 'BINANCE', expiresAt: shiftDays(45) },
+  { id: 'seat-gate-3', exchange: 'GATE', expiresAt: shiftDays(55) },
+  { id: 'seat-okx-5', exchange: 'OKX', expiresAt: shiftDays(90) }
 ]
 
-const INITIAL_IPS: EgressIp[] = [
-  { id: 'ip-1', ip: '203.0.113.18', source: 'included', expiresAt: null },
-  { id: 'ip-2', ip: '198.51.100.44', source: 'included', expiresAt: null },
-  { id: 'ip-3', ip: '203.0.113.77', source: 'addon', expiresAt: shiftDays(5) }
+const INITIAL_IPS: ProxyIp[] = [
+  { id: 'ip-1', ip: '203.0.113.18', hostId: 1, source: 'included', packId: null, expiresAt: null },
+  { id: 'ip-2', ip: '198.51.100.44', hostId: 2, source: 'included', packId: null, expiresAt: null },
+  {
+    id: 'ip-3',
+    ip: '203.0.113.77',
+    hostId: 1,
+    source: 'addon',
+    packId: 'pack-demo-1',
+    expiresAt: shiftDays(5)
+  },
+  {
+    id: 'ip-4',
+    ip: '198.51.100.88',
+    hostId: 2,
+    source: 'addon',
+    packId: 'pack-demo-1',
+    expiresAt: shiftDays(5)
+  }
 ]
 
 const EMPTY_QTY: Record<ExchangeId, number> = {
@@ -145,6 +175,8 @@ export default function IncubatorPricingPage() {
   const [apiQty, setApiQty] = useState(EMPTY_QTY)
   const [ipQty, setIpQty] = useState(1)
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([])
+  const [seatPageSize, setSeatPageSize] = useState<10 | 20 | 30 | 40 | 50>(10)
+  const [seatPage, setSeatPage] = useState(0)
   const [submittingKey, setSubmittingKey] = useState<string | null>(null)
 
   const studioVip = {
@@ -163,22 +195,56 @@ export default function IncubatorPricingPage() {
     [exchanges, seatsByExchange]
   )
   const totalApiUsed = useMemo(() => exchanges.reduce((sum, item) => sum + item.usedSlots, 0), [exchanges])
-  const addonIpCount = ips.filter(item => item.source === 'addon').length
+  const addonPackCount = useMemo(() => {
+    const packs = new Set(
+      ips.filter(item => item.source === 'addon' && item.packId).map(item => item.packId as string)
+    )
+    return packs.size
+  }, [ips])
+
+  const sortedIpPacks = useMemo(() => {
+    const included = ips
+      .filter(item => item.source === 'included')
+      .sort((a, b) => a.hostId - b.hostId)
+
+    const packMap = new Map<string, ProxyIp[]>()
+    for (const item of ips) {
+      if (item.source !== 'addon' || !item.packId) continue
+      const list = packMap.get(item.packId) ?? []
+      list.push(item)
+      packMap.set(item.packId, list)
+    }
+
+    const packs = [...packMap.entries()]
+      .map(([packId, members]) => {
+        const sorted = [...members].sort((a, b) => a.hostId - b.hostId)
+        const expiresAt = sorted[0]?.expiresAt ?? null
+        return { packId, members: sorted, expiresAt }
+      })
+      .sort((a, b) => (a.expiresAt ?? '').localeCompare(b.expiresAt ?? ''))
+
+    return { included, packs }
+  }, [ips])
 
   const sortedSeats = useMemo(
-    () =>
-      [...seats].sort((a, b) => {
-        if (a.exchange !== b.exchange) return a.exchange.localeCompare(b.exchange)
-        return a.expiresAt.localeCompare(b.expiresAt)
-      }),
+    () => [...seats].sort((a, b) => a.expiresAt.localeCompare(b.expiresAt)),
     [seats]
   )
+
+  const seatPageCount = Math.max(1, Math.ceil(sortedSeats.length / seatPageSize))
+  const safeSeatPage = Math.min(seatPage, seatPageCount - 1)
+  const pagedSeats = useMemo(() => {
+    const start = safeSeatPage * seatPageSize
+    return sortedSeats.slice(start, start + seatPageSize)
+  }, [sortedSeats, safeSeatPage, seatPageSize])
 
   const selectedSeats = sortedSeats.filter(item => selectedSeatIds.includes(item.id))
   const selectedRenewFee = selectedSeats.reduce(
     (sum, seat) => sum + exchangeMeta(seat.exchange).unitPriceUsdt,
     0
   )
+  const pageSelectedCount = pagedSeats.filter(item => selectedSeatIds.includes(item.id)).length
+  const allPageSelected = pagedSeats.length > 0 && pageSelectedCount === pagedSeats.length
 
   const adjustApiQty = (exchange: ExchangeId, delta: number) => {
     setApiQty(prev => ({
@@ -195,8 +261,17 @@ export default function IncubatorPricingPage() {
     setSelectedSeatIds(prev => (checked ? [...prev, id] : prev.filter(item => item !== id)))
   }
 
-  const toggleAllSeats = (checked: boolean) => {
-    setSelectedSeatIds(checked ? sortedSeats.map(item => item.id) : [])
+  const toggleAllSeatsOnPage = (checked: boolean) => {
+    const pageIds = pagedSeats.map(item => item.id)
+    setSelectedSeatIds(prev => {
+      if (checked) return [...new Set([...prev, ...pageIds])]
+      return prev.filter(id => !pageIds.includes(id))
+    })
+  }
+
+  const changeSeatPageSize = (size: 10 | 20 | 30 | 40 | 50) => {
+    setSeatPageSize(size)
+    setSeatPage(0)
   }
 
   const purchaseApi = async (exchange: ExchangeId) => {
@@ -260,30 +335,51 @@ export default function IncubatorPricingPage() {
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
       const expiresAt = addMonths(formatDate(startOfToday()), 1)
-      const nextIps = Array.from({ length: ipQty }, (_, index) => ({
-        id: `ip-${Date.now()}-${index}`,
-        ip: `203.0.113.${50 + ips.length + index}`,
-        source: 'addon' as const,
-        expiresAt
-      }))
-      setIps(prev => [...prev, ...nextIps])
-      toast.success(`已加购出口 IP × ${ipQty}（演示）`)
+      const created: ProxyIp[] = []
+      for (let i = 0; i < ipQty; i += 1) {
+        const packId = `pack-${Date.now()}-${i}`
+        const base = 50 + ips.length + created.length
+        created.push(
+          {
+            id: `${packId}-h1`,
+            ip: `203.0.113.${base}`,
+            hostId: 1,
+            source: 'addon',
+            packId,
+            expiresAt
+          },
+          {
+            id: `${packId}-h2`,
+            ip: `198.51.100.${base}`,
+            hostId: 2,
+            source: 'addon',
+            packId,
+            expiresAt
+          }
+        )
+      }
+      setIps(prev => [...prev, ...created])
+      toast.success(
+        `已加购代理 IP × ${ipQty} 份（共 ${ipQty * IP_PER_PACK} 条，host 1/2 各半），扣 ${ipQty * IP_PACK_PRICE_USDT} USDT（演示）`
+      )
       setIpQty(1)
     } finally {
       setSubmittingKey(null)
     }
   }
 
-  const renewIp = async (id: string) => {
-    const target = ips.find(item => item.id === id)
-    if (!target || target.source !== 'addon' || !target.expiresAt) return
+  const renewIpPack = async (packId: string) => {
+    const members = ips.filter(item => item.packId === packId)
+    if (members.length === 0 || !members[0]?.expiresAt) return
 
-    setSubmittingKey(`renew-ip-${id}`)
+    setSubmittingKey(`renew-ip-${packId}`)
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
-      const nextExpires = addMonths(target.expiresAt, 1)
-      setIps(prev => prev.map(item => (item.id === id ? { ...item, expiresAt: nextExpires } : item)))
-      toast.success(`已续费出口 IP ${target.ip} 一个月，扣 ${IP_UNIT_PRICE_USDT} USDT（演示）`)
+      const nextExpires = addMonths(members[0].expiresAt, 1)
+      setIps(prev =>
+        prev.map(item => (item.packId === packId ? { ...item, expiresAt: nextExpires } : item))
+      )
+      toast.success(`已续费代理 IP 1 份（2 条）一个月，扣 ${IP_PACK_PRICE_USDT} USDT（演示）`)
     } finally {
       setSubmittingKey(null)
     }
@@ -337,7 +433,7 @@ export default function IncubatorPricingPage() {
         <CardContent className='dark:bg-muted/15 grid grid-cols-1 divide-y divide-border/60 p-0 sm:grid-cols-3 sm:divide-x sm:divide-y-0'>
           <Metric label='API 总席位' value={`${totalApiUsed} / ${totalApiCapacity}`} />
           <Metric label='赠送规则' value='每所 4 席' />
-          <Metric label='出口 IP' value={`${ips.length} 条（加购 ${addonIpCount}）`} />
+          <Metric label='代理 IP' value={`${ips.length} 条（加购 ${addonPackCount} 份）`} />
         </CardContent>
       </Card>
 
@@ -465,21 +561,42 @@ export default function IncubatorPricingPage() {
               <CardDescription className='text-xs'>
                 共 {sortedSeats.length} 个加购席位
                 {selectedSeats.length > 0 ? ` · 已选 ${selectedSeats.length}` : ''}
+                {sortedSeats.length > 0
+                  ? ` · 第 ${safeSeatPage + 1}/${seatPageCount} 页`
+                  : ''}
               </CardDescription>
             </div>
             <div className='flex flex-wrap items-center gap-2'>
+              <div className='flex items-center gap-1 rounded-md border border-border/60 p-0.5'>
+                {([10, 20, 30, 40, 50] as const).map(size => (
+                  <button
+                    key={size}
+                    type='button'
+                    onClick={() => changeSeatPageSize(size)}
+                    className={cn(
+                      'h-6 rounded px-1.5 text-[10px] font-semibold transition-colors',
+                      seatPageSize === size
+                        ? 'bg-primary text-primary-foreground'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    {size}/页
+                  </button>
+                ))}
+              </div>
               <label className='text-muted-foreground flex items-center gap-1.5 text-xs'>
                 <Checkbox
-                  checked={sortedSeats.length > 0 && selectedSeatIds.length === sortedSeats.length}
-                  onCheckedChange={value => toggleAllSeats(value === true)}
-                  disabled={sortedSeats.length === 0}
+                  checked={allPageSelected}
+                  onCheckedChange={value => toggleAllSeatsOnPage(value === true)}
+                  disabled={pagedSeats.length === 0}
                 />
-                全选
+                全选本页
               </label>
               <Button
                 type='button'
                 size='sm'
-                className='h-7 px-2.5 text-xs'
+                variant='outline'
+                className='h-7 border-amber-500/50 bg-transparent px-2.5 text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
                 disabled={selectedSeats.length === 0 || submittingKey === 'renew-seats'}
                 onClick={() => void renewSelectedSeats()}
               >
@@ -496,62 +613,97 @@ export default function IncubatorPricingPage() {
                 暂无加购席位。先在上方交易所卡片加购。
               </p>
             ) : (
-              sortedSeats.map(seat => {
-                const meta = exchangeMeta(seat.exchange)
-                const days = daysUntil(seat.expiresAt)
-                const tone = expiryTone(days)
-                const busy = submittingKey === `renew-seat-${seat.id}`
-                const checked = selectedSeatIds.includes(seat.id)
-                const seatNo =
-                  seatsByExchange[seat.exchange].findIndex(item => item.id === seat.id) + 1
+              <>
+                {pagedSeats.map(seat => {
+                  const meta = exchangeMeta(seat.exchange)
+                  const days = daysUntil(seat.expiresAt)
+                  const tone = expiryTone(days)
+                  const busy = submittingKey === `renew-seat-${seat.id}`
+                  const checked = selectedSeatIds.includes(seat.id)
+                  const seatNo =
+                    seatsByExchange[seat.exchange].findIndex(item => item.id === seat.id) + 1
 
-                return (
-                  <div
-                    key={seat.id}
-                    className={cn(
-                      'flex flex-wrap items-center justify-between gap-2 rounded-md border px-2 py-1.5',
-                      tone === 'danger' && 'border-destructive/30 bg-destructive/5',
-                      tone === 'warn' && 'border-amber-500/30 bg-amber-500/5',
-                      tone === 'ok' && 'border-border/60 bg-card'
-                    )}
-                  >
-                    <div className='flex min-w-0 items-center gap-2'>
-                      <Checkbox
-                        checked={checked}
-                        onCheckedChange={value => toggleSeat(seat.id, value === true)}
-                      />
-                      <span className='flex size-5 shrink-0 items-center justify-center rounded bg-white/95 p-0.5 shadow-sm dark:bg-white/90'>
-                        <img src={meta.logo} alt={meta.label} className='size-full object-contain' />
-                      </span>
-                      <div className='min-w-0'>
-                        <p className='text-xs font-semibold'>
-                          {meta.label} · 席位 {seatNo}
-                        </p>
-                        <p
-                          className={cn(
-                            'text-[10px]',
-                            tone === 'danger' && 'text-destructive',
-                            tone === 'warn' && 'text-amber-700 dark:text-amber-300',
-                            tone === 'ok' && 'text-muted-foreground'
-                          )}
-                        >
-                          {expiryLabel(days, seat.expiresAt)}
-                        </p>
+                  return (
+                    <div
+                      key={seat.id}
+                      className={cn(
+                        'flex flex-wrap items-center justify-between gap-2 rounded-md border px-2 py-1.5',
+                        tone === 'danger' && 'border-destructive/30 bg-destructive/5',
+                        tone === 'warn' && 'border-amber-500/30 bg-amber-500/5',
+                        tone === 'ok' && 'border-border/60 bg-card'
+                      )}
+                    >
+                      <div className='flex min-w-0 items-center gap-2'>
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={value => toggleSeat(seat.id, value === true)}
+                        />
+                        <span className='flex size-5 shrink-0 items-center justify-center rounded bg-white/95 p-0.5 shadow-sm dark:bg-white/90'>
+                          <img src={meta.logo} alt={meta.label} className='size-full object-contain' />
+                        </span>
+                        <div className='min-w-0'>
+                          <p className='text-xs font-semibold'>
+                            {meta.label} · 席位 {seatNo}
+                          </p>
+                          <p
+                            className={cn(
+                              'text-[10px]',
+                              tone === 'danger' && 'text-destructive',
+                              tone === 'warn' && 'text-amber-700 dark:text-amber-300',
+                              tone === 'ok' && 'text-muted-foreground'
+                            )}
+                          >
+                            {expiryLabel(days, seat.expiresAt)}
+                          </p>
+                        </div>
                       </div>
+                      <Button
+                        type='button'
+                        size='sm'
+                        variant='outline'
+                        className='h-7 border-amber-500/50 bg-transparent px-2 text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
+                        disabled={busy}
+                        onClick={() => void renewOneSeat(seat.id)}
+                      >
+                        {busy ? '续费中…' : `续 1 个月 · ${meta.unitPriceUsdt}U`}
+                      </Button>
                     </div>
+                  )
+                })}
+
+                <div className='border-border/60 flex flex-wrap items-center justify-between gap-2 border-t pt-2'>
+                  <p className='text-muted-foreground text-[10px]'>
+                    显示 {safeSeatPage * seatPageSize + 1}-
+                    {Math.min((safeSeatPage + 1) * seatPageSize, sortedSeats.length)} /{' '}
+                    {sortedSeats.length}
+                  </p>
+                  <div className='flex items-center gap-1'>
                     <Button
                       type='button'
-                      size='sm'
-                      variant={tone === 'danger' || tone === 'warn' ? 'default' : 'outline'}
-                      className='h-7 px-2 text-xs'
-                      disabled={busy}
-                      onClick={() => void renewOneSeat(seat.id)}
+                      size='icon'
+                      variant='outline'
+                      className='size-7'
+                      disabled={safeSeatPage <= 0}
+                      onClick={() => setSeatPage(Math.max(0, safeSeatPage - 1))}
                     >
-                      {busy ? '续费中…' : `续 1 个月 · ${meta.unitPriceUsdt}U`}
+                      <ChevronLeft className='size-3.5' />
+                    </Button>
+                    <span className='text-muted-foreground min-w-14 text-center text-[11px] tabular-nums'>
+                      {safeSeatPage + 1} / {seatPageCount}
+                    </span>
+                    <Button
+                      type='button'
+                      size='icon'
+                      variant='outline'
+                      className='size-7'
+                      disabled={safeSeatPage >= seatPageCount - 1}
+                      onClick={() => setSeatPage(Math.min(seatPageCount - 1, safeSeatPage + 1))}
+                    >
+                      <ChevronRight className='size-3.5' />
                     </Button>
                   </div>
-                )
-              })
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
@@ -559,18 +711,18 @@ export default function IncubatorPricingPage() {
 
       <section className='space-y-1.5'>
         <div>
-          <h3 className='text-sm font-semibold tracking-tight'>出口 IP</h3>
+          <h3 className='text-sm font-semibold tracking-tight'>代理 IP</h3>
           <p className='text-muted-foreground mt-0.5 text-xs'>
-            基础 IP 不过期；加购 IP 同样独立按月，可逐条续费。
+            增加更多 IP 用于批量交易，减少账号关联性。
           </p>
         </div>
 
         <Card className='border-border/50 gap-0 overflow-hidden py-0 shadow-sm'>
           <CardHeader className='border-border/60 flex flex-col gap-2 border-b bg-gradient-to-b from-background to-muted/20 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between dark:to-muted/10'>
             <div>
-              <CardTitle className='text-sm'>已分配出口</CardTitle>
+              <CardTitle className='text-sm'>已分配代理 IP</CardTitle>
               <CardDescription className='text-xs'>
-                当前 {ips.length} 条 · 加购单价 {IP_UNIT_PRICE_USDT} USDT / 月
+                当前 {ips.length} 条 · {IP_PACK_PRICE_USDT} USDT / 月 / 份（每份 host 1、2 各 1 条）
               </CardDescription>
             </div>
             <div className='flex flex-wrap items-center gap-2'>
@@ -596,7 +748,7 @@ export default function IncubatorPricingPage() {
                 </Button>
               </div>
               <span className='text-muted-foreground text-[11px] tabular-nums'>
-                {ipQty * IP_UNIT_PRICE_USDT} USDT
+                {ipQty * IP_PACK_PRICE_USDT} USDT · {ipQty * IP_PER_PACK} 条
               </span>
               <Button
                 type='button'
@@ -605,57 +757,84 @@ export default function IncubatorPricingPage() {
                 disabled={submittingKey === 'ip'}
                 onClick={() => void purchaseIp()}
               >
-                {submittingKey === 'ip' ? '提交中…' : '加购 IP · 各 1 个月'}
+                {submittingKey === 'ip' ? '提交中…' : `加购 ×${ipQty} 份 · 各 1 个月`}
               </Button>
             </div>
           </CardHeader>
 
           <CardContent className='dark:bg-muted/10 space-y-1.5 px-3 py-2.5'>
-            {ips.map(item => {
-              const days = daysUntil(item.expiresAt)
-              const tone = item.source === 'addon' ? expiryTone(days) : 'none'
-              const busy = submittingKey === `renew-ip-${item.id}`
-
-              return (
-                <div
-                  key={item.id}
-                  className={cn(
-                    'flex flex-wrap items-center justify-between gap-2 rounded-md border px-2 py-1.5',
-                    item.source === 'addon'
-                      ? 'border-primary/20 bg-primary/5'
-                      : 'border-border/60 bg-muted/30'
-                  )}
-                >
-                  <div className='min-w-0'>
-                    <code className='font-mono text-[11px] font-semibold tabular-nums'>{item.ip}</code>
-                    <p
-                      className={cn(
-                        'mt-0.5 text-[10px]',
-                        tone === 'danger' && 'text-destructive',
-                        tone === 'warn' && 'text-amber-700 dark:text-amber-300',
-                        (tone === 'ok' || tone === 'none') && 'text-muted-foreground'
-                      )}
+            {sortedIpPacks.included.length > 0 ? (
+              <div className='rounded-md border border-border/60 bg-muted/30 px-2 py-1.5'>
+                <p className='text-muted-foreground mb-1 text-[10px] font-medium'>基础分配 · 不过期</p>
+                <div className='flex flex-wrap gap-1.5'>
+                  {sortedIpPacks.included.map(item => (
+                    <code
+                      key={item.id}
+                      className='rounded border border-border/50 bg-background px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums'
                     >
-                      {item.source === 'included'
-                        ? '基础分配 · 不过期'
-                        : expiryLabel(days, item.expiresAt)}
-                    </p>
-                  </div>
-                  {item.source === 'addon' ? (
+                      {item.ip}
+                    </code>
+                  ))}
+                </div>
+              </div>
+            ) : null}
+
+            {sortedIpPacks.packs.length === 0 ? (
+              <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-xs'>
+                暂无加购代理 IP。每份 10 USDT，同时分配 host 1、2 各 1 条。
+              </p>
+            ) : (
+              sortedIpPacks.packs.map(pack => {
+                const days = daysUntil(pack.expiresAt)
+                const tone = expiryTone(days)
+                const busy = submittingKey === `renew-ip-${pack.packId}`
+
+                return (
+                  <div
+                    key={pack.packId}
+                    className={cn(
+                      'flex flex-wrap items-center justify-between gap-2 rounded-md border px-2 py-1.5',
+                      tone === 'danger' && 'border-destructive/30 bg-destructive/5',
+                      tone === 'warn' && 'border-amber-500/30 bg-amber-500/5',
+                      tone === 'ok' && 'border-primary/20 bg-primary/5'
+                    )}
+                  >
+                    <div className='min-w-0 space-y-1'>
+                      <div className='flex flex-wrap gap-1.5'>
+                        {pack.members.map(item => (
+                          <code
+                            key={item.id}
+                            className='rounded border border-border/40 bg-background/80 px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums'
+                          >
+                            {item.ip}
+                          </code>
+                        ))}
+                      </div>
+                      <p
+                        className={cn(
+                          'text-[10px]',
+                          tone === 'danger' && 'text-destructive',
+                          tone === 'warn' && 'text-amber-700 dark:text-amber-300',
+                          tone === 'ok' && 'text-muted-foreground'
+                        )}
+                      >
+                        加购 1 份 · {expiryLabel(days, pack.expiresAt)}
+                      </p>
+                    </div>
                     <Button
                       type='button'
                       size='sm'
-                      variant={tone === 'danger' || tone === 'warn' ? 'default' : 'outline'}
-                      className='h-7 px-2 text-xs'
+                      variant='outline'
+                      className='h-7 border-amber-500/50 bg-transparent px-2 text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
                       disabled={busy}
-                      onClick={() => void renewIp(item.id)}
+                      onClick={() => void renewIpPack(pack.packId)}
                     >
-                      {busy ? '续费中…' : `续 1 个月 · ${IP_UNIT_PRICE_USDT}U`}
+                      {busy ? '续费中…' : `续 1 个月 · ${IP_PACK_PRICE_USDT}U`}
                     </Button>
-                  ) : null}
-                </div>
-              )
-            })}
+                  </div>
+                )
+              })
+            )}
           </CardContent>
         </Card>
       </section>
