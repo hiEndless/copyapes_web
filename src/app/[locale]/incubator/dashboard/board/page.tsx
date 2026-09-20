@@ -81,6 +81,8 @@ import {
   type IncubatorCampaign
 } from '@/lib/incubator-campaigns'
 
+const STARTING_POLL_INTERVAL_MS = 2_500
+
 function fromApiCampaign(item: IncubatorCampaign): Campaign {
   const exchange = item.exchange === 'BINANCE' ? 'Binance' : item.exchange === 'GATE' ? 'Gate' : 'OKX'
   return {
@@ -102,7 +104,7 @@ function fromApiCampaign(item: IncubatorCampaign): Campaign {
       index: round.round_number,
       memberCount: round.expected_member_count,
       netPnl: 0,
-      phase: round.status === 'STARTING' ? 'STARTING' : round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : 'PREPARING',
+      phase: round.status === 'STARTING' ? 'STARTING' : round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : round.status === 'ERROR' ? 'ERROR' : 'PREPARING',
       leaderConfirmed: round.leader_member_id !== null,
       setupVersion: round.setup_version,
       canStart: round.can_start,
@@ -339,12 +341,10 @@ function MemberCard({
 }
 
 export default function IncubatorBoardPage() {
-  const [demoMode, setDemoMode] = useState(true)
-  const [campaigns, setCampaigns] = useState<Campaign[]>(() => cloneDemoBoardData().campaigns)
-  const [activeCampaignId, setActiveCampaignId] = useState(
-    () => cloneDemoBoardData().campaigns[0]?.id ?? ''
-  )
-  const [idleApis, setIdleApis] = useState(() => cloneDemoBoardData().idleApis)
+  const [demoMode, setDemoMode] = useState(false)
+  const [campaigns, setCampaigns] = useState<Campaign[]>([])
+  const [activeCampaignId, setActiveCampaignId] = useState('')
+  const [idleApis, setIdleApis] = useState<ReturnType<typeof cloneDemoBoardData>['idleApis']>([])
   const campaign = useMemo(
     () => campaigns.find(item => item.id === activeCampaignId) ?? campaigns[0] ?? null,
     [campaigns, activeCampaignId]
@@ -486,6 +486,41 @@ export default function IncubatorBoardPage() {
     if (!campaign) return null
     return campaign.rounds.find(round => round.index === roundIndex) ?? campaign.rounds[0]
   }, [campaign, roundIndex])
+
+  useEffect(() => {
+    if (demoMode || activeRound?.phase !== 'STARTING') return
+
+    let cancelled = false
+    let inFlight = false
+    const generation = realLoadGeneration.current
+
+    const refreshStartingRound = async () => {
+      if (inFlight) return
+      inFlight = true
+      try {
+        const campaignItems = await listIncubatorCampaigns()
+        if (
+          cancelled ||
+          generation !== realLoadGeneration.current ||
+          readBoardDemoMode()
+        ) {
+          return
+        }
+        setCampaigns(campaignItems.map(fromApiCampaign))
+      } catch {
+        // Keep the last known STARTING state and retry. User-triggered actions still surface errors.
+      } finally {
+        inFlight = false
+      }
+    }
+
+    void refreshStartingRound()
+    const timer = window.setInterval(refreshStartingRound, STARTING_POLL_INTERVAL_MS)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [activeRound?.id, activeRound?.phase, demoMode])
 
   const selectedMember = useMemo(() => {
     if (!activeRound) return null
@@ -1042,7 +1077,8 @@ export default function IncubatorBoardPage() {
                       'inline-flex shrink-0 items-center gap-1.5 border-0 bg-white/95 text-[10px] hover:bg-white',
                       activeRound.phase === 'RUNNING' && 'text-emerald-700',
                       activeRound.phase === 'PREPARING' && 'text-amber-700',
-                      activeRound.phase === 'SETTLED' && 'text-slate-600'
+                      activeRound.phase === 'SETTLED' && 'text-slate-600',
+                      activeRound.phase === 'ERROR' && 'text-red-700'
                     )}
                   >
                     {activeRound.phase === 'RUNNING' && <PulseDot />}

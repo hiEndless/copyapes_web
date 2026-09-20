@@ -28,10 +28,8 @@ function PnlText({ value }: { value: number }) {
 }
 
 export default function IncubatorHistoryPage() {
-  const [demoMode, setDemoMode] = useState(true)
-  const [historyCampaigns, setHistoryCampaigns] = useState<Campaign[]>(
-    () => cloneDemoBoardData().historyCampaigns
-  )
+  const [demoMode, setDemoMode] = useState(false)
+  const [historyCampaigns, setHistoryCampaigns] = useState<Campaign[]>([])
 
   useEffect(() => {
     const syncFromDemoMode = (enabled: boolean) => {

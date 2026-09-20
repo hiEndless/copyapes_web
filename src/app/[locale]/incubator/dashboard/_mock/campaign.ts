@@ -2,7 +2,7 @@ export type MemberRelation = 'SAME' | 'INVERSE'
 export type MemberResult = 'ACTIVE' | 'PROMOTED' | 'ELIMINATED' | 'WINNER'
 export type CampaignStatus = 'READY' | 'RUNNING' | 'COMPLETED' | 'PAUSED'
 export type DataConfidence = 'LIVE' | 'PROVISIONAL' | 'FINAL'
-export type RoundPhase = 'PREPARING' | 'STARTING' | 'RUNNING' | 'SETTLED'
+export type RoundPhase = 'PREPARING' | 'STARTING' | 'RUNNING' | 'SETTLED' | 'ERROR'
 export type ExchangeId = 'Binance' | 'OKX' | 'Gate'
 
 export type RoundMember = {
@@ -337,9 +337,9 @@ export const INCUBATOR_BOARD_DEMO_MODE_KEY = 'incubator.board.demoMode'
 export const INCUBATOR_DEMO_MODE_EVENT = 'incubator-demo-mode-change'
 
 export function readBoardDemoMode(): boolean {
-  if (typeof window === 'undefined') return true
+  if (typeof window === 'undefined') return false
   const raw = window.localStorage.getItem(INCUBATOR_BOARD_DEMO_MODE_KEY)
-  if (raw === null) return true
+  if (raw === null) return false
   return raw === '1' || raw === 'true'
 }
 
@@ -820,6 +820,8 @@ export function roundPhaseLabel(phase: RoundPhase) {
       return '进行中'
     case 'SETTLED':
       return '已结算'
+    case 'ERROR':
+      return '启动失败'
     default:
       return phase
   }
