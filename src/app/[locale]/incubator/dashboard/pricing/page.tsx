@@ -406,7 +406,7 @@ export default function IncubatorPricingPage() {
       <Card className='border-border/50 gap-0 overflow-hidden border-primary/15 py-0 shadow-sm'>
         <CardHeader
           className={cn(
-            'flex flex-col gap-2 border-b px-3 py-2.5 md:flex-row md:items-center md:justify-between',
+            'flex flex-col gap-2 border-b px-3 py-2.5 !pb-2.5 md:flex-row md:items-center md:justify-between',
             VIP_HEADER_CLASS
           )}
         >
@@ -419,7 +419,7 @@ export default function IncubatorPricingPage() {
               会员在 CopyApes 侧购买与续费；Incubator 仅校验资格。
             </CardDescription>
           </div>
-          <div className='flex flex-wrap items-center gap-1.5'>
+          <div className='flex flex-wrap items-center gap-2'>
             {studioVip.active ? (
               <Badge className='h-5 gap-1 border-0 bg-emerald-600/15 px-1.5 text-[10px] text-emerald-700 hover:bg-emerald-600/15 dark:text-emerald-400'>
                 <span className='size-1.5 rounded-full bg-emerald-500' />
@@ -431,10 +431,15 @@ export default function IncubatorPricingPage() {
               </Badge>
             )}
             <span className='text-muted-foreground text-xs'>到期 {studioVip.expiresAt}</span>
-            <Button asChild variant='outline' size='sm' className='h-7 gap-1 px-2 text-xs'>
+            <Button
+              asChild
+              variant='ghost'
+              size='sm'
+              className='text-primary hover:text-primary h-7 gap-1 px-1.5 text-xs font-medium hover:bg-primary/5'
+            >
               <Link href='/dashboard/pricing'>
-                去 CopyApes 续费
-                <ExternalLink className='size-3' />
+                续费工作室 VIP
+                <ExternalLink className='size-3 opacity-70' />
               </Link>
             </Button>
           </div>
