@@ -85,3 +85,17 @@ export function updateIncubatorRoundSetup(input: {
     })
   })
 }
+
+export function startIncubatorRound(input: {
+  roundId: string
+  setupVersion: number
+  requestId: string
+}) {
+  return request<IncubatorCampaign>(`rounds/${encodeURIComponent(input.roundId)}/start`, {
+    method: 'POST',
+    body: JSON.stringify({
+      setup_version: input.setupVersion,
+      request_id: input.requestId
+    })
+  })
+}

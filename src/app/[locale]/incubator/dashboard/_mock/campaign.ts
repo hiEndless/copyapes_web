@@ -2,7 +2,7 @@ export type MemberRelation = 'SAME' | 'INVERSE'
 export type MemberResult = 'ACTIVE' | 'PROMOTED' | 'ELIMINATED' | 'WINNER'
 export type CampaignStatus = 'READY' | 'RUNNING' | 'COMPLETED' | 'PAUSED'
 export type DataConfidence = 'LIVE' | 'PROVISIONAL' | 'FINAL'
-export type RoundPhase = 'PREPARING' | 'RUNNING' | 'SETTLED'
+export type RoundPhase = 'PREPARING' | 'STARTING' | 'RUNNING' | 'SETTLED'
 export type ExchangeId = 'Binance' | 'OKX' | 'Gate'
 
 export type RoundMember = {
@@ -814,6 +814,8 @@ export function roundPhaseLabel(phase: RoundPhase) {
   switch (phase) {
     case 'PREPARING':
       return '准备中'
+    case 'STARTING':
+      return '启动中'
     case 'RUNNING':
       return '进行中'
     case 'SETTLED':

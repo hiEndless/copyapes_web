@@ -76,6 +76,7 @@ import { listIncubatorApiAccounts } from '@/lib/incubator-api-accounts'
 import {
   createIncubatorCampaign,
   listIncubatorCampaigns,
+  startIncubatorRound,
   updateIncubatorRoundSetup,
   type IncubatorCampaign
 } from '@/lib/incubator-campaigns'
@@ -101,7 +102,7 @@ function fromApiCampaign(item: IncubatorCampaign): Campaign {
       index: round.round_number,
       memberCount: round.expected_member_count,
       netPnl: 0,
-      phase: round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : 'PREPARING',
+      phase: round.status === 'STARTING' ? 'STARTING' : round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : 'PREPARING',
       leaderConfirmed: round.leader_member_id !== null,
       setupVersion: round.setup_version,
       canStart: round.can_start,
@@ -359,6 +360,7 @@ export default function IncubatorBoardPage() {
   const [createOpen, setCreateOpen] = useState(false)
   const [createBusy, setCreateBusy] = useState(false)
   const [setupBusy, setSetupBusy] = useState(false)
+  const [startBusy, setStartBusy] = useState(false)
   const [leaderOpen, setLeaderOpen] = useState(false)
   const [terminateOpen, setTerminateOpen] = useState(false)
   const [endProjectOpen, setEndProjectOpen] = useState(false)
@@ -372,6 +374,7 @@ export default function IncubatorBoardPage() {
   const [pendingWinner, setPendingWinner] = useState<MemberRelation>('SAME')
   const [dragOverRelation, setDragOverRelation] = useState<MemberRelation | null>(null)
   const realLoadGeneration = useRef(0)
+  const startRequestIds = useRef<Record<string, string>>({})
 
   const loadRealData = async () => {
     const generation = ++realLoadGeneration.current
@@ -533,8 +536,8 @@ export default function IncubatorBoardPage() {
     campaign!.status !== 'COMPLETED'
   const groupsBalanced = sameMembers.length === inverseMembers.length && sameMembers.length > 0
   const leaderIsSame = Boolean(leader?.isLeader && leader.relation === 'SAME')
-  const canStart =
-    demoMode && Boolean(activeRound) && isPreparing && activeRound!.leaderConfirmed && leaderIsSame && groupsBalanced
+  const canStart = Boolean(activeRound) && isPreparing && activeRound!.leaderConfirmed && leaderIsSame && groupsBalanced &&
+    (demoMode || activeRound!.canStart === true) && !setupBusy && !startBusy
 
   const busyApiIds = useMemo(() => {
     const ids = new Set<string>()
@@ -698,9 +701,46 @@ export default function IncubatorBoardPage() {
     }
   }
 
-  const handleStartRound = () => {
-    if (!demoMode || !canStart || !campaign) return
-    patchActiveCampaign(prev => startRound(prev))
+  const handleStartRound = async () => {
+    if (!canStart || !campaign || !activeRound) return
+    if (demoMode) {
+      patchActiveCampaign(prev => startRound(prev))
+      return
+    }
+    if (!activeRound.setupVersion) return
+    toast.warning('请确认这些 API 未同时执行 CopyApes 跟单任务；Incubator 不会跨系统强制互斥')
+    const submittedGeneration = realLoadGeneration.current
+    const requestId = startRequestIds.current[activeRound.id] ?? crypto.randomUUID()
+    startRequestIds.current[activeRound.id] = requestId
+    setStartBusy(true)
+    try {
+      const updated = fromApiCampaign(await startIncubatorRound({
+        roundId: activeRound.id,
+        setupVersion: activeRound.setupVersion,
+        requestId
+      }))
+      if (submittedGeneration !== realLoadGeneration.current) {
+        if (!readBoardDemoMode()) {
+          void loadRealData().catch(loadError =>
+            toast.error(loadError instanceof Error ? loadError.message : '项目数据加载失败')
+          )
+        }
+        return
+      }
+      if (readBoardDemoMode()) return
+      delete startRequestIds.current[activeRound.id]
+      upsertCampaign(updated)
+      focusCampaign(updated)
+      toast.success('本轮正在启动，等待运行模块确认')
+    } catch (error) {
+      if (submittedGeneration !== realLoadGeneration.current || readBoardDemoMode()) return
+      toast.error(error instanceof Error ? error.message : '本轮启动失败')
+      void loadRealData().catch(loadError =>
+        toast.error(loadError instanceof Error ? loadError.message : '项目数据加载失败')
+      )
+    } finally {
+      setStartBusy(false)
+    }
   }
 
   const handleTerminate = () => {
@@ -1048,7 +1088,7 @@ export default function IncubatorBoardPage() {
                       disabled={!canStart}
                       onClick={handleStartRound}
                     >
-                      {demoMode ? '开始本轮' : activeRound.canStart ? '已具备启动条件' : '尚未具备条件'}
+                      {startBusy ? '启动中…' : activeRound.phase === 'STARTING' ? '等待运行确认' : '开始本轮'}
                     </Button>
                     <Button
                       type='button'
