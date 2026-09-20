@@ -38,6 +38,8 @@ export interface ApiFormData {
 interface ApiBindFormStepProps {
   formData: ApiFormData
   ipWhitelist: string
+  ipLoading?: boolean
+  ipError?: string | null
   loading: boolean
   onChange: (field: string, value: string | boolean) => void
   onSubmit: (e: React.FormEvent) => void
@@ -51,6 +53,8 @@ const FIELD_INPUT =
 export function ApiBindFormStep({
   formData,
   ipWhitelist,
+  ipLoading = false,
+  ipError = null,
   loading,
   onChange,
   onSubmit
@@ -68,8 +72,12 @@ export function ApiBindFormStep({
   ]
 
   const copyIpWhitelist = async () => {
+    if (!ipList.length) {
+      toast.error('暂无出口 IP 可复制')
+      return
+    }
     try {
-      await navigator.clipboard.writeText(ipWhitelist)
+      await navigator.clipboard.writeText(ipList.join(','))
       toast.success('已复制到剪贴板')
     } catch {
       toast.error('复制失败')
@@ -247,15 +255,29 @@ export function ApiBindFormStep({
                 把以下 IP 全部添加到交易所 API Key 的「受信任 IP」列表，缺一不可：
               </p>
               <div className='mt-2 flex flex-wrap gap-1.5'>
-                {ipList.map((ip) => (
-                  <code
-                    key={ip}
-                    className='bg-background text-foreground rounded-md px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums'
-                  >
-                    {ip}
-                  </code>
-                ))}
+                {ipLoading ? (
+                  <span className='text-muted-foreground inline-flex items-center gap-1.5 text-[11px]'>
+                    <Loader2Icon className='size-3.5 animate-spin' />
+                    正在加载已分配出口 IP…
+                  </span>
+                ) : ipList.length > 0 ? (
+                  ipList.map((ip) => (
+                    <code
+                      key={ip}
+                      className='bg-background text-foreground rounded-md px-2.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums'
+                    >
+                      {ip}
+                    </code>
+                  ))
+                ) : (
+                  <span className='text-destructive text-[11px] font-medium'>
+                    {ipError || '暂无已分配出口 IP'}
+                  </span>
+                )}
               </div>
+              {ipError && ipList.length > 0 ? (
+                <p className='text-destructive mt-2 text-[11px] font-medium'>{ipError}</p>
+              ) : null}
               <p className='text-muted-foreground/80 mt-2 text-[11px] font-medium'>
                 请将以上 IP 全部添加到交易所 API Key 的 IP 白名单，缺一不可。
               </p>

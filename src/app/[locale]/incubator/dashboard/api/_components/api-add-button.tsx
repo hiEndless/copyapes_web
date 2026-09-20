@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { toast } from 'sonner'
 import { PlusIcon } from 'lucide-react'
@@ -8,10 +8,9 @@ import { PlusIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
+import { listIncubatorProxyEgressIps } from '@/lib/incubator-proxy'
 
 import { ApiBindFormStep, type ApiFormData } from './api-bind-form-step'
-
-const EXCHANGE_IP_WHITELIST = process.env.NEXT_PUBLIC_IP_WHITELIST ?? '127.0.0.1'
 
 const INITIAL_FORM_DATA: ApiFormData = {
   exchange: 'binance',
@@ -29,16 +28,48 @@ export function ApiAddButton({
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState<ApiFormData>(INITIAL_FORM_DATA)
+  const [ipWhitelist, setIpWhitelist] = useState('')
+  const [ipLoading, setIpLoading] = useState(false)
+  const [ipError, setIpError] = useState<string | null>(null)
 
   const resetDialog = () => {
     setFormData(INITIAL_FORM_DATA)
     setLoading(false)
+    setIpWhitelist('')
+    setIpLoading(false)
+    setIpError(null)
   }
 
   const handleOpenChange = (nextOpen: boolean) => {
     setOpen(nextOpen)
     if (!nextOpen) resetDialog()
   }
+
+  useEffect(() => {
+    if (!open) return
+    let cancelled = false
+    setIpLoading(true)
+    setIpError(null)
+    listIncubatorProxyEgressIps()
+      .then(payload => {
+        if (cancelled) return
+        setIpWhitelist(payload.egress_ips.join(','))
+        if (payload.egress_ips.length === 0) {
+          setIpError('尚未分配可用出口 IP，请稍后重试或联系管理员')
+        }
+      })
+      .catch(error => {
+        if (cancelled) return
+        setIpWhitelist('')
+        setIpError(error instanceof Error ? error.message : '出口 IP 加载失败')
+      })
+      .finally(() => {
+        if (!cancelled) setIpLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [open])
 
   const handleChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({ ...prev, [field]: value }))
@@ -54,6 +85,16 @@ export function ApiAddButton({
 
     if (!formData.api_key.trim() || !formData.api_secret.trim()) {
       toast.error('请填写 API Key 与 Secret')
+      return
+    }
+
+    if (ipLoading) {
+      toast.error('出口 IP 加载中，请稍候')
+      return
+    }
+
+    if (!ipWhitelist.trim()) {
+      toast.error(ipError || '暂无可用出口 IP，无法绑定')
       return
     }
 
@@ -85,7 +126,9 @@ export function ApiAddButton({
       >
         <ApiBindFormStep
           formData={formData}
-          ipWhitelist={EXCHANGE_IP_WHITELIST}
+          ipWhitelist={ipWhitelist}
+          ipLoading={ipLoading}
+          ipError={ipError}
           loading={loading}
           onChange={handleChange}
           onSubmit={handleSubmit}

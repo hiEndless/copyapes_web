@@ -7,6 +7,7 @@ const ROUTE_METHODS: Readonly<Record<string, readonly string[]>> = {
   'auth/sso/login': ['POST'],
   'api-accounts': ['GET', 'POST'],
   'campaigns': ['GET', 'POST'],
+  'proxy-assignments/egress-ips': ['GET'],
 }
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
