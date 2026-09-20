@@ -69,6 +69,7 @@ import {
   type MemberRelation,
   type OpenPosition,
   type PromoteResultSummary,
+  type RoundSnapshot,
   type RoundMember
 } from '../_mock/campaign'
 import { TradeTimeline } from '../_components/trade-timeline'
@@ -82,6 +83,15 @@ import {
 } from '@/lib/incubator-campaigns'
 
 const STARTING_POLL_INTERVAL_MS = 2_500
+
+function roundSetupSignature(round: RoundSnapshot): string {
+  const leaderMemberId = round.members.find(member => member.isLeader)?.id ?? null
+  const assignments = round.members
+    .map(member => [member.id, member.relation] as const)
+    .sort(([left], [right]) => left.localeCompare(right))
+
+  return JSON.stringify({ leaderMemberId, assignments })
+}
 
 function fromApiCampaign(item: IncubatorCampaign): Campaign {
   const exchange = item.exchange === 'BINANCE' ? 'Binance' : item.exchange === 'GATE' ? 'Gate' : 'OKX'
@@ -375,6 +385,15 @@ export default function IncubatorBoardPage() {
   const [dragOverRelation, setDragOverRelation] = useState<MemberRelation | null>(null)
   const realLoadGeneration = useRef(0)
   const startRequestIds = useRef<Record<string, string>>({})
+  const savedSetupSignatures = useRef<Record<string, string>>({})
+
+  const rememberPersistedCampaigns = (items: Campaign[]) => {
+    for (const item of items) {
+      for (const round of item.rounds) {
+        savedSetupSignatures.current[round.id] = roundSetupSignature(round)
+      }
+    }
+  }
 
   const loadRealData = async () => {
     const generation = ++realLoadGeneration.current
@@ -395,6 +414,7 @@ export default function IncubatorBoardPage() {
     }
     if (generation !== realLoadGeneration.current || readBoardDemoMode()) return
     const nextCampaigns = campaignItems.map(fromApiCampaign)
+    rememberPersistedCampaigns(nextCampaigns)
     setCampaigns(nextCampaigns)
     setIdleApis(
       accountItems
@@ -506,7 +526,9 @@ export default function IncubatorBoardPage() {
         ) {
           return
         }
-        setCampaigns(campaignItems.map(fromApiCampaign))
+        const nextCampaigns = campaignItems.map(fromApiCampaign)
+        rememberPersistedCampaigns(nextCampaigns)
+        setCampaigns(nextCampaigns)
       } catch {
         // Keep the last known STARTING state and retry. User-triggered actions still surface errors.
       } finally {
@@ -526,6 +548,13 @@ export default function IncubatorBoardPage() {
     if (!activeRound) return null
     return activeRound.members.find(member => member.id === selectedMemberId) ?? activeRound.members[0]
   }, [activeRound, selectedMemberId])
+
+  const setupDirty = Boolean(
+    !demoMode &&
+      activeRound &&
+      savedSetupSignatures.current[activeRound.id] !== undefined &&
+      savedSetupSignatures.current[activeRound.id] !== roundSetupSignature(activeRound)
+  )
 
   const sameMembers = activeRound?.members.filter(member => member.relation === 'SAME') ?? []
   const inverseMembers = activeRound?.members.filter(member => member.relation === 'INVERSE') ?? []
@@ -572,7 +601,7 @@ export default function IncubatorBoardPage() {
   const groupsBalanced = sameMembers.length === inverseMembers.length && sameMembers.length > 0
   const leaderIsSame = Boolean(leader?.isLeader && leader.relation === 'SAME')
   const canStart = Boolean(activeRound) && isPreparing && activeRound!.leaderConfirmed && leaderIsSame && groupsBalanced &&
-    (demoMode || activeRound!.canStart === true) && !setupBusy && !startBusy
+    (demoMode || activeRound!.canStart === true) && !setupDirty && !setupBusy && !startBusy
 
   const busyApiIds = useMemo(() => {
     const ids = new Set<string>()
@@ -652,6 +681,8 @@ export default function IncubatorBoardPage() {
         ? createCampaignFromApis({ name: createName, exchange: createExchange, apis })
         : fromApiCampaign(await createIncubatorCampaign(createName.trim(), selectedApiIds))
 
+      if (!submittedInDemo) rememberPersistedCampaigns([next])
+
       if (!submittedInDemo && submittedGeneration !== realLoadGeneration.current) {
         if (!readBoardDemoMode()) {
           void loadRealData().catch(error =>
@@ -721,16 +752,15 @@ export default function IncubatorBoardPage() {
         return
       }
       if (readBoardDemoMode()) return
+      rememberPersistedCampaigns([updated])
       upsertCampaign(updated)
       focusCampaign(updated)
       setLeaderOpen(false)
       toast.success('本轮配置已保存')
     } catch (error) {
       if (submittedGeneration !== realLoadGeneration.current || readBoardDemoMode()) return
-      toast.error(error instanceof Error ? error.message : '本轮配置保存失败')
-      void loadRealData().catch(loadError =>
-        toast.error(loadError instanceof Error ? loadError.message : '项目数据加载失败')
-      )
+      const message = error instanceof Error ? error.message : '本轮配置保存失败'
+      toast.error(`${message}；未保存草稿已保留`)
     } finally {
       setSetupBusy(false)
     }
@@ -764,6 +794,7 @@ export default function IncubatorBoardPage() {
       }
       if (readBoardDemoMode()) return
       delete startRequestIds.current[activeRound.id]
+      rememberPersistedCampaigns([updated])
       upsertCampaign(updated)
       focusCampaign(updated)
       toast.success('本轮正在启动，等待运行模块确认')
@@ -1078,6 +1109,7 @@ export default function IncubatorBoardPage() {
                       </CardTitle>
                       <p className='mt-1 text-xs text-white/75'>
                         领单 {leader?.apiLabel ?? '未确认'} · {confidenceLabel(campaign.confidence)}
+                        {setupDirty ? ' · 配置未保存' : ''}
                       </p>
                     </div>
                   </div>
@@ -1134,7 +1166,13 @@ export default function IncubatorBoardPage() {
                       disabled={!canStart}
                       onClick={handleStartRound}
                     >
-                      {startBusy ? '启动中…' : activeRound.phase === 'STARTING' ? '等待运行确认' : '开始本轮'}
+                      {startBusy
+                        ? '启动中…'
+                        : activeRound.phase === 'STARTING'
+                          ? '等待运行确认'
+                          : setupDirty
+                            ? '请先保存配置'
+                            : '开始本轮'}
                     </Button>
                     <Button
                       type='button'
