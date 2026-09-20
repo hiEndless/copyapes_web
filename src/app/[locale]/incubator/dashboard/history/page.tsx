@@ -68,12 +68,12 @@ export default function IncubatorHistoryPage() {
         <Card className='border-dashed py-16 shadow-none'>
           <CardContent className='flex flex-col items-center justify-center text-center'>
             <p className='text-sm font-medium'>
-              {demoMode ? '暂无历史项目' : '真实模式暂无历史数据'}
+              {demoMode ? '暂无历史项目' : '历史 Campaign 接口待接入'}
             </p>
             <p className='text-muted-foreground mt-1 text-xs'>
               {demoMode
                 ? '结束后的项目会出现在这里'
-                : '请到项目看板开启「模拟演示」同步载入历史 mock'}
+                : '当前不会展示模拟结果；如需查看交互样例，请在项目看板显式开启模拟演示'}
             </p>
           </CardContent>
         </Card>

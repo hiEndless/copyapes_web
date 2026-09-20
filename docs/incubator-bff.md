@@ -14,4 +14,6 @@
 - 真实模式拖拽采用本地草稿：页面以最近一次后端响应中的 Leader 与 SAME/INVERSE assignment 为保存快照，草稿偏离快照时显示“配置未保存”并禁止启动；拖回原值或 `PUT setup` 成功后恢复 clean。
 - 存在真实模式未保存草稿时，切换 Campaign、切换 Demo/真实模式、站内离开以及刷新/关闭页面前必须提示确认；clean 状态和 Demo 不注册离开守卫。
 - 创建 Campaign 的账号预筛选只隐藏处于 `STARTING/RUNNING/PAUSING` Round 的 Runtime Claim 账号，并显示隐藏数量；`READY/ERROR/COMPLETED` 成员不视为运行占用，最终并发互斥仍以后端 Start 原子 Claim 为准。
+- Campaign 状态采用显式白名单映射：仅后端 `ACTIVE` 映射为前端 `RUNNING`，`ERROR` 与未知值分别显示异常/未知状态。真实收益、交易、余额、仓位、时间线和历史接口接入前统一显示“待接入”，不得用零值或 mock 数据伪装真实结果。
+- Campaign 只有 `READY/RUNNING` 可进入 Round Setup，只有 `RUNNING` 可执行运行态操作；`ERROR/UNKNOWN/COMPLETED/PAUSED` 对拖拽、Setup 与 Start 一律失败关闭。
 - 回滚：移除 `/dashboard/Sync` 入口或将流量切回旧版本即可；该路由不写本地状态。

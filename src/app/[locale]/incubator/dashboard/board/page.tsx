@@ -95,12 +95,24 @@ function roundSetupSignature(round: RoundSnapshot): string {
 
 function fromApiCampaign(item: IncubatorCampaign): Campaign {
   const exchange = item.exchange === 'BINANCE' ? 'Binance' : item.exchange === 'GATE' ? 'Gate' : 'OKX'
+  const status =
+    item.status === 'READY'
+      ? 'READY'
+      : item.status === 'ACTIVE'
+        ? 'RUNNING'
+        : item.status === 'COMPLETED'
+          ? 'COMPLETED'
+          : item.status === 'PAUSED'
+            ? 'PAUSED'
+            : item.status === 'ERROR'
+              ? 'ERROR'
+              : 'UNKNOWN'
   return {
     id: item.id,
     code: item.code,
     name: item.name,
     exchange,
-    status: item.status === 'READY' ? 'READY' : item.status === 'COMPLETED' ? 'COMPLETED' : 'RUNNING',
+    status,
     confidence: item.status === 'COMPLETED' ? 'FINAL' : 'LIVE',
     initialAccounts: item.initial_account_count,
     currentRound: item.current_round,
@@ -114,7 +126,7 @@ function fromApiCampaign(item: IncubatorCampaign): Campaign {
       index: round.round_number,
       memberCount: round.expected_member_count,
       netPnl: 0,
-      phase: round.status === 'STARTING' ? 'STARTING' : round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : round.status === 'ERROR' ? 'ERROR' : 'PREPARING',
+      phase: ['LOCKED', 'READY'].includes(round.status) ? 'PREPARING' : round.status === 'STARTING' ? 'STARTING' : round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : round.status === 'ERROR' ? 'ERROR' : 'UNKNOWN',
       leaderConfirmed: round.leader_member_id !== null,
       setupVersion: round.setup_version,
       canStart: round.can_start,
@@ -284,17 +296,19 @@ function MemberCard({
   member,
   selected,
   draggable,
+  detailsAvailable,
   onSelect,
   onDragStart
 }: {
   member: RoundMember
   selected: boolean
   draggable: boolean
+  detailsAvailable: boolean
   onSelect: () => void
   onDragStart: (event: DragEvent<HTMLButtonElement>) => void
 }) {
-  const balance = memberBalance(member)
-  const lowBalance = isLowBalance(balance)
+  const balance = detailsAvailable ? memberBalance(member) : 0
+  const lowBalance = detailsAvailable && isLowBalance(balance)
 
   return (
     <button
@@ -331,21 +345,25 @@ function MemberCard({
             )}
           </div>
           <p className='text-muted-foreground mt-0.5 text-[11px]'>
-            {member.trades} 笔 · 可用{' '}
-            <span
-              className={cn(
-                'tabular-nums',
-                lowBalance ? 'font-medium text-amber-700 dark:text-amber-300' : 'text-foreground/80'
-              )}
-            >
-              {balance.toLocaleString(undefined, { maximumFractionDigits: 1 })} U
-            </span>
+            {detailsAvailable ? (
+              <>
+                {member.trades} 笔 · 可用{' '}
+                <span
+                  className={cn(
+                    'tabular-nums',
+                    lowBalance ? 'font-medium text-amber-700 dark:text-amber-300' : 'text-foreground/80'
+                  )}
+                >
+                  {balance.toLocaleString(undefined, { maximumFractionDigits: 1 })} U
+                </span>
+              </>
+            ) : '交易与余额明细待接入'}
           </p>
         </div>
       </div>
       <div className='shrink-0 text-right'>
         <p className='text-muted-foreground text-[10px]'>本轮</p>
-        <PnlText value={member.pnl} className='text-sm' />
+        {detailsAvailable ? <PnlText value={member.pnl} className='text-sm' /> : <span className='text-muted-foreground text-xs'>待接入</span>}
       </div>
     </button>
   )
@@ -599,7 +617,7 @@ export default function IncubatorBoardPage() {
   const inverseNet = inverseMembers.reduce((sum, member) => sum + member.pnl, 0)
   const leader = activeRound?.members.find(member => member.isLeader)
   const unsettled = campaign ? Math.max(campaign.cycles - campaign.settled, 0) : 0
-  const openPositions = getLeaderOpenPositions(leader?.apiId, activeRound?.phase)
+  const openPositions = demoMode ? getLeaderOpenPositions(leader?.apiId, activeRound?.phase) : []
   const endProjectBlockReason = (() => {
     if (!campaign || campaign.status === 'COMPLETED') return null
     if (activeRound?.phase === 'RUNNING') {
@@ -614,27 +632,29 @@ export default function IncubatorBoardPage() {
     return null
   })()
   const canEndProject = !endProjectBlockReason
-  const closedPositions = getLeaderClosedPositions(leader?.apiId)
+  const closedPositions = demoMode ? getLeaderClosedPositions(leader?.apiId) : []
   const inspectingLeader = Boolean(
     selectedMember && leader && (selectedMember.isLeader || selectedMember.id === leader.id)
   )
   const recordsTabLabel = inspectingLeader ? '领单记录' : '跟单记录'
-  const tradeTimeline = getMemberTradeTimeline({
-    apiId: selectedMember?.apiId,
-    apiLabel: selectedMember?.apiLabel,
-    isLeader: inspectingLeader
-  })
+  const tradeTimeline = demoMode
+    ? getMemberTradeTimeline({
+        apiId: selectedMember?.apiId,
+        apiLabel: selectedMember?.apiLabel,
+        isLeader: inspectingLeader
+      })
+    : []
 
   const isPreparing =
     Boolean(campaign && activeRound) &&
     viewingCurrent &&
     activeRound!.phase === 'PREPARING' &&
-    campaign!.status !== 'COMPLETED'
+    ['READY', 'RUNNING'].includes(campaign!.status)
   const isRunning =
     Boolean(campaign && activeRound) &&
     viewingCurrent &&
     activeRound!.phase === 'RUNNING' &&
-    campaign!.status !== 'COMPLETED'
+    campaign!.status === 'RUNNING'
   const groupsBalanced = sameMembers.length === inverseMembers.length && sameMembers.length > 0
   const leaderIsSame = Boolean(leader?.isLeader && leader.relation === 'SAME')
   const canStart = Boolean(activeRound) && isPreparing && activeRound!.leaderConfirmed && leaderIsSame && groupsBalanced &&
@@ -673,8 +693,11 @@ export default function IncubatorBoardPage() {
   const selectedBalanceTotal = useMemo(() => {
     return availableApis
       .filter(api => selectedApiIds.includes(api.id))
-      .reduce((sum, api) => sum + (api.balanceUsdt ?? mockBalanceForApi(api.id)), 0)
-  }, [availableApis, selectedApiIds])
+      .reduce((sum, api) => sum + (api.balanceUsdt ?? (demoMode ? mockBalanceForApi(api.id) : 0)), 0)
+  }, [availableApis, selectedApiIds, demoMode])
+  const selectedBalancePending = !demoMode && availableApis.some(
+    api => selectedApiIds.includes(api.id) && api.balanceUsdt === undefined
+  )
 
   const openInspector = (member: RoundMember) => {
     setSelectedMemberId(member.id)
@@ -764,6 +787,10 @@ export default function IncubatorBoardPage() {
 
   const handleConfirmLeader = async () => {
     if (!pendingLeaderId || !campaign) return
+    if (!isPreparing) {
+      toast.error('当前项目或轮次状态不允许修改配置')
+      return
+    }
     const candidate = sameMembers.find(member => member.id === pendingLeaderId)
     if (!candidate) {
       setPendingLeaderId(sameMembers[0]?.id ?? null)
@@ -1106,20 +1133,20 @@ export default function IncubatorBoardPage() {
                 </div>
               </CardHeader>
               <CardContent className='dark:bg-muted/15 grid grid-cols-2 border-t border-border/60 p-0 sm:grid-cols-4'>
-                <Metric label='项目净收益' value={<PnlText value={campaign.campaignNet} />} tinted />
-                <Metric label='手续费' value={<PnlText value={campaign.fees} />} tinted />
+                <Metric label='项目净收益' value={demoMode ? <PnlText value={campaign.campaignNet} /> : '待接入'} tinted />
+                <Metric label='手续费' value={demoMode ? <PnlText value={campaign.fees} /> : '待接入'} tinted />
                 <Metric
                   label='交易周期'
-                  value={<span className='tabular-nums'>{campaign.cycles}</span>}
+                  value={demoMode ? <span className='tabular-nums'>{campaign.cycles}</span> : '待接入'}
                   tinted
                 />
                 <Metric
                   label='结算进度'
-                  value={
+                  value={demoMode ? (
                     <span className='tabular-nums'>
                       {campaign.settled} / {campaign.cycles}
                     </span>
-                  }
+                  ) : '待接入'}
                   tinted
                 />
               </CardContent>
@@ -1181,12 +1208,12 @@ export default function IncubatorBoardPage() {
                 </div>
               </CardHeader>
               <CardContent className='dark:bg-muted/15 grid grid-cols-2 border-t border-border/60 p-0 sm:grid-cols-4'>
-                <Metric label='本轮净收益' value={<PnlText value={activeRound.netPnl} />} tinted />
-                <Metric label='同向净收益' value={<PnlText value={sameNet} />} tinted />
-                <Metric label='反向净收益' value={<PnlText value={inverseNet} />} tinted />
+                <Metric label='本轮净收益' value={demoMode ? <PnlText value={activeRound.netPnl} /> : '待接入'} tinted />
+                <Metric label='同向净收益' value={demoMode ? <PnlText value={sameNet} /> : '待接入'} tinted />
+                <Metric label='反向净收益' value={demoMode ? <PnlText value={inverseNet} /> : '待接入'} tinted />
                 <Metric
                   label='未结算'
-                  value={<span className='tabular-nums'>{unsettled}</span>}
+                  value={demoMode ? <span className='tabular-nums'>{unsettled}</span> : '待接入'}
                   tinted
                 />
               </CardContent>
@@ -1396,6 +1423,7 @@ export default function IncubatorBoardPage() {
                           member={member}
                           selected={selectedMember?.id === member.id}
                           draggable={isPreparing}
+                          detailsAvailable={demoMode}
                           onSelect={() => openInspector(member)}
                           onDragStart={onMemberDragStart(member)}
                         />
@@ -1433,12 +1461,12 @@ export default function IncubatorBoardPage() {
                   <p className='text-muted-foreground/90 text-[11px] font-medium'>
                     第 {round.index} 轮 · {round.memberCount} 账号
                   </p>
-                  <PnlText value={round.netPnl} className='mt-1.5 block text-sm' />
+                  {demoMode ? <PnlText value={round.netPnl} className='mt-1.5 block text-sm' /> : <span className='text-muted-foreground mt-1.5 block text-sm'>待接入</span>}
                 </div>
               ))}
               <div className='bg-primary/5 dark:bg-primary/10 px-4 py-3'>
                 <p className='text-primary text-[11px] font-medium'>项目合计</p>
-                <PnlText value={campaign.campaignNet} className='mt-1.5 block text-sm' />
+                {demoMode ? <PnlText value={campaign.campaignNet} className='mt-1.5 block text-sm' /> : <span className='text-muted-foreground mt-1.5 block text-sm'>待接入</span>}
               </div>
             </CardContent>
           </Card>
@@ -1470,13 +1498,15 @@ export default function IncubatorBoardPage() {
                   {leader ? ` · ${leader.apiLabel}` : ' · 未确认'}
                 </p>
                 <div className='max-h-48 overflow-y-auto pr-0.5'>
-                  {!leader ? (
+                  {!demoMode ? (
+                    <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-[11px]'>真实仓位接口待接入</p>
+                  ) : !leader ? (
                     <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-[11px]'>
                       尚未确认领单，暂无仓位
                     </p>
                   ) : openPositions.length === 0 ? (
                     <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-[11px]'>
-                      领单暂无当前持仓
+                      {demoMode ? '领单暂无当前持仓' : '真实仓位接口待接入'}
                     </p>
                   ) : (
                     <div className='grid grid-cols-2 gap-1.5'>
@@ -1516,14 +1546,16 @@ export default function IncubatorBoardPage() {
             <TabsContent value='copies' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
               <TradeTimeline
                 items={tradeTimeline}
-                emptyText={inspectingLeader ? '暂无领单记录' : '暂无跟单记录'}
+                emptyText={demoMode ? (inspectingLeader ? '暂无领单记录' : '暂无跟单记录') : '真实交易记录接口待接入'}
               />
             </TabsContent>
             <TabsContent value='positions' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
-              {!leader ? (
+              {!demoMode ? (
+                <p className='text-muted-foreground text-center text-[11px]'>真实仓位接口待接入</p>
+              ) : !leader ? (
                 <p className='text-muted-foreground text-center text-[11px]'>尚未确认领单，暂无仓位</p>
               ) : openPositions.length === 0 ? (
-                <p className='text-muted-foreground text-center text-[11px]'>领单暂无当前持仓</p>
+                <p className='text-muted-foreground text-center text-[11px]'>{demoMode ? '领单暂无当前持仓' : '真实仓位接口待接入'}</p>
               ) : (
                 <div className='grid grid-cols-2 gap-1.5'>
                   {openPositions.map(position => (
@@ -1533,10 +1565,12 @@ export default function IncubatorBoardPage() {
               )}
             </TabsContent>
             <TabsContent value='history' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
-              {!leader ? (
+              {!demoMode ? (
+                <p className='text-muted-foreground text-center text-[11px]'>真实历史持仓接口待接入</p>
+              ) : !leader ? (
                 <p className='text-muted-foreground text-center text-[11px]'>尚未确认领单，暂无历史仓位</p>
               ) : closedPositions.length === 0 ? (
-                <p className='text-muted-foreground text-center text-[11px]'>暂无历史持仓</p>
+                <p className='text-muted-foreground text-center text-[11px]'>{demoMode ? '暂无历史持仓' : '真实历史持仓接口待接入'}</p>
               ) : (
                 <div className='grid grid-cols-2 gap-1.5'>
                   {closedPositions.map(position => (
@@ -1609,7 +1643,9 @@ export default function IncubatorBoardPage() {
                   {runtimeClaimedCount > 0 ? ` · ${runtimeClaimedCount} 个运行占用已隐藏` : ''}
                   {!selectionValid && selectedApiIds.length > 0 ? ' · 须为 2 的幂' : ''}
                   {selectedApiIds.length > 0
-                    ? ` · 合计可用 ${selectedBalanceTotal.toLocaleString(undefined, { maximumFractionDigits: 1 })} U`
+                    ? selectedBalancePending
+                      ? ' · 合计可用待接入'
+                      : ` · 合计可用 ${selectedBalanceTotal.toLocaleString(undefined, { maximumFractionDigits: 1 })} U`
                     : ''}
                 </span>
               </div>
@@ -1621,8 +1657,8 @@ export default function IncubatorBoardPage() {
                 ) : (
                   availableApis.map(api => {
                     const checked = selectedApiIds.includes(api.id)
-                    const balance = api.balanceUsdt ?? mockBalanceForApi(api.id)
-                    const low = isLowBalance(balance)
+                    const balance = api.balanceUsdt ?? (demoMode ? mockBalanceForApi(api.id) : null)
+                    const low = balance !== null && isLowBalance(balance)
                     return (
                       <label
                         key={api.id}
@@ -1642,7 +1678,9 @@ export default function IncubatorBoardPage() {
                                 : 'text-muted-foreground'
                             )}
                           >
-                            可用 {balance.toLocaleString(undefined, { maximumFractionDigits: 1 })} U
+                            {balance === null
+                              ? '可用余额待接入'
+                              : `可用 ${balance.toLocaleString(undefined, { maximumFractionDigits: 1 })} U`}
                           </span>
                           {low && (
                             <span className='shrink-0 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-medium text-amber-700 dark:text-amber-300'>

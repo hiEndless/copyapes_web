@@ -1,8 +1,8 @@
 export type MemberRelation = 'SAME' | 'INVERSE'
 export type MemberResult = 'ACTIVE' | 'PROMOTED' | 'ELIMINATED' | 'WINNER'
-export type CampaignStatus = 'READY' | 'RUNNING' | 'COMPLETED' | 'PAUSED'
+export type CampaignStatus = 'READY' | 'RUNNING' | 'COMPLETED' | 'PAUSED' | 'ERROR' | 'UNKNOWN'
 export type DataConfidence = 'LIVE' | 'PROVISIONAL' | 'FINAL'
-export type RoundPhase = 'PREPARING' | 'STARTING' | 'RUNNING' | 'SETTLED' | 'ERROR'
+export type RoundPhase = 'PREPARING' | 'STARTING' | 'RUNNING' | 'SETTLED' | 'ERROR' | 'UNKNOWN'
 export type ExchangeId = 'Binance' | 'OKX' | 'Gate'
 
 export type RoundMember = {
@@ -776,6 +776,10 @@ export function campaignStatusLabel(status: CampaignStatus) {
       return '已结束'
     case 'PAUSED':
       return '已暂停'
+    case 'ERROR':
+      return '异常'
+    case 'UNKNOWN':
+      return '未知状态'
     default:
       return status
   }
@@ -823,6 +827,8 @@ export function roundPhaseLabel(phase: RoundPhase) {
       return '已结算'
     case 'ERROR':
       return '启动失败'
+    case 'UNKNOWN':
+      return '未知状态'
     default:
       return phase
   }
