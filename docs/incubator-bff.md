@@ -12,4 +12,5 @@
 - Round 进入 `STARTING` 后，看板每 2.5 秒刷新 Campaign 列表；收到 Runtime 回执并呈现 `RUNNING`/`ERROR` 等非 `STARTING` 状态后自动停止轮询，页面不调用内部 Runtime 回执接口。
 - 终止本轮、整侧晋级和结束项目在后端接口发布前仅可用于显式 Demo；真实模式必须禁用并标记“待接入”，不得通过本地状态模拟成功。
 - 真实模式拖拽采用本地草稿：页面以最近一次后端响应中的 Leader 与 SAME/INVERSE assignment 为保存快照，草稿偏离快照时显示“配置未保存”并禁止启动；拖回原值或 `PUT setup` 成功后恢复 clean。
+- 存在真实模式未保存草稿时，切换 Campaign、切换 Demo/真实模式、站内离开以及刷新/关闭页面前必须提示确认；clean 状态和 Demo 不注册离开守卫。
 - 回滚：移除 `/dashboard/Sync` 入口或将流量切回旧版本即可；该路由不写本地状态。

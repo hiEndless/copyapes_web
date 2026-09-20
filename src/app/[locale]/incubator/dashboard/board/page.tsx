@@ -448,6 +448,7 @@ export default function IncubatorBoardPage() {
   }, [])
 
   const applyDemoMode = (enabled: boolean) => {
+    if (!confirmLeaveSetupDraft()) return
     writeBoardDemoMode(enabled)
     setDemoMode(enabled)
     setPromoteResult(null)
@@ -555,6 +556,41 @@ export default function IncubatorBoardPage() {
       savedSetupSignatures.current[activeRound.id] !== undefined &&
       savedSetupSignatures.current[activeRound.id] !== roundSetupSignature(activeRound)
   )
+
+  function confirmLeaveSetupDraft(): boolean {
+    return !setupDirty || window.confirm('当前配置尚未保存，确定离开当前视图吗？')
+  }
+
+  useEffect(() => {
+    if (!setupDirty) return
+
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    const handleLinkClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return
+      }
+      const target = event.target
+      const anchor = target instanceof Element ? target.closest<HTMLAnchorElement>('a[href]') : null
+      if (!anchor || anchor.target === '_blank' || anchor.hasAttribute('download')) return
+      const nextUrl = new URL(anchor.href, window.location.href)
+      const currentUrl = new URL(window.location.href)
+      if (nextUrl.pathname === currentUrl.pathname && nextUrl.search === currentUrl.search) return
+      if (!window.confirm('当前配置尚未保存，确定离开当前视图吗？')) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    document.addEventListener('click', handleLinkClick, true)
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('click', handleLinkClick, true)
+    }
+  }, [setupDirty])
 
   const sameMembers = activeRound?.members.filter(member => member.relation === 'SAME') ?? []
   const inverseMembers = activeRound?.members.filter(member => member.relation === 'INVERSE') ?? []
@@ -668,6 +704,7 @@ export default function IncubatorBoardPage() {
 
   const handleCreateCampaign = async () => {
     if (!selectionValid) return
+    if (!demoMode && !confirmLeaveSetupDraft()) return
     const submittedInDemo = demoMode
     const submittedGeneration = realLoadGeneration.current
     const apis = availableApis
@@ -905,7 +942,7 @@ export default function IncubatorBoardPage() {
 
   const handleSwitchCampaign = (id: string) => {
     const next = campaigns.find(item => item.id === id)
-    if (!next) return
+    if (!next || next.id === campaign?.id || !confirmLeaveSetupDraft()) return
     focusCampaign(next)
   }
 
@@ -1262,6 +1299,7 @@ export default function IncubatorBoardPage() {
                     key={round.id}
                     type='button'
                     onClick={() => {
+                      if (round.index === roundIndex || !confirmLeaveSetupDraft()) return
                       setRoundIndex(round.index)
                       setSelectedMemberId(
                         round.members.find(m => m.isLeader)?.id ?? round.members[0]?.id ?? null
