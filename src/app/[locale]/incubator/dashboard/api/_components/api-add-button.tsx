@@ -17,7 +17,8 @@ const INITIAL_FORM_DATA: ApiFormData = {
   api_label: '',
   api_key: '',
   api_secret: '',
-  api_passphrase: ''
+  api_passphrase: '',
+  flag: 0
 }
 
 export function ApiAddButton({
@@ -71,7 +72,7 @@ export function ApiAddButton({
     }
   }, [open])
 
-  const handleChange = (field: string, value: string | boolean) => {
+  const handleChange = (field: string, value: string | boolean | 0 | 1) => {
     setFormData(prev => ({ ...prev, [field]: value }))
   }
 

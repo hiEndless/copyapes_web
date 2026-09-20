@@ -7,6 +7,7 @@ export type ApiItem = {
   create_datetime: string
   status: number
   roleType?: string | null
+  flag?: 0 | 1
 }
 
 export const MOCK_API_LIST: ApiItem[] = [

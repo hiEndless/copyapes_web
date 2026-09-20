@@ -2,7 +2,8 @@ export type IncubatorApiAccount = {
   id: string
   label: string
   exchange: 'BINANCE' | 'OKX' | 'GATE'
-  environment: 'LIVE'
+  environment: 'LIVE' | 'DEMO'
+  flag: 0 | 1
   status: string
   masked_api_key: string
   exchange_uid: string | null
@@ -22,6 +23,7 @@ export type AddIncubatorApiAccount = {
   api_key: string
   secret_key: string
   passphrase?: string
+  flag?: 0 | 1
 }
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
@@ -59,7 +61,10 @@ export function listIncubatorApiAccounts() {
 export function addIncubatorApiAccount(input: AddIncubatorApiAccount) {
   return request<IncubatorApiAccount>('api-accounts', {
     method: 'POST',
-    body: JSON.stringify(input)
+    body: JSON.stringify({
+      ...input,
+      flag: input.flag ?? 0
+    })
   })
 }
 

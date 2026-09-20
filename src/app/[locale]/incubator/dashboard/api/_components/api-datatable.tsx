@@ -85,6 +85,11 @@ const getColumns = (
             ) : null}
           </div>
           <span className='font-medium'>{row.getValue('api_name') || '-'}</span>
+          {row.original.flag === 1 ? (
+            <span className='bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded px-1.5 py-px text-[10px] font-semibold'>
+              模拟盘
+            </span>
+          ) : null}
           {actionsEnabled && (
             <Button
               variant='ghost'

@@ -33,6 +33,7 @@ export interface ApiFormData {
   api_key: string
   api_secret: string
   api_passphrase: string
+  flag: 0 | 1
 }
 
 interface ApiBindFormStepProps {
@@ -41,7 +42,7 @@ interface ApiBindFormStepProps {
   ipLoading?: boolean
   ipError?: string | null
   loading: boolean
-  onChange: (field: string, value: string | boolean) => void
+  onChange: (field: string, value: string | boolean | 0 | 1) => void
   onSubmit: (e: React.FormEvent) => void
 }
 
@@ -168,6 +169,34 @@ export function ApiBindFormStep({
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
+
+          {process.env.NEXT_PUBLIC_INCUBATOR_ALLOW_DEMO_API === '1' ? (
+            <div>
+              <label className={FIELD_LABEL}>交易环境 *</label>
+              <div className='bg-muted grid grid-cols-2 gap-1 rounded-md p-1'>
+                {(
+                  [
+                    { value: 0 as const, label: '实盘' },
+                    { value: 1 as const, label: '模拟盘' }
+                  ] as const
+                ).map(option => (
+                  <button
+                    key={option.value}
+                    type='button'
+                    className={cn(
+                      'h-9 rounded-md text-[13px] font-semibold transition-colors',
+                      formData.flag === option.value
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                    onClick={() => onChange('flag', option.value)}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
 
           <div>
             <label htmlFor='api_label' className={FIELD_LABEL}>

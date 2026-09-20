@@ -27,7 +27,8 @@ function toApiItem(account: IncubatorApiAccount): ApiItem {
     usdt: account.available_balance == null ? null : Number(account.available_balance),
     create_datetime: account.created_at,
     status: account.status === 'ACTIVE' ? 1 : 0,
-    roleType: null
+    roleType: null,
+    flag: account.flag === 1 ? 1 : 0
   }
 }
 
@@ -48,7 +49,8 @@ export default function IncubatorApiPage() {
       label: input.api_label,
       api_key: input.api_key,
       secret_key: input.api_secret,
-      passphrase: input.api_passphrase || undefined
+      passphrase: input.api_passphrase || undefined,
+      flag: input.flag
     })
     setData(prev => [toApiItem(account), ...prev])
   }
