@@ -168,6 +168,15 @@ function exchangeMeta(id: ExchangeId) {
   return EXCHANGES.find(item => item.exchange === id)!
 }
 
+const SECTION_HEADER_CLASS =
+  'border-border/60 bg-gradient-to-b from-background to-muted/20 dark:to-muted/10'
+
+const VIP_HEADER_CLASS =
+  'border-border/60 bg-gradient-to-b from-primary/8 via-primary/4 to-background dark:from-primary/15 dark:via-primary/5 dark:to-background'
+
+const RENEW_BTN_CLASS =
+  'h-7 border-amber-500/50 bg-transparent text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
+
 export default function IncubatorPricingPage() {
   const [exchanges] = useState(EXCHANGES)
   const [seats, setSeats] = useState(INITIAL_SEATS)
@@ -360,7 +369,7 @@ export default function IncubatorPricingPage() {
       }
       setIps(prev => [...prev, ...created])
       toast.success(
-        `已加购代理 IP × ${ipQty} 份（共 ${ipQty * IP_PER_PACK} 条，host 1/2 各半），扣 ${ipQty * IP_PACK_PRICE_USDT} USDT（演示）`
+        `已加购代理 IP × ${ipQty} 份（共 ${ipQty * IP_PER_PACK} 条），扣 ${ipQty * IP_PACK_PRICE_USDT} USDT（演示）`
       )
       setIpQty(1)
     } finally {
@@ -386,7 +395,7 @@ export default function IncubatorPricingPage() {
   }
 
   return (
-    <div className='flex h-full flex-col gap-3 overflow-y-auto p-3 lg:p-4'>
+    <div className='flex h-full flex-col gap-7 overflow-y-auto p-3 lg:p-4'>
       <div className='flex flex-col gap-0.5'>
         <h2 className='text-lg font-semibold tracking-tight'>用量与加购</h2>
         <p className='text-muted-foreground text-xs'>
@@ -394,16 +403,16 @@ export default function IncubatorPricingPage() {
         </p>
       </div>
 
-      <Card className='border-border/50 gap-0 overflow-hidden py-0 shadow-sm'>
+      <Card className='border-border/50 gap-0 overflow-hidden border-primary/15 py-0 shadow-sm'>
         <CardHeader
           className={cn(
-            'border-border/60 flex flex-col gap-2 border-b px-3 py-2.5 md:flex-row md:items-center md:justify-between',
-            'bg-gradient-to-b from-background to-muted/20 dark:to-muted/10'
+            'flex flex-col gap-2 border-b px-3 py-2.5 md:flex-row md:items-center md:justify-between',
+            VIP_HEADER_CLASS
           )}
         >
           <div className='space-y-0.5'>
             <CardTitle className='flex items-center gap-1.5 text-sm'>
-              <ShieldCheck className='size-3.5 text-emerald-600 dark:text-emerald-400' />
+              <ShieldCheck className='size-3.5 text-primary' />
               工作室 VIP 准入
             </CardTitle>
             <CardDescription className='text-xs'>
@@ -460,17 +469,22 @@ export default function IncubatorPricingPage() {
             return (
               <Card
                 key={item.exchange}
-                className='border-border/50 flex h-full flex-col gap-0 overflow-hidden py-0 shadow-sm transition-colors hover:border-primary/20'
+                className='border-border/50 flex h-full flex-col gap-0 overflow-hidden py-0 shadow-sm transition-colors hover:border-border'
               >
-                <CardHeader className='border-border/60 shrink-0 space-y-0 border-b bg-gradient-to-b from-background to-muted/20 px-3 py-2 dark:to-muted/10'>
-                  <div className='flex items-center justify-between gap-2'>
+                <CardHeader
+                  className={cn(
+                    'shrink-0 gap-0 space-y-0 border-b px-3 py-2 !pb-2 items-center',
+                    SECTION_HEADER_CLASS
+                  )}
+                >
+                  <div className='flex w-full items-center justify-between gap-2'>
                     <div className='flex items-center gap-1.5'>
-                      <span className='flex size-6 items-center justify-center rounded-md bg-white/95 p-1 shadow-sm dark:bg-white/90'>
+                      <span className='flex size-6 shrink-0 items-center justify-center rounded-md bg-white/95 p-1 shadow-sm dark:bg-white/90'>
                         <img src={item.logo} alt={item.label} className='size-full object-contain' />
                       </span>
-                      <div>
+                      <div className='min-w-0'>
                         <CardTitle className='text-sm leading-none'>{item.label}</CardTitle>
-                        <CardDescription className='mt-0.5 text-[11px]'>
+                        <CardDescription className='mt-0.5 text-[11px] leading-none'>
                           {item.unitPriceUsdt} USDT / 席 / 月
                         </CardDescription>
                       </div>
@@ -478,7 +492,7 @@ export default function IncubatorPricingPage() {
                     <Badge
                       variant={remaining === 0 ? 'destructive' : 'secondary'}
                       className={cn(
-                        'h-5 px-1.5 text-[10px]',
+                        'h-5 shrink-0 px-1.5 text-[10px]',
                         remaining === 0 ? '' : 'border-border/60 bg-muted/40'
                       )}
                     >
@@ -505,39 +519,36 @@ export default function IncubatorPricingPage() {
                   </p>
                 </CardContent>
 
-                <CardFooter className='border-border/60 mt-auto flex-col items-stretch gap-2 border-t bg-card px-3 py-2 dark:bg-transparent'>
-                  <div className='flex h-7 items-center justify-between gap-2'>
-                    <div className='flex items-center gap-1.5'>
-                      <Button
-                        type='button'
-                        size='icon'
-                        variant='outline'
-                        className='size-7'
-                        onClick={() => adjustApiQty(item.exchange, -1)}
-                      >
-                        <Minus className='size-3.5' />
-                      </Button>
-                      <span className='min-w-6 text-center text-sm font-semibold tabular-nums'>{qty}</span>
-                      <Button
-                        type='button'
-                        size='icon'
-                        variant='outline'
-                        className='size-7'
-                        onClick={() => adjustApiQty(item.exchange, 1)}
-                      >
-                        <Plus className='size-3.5' />
-                      </Button>
-                    </div>
-                    <span className='text-muted-foreground text-[11px] tabular-nums'>{fee} USDT</span>
+                <CardFooter className='border-border/60 mt-auto flex-row items-center gap-2 border-t bg-card px-3 py-2 !pt-2 dark:bg-transparent'>
+                  <div className='flex h-7 shrink-0 items-center gap-1.5'>
+                    <Button
+                      type='button'
+                      size='icon'
+                      variant='outline'
+                      className='size-7'
+                      onClick={() => adjustApiQty(item.exchange, -1)}
+                    >
+                      <Minus className='size-3.5' />
+                    </Button>
+                    <span className='min-w-6 text-center text-sm font-semibold tabular-nums'>{qty}</span>
+                    <Button
+                      type='button'
+                      size='icon'
+                      variant='outline'
+                      className='size-7'
+                      onClick={() => adjustApiQty(item.exchange, 1)}
+                    >
+                      <Plus className='size-3.5' />
+                    </Button>
                   </div>
                   <Button
                     type='button'
                     size='sm'
-                    className='h-7 w-full text-xs'
+                    className='h-7 min-w-0 flex-1 px-2 text-xs'
                     disabled={busy}
                     onClick={() => void purchaseApi(item.exchange)}
                   >
-                    {busy ? '提交中…' : `加购 ×${qty} · 各 1 个月`}
+                    {busy ? '提交中…' : `加购 · ${fee}U`}
                   </Button>
                 </CardFooter>
               </Card>
@@ -555,7 +566,12 @@ export default function IncubatorPricingPage() {
         </div>
 
         <Card className='border-border/50 gap-0 overflow-hidden py-0 shadow-sm'>
-          <CardHeader className='border-border/60 flex flex-col gap-2 border-b bg-gradient-to-b from-background to-muted/20 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between dark:to-muted/10'>
+          <CardHeader
+            className={cn(
+              'flex flex-col gap-2 border-b px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between',
+              SECTION_HEADER_CLASS
+            )}
+          >
             <div>
               <CardTitle className='text-sm'>待续费席位</CardTitle>
               <CardDescription className='text-xs'>
@@ -596,7 +612,7 @@ export default function IncubatorPricingPage() {
                 type='button'
                 size='sm'
                 variant='outline'
-                className='h-7 border-amber-500/50 bg-transparent px-2.5 text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
+                className={cn(RENEW_BTN_CLASS, 'px-2.5')}
                 disabled={selectedSeats.length === 0 || submittingKey === 'renew-seats'}
                 onClick={() => void renewSelectedSeats()}
               >
@@ -627,10 +643,10 @@ export default function IncubatorPricingPage() {
                     <div
                       key={seat.id}
                       className={cn(
-                        'flex flex-wrap items-center justify-between gap-2 rounded-md border px-2 py-1.5',
-                        tone === 'danger' && 'border-destructive/30 bg-destructive/5',
-                        tone === 'warn' && 'border-amber-500/30 bg-amber-500/5',
-                        tone === 'ok' && 'border-border/60 bg-card'
+                        'border-border/60 bg-card flex flex-wrap items-center justify-between gap-2 rounded-md border border-l-2 px-2 py-1.5',
+                        tone === 'danger' && 'border-l-destructive',
+                        tone === 'warn' && 'border-l-amber-500',
+                        tone === 'ok' && 'border-l-transparent'
                       )}
                     >
                       <div className='flex min-w-0 items-center gap-2'>
@@ -661,7 +677,7 @@ export default function IncubatorPricingPage() {
                         type='button'
                         size='sm'
                         variant='outline'
-                        className='h-7 border-amber-500/50 bg-transparent px-2 text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
+                        className={cn(RENEW_BTN_CLASS, 'px-2')}
                         disabled={busy}
                         onClick={() => void renewOneSeat(seat.id)}
                       >
@@ -718,11 +734,16 @@ export default function IncubatorPricingPage() {
         </div>
 
         <Card className='border-border/50 gap-0 overflow-hidden py-0 shadow-sm'>
-          <CardHeader className='border-border/60 flex flex-col gap-2 border-b bg-gradient-to-b from-background to-muted/20 px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between dark:to-muted/10'>
+          <CardHeader
+            className={cn(
+              'flex flex-col gap-2 border-b px-3 py-2.5 sm:flex-row sm:items-center sm:justify-between',
+              SECTION_HEADER_CLASS
+            )}
+          >
             <div>
               <CardTitle className='text-sm'>已分配代理 IP</CardTitle>
               <CardDescription className='text-xs'>
-                当前 {ips.length} 条 · {IP_PACK_PRICE_USDT} USDT / 月 / 份（每份 host 1、2 各 1 条）
+                当前 {ips.length} 条 · {IP_PACK_PRICE_USDT} USDT / 月 / 份（每份 2 条）
               </CardDescription>
             </div>
             <div className='flex flex-wrap items-center gap-2'>
@@ -757,7 +778,7 @@ export default function IncubatorPricingPage() {
                 disabled={submittingKey === 'ip'}
                 onClick={() => void purchaseIp()}
               >
-                {submittingKey === 'ip' ? '提交中…' : `加购 ×${ipQty} 份 · 各 1 个月`}
+                {submittingKey === 'ip' ? '提交中…' : `加购 ×${ipQty} 份`}
               </Button>
             </div>
           </CardHeader>
@@ -781,7 +802,7 @@ export default function IncubatorPricingPage() {
 
             {sortedIpPacks.packs.length === 0 ? (
               <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-xs'>
-                暂无加购代理 IP。每份 10 USDT，同时分配 host 1、2 各 1 条。
+                暂无加购代理 IP。每份 10 USDT，每份 2 条。
               </p>
             ) : (
               sortedIpPacks.packs.map(pack => {
@@ -793,10 +814,10 @@ export default function IncubatorPricingPage() {
                   <div
                     key={pack.packId}
                     className={cn(
-                      'flex flex-wrap items-center justify-between gap-2 rounded-md border px-2 py-1.5',
-                      tone === 'danger' && 'border-destructive/30 bg-destructive/5',
-                      tone === 'warn' && 'border-amber-500/30 bg-amber-500/5',
-                      tone === 'ok' && 'border-primary/20 bg-primary/5'
+                      'border-border/60 bg-card flex flex-wrap items-center justify-between gap-2 rounded-md border border-l-2 px-2 py-1.5',
+                      tone === 'danger' && 'border-l-destructive',
+                      tone === 'warn' && 'border-l-amber-500',
+                      tone === 'ok' && 'border-l-transparent'
                     )}
                   >
                     <div className='min-w-0 space-y-1'>
@@ -825,7 +846,7 @@ export default function IncubatorPricingPage() {
                       type='button'
                       size='sm'
                       variant='outline'
-                      className='h-7 border-amber-500/50 bg-transparent px-2 text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
+                      className={cn(RENEW_BTN_CLASS, 'px-2')}
                       disabled={busy}
                       onClick={() => void renewIpPack(pack.packId)}
                     >
