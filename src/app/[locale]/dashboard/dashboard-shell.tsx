@@ -291,7 +291,7 @@ const incubatorMenuItems: MenuItem[] = [
   {
     id: 'pricing',
     icon: Crown,
-    label: '订阅服务',
+    label: '用量与加购',
     href: '/incubator/dashboard/pricing'
   },
   {
