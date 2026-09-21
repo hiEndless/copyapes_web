@@ -395,10 +395,10 @@ export default function IncubatorPricingPage() {
   }
 
   return (
-    <div className='flex h-full flex-col gap-7 overflow-y-auto p-3 lg:p-4'>
-      <div className='flex flex-col gap-0.5'>
-        <h2 className='text-lg font-semibold tracking-tight'>用量与加购</h2>
-        <p className='text-muted-foreground text-xs'>
+    <div className='flex h-full flex-col gap-7 overflow-y-auto p-4 lg:p-6'>
+      <div className='flex flex-col gap-2'>
+        <h2 className='text-2xl font-bold tracking-tight'>用量与加购</h2>
+        <p className='text-muted-foreground text-sm'>
           每个加购席位独立计费：加购永远买 1 个月；续费在下方单独处理，互不影响。
         </p>
       </div>
