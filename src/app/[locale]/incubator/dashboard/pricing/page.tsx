@@ -416,7 +416,7 @@ export default function IncubatorPricingPage() {
               工作室 VIP 准入
             </CardTitle>
             <CardDescription className='text-xs'>
-              会员在 CopyApes 侧购买与续费；Incubator 仅校验资格。
+              会员在 CopyApes 跟单系统侧购买与续费；带单系统仅校验资格。
             </CardDescription>
           </div>
           <div className='flex flex-wrap items-center gap-2'>
