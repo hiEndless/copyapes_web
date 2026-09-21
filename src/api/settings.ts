@@ -102,22 +102,25 @@ export const settingsApi = {
     }).then(res => res.data);
   },
 
-  getNoticeInfo: () => {
+  getNoticeInfo: (options?: { silent?: boolean }) => {
     return request<NoticeResponse>('/notice/', {
-      method: 'GET'
-    }).then(res => res.data);
+      method: 'GET',
+      silent: options?.silent
+    }).then(res => (res.code === 0 ? res.data : undefined))
   },
 
-  getConnectInfo: () => {
+  getConnectInfo: (options?: { silent?: boolean }) => {
     return request<ConnectResponse>('/connect/', {
-      method: 'GET'
-    }).then(res => res.data);
+      method: 'GET',
+      silent: options?.silent
+    }).then(res => (res.code === 0 ? res.data : undefined))
   },
 
-  getEntitlementProfile: () => {
+  getEntitlementProfile: (options?: { silent?: boolean }) => {
     return request<EntitlementProfileResponse>('/entitlement/profile/', {
-      method: 'GET'
-    }).then(res => res.data);
+      method: 'GET',
+      silent: options?.silent
+    }).then(res => (res.code === 0 ? res.data : undefined))
   },
 
   sendMessage: (data: {

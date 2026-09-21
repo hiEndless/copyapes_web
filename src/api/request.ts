@@ -155,15 +155,23 @@ export async function request<T>(endpoint: string, options: RequestOptions = {})
 
     return data as BaseResponse<T>;
   } catch (error) {
-    console.error('API Request Error:', error);
+    const isNetworkError =
+      error instanceof TypeError &&
+      (error.message === 'Failed to fetch' || error.message.includes('NetworkError'))
+
+    if (isNetworkError) {
+      console.warn('API network unavailable:', error)
+    } else {
+      console.error('API Request Error:', error)
+    }
 
     if (!silent && typeof window !== 'undefined') {
-      toast.error('网络请求失败，请稍后重试');
+      toast.error('网络请求失败，请稍后重试')
     }
 
     return {
       code: 1005, // API_ERROR based on backend
       error: '网络请求失败，请稍后重试',
-    } as BaseResponse<T>;
+    } as BaseResponse<T>
   }
 }

@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
-import { ChartColumn, Crown, GripVertical, Plus, Waypoints, X } from 'lucide-react'
+import { ChartColumn, CircleStop, Crown, GripVertical, Play, Plus, Square, Waypoints, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -562,15 +562,36 @@ export default function IncubatorBoardPage() {
     }
   }
 
+  const loadDemoBoard = () => {
+    realLoadGeneration.current += 1
+    const demo = cloneDemoBoardData()
+    setCampaigns(demo.campaigns)
+    setIdleApis(demo.idleApis)
+    const first = demo.campaigns[0]
+    if (first) {
+      setActiveCampaignId(first.id)
+      setRoundIndex(first.currentRound)
+      const current = first.rounds.find(round => round.index === first.currentRound)
+      setSelectedMemberId(
+        current?.members.find(m => m.isLeader)?.id ?? current?.members[0]?.id ?? null
+      )
+    } else {
+      setActiveCampaignId('')
+      setSelectedMemberId(null)
+    }
+  }
+
   useEffect(() => {
     const enabled = readBoardDemoMode()
     setDemoMode(enabled)
-    if (!enabled) {
-      setPromoteResult(null)
-      void loadRealData().catch(error =>
-        toast.error(error instanceof Error ? error.message : '项目数据加载失败')
-      )
+    setPromoteResult(null)
+    if (enabled) {
+      loadDemoBoard()
+      return
     }
+    void loadRealData().catch(error =>
+      toast.error(error instanceof Error ? error.message : '项目数据加载失败')
+    )
   }, [])
 
   const applyDemoMode = (enabled: boolean) => {
@@ -587,22 +608,7 @@ export default function IncubatorBoardPage() {
     setSelectedApiIds([])
 
     if (enabled) {
-      realLoadGeneration.current += 1
-      const demo = cloneDemoBoardData()
-      setCampaigns(demo.campaigns)
-      setIdleApis(demo.idleApis)
-      const first = demo.campaigns[0]
-      if (first) {
-        setActiveCampaignId(first.id)
-        setRoundIndex(first.currentRound)
-        const current = first.rounds.find(round => round.index === first.currentRound)
-        setSelectedMemberId(
-          current?.members.find(m => m.isLeader)?.id ?? current?.members[0]?.id ?? null
-        )
-      } else {
-        setActiveCampaignId('')
-        setSelectedMemberId(null)
-      }
+      loadDemoBoard()
       return
     }
 
@@ -1423,9 +1429,10 @@ export default function IncubatorBoardPage() {
                       size='sm'
                       variant='outline'
                       disabled={!demoMode || !canEndProject}
-                      className='h-8 shrink-0 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
+                      className='h-8 shrink-0 gap-1.5 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
                       onClick={() => setEndProjectOpen(true)}
                     >
+                      <CircleStop className='size-3.5' />
                       {demoMode ? '结束项目' : '结束项目（待接入）'}
                     </Button>
                   </div>
@@ -1504,10 +1511,11 @@ export default function IncubatorBoardPage() {
                     <Button
                       type='button'
                       size='sm'
-                      className='h-8 w-full px-3 text-xs'
+                      className='h-8 w-full gap-1.5 px-3 text-xs'
                       disabled={!canStart}
                       onClick={handleStartRound}
                     >
+                      <Play className='size-3.5' />
                       {startBusy
                         ? '启动中…'
                         : activeRound.phase === 'STARTING'
@@ -1520,13 +1528,14 @@ export default function IncubatorBoardPage() {
                       type='button'
                       size='sm'
                       variant='outline'
-                      className='h-8 w-full border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
+                      className='h-8 w-full gap-1.5 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
                       disabled={!demoMode || !isRunning}
                       onClick={() => {
                         setPendingWinner(sameNet >= inverseNet ? 'SAME' : 'INVERSE')
                         setTerminateOpen(true)
                       }}
                     >
+                      <Square className='size-3.5' />
                       {demoMode ? '终止本轮' : '终止本轮（待接入）'}
                     </Button>
                   </div>

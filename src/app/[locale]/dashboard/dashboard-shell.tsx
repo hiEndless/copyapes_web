@@ -510,40 +510,40 @@ const DashboardShell = ({
     // Load entitlement profile on app shell mount
     const fetchEntitlementProfile = async () => {
       try {
-        const profile = await settingsApi.getEntitlementProfile()
+        const profile = await settingsApi.getEntitlementProfile({ silent: true })
 
         if (profile) {
           localStorage.setItem('entitlementProfile', JSON.stringify(profile))
           window.dispatchEvent(new Event('entitlementProfileUpdated'))
         }
       } catch (err) {
-        console.error('Failed to fetch entitlement profile on mount:', err)
+        console.warn('Failed to fetch entitlement profile on mount:', err)
       }
     }
 
     const fetchNotice = async () => {
       try {
-        const noticeData = await settingsApi.getNoticeInfo()
+        const noticeData = await settingsApi.getNoticeInfo({ silent: true })
 
         if (noticeData) {
           localStorage.setItem('noticeInfo', JSON.stringify(noticeData))
           window.dispatchEvent(new Event('noticeInfoUpdated'))
         }
       } catch (err) {
-        console.error('Failed to fetch notice info on mount:', err)
+        console.warn('Failed to fetch notice info on mount:', err)
       }
     }
 
     const fetchConnectInfo = async () => {
       try {
-        const connectData = await settingsApi.getConnectInfo()
+        const connectData = await settingsApi.getConnectInfo({ silent: true })
 
         if (connectData) {
           localStorage.setItem('connectInfo', JSON.stringify(connectData))
           window.dispatchEvent(new Event('connectInfoUpdated'))
         }
       } catch (err) {
-        console.error('Failed to fetch connect info on mount:', err)
+        console.warn('Failed to fetch connect info on mount:', err)
       }
     }
 
