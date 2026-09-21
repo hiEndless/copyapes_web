@@ -72,7 +72,7 @@ import {
   type RoundSnapshot,
   type RoundMember
 } from '../_mock/campaign'
-import { TradeTimeline } from '../_components/trade-timeline'
+import { TradeTimeline, type TradeTimelineItem } from '../_components/trade-timeline'
 import { listIncubatorApiAccounts } from '@/lib/incubator-api-accounts'
 import {
   createIncubatorCampaign,
@@ -81,6 +81,10 @@ import {
   updateIncubatorRoundSetup,
   type IncubatorCampaign
 } from '@/lib/incubator-campaigns'
+import {
+  listIncubatorTradeRecords,
+  type IncubatorTradeEvent
+} from '@/lib/incubator-trade-records'
 
 const STARTING_POLL_INTERVAL_MS = 2_500
 
@@ -184,6 +188,46 @@ function ExchangeLogo({ exchange, className }: { exchange: string; className?: s
 function shortOpenedAt(value: string) {
   const match = value.match(/(\d{2})-(\d{2})\s+(\d{2}:\d{2}:\d{2})/)
   return match ? `${match[1]}-${match[2]} ${match[3]}` : value
+}
+
+function toTradeTimeline(
+  events: IncubatorTradeEvent[],
+  inspectingLeader: boolean,
+  apiLabel: string
+): TradeTimelineItem[] {
+  const items: TradeTimelineItem[] = []
+
+  for (const event of events) {
+    if (inspectingLeader && event.leader) {
+      items.push({
+        id: `leader:${event.leader.id}`,
+        eventAt: event.leader.occurred_at,
+        action: event.leader.action.toLowerCase() as TradeTimelineItem['action'],
+        side: event.leader.side.toLowerCase() as TradeTimelineItem['side'],
+        posSide: event.leader.position_side.toLowerCase() as TradeTimelineItem['posSide'],
+        symbol: event.leader.symbol,
+        quantity: event.leader.quantity,
+        apiLabel
+      })
+    }
+    if (!inspectingLeader) {
+      for (const record of event.followers) {
+        items.push({
+          id: `follower:${record.id}`,
+          eventAt: record.occurred_at ?? event.occurred_at,
+          action: record.action.toLowerCase() as TradeTimelineItem['action'],
+          side: record.side.toLowerCase() as TradeTimelineItem['side'],
+          posSide: record.position_side.toLowerCase() as TradeTimelineItem['posSide'],
+          symbol: record.symbol,
+          quantity: record.quantity,
+          apiLabel,
+          error: record.reason_code ? { code: record.reason_code, msg: record.status } : null
+        })
+      }
+    }
+  }
+
+  return items
 }
 
 function PositionCard({
@@ -386,6 +430,11 @@ export default function IncubatorBoardPage() {
   )
   const [inspectorOpen, setInspectorOpen] = useState(false)
   const [inspectorTab, setInspectorTab] = useState('copies')
+  const [realTradeTimeline, setRealTradeTimeline] = useState<TradeTimelineItem[]>([])
+  const [tradeTimelineLoading, setTradeTimelineLoading] = useState(false)
+  const [tradeTimelineMoreLoading, setTradeTimelineMoreLoading] = useState(false)
+  const [tradeTimelineError, setTradeTimelineError] = useState<string | null>(null)
+  const [tradeTimelineCursor, setTradeTimelineCursor] = useState<string | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
   const [createBusy, setCreateBusy] = useState(false)
   const [setupBusy, setSetupBusy] = useState(false)
@@ -403,6 +452,7 @@ export default function IncubatorBoardPage() {
   const [pendingWinner, setPendingWinner] = useState<MemberRelation>('SAME')
   const [dragOverRelation, setDragOverRelation] = useState<MemberRelation | null>(null)
   const realLoadGeneration = useRef(0)
+  const tradeTimelineGeneration = useRef(0)
   const startRequestIds = useRef<Record<string, string>>({})
   const savedSetupSignatures = useRef<Record<string, string>>({})
 
@@ -637,13 +687,79 @@ export default function IncubatorBoardPage() {
     selectedMember && leader && (selectedMember.isLeader || selectedMember.id === leader.id)
   )
   const recordsTabLabel = inspectingLeader ? '领单记录' : '跟单记录'
+  useEffect(() => {
+    const generation = ++tradeTimelineGeneration.current
+    setTradeTimelineMoreLoading(false)
+    if (demoMode || !inspectorOpen || !campaign || !activeRound || !selectedMember) {
+      setRealTradeTimeline([])
+      setTradeTimelineLoading(false)
+      setTradeTimelineError(null)
+      setTradeTimelineCursor(null)
+      return
+    }
+    let cancelled = false
+    setTradeTimelineLoading(true)
+    setTradeTimelineError(null)
+    void listIncubatorTradeRecords({
+      campaignId: campaign.id,
+      roundId: activeRound.id,
+      apiId: selectedMember.apiId,
+      limit: 100
+    })
+      .then(page => {
+        if (cancelled || generation !== tradeTimelineGeneration.current) return
+        setRealTradeTimeline(toTradeTimeline(page.items, inspectingLeader, selectedMember.apiLabel))
+        setTradeTimelineCursor(page.next_cursor)
+      })
+      .catch(error => {
+        if (!cancelled && generation === tradeTimelineGeneration.current) {
+          setRealTradeTimeline([])
+          setTradeTimelineCursor(null)
+          setTradeTimelineError(error instanceof Error ? error.message : '交易记录加载失败')
+        }
+      })
+      .finally(() => {
+        if (!cancelled && generation === tradeTimelineGeneration.current) setTradeTimelineLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [activeRound, campaign, demoMode, inspectingLeader, inspectorOpen, selectedMember])
+
+  const loadMoreTradeTimeline = async () => {
+    if (!campaign || !activeRound || !selectedMember || !tradeTimelineCursor || tradeTimelineMoreLoading) return
+    const generation = tradeTimelineGeneration.current
+    setTradeTimelineMoreLoading(true)
+    setTradeTimelineError(null)
+    try {
+      const page = await listIncubatorTradeRecords({
+        campaignId: campaign.id,
+        roundId: activeRound.id,
+        apiId: selectedMember.apiId,
+        limit: 100,
+        cursor: tradeTimelineCursor
+      })
+      if (generation !== tradeTimelineGeneration.current) return
+      setRealTradeTimeline(previous => [
+        ...previous,
+        ...toTradeTimeline(page.items, inspectingLeader, selectedMember.apiLabel)
+      ])
+      setTradeTimelineCursor(page.next_cursor)
+    } catch (error) {
+      if (generation === tradeTimelineGeneration.current) {
+        setTradeTimelineError(error instanceof Error ? error.message : '交易记录加载失败')
+      }
+    } finally {
+      if (generation === tradeTimelineGeneration.current) setTradeTimelineMoreLoading(false)
+    }
+  }
   const tradeTimeline = demoMode
     ? getMemberTradeTimeline({
         apiId: selectedMember?.apiId,
         apiLabel: selectedMember?.apiLabel,
         isLeader: inspectingLeader
       })
-    : []
+    : realTradeTimeline
 
   const isPreparing =
     Boolean(campaign && activeRound) &&
@@ -1544,10 +1660,28 @@ export default function IncubatorBoardPage() {
             </SheetHeader>
 
             <TabsContent value='copies' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
-              <TradeTimeline
-                items={tradeTimeline}
-                emptyText={demoMode ? (inspectingLeader ? '暂无领单记录' : '暂无跟单记录') : '真实交易记录接口待接入'}
-              />
+              {tradeTimelineLoading ? (
+                <p className='text-muted-foreground py-6 text-center text-[11px]'>交易记录加载中…</p>
+              ) : tradeTimelineError ? (
+                <p className='text-red-600/90 dark:text-red-400/90 py-6 text-center text-[11px]'>{tradeTimelineError}</p>
+              ) : (
+                <TradeTimeline
+                  items={tradeTimeline}
+                  emptyText={inspectingLeader ? '暂无领单记录' : '暂无跟单记录'}
+                />
+              )}
+              {!demoMode && !tradeTimelineLoading && !tradeTimelineError && tradeTimelineCursor && (
+                <Button
+                  type='button'
+                  variant='outline'
+                  size='sm'
+                  className='mt-2 w-full'
+                  disabled={tradeTimelineMoreLoading}
+                  onClick={() => void loadMoreTradeTimeline()}
+                >
+                  {tradeTimelineMoreLoading ? '加载中…' : '加载更多'}
+                </Button>
+              )}
             </TabsContent>
             <TabsContent value='positions' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
               {!demoMode ? (
