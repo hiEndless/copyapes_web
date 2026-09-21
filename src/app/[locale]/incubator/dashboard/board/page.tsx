@@ -85,8 +85,14 @@ import {
   listIncubatorTradeRecords,
   type IncubatorTradeEvent
 } from '@/lib/incubator-trade-records'
+import {
+  getIncubatorCampaignEconomics,
+  type IncubatorCampaignEconomics,
+  type IncubatorMemberEconomics
+} from '@/lib/incubator-economics'
 
 const STARTING_POLL_INTERVAL_MS = 2_500
+const ECONOMICS_POLL_INTERVAL_MS = 10_000
 
 function roundSetupSignature(round: RoundSnapshot): string {
   const leaderMemberId = round.members.find(member => member.isLeader)?.id ?? null
@@ -163,6 +169,42 @@ function PnlText({ value, className }: { value: number; className?: string }) {
       {formatPnl(value)}
     </span>
   )
+}
+
+function decimalParts(value: string) {
+  const normalized = value.trim()
+  const negative = normalized.startsWith('-')
+  const unsigned = normalized.replace(/^[+-]/, '')
+  const [integer = '0', fraction = ''] = unsigned.split('.', 2)
+  const compactInteger = integer.replace(/^0+(?=\d)/, '') || '0'
+  const compactFraction = fraction.replace(/0+$/, '')
+  const zero = /^0*$/.test(compactInteger) && /^0*$/.test(compactFraction)
+  return {
+    sign: zero ? 0 : negative ? -1 : 1,
+    text: `${negative && !zero ? '-' : ''}${compactInteger}${compactFraction ? `.${compactFraction}` : ''}`
+  }
+}
+
+function DecimalPnlText({ value, className }: { value: string; className?: string }) {
+  const decimal = decimalParts(value)
+  return (
+    <span
+      className={cn(
+        'font-semibold tabular-nums tracking-tight',
+        decimal.sign > 0 && 'text-emerald-600 dark:text-emerald-400',
+        decimal.sign < 0 && 'text-red-600 dark:text-red-400',
+        className
+      )}
+    >
+      {decimal.sign > 0 ? '+' : ''}{decimal.text} U
+    </span>
+  )
+}
+
+function economicsStatusLabel(status: IncubatorCampaignEconomics['settlement']['data_status']) {
+  if (status === 'FINAL') return '最终数据'
+  if (status === 'FAILED') return '结算异常'
+  return '暂定数据'
 }
 
 const CARD_HERO_HEADER =
@@ -341,6 +383,7 @@ function MemberCard({
   selected,
   draggable,
   detailsAvailable,
+  economics,
   onSelect,
   onDragStart
 }: {
@@ -348,6 +391,7 @@ function MemberCard({
   selected: boolean
   draggable: boolean
   detailsAvailable: boolean
+  economics?: IncubatorMemberEconomics
   onSelect: () => void
   onDragStart: (event: DragEvent<HTMLButtonElement>) => void
 }) {
@@ -401,13 +445,21 @@ function MemberCard({
                   {balance.toLocaleString(undefined, { maximumFractionDigits: 1 })} U
                 </span>
               </>
-            ) : '交易与余额明细待接入'}
+            ) : economics ? (
+              <>{economics.totals.trade_count} 笔 · 结算 {economics.settlement.settled} / {economics.settlement.total}</>
+            ) : '收益数据加载中'}
           </p>
         </div>
       </div>
       <div className='shrink-0 text-right'>
         <p className='text-muted-foreground text-[10px]'>本轮</p>
-        {detailsAvailable ? <PnlText value={member.pnl} className='text-sm' /> : <span className='text-muted-foreground text-xs'>待接入</span>}
+        {detailsAvailable ? (
+          <PnlText value={member.pnl} className='text-sm' />
+        ) : economics ? (
+          <DecimalPnlText value={economics.totals.realized_pnl} className='text-sm' />
+        ) : (
+          <span className='text-muted-foreground text-xs'>加载中</span>
+        )}
       </div>
     </button>
   )
@@ -431,6 +483,9 @@ export default function IncubatorBoardPage() {
   const [inspectorOpen, setInspectorOpen] = useState(false)
   const [inspectorTab, setInspectorTab] = useState('copies')
   const [realTradeTimeline, setRealTradeTimeline] = useState<TradeTimelineItem[]>([])
+  const [economicsByCampaign, setEconomicsByCampaign] = useState<Record<string, IncubatorCampaignEconomics>>({})
+  const [economicsLoading, setEconomicsLoading] = useState(false)
+  const [economicsError, setEconomicsError] = useState<string | null>(null)
   const [tradeTimelineLoading, setTradeTimelineLoading] = useState(false)
   const [tradeTimelineMoreLoading, setTradeTimelineMoreLoading] = useState(false)
   const [tradeTimelineError, setTradeTimelineError] = useState<string | null>(null)
@@ -453,6 +508,8 @@ export default function IncubatorBoardPage() {
   const [dragOverRelation, setDragOverRelation] = useState<MemberRelation | null>(null)
   const realLoadGeneration = useRef(0)
   const tradeTimelineGeneration = useRef(0)
+  const economicsGeneration = useRef(0)
+  const economicsCache = useRef<Record<string, IncubatorCampaignEconomics>>({})
   const startRequestIds = useRef<Record<string, string>>({})
   const savedSetupSignatures = useRef<Record<string, string>>({})
 
@@ -577,6 +634,78 @@ export default function IncubatorBoardPage() {
     return campaign.rounds.find(round => round.index === roundIndex) ?? campaign.rounds[0]
   }, [campaign, roundIndex])
 
+  const economics = campaign ? economicsByCampaign[campaign.id] : undefined
+  const activeRoundEconomics = useMemo(
+    () => economics?.rounds.find(round => round.round_id === activeRound?.id),
+    [activeRound?.id, economics]
+  )
+  const memberEconomics = useMemo(
+    () => new Map(activeRoundEconomics?.members.map(member => [member.round_member_id, member]) ?? []),
+    [activeRoundEconomics]
+  )
+
+  useEffect(() => {
+    if (demoMode) {
+      economicsGeneration.current += 1
+      economicsCache.current = {}
+      setEconomicsByCampaign({})
+      setEconomicsLoading(false)
+      setEconomicsError(null)
+      return
+    }
+    if (!campaign) {
+      economicsGeneration.current += 1
+      setEconomicsLoading(false)
+      setEconomicsError(null)
+      return
+    }
+    if (campaign.exchange !== 'OKX') {
+      economicsGeneration.current += 1
+      setEconomicsLoading(false)
+      setEconomicsError('当前阶段仅支持 OKX 项目收益')
+      return
+    }
+
+    let cancelled = false
+    let inFlight = false
+    let timer: number | null = null
+    const generation = ++economicsGeneration.current
+    setEconomicsError(null)
+
+    const refreshEconomics = async () => {
+      if (inFlight) return
+      inFlight = true
+      if (!economicsCache.current[campaign.id]) setEconomicsLoading(true)
+      try {
+        const next = await getIncubatorCampaignEconomics(campaign.id)
+        if (cancelled || generation !== economicsGeneration.current || readBoardDemoMode()) return
+        economicsCache.current[campaign.id] = next
+        setEconomicsByCampaign(previous => ({ ...previous, [campaign.id]: next }))
+        setEconomicsError(null)
+        if (next.status === 'COMPLETED' && timer !== null) {
+          window.clearInterval(timer)
+          timer = null
+        }
+      } catch (error) {
+        if (!cancelled && generation === economicsGeneration.current) {
+          setEconomicsError(error instanceof Error ? error.message : '收益数据加载失败')
+        }
+      } finally {
+        if (!cancelled && generation === economicsGeneration.current) setEconomicsLoading(false)
+        inFlight = false
+      }
+    }
+
+    void refreshEconomics()
+    timer = campaign.status === 'COMPLETED'
+      ? null
+      : window.setInterval(refreshEconomics, ECONOMICS_POLL_INTERVAL_MS)
+    return () => {
+      cancelled = true
+      if (timer !== null) window.clearInterval(timer)
+    }
+  }, [campaign?.exchange, campaign?.id, campaign?.status, demoMode])
+
   useEffect(() => {
     if (demoMode || activeRound?.phase !== 'STARTING') return
 
@@ -666,7 +795,15 @@ export default function IncubatorBoardPage() {
   const sameNet = sameMembers.reduce((sum, member) => sum + member.pnl, 0)
   const inverseNet = inverseMembers.reduce((sum, member) => sum + member.pnl, 0)
   const leader = activeRound?.members.find(member => member.isLeader)
-  const unsettled = campaign ? Math.max(campaign.cycles - campaign.settled, 0) : 0
+  const campaignUnsettled = demoMode
+    ? campaign ? Math.max(campaign.cycles - campaign.settled, 0) : 0
+    : economics ? economics.settlement.pending + economics.settlement.failed : 0
+  const roundUnsettled = demoMode
+    ? campaignUnsettled
+    : activeRoundEconomics
+      ? activeRoundEconomics.settlement.pending + activeRoundEconomics.settlement.failed
+      : 0
+  const economicsFallback = economicsLoading ? '加载中' : economicsError ? '加载失败' : '暂无数据'
   const openPositions = demoMode ? getLeaderOpenPositions(leader?.apiId, activeRound?.phase) : []
   const endProjectBlockReason = (() => {
     if (!campaign || campaign.status === 'COMPLETED') return null
@@ -676,7 +813,7 @@ export default function IncubatorBoardPage() {
     if (openPositions.length > 0) {
       return '领单仍有未平仓位，请先全部平仓'
     }
-    if (unsettled > 0) {
+    if (campaignUnsettled > 0) {
       return '仍有未结算周期，收益统计未完成'
     }
     return null
@@ -1220,6 +1357,11 @@ export default function IncubatorBoardPage() {
         </Card>
       ) : (
         <>
+          {!demoMode && (economicsError || economics?.settlement.data_status === 'FAILED') && (
+            <div className='rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-700 dark:text-red-300'>
+              {economicsError ?? `有 ${economics?.settlement.failed ?? 0} 个结算任务失败，当前收益不是最终结果`}
+            </div>
+          )}
           <div className='grid gap-4 xl:grid-cols-2'>
             <Card className='gap-0 overflow-hidden py-0 shadow-sm'>
               <CardHeader className={cn(CARD_HERO_HEADER, 'gap-3 rounded-none px-4 py-4')}>
@@ -1249,11 +1391,11 @@ export default function IncubatorBoardPage() {
                 </div>
               </CardHeader>
               <CardContent className='dark:bg-muted/15 grid grid-cols-2 border-t border-border/60 p-0 sm:grid-cols-4'>
-                <Metric label='项目净收益' value={demoMode ? <PnlText value={campaign.campaignNet} /> : '待接入'} tinted />
-                <Metric label='手续费' value={demoMode ? <PnlText value={campaign.fees} /> : '待接入'} tinted />
+                <Metric label='项目净收益' value={demoMode ? <PnlText value={campaign.campaignNet} /> : economics ? <DecimalPnlText value={economics.totals.realized_pnl} /> : economicsFallback} tinted />
+                <Metric label='手续费' value={demoMode ? <PnlText value={campaign.fees} /> : economics ? <DecimalPnlText value={economics.totals.fee} /> : economicsFallback} tinted />
                 <Metric
                   label='交易周期'
-                  value={demoMode ? <span className='tabular-nums'>{campaign.cycles}</span> : '待接入'}
+                  value={demoMode ? <span className='tabular-nums'>{campaign.cycles}</span> : economics ? <span className='tabular-nums'>{economics.totals.trade_cycle_count}</span> : economicsFallback}
                   tinted
                 />
                 <Metric
@@ -1262,7 +1404,9 @@ export default function IncubatorBoardPage() {
                     <span className='tabular-nums'>
                       {campaign.settled} / {campaign.cycles}
                     </span>
-                  ) : '待接入'}
+                  ) : economics ? (
+                    <span className='tabular-nums'>{economics.settlement.settled} / {economics.settlement.total}</span>
+                  ) : economicsFallback}
                   tinted
                 />
               </CardContent>
@@ -1302,7 +1446,11 @@ export default function IncubatorBoardPage() {
                         第 {activeRound.index} 轮
                       </CardTitle>
                       <p className='mt-1 text-xs text-white/75'>
-                        领单 {leader?.apiLabel ?? '未确认'} · {confidenceLabel(campaign.confidence)}
+                        领单 {leader?.apiLabel ?? '未确认'} · {demoMode
+                          ? confidenceLabel(campaign.confidence)
+                          : economics
+                            ? economicsStatusLabel(economics.settlement.data_status)
+                            : economicsFallback}
                         {setupDirty ? ' · 配置未保存' : ''}
                       </p>
                     </div>
@@ -1324,12 +1472,12 @@ export default function IncubatorBoardPage() {
                 </div>
               </CardHeader>
               <CardContent className='dark:bg-muted/15 grid grid-cols-2 border-t border-border/60 p-0 sm:grid-cols-4'>
-                <Metric label='本轮净收益' value={demoMode ? <PnlText value={activeRound.netPnl} /> : '待接入'} tinted />
-                <Metric label='同向净收益' value={demoMode ? <PnlText value={sameNet} /> : '待接入'} tinted />
-                <Metric label='反向净收益' value={demoMode ? <PnlText value={inverseNet} /> : '待接入'} tinted />
+                <Metric label='本轮净收益' value={demoMode ? <PnlText value={activeRound.netPnl} /> : activeRoundEconomics ? <DecimalPnlText value={activeRoundEconomics.totals.realized_pnl} /> : economicsFallback} tinted />
+                <Metric label='同向净收益' value={demoMode ? <PnlText value={sameNet} /> : activeRoundEconomics ? <DecimalPnlText value={activeRoundEconomics.same_totals.realized_pnl} /> : economicsFallback} tinted />
+                <Metric label='反向净收益' value={demoMode ? <PnlText value={inverseNet} /> : activeRoundEconomics ? <DecimalPnlText value={activeRoundEconomics.inverse_totals.realized_pnl} /> : economicsFallback} tinted />
                 <Metric
                   label='未结算'
-                  value={demoMode ? <span className='tabular-nums'>{unsettled}</span> : '待接入'}
+                  value={<span className='tabular-nums'>{roundUnsettled}</span>}
                   tinted
                 />
               </CardContent>
@@ -1540,6 +1688,7 @@ export default function IncubatorBoardPage() {
                           selected={selectedMember?.id === member.id}
                           draggable={isPreparing}
                           detailsAvailable={demoMode}
+                          economics={memberEconomics.get(member.id)}
                           onSelect={() => openInspector(member)}
                           onDragStart={onMemberDragStart(member)}
                         />
@@ -1577,12 +1726,27 @@ export default function IncubatorBoardPage() {
                   <p className='text-muted-foreground/90 text-[11px] font-medium'>
                     第 {round.index} 轮 · {round.memberCount} 账号
                   </p>
-                  {demoMode ? <PnlText value={round.netPnl} className='mt-1.5 block text-sm' /> : <span className='text-muted-foreground mt-1.5 block text-sm'>待接入</span>}
+                  {demoMode ? (
+                    <PnlText value={round.netPnl} className='mt-1.5 block text-sm' />
+                  ) : economics?.rounds.find(item => item.round_id === round.id) ? (
+                    <DecimalPnlText
+                      value={economics.rounds.find(item => item.round_id === round.id)!.totals.realized_pnl}
+                      className='mt-1.5 block text-sm'
+                    />
+                  ) : (
+                    <span className='text-muted-foreground mt-1.5 block text-sm'>{economicsFallback}</span>
+                  )}
                 </div>
               ))}
               <div className='bg-primary/5 dark:bg-primary/10 px-4 py-3'>
                 <p className='text-primary text-[11px] font-medium'>项目合计</p>
-                {demoMode ? <PnlText value={campaign.campaignNet} className='mt-1.5 block text-sm' /> : <span className='text-muted-foreground mt-1.5 block text-sm'>待接入</span>}
+                {demoMode ? (
+                  <PnlText value={campaign.campaignNet} className='mt-1.5 block text-sm' />
+                ) : economics ? (
+                  <DecimalPnlText value={economics.totals.realized_pnl} className='mt-1.5 block text-sm' />
+                ) : (
+                  <span className='text-muted-foreground mt-1.5 block text-sm'>{economicsFallback}</span>
+                )}
               </div>
             </CardContent>
           </Card>
