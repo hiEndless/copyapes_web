@@ -19,6 +19,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import { canBindIncubatorDemoApi } from '@/lib/incubator-auth'
 import { cn } from '@/lib/utils'
 
 const EXCHANGES = [
@@ -62,6 +63,7 @@ export function ApiBindFormStep({
 }: ApiBindFormStepProps) {
   const selectedExchange = EXCHANGES.find((ex) => ex.value === formData.exchange)
   const passphraseExchangeLabel = selectedExchange ? selectedExchange.label : formData.exchange.toUpperCase()
+  const allowDemoApi = canBindIncubatorDemoApi()
 
   const ipList = [
     ...new Set(
@@ -170,7 +172,7 @@ export function ApiBindFormStep({
             </DropdownMenu>
           </div>
 
-          {process.env.NEXT_PUBLIC_INCUBATOR_ALLOW_DEMO_API === '1' ? (
+          {allowDemoApi ? (
             <div>
               <label className={FIELD_LABEL}>交易环境 *</label>
               <div className='bg-muted grid grid-cols-2 gap-1 rounded-md p-1'>

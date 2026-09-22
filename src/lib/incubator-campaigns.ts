@@ -99,3 +99,23 @@ export function startIncubatorRound(input: {
     })
   })
 }
+
+export function terminateIncubatorRound(input: {
+  roundId: string
+  requestId: string
+  winnerRelation: 'SAME' | 'INVERSE'
+}) {
+  return request<IncubatorCampaign>(`rounds/${encodeURIComponent(input.roundId)}/terminate`, {
+    method: 'POST',
+    body: JSON.stringify({
+      request_id: input.requestId,
+      winner_relation: input.winnerRelation
+    })
+  })
+}
+
+export function endIncubatorCampaign(campaignId: string) {
+  return request<IncubatorCampaign>(`campaigns/${encodeURIComponent(campaignId)}/end`, {
+    method: 'POST'
+  })
+}

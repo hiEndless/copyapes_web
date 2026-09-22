@@ -17,18 +17,31 @@ function allowedRouteMethods(path: string[]): readonly string[] | undefined {
 
   if (exact) return exact
 
+  if (
+    path[0] === 'rounds' &&
+    UUID_PATTERN.test(path[1] || '') &&
+    path.length === 5 &&
+    path[2] === 'members' &&
+    UUID_PATTERN.test(path[3] || '') &&
+    path[4] === 'positions'
+  ) {
+    return ['GET']
+  }
+
   if (path[0] === 'rounds' && UUID_PATTERN.test(path[1] || '') && path.length === 3) {
     if (path[2] === 'setup') return ['PUT']
     if (path[2] === 'start') return ['POST']
+    if (path[2] === 'terminate') return ['POST']
+    if (path[2] === 'leader-position') return ['GET']
   }
 
   if (
     path[0] === 'campaigns' &&
     UUID_PATTERN.test(path[1] || '') &&
     path.length === 3 &&
-    (path[2] === 'trade-records' || path[2] === 'economics')
+    (path[2] === 'trade-records' || path[2] === 'economics' || path[2] === 'end')
   ) {
-    return ['GET']
+    return path[2] === 'end' ? ['POST'] : ['GET']
   }
 
   if (path[0] !== 'api-accounts' || !UUID_PATTERN.test(path[1] || '')) return undefined

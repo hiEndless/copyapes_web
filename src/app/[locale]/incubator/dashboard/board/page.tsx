@@ -58,6 +58,7 @@ import {
   readBoardDemoMode,
   relationLabel,
   resultLabel,
+  validApiSelectionCounts,
   roundPhaseLabel,
   startRound,
   terminateRound,
@@ -76,8 +77,10 @@ import { TradeTimeline, type TradeTimelineItem } from '../_components/trade-time
 import { listIncubatorApiAccounts } from '@/lib/incubator-api-accounts'
 import {
   createIncubatorCampaign,
+  endIncubatorCampaign,
   listIncubatorCampaigns,
   startIncubatorRound,
+  terminateIncubatorRound,
   updateIncubatorRoundSetup,
   type IncubatorCampaign
 } from '@/lib/incubator-campaigns'
@@ -90,9 +93,72 @@ import {
   type IncubatorCampaignEconomics,
   type IncubatorMemberEconomics
 } from '@/lib/incubator-economics'
+import type { IncubatorLeaderPositionItem } from '@/lib/incubator-leader-position'
+import {
+  MEMBER_POSITION_CACHE_TTL_MS,
+  loadCachedMemberPositions,
+  memberPositionReasonText,
+  peekCachedMemberPositions,
+  type IncubatorMemberPositions
+} from '@/lib/incubator-member-position'
 
 const STARTING_POLL_INTERVAL_MS = 2_500
 const ECONOMICS_POLL_INTERVAL_MS = 10_000
+
+function roiPercent(ratio: string | null | undefined): number | null {
+  if (ratio == null || ratio.trim() === '') return null
+  const parsed = Number(ratio)
+  return Number.isFinite(parsed) ? parsed * 100 : null
+}
+
+function formatRoi(value: number): string {
+  const digits = Math.abs(value) < 1 ? 2 : 1
+  const text = value.toFixed(digits)
+  if (Number(text) === 0) return '0.0%'
+  return `${value > 0 ? '+' : ''}${text}%`
+}
+
+function parseDecimalDisplay(value: string | null | undefined): number {
+  if (value == null || value.trim() === '') return 0
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+function toLeaderOpenPosition(item: IncubatorLeaderPositionItem): OpenPosition {
+  const side = item.position_side.trim().toUpperCase() === 'SHORT' ? 'SHORT' : 'LONG'
+  const mode = item.margin_mode.trim().toLowerCase()
+  const marginMode = mode.includes('isolat') || mode.includes('逐仓') ? '逐仓' : '全仓'
+  const qtyAsset = item.symbol.replace(/[-_]?USDT.*$/i, '').replace(/-/g, '') || item.symbol
+
+  return {
+    id: item.exchange_position_id || `${item.symbol}:${item.position_side}:${item.margin_mode}`,
+    symbol: item.symbol,
+    side,
+    marginMode,
+    leverage: parseDecimalDisplay(item.leverage),
+    pnlUsdt: parseDecimalDisplay(item.unrealized_pnl),
+    roiPct: roiPercent(item.unrealized_pnl_ratio),
+    qty: parseDecimalDisplay(item.quantity),
+    qtyAsset,
+    entryPrice: parseDecimalDisplay(item.entry_price),
+    openedAt: ''
+  }
+}
+
+function positionView(snapshot: IncubatorMemberPositions): { positions: OpenPosition[]; error: string | null } {
+  if (snapshot.status === 'UNAVAILABLE') {
+    return { positions: [], error: memberPositionReasonText(snapshot.reason_code) }
+  }
+
+  return { positions: snapshot.positions.map(toLeaderOpenPosition), error: null }
+}
+
+function leaderPositionEmptyText(input: { hasLeader: boolean; loading: boolean; error: string | null }): string {
+  if (!input.hasLeader) return '尚未确认领单，暂无仓位'
+  if (input.loading) return '领单仓位加载中…'
+  if (input.error) return input.error
+  return '领单暂无当前持仓'
+}
 
 function roundSetupSignature(round: RoundSnapshot): string {
   const leaderMemberId = round.members.find(member => member.isLeader)?.id ?? null
@@ -228,6 +294,7 @@ function ExchangeLogo({ exchange, className }: { exchange: string; className?: s
 }
 
 function shortOpenedAt(value: string) {
+  if (!value) return '-'
   const match = value.match(/(\d{2})-(\d{2})\s+(\d{2}:\d{2}:\d{2})/)
   return match ? `${match[1]}-${match[2]} ${match[3]}` : value
 }
@@ -322,12 +389,11 @@ function PositionCard({
           <p
             className={cn(
               'text-[11px] font-semibold tabular-nums leading-tight',
-              position.roiPct > 0 && 'text-emerald-600 dark:text-emerald-400',
-              position.roiPct < 0 && 'text-red-600 dark:text-red-400'
+              position.roiPct != null && position.roiPct > 0 && 'text-emerald-600 dark:text-emerald-400',
+              position.roiPct != null && position.roiPct < 0 && 'text-red-600 dark:text-red-400'
             )}
           >
-            {position.roiPct > 0 ? '+' : ''}
-            {position.roiPct.toFixed(1)}%
+            {position.roiPct == null ? '-' : formatRoi(position.roiPct)}
           </p>
         </div>
       </div>
@@ -490,10 +556,18 @@ export default function IncubatorBoardPage() {
   const [tradeTimelineMoreLoading, setTradeTimelineMoreLoading] = useState(false)
   const [tradeTimelineError, setTradeTimelineError] = useState<string | null>(null)
   const [tradeTimelineCursor, setTradeTimelineCursor] = useState<string | null>(null)
+  const [realOpenPositions, setRealOpenPositions] = useState<OpenPosition[]>([])
+  const [leaderPositionLoading, setLeaderPositionLoading] = useState(false)
+  const [leaderPositionError, setLeaderPositionError] = useState<string | null>(null)
+  const [realMemberPositions, setRealMemberPositions] = useState<OpenPosition[]>([])
+  const [memberPositionLoading, setMemberPositionLoading] = useState(false)
+  const [memberPositionError, setMemberPositionError] = useState<string | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
   const [createBusy, setCreateBusy] = useState(false)
   const [setupBusy, setSetupBusy] = useState(false)
   const [startBusy, setStartBusy] = useState(false)
+  const [terminateBusy, setTerminateBusy] = useState(false)
+  const [endProjectBusy, setEndProjectBusy] = useState(false)
   const [leaderOpen, setLeaderOpen] = useState(false)
   const [terminateOpen, setTerminateOpen] = useState(false)
   const [endProjectOpen, setEndProjectOpen] = useState(false)
@@ -509,6 +583,8 @@ export default function IncubatorBoardPage() {
   const realLoadGeneration = useRef(0)
   const tradeTimelineGeneration = useRef(0)
   const economicsGeneration = useRef(0)
+  const leaderPositionGeneration = useRef(0)
+  const memberPositionGeneration = useRef(0)
   const economicsCache = useRef<Record<string, IncubatorCampaignEconomics>>({})
   const startRequestIds = useRef<Record<string, string>>({})
   const savedSetupSignatures = useRef<Record<string, string>>({})
@@ -749,10 +825,94 @@ export default function IncubatorBoardPage() {
     }
   }, [activeRound?.id, activeRound?.phase, demoMode])
 
+  const leaderMemberId = activeRound?.members.find(member => member.isLeader)?.id ?? null
+  const leaderRoundId = activeRound?.id ?? null
+
+  useEffect(() => {
+    if (demoMode || !leaderRoundId || !leaderMemberId) {
+      leaderPositionGeneration.current += 1
+      setRealOpenPositions([])
+      setLeaderPositionLoading(false)
+      setLeaderPositionError(null)
+      return
+    }
+
+    let cancelled = false
+    const generation = ++leaderPositionGeneration.current
+    const roundId = leaderRoundId
+    setLeaderPositionError(null)
+
+    const refreshLeaderPosition = async () => {
+      if (!peekCachedMemberPositions(roundId, leaderMemberId)) setLeaderPositionLoading(true)
+      try {
+        const snapshot = await loadCachedMemberPositions(roundId, leaderMemberId)
+        if (cancelled || generation !== leaderPositionGeneration.current || readBoardDemoMode()) return
+        const next = positionView(snapshot)
+        setRealOpenPositions(next.positions)
+        setLeaderPositionError(next.error)
+      } catch (error) {
+        if (!cancelled && generation === leaderPositionGeneration.current) {
+          setRealOpenPositions([])
+          setLeaderPositionError(error instanceof Error ? error.message : '领单仓位加载失败')
+        }
+      } finally {
+        if (!cancelled && generation === leaderPositionGeneration.current) setLeaderPositionLoading(false)
+      }
+    }
+
+    void refreshLeaderPosition()
+    const timer = window.setInterval(refreshLeaderPosition, MEMBER_POSITION_CACHE_TTL_MS)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [demoMode, leaderMemberId, leaderRoundId])
+
   const selectedMember = useMemo(() => {
     if (!activeRound) return null
     return activeRound.members.find(member => member.id === selectedMemberId) ?? activeRound.members[0]
   }, [activeRound, selectedMemberId])
+
+  useEffect(() => {
+    if (demoMode || !inspectorOpen || !activeRound || !selectedMember) {
+      memberPositionGeneration.current += 1
+      setRealMemberPositions([])
+      setMemberPositionLoading(false)
+      setMemberPositionError(null)
+      return
+    }
+
+    let cancelled = false
+    const generation = ++memberPositionGeneration.current
+    const roundId = activeRound.id
+    const memberId = selectedMember.id
+    setMemberPositionError(null)
+
+    const refreshMemberPosition = async () => {
+      if (!peekCachedMemberPositions(roundId, memberId)) setMemberPositionLoading(true)
+      try {
+        const snapshot = await loadCachedMemberPositions(roundId, memberId)
+        if (cancelled || generation !== memberPositionGeneration.current || readBoardDemoMode()) return
+        const next = positionView(snapshot)
+        setRealMemberPositions(next.positions)
+        setMemberPositionError(next.error)
+      } catch (error) {
+        if (!cancelled && generation === memberPositionGeneration.current) {
+          setRealMemberPositions([])
+          setMemberPositionError(error instanceof Error ? error.message : '持仓查询失败')
+        }
+      } finally {
+        if (!cancelled && generation === memberPositionGeneration.current) setMemberPositionLoading(false)
+      }
+    }
+
+    void refreshMemberPosition()
+    const timer = window.setInterval(refreshMemberPosition, MEMBER_POSITION_CACHE_TTL_MS)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [activeRound?.id, demoMode, inspectorOpen, selectedMember?.id])
 
   const setupDirty = Boolean(
     !demoMode &&
@@ -810,7 +970,20 @@ export default function IncubatorBoardPage() {
       ? activeRoundEconomics.settlement.pending + activeRoundEconomics.settlement.failed
       : 0
   const economicsFallback = economicsLoading ? '加载中' : economicsError ? '加载失败' : '暂无数据'
-  const openPositions = demoMode ? getLeaderOpenPositions(leader?.apiId, activeRound?.phase) : []
+  const openPositions = demoMode
+    ? getLeaderOpenPositions(leader?.apiId, activeRound?.phase)
+    : realOpenPositions
+  const leaderPositionFallback = leaderPositionEmptyText({
+    hasLeader: Boolean(leader),
+    loading: leaderPositionLoading,
+    error: leaderPositionError
+  })
+  const memberOpenPositions = demoMode
+    ? getLeaderOpenPositions(selectedMember?.apiId, activeRound?.phase)
+    : realMemberPositions
+  const memberPositionFallback = memberPositionLoading
+    ? '持仓加载中…'
+    : memberPositionError || '暂无当前持仓'
   const endProjectBlockReason = (() => {
     if (!campaign || campaign.status === 'COMPLETED') return null
     if (activeRound?.phase === 'RUNNING') {
@@ -948,15 +1121,27 @@ export default function IncubatorBoardPage() {
     })
   }, [availableApis])
 
-  const selectionValid = isPowerOfTwo(selectedApiIds.length) && createName.trim().length > 0
-  const selectedBalanceTotal = useMemo(() => {
-    return availableApis
-      .filter(api => selectedApiIds.includes(api.id))
-      .reduce((sum, api) => sum + (api.balanceUsdt ?? (demoMode ? mockBalanceForApi(api.id) : 0)), 0)
-  }, [availableApis, selectedApiIds, demoMode])
-  const selectedBalancePending = !demoMode && availableApis.some(
-    api => selectedApiIds.includes(api.id) && api.balanceUsdt === undefined
+  const selectionCountValid = isPowerOfTwo(selectedApiIds.length)
+  const selectionValid = selectionCountValid && createName.trim().length > 0
+  const validSelectionCounts = useMemo(
+    () => validApiSelectionCounts(availableApis.length),
+    [availableApis.length]
   )
+  const selectionCountHint = useMemo(() => {
+    if (availableApis.length < 2) return '当前可用不足 2 个'
+    return `请选 ${validSelectionCounts.join(' 或 ')} 个`
+  }, [availableApis.length, validSelectionCounts])
+  const availableMinBalance = useMemo(() => {
+    const balances = availableApis
+      .map(api => api.balanceUsdt ?? (demoMode ? mockBalanceForApi(api.id) : null))
+      .filter((value): value is number => typeof value === 'number' && Number.isFinite(value))
+    if (balances.length === 0) return null
+    return Math.min(...balances)
+  }, [availableApis, demoMode])
+  const availableBalancePending =
+    !demoMode && availableApis.length > 0 && availableApis.some(api => api.balanceUsdt === undefined)
+  const formatUsdt = (value: number) =>
+    value.toLocaleString(undefined, { maximumFractionDigits: 1 })
 
   const openInspector = (member: RoundMember) => {
     setSelectedMemberId(member.id)
@@ -1146,15 +1331,57 @@ export default function IncubatorBoardPage() {
     }
   }
 
-  const handleTerminate = () => {
-    if (!demoMode) {
-      toast.error('真实模式暂不支持终止与晋级，请等待后端接口接入')
-      return
-    }
+  const handleTerminate = async () => {
     if (!campaign || !activeRound) return
     const eliminatedApiIds = new Set(
       activeRound.members.filter(member => member.relation !== pendingWinner).map(member => member.apiId)
     )
+    if (!demoMode) {
+      setTerminateBusy(true)
+      try {
+        const requestId = crypto.randomUUID()
+        const updated = fromApiCampaign(
+          await terminateIncubatorRound({
+            roundId: activeRound.id,
+            requestId,
+            winnerRelation: pendingWinner
+          })
+        )
+        const summary = buildPromoteResultSummary(
+          activeRound.members,
+          activeRound.index,
+          pendingWinner,
+          null,
+          false
+        )
+        const projectCompleted = updated.status === 'COMPLETED'
+        setPromoteResult({
+          ...summary,
+          nextRoundIndex: projectCompleted ? null : updated.currentRound,
+          projectCompleted
+        })
+        setPromoteDetailOpen(true)
+        rememberPersistedCampaigns([updated])
+        if (projectCompleted) {
+          const freed = getCampaignApiIds(campaign)
+          setIdleApis(prev => prev.map(api => (freed.has(api.id) ? { ...api, busy: false } : api)))
+          const remaining = campaigns.filter(item => item.id !== campaign.id)
+          syncRoundView(updated, remaining)
+        } else {
+          setIdleApis(prev =>
+            prev.map(api => (eliminatedApiIds.has(api.id) ? { ...api, busy: false } : api))
+          )
+          syncRoundView(updated)
+        }
+        setTerminateOpen(false)
+        toast.success(projectCompleted ? '项目已结束' : '本轮已终止，晋级账号进入下一轮')
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : '终止本轮失败')
+      } finally {
+        setTerminateBusy(false)
+      }
+      return
+    }
     const summary = buildPromoteResultSummary(
       activeRound.members,
       activeRound.index,
@@ -1185,12 +1412,25 @@ export default function IncubatorBoardPage() {
     setTerminateOpen(false)
   }
 
-  const handleEndProject = () => {
+  const handleEndProject = async () => {
+    if (!campaign || !canEndProject) return
     if (!demoMode) {
-      toast.error('真实模式暂不支持结束项目，请等待后端接口接入')
+      setEndProjectBusy(true)
+      try {
+        const updated = fromApiCampaign(await endIncubatorCampaign(campaign.id))
+        const freed = getCampaignApiIds(campaign)
+        const remaining = campaigns.filter(item => item.id !== campaign.id)
+        setIdleApis(prev => prev.map(api => (freed.has(api.id) ? { ...api, busy: false } : api)))
+        syncRoundView(updated, remaining)
+        setEndProjectOpen(false)
+        toast.success('项目已结束')
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : '结束项目失败')
+      } finally {
+        setEndProjectBusy(false)
+      }
       return
     }
-    if (!campaign || !canEndProject) return
     const freed = getCampaignApiIds(campaign)
     const remaining = campaigns.filter(item => item.id !== campaign.id)
     const next = endCampaignEarly(campaign)
@@ -1238,6 +1478,17 @@ export default function IncubatorBoardPage() {
     setSelectedApiIds(prev =>
       prev.includes(apiId) ? prev.filter(id => id !== apiId) : [...prev, apiId]
     )
+  }
+
+  const allAvailableSelected =
+    availableApis.length > 0 && availableApis.every(api => selectedApiIds.includes(api.id))
+
+  const toggleSelectAllApis = () => {
+    if (allAvailableSelected) {
+      setSelectedApiIds([])
+      return
+    }
+    setSelectedApiIds(availableApis.map(api => api.id))
   }
 
   const handleSwitchCampaign = (id: string) => {
@@ -1420,20 +1671,18 @@ export default function IncubatorBoardPage() {
                 <CardFooter className='border-border/60 border-t px-4 py-3'>
                   <div className='flex w-full items-center justify-between gap-3'>
                     <p className='text-muted-foreground min-w-0 flex-1 text-[11px] leading-snug'>
-                      {!demoMode
-                        ? '真实模式结束项目接口尚未接入'
-                        : endProjectBlockReason ?? '提前结束将释放账号，本轮数据保留在历史'}
+                      {endProjectBlockReason ?? '提前结束将释放账号，本轮数据保留在历史'}
                     </p>
                     <Button
                       type='button'
                       size='sm'
                       variant='outline'
-                      disabled={!demoMode || !canEndProject}
+                      disabled={!canEndProject || endProjectBusy}
                       className='h-8 shrink-0 gap-1.5 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
                       onClick={() => setEndProjectOpen(true)}
                     >
                       <CircleStop className='size-3.5' />
-                      {demoMode ? '结束项目' : '结束项目（待接入）'}
+                      {endProjectBusy ? '结束中…' : '结束项目'}
                     </Button>
                   </div>
                 </CardFooter>
@@ -1529,14 +1778,14 @@ export default function IncubatorBoardPage() {
                       size='sm'
                       variant='outline'
                       className='h-8 w-full gap-1.5 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
-                      disabled={!demoMode || !isRunning}
+                      disabled={!isRunning || terminateBusy}
                       onClick={() => {
                         setPendingWinner(sameNet >= inverseNet ? 'SAME' : 'INVERSE')
                         setTerminateOpen(true)
                       }}
                     >
                       <Square className='size-3.5' />
-                      {demoMode ? '终止本轮' : '终止本轮（待接入）'}
+                      {terminateBusy ? '终止中…' : '终止本轮'}
                     </Button>
                   </div>
                 ) : (
@@ -1787,15 +2036,13 @@ export default function IncubatorBoardPage() {
                   {leader ? ` · ${leader.apiLabel}` : ' · 未确认'}
                 </p>
                 <div className='max-h-48 overflow-y-auto pr-0.5'>
-                  {!demoMode ? (
-                    <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-[11px]'>真实仓位接口待接入</p>
-                  ) : !leader ? (
+                  {!leader ? (
                     <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-[11px]'>
                       尚未确认领单，暂无仓位
                     </p>
                   ) : openPositions.length === 0 ? (
                     <p className='text-muted-foreground rounded-md border border-dashed border-border/60 px-3 py-3 text-center text-[11px]'>
-                      {demoMode ? '领单暂无当前持仓' : '真实仓位接口待接入'}
+                      {demoMode ? '领单暂无当前持仓' : leaderPositionFallback}
                     </p>
                   ) : (
                     <div className='grid grid-cols-2 gap-1.5'>
@@ -1857,15 +2104,13 @@ export default function IncubatorBoardPage() {
               )}
             </TabsContent>
             <TabsContent value='positions' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
-              {!demoMode ? (
-                <p className='text-muted-foreground text-center text-[11px]'>真实仓位接口待接入</p>
-              ) : !leader ? (
-                <p className='text-muted-foreground text-center text-[11px]'>尚未确认领单，暂无仓位</p>
-              ) : openPositions.length === 0 ? (
-                <p className='text-muted-foreground text-center text-[11px]'>{demoMode ? '领单暂无当前持仓' : '真实仓位接口待接入'}</p>
+              {memberOpenPositions.length === 0 ? (
+                <p className='text-muted-foreground text-center text-[11px]'>
+                  {demoMode ? '暂无当前持仓' : memberPositionFallback}
+                </p>
               ) : (
                 <div className='grid grid-cols-2 gap-1.5'>
-                  {openPositions.map(position => (
+                  {memberOpenPositions.map(position => (
                     <PositionCard key={position.id} position={position} />
                   ))}
                 </div>
@@ -1894,7 +2139,17 @@ export default function IncubatorBoardPage() {
         <DialogContent className='sm:max-w-lg'>
           <DialogHeader>
             <DialogTitle>创建项目</DialogTitle>
-            <DialogDescription>选择交易所与空闲 API，数量须为 2 的幂（2/4/8/16…）。</DialogDescription>
+            <DialogDescription>
+              {availableApis.length < 2
+                ? '请先准备至少 2 个同交易所空闲 API。'
+                : `当前有 ${availableApis.length} 个可用 API，${selectionCountHint}。${
+                    availableMinBalance !== null
+                      ? `可用最低 ${formatUsdt(availableMinBalance)} U。`
+                      : availableBalancePending
+                        ? '可用余额待接入。'
+                        : ''
+                  }`}
+            </DialogDescription>
           </DialogHeader>
 
           <div className='rounded-md border border-amber-500/20 bg-amber-500/10 px-3 py-2.5 text-xs leading-relaxed text-amber-800 dark:text-amber-200'>
@@ -1939,21 +2194,31 @@ export default function IncubatorBoardPage() {
 
             <div className='space-y-2'>
               <div className='flex items-center justify-between gap-2'>
-              <Label>可用 API</Label>
+                <div className='flex items-center gap-2'>
+                  <Label>可用 API</Label>
+                  <button
+                    type='button'
+                    disabled={availableApis.length === 0}
+                    onClick={toggleSelectAllApis}
+                    className='text-primary disabled:text-muted-foreground text-xs font-medium disabled:cursor-not-allowed'
+                  >
+                    {allAvailableSelected ? '取消全选' : '全选'}
+                  </button>
+                </div>
                 <span
                   className={cn(
                     'text-xs',
-                    selectionValid ? 'text-muted-foreground' : 'text-destructive'
+                    selectionCountValid ? 'text-muted-foreground' : 'text-destructive'
                   )}
                 >
                   已选 {selectedApiIds.length}
                   {runtimeClaimedCount > 0 ? ` · ${runtimeClaimedCount} 个运行占用已隐藏` : ''}
-                  {!selectionValid && selectedApiIds.length > 0 ? ' · 须为 2 的幂' : ''}
-                  {selectedApiIds.length > 0
-                    ? selectedBalancePending
-                      ? ' · 合计可用待接入'
-                      : ` · 合计可用 ${selectedBalanceTotal.toLocaleString(undefined, { maximumFractionDigits: 1 })} U`
-                    : ''}
+                  {!selectionCountValid ? ` · ${selectionCountHint}` : ''}
+                  {availableMinBalance !== null
+                    ? ` · 可用最低 ${formatUsdt(availableMinBalance)} U`
+                    : availableBalancePending && availableApis.length > 0
+                      ? ' · 可用最低待接入'
+                      : ''}
                 </span>
               </div>
               <div className='border-border/60 max-h-56 space-y-1 overflow-y-auto rounded-md border p-2'>
@@ -2152,11 +2417,11 @@ export default function IncubatorBoardPage() {
             })()}
           </div>
           <DialogFooter>
-            <Button type='button' variant='outline' onClick={() => setTerminateOpen(false)}>
+            <Button type='button' variant='outline' disabled={terminateBusy} onClick={() => setTerminateOpen(false)}>
               取消
             </Button>
-            <Button type='button' onClick={handleTerminate}>
-              确认终止
+            <Button type='button' disabled={terminateBusy} onClick={() => void handleTerminate()}>
+              {terminateBusy ? '终止中…' : '确认终止'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -2251,16 +2516,16 @@ export default function IncubatorBoardPage() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button type='button' variant='outline' onClick={() => setEndProjectOpen(false)}>
+            <Button type='button' variant='outline' disabled={endProjectBusy} onClick={() => setEndProjectOpen(false)}>
               取消
             </Button>
             <Button
               type='button'
               variant='destructive'
-              disabled={!canEndProject}
-              onClick={handleEndProject}
+              disabled={!canEndProject || endProjectBusy}
+              onClick={() => void handleEndProject()}
             >
-              确认结束
+              {endProjectBusy ? '结束中…' : '确认结束'}
             </Button>
           </DialogFooter>
         </DialogContent>

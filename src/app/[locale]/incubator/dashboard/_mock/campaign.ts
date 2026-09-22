@@ -69,7 +69,7 @@ export type OpenPosition = {
   marginMode: '全仓' | '逐仓'
   leverage: number
   pnlUsdt: number
-  roiPct: number
+  roiPct: number | null
   qty: number
   qtyAsset: string
   entryPrice: number
@@ -836,6 +836,15 @@ export function roundPhaseLabel(phase: RoundPhase) {
 
 export function isPowerOfTwo(n: number) {
   return n >= 2 && (n & (n - 1)) === 0
+}
+
+/** Valid create-campaign API counts for the current idle pool (2, 4, 8… up to available). */
+export function validApiSelectionCounts(availableCount: number): number[] {
+  const counts: number[] = []
+  for (let size = 2; size <= availableCount; size *= 2) {
+    counts.push(size)
+  }
+  return counts
 }
 
 export function totalRoundsFromCount(n: number) {

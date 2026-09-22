@@ -58,6 +58,20 @@ export function readStudioVip(): boolean | null {
   }
 }
 
+/** Root operators may bind DEMO (flag=1) API accounts. */
+export function canBindIncubatorDemoApi(): boolean {
+  if (typeof window === 'undefined') return false
+
+  try {
+    const raw = localStorage.getItem('userInfo')
+    if (!raw) return false
+    const user = JSON.parse(raw) as { id?: number; name?: string }
+    return Number(user.id) === 1 || String(user.name || '').trim() === 'root'
+  } catch {
+    return false
+  }
+}
+
 export async function loginIncubatorSso(): Promise<IncubatorSsoLoginResult> {
   const token = localStorage.getItem('token')
 

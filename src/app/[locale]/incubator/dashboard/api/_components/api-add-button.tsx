@@ -7,8 +7,9 @@ import { PlusIcon } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
-import { cn } from '@/lib/utils'
+import { canBindIncubatorDemoApi } from '@/lib/incubator-auth'
 import { listIncubatorProxyEgressIps } from '@/lib/incubator-proxy'
+import { cn } from '@/lib/utils'
 
 import { ApiBindFormStep, type ApiFormData } from './api-bind-form-step'
 
@@ -102,7 +103,8 @@ export function ApiAddButton({
     setLoading(true)
 
     try {
-      await onAdd({ ...formData, api_label: formData.api_label.trim() })
+      const flag = canBindIncubatorDemoApi() ? formData.flag : 0
+      await onAdd({ ...formData, api_label: formData.api_label.trim(), flag })
       toast.success('添加成功')
       setOpen(false)
       resetDialog()
