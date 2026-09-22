@@ -96,9 +96,13 @@ import {
 import type { IncubatorLeaderPositionItem } from '@/lib/incubator-leader-position'
 import {
   MEMBER_POSITION_CACHE_TTL_MS,
+  loadCachedMemberPositionHistory,
   loadCachedMemberPositions,
   memberPositionReasonText,
+  peekCachedMemberPositionHistory,
   peekCachedMemberPositions,
+  type IncubatorMemberPositionHistory,
+  type IncubatorMemberPositionHistoryItem,
   type IncubatorMemberPositions
 } from '@/lib/incubator-member-position'
 
@@ -151,6 +155,36 @@ function toLeaderOpenPosition(item: IncubatorLeaderPositionItem): OpenPosition {
     entryPrice: parseDecimalDisplay(item.entry_price),
     openedAt: formatPositionOpenedAt(item.opened_at)
   }
+}
+
+function toClosedPosition(item: IncubatorMemberPositionHistoryItem): ClosedPosition {
+  const side = item.position_side.trim().toUpperCase() === 'SHORT' ? 'SHORT' : 'LONG'
+  const mode = item.margin_mode.trim().toLowerCase()
+  const marginMode = mode.includes('isolat') || mode.includes('逐仓') ? '逐仓' : '全仓'
+  const qtyAsset = item.symbol.replace(/[-_]?USDT.*$/i, '').replace(/-/g, '') || item.symbol
+
+  return {
+    id: `${item.exchange_position_id || item.symbol}:${item.position_side}:${item.closed_at}`,
+    symbol: item.symbol,
+    side,
+    marginMode,
+    leverage: parseDecimalDisplay(item.leverage),
+    pnlUsdt: parseDecimalDisplay(item.realized_pnl),
+    roiPct: roiPercent(item.realized_pnl_ratio),
+    qty: parseDecimalDisplay(item.quantity),
+    qtyAsset,
+    entryPrice: parseDecimalDisplay(item.entry_price),
+    openedAt: formatPositionOpenedAt(item.opened_at),
+    closedAt: formatPositionOpenedAt(item.closed_at)
+  }
+}
+
+function historyView(snapshot: IncubatorMemberPositionHistory): { positions: ClosedPosition[]; error: string | null } {
+  if (snapshot.status === 'UNAVAILABLE') {
+    return { positions: [], error: memberPositionReasonText(snapshot.reason_code) }
+  }
+
+  return { positions: snapshot.positions.map(toClosedPosition), error: null }
 }
 
 function positionView(snapshot: IncubatorMemberPositions): { positions: OpenPosition[]; error: string | null } {
@@ -379,9 +413,11 @@ function PositionCard({
         <span className='bg-muted text-muted-foreground rounded px-1 py-px text-[9px]'>
           {position.marginMode}
         </span>
-        <span className='bg-muted text-muted-foreground rounded px-1 py-px text-[9px]'>
-          {position.leverage}x
-        </span>
+        {position.leverage > 0 && (
+          <span className='bg-muted text-muted-foreground rounded px-1 py-px text-[9px]'>
+            {position.leverage}x
+          </span>
+        )}
       </div>
 
       <div className='mt-1.5 grid grid-cols-2 gap-1'>
@@ -579,6 +615,9 @@ export default function IncubatorBoardPage() {
   const [realMemberPositions, setRealMemberPositions] = useState<OpenPosition[]>([])
   const [memberPositionLoading, setMemberPositionLoading] = useState(false)
   const [memberPositionError, setMemberPositionError] = useState<string | null>(null)
+  const [realClosedPositions, setRealClosedPositions] = useState<ClosedPosition[]>([])
+  const [historyPositionLoading, setHistoryPositionLoading] = useState(false)
+  const [historyPositionError, setHistoryPositionError] = useState<string | null>(null)
   const [createOpen, setCreateOpen] = useState(false)
   const [createBusy, setCreateBusy] = useState(false)
   const [setupBusy, setSetupBusy] = useState(false)
@@ -602,6 +641,7 @@ export default function IncubatorBoardPage() {
   const economicsGeneration = useRef(0)
   const leaderPositionGeneration = useRef(0)
   const memberPositionGeneration = useRef(0)
+  const historyPositionGeneration = useRef(0)
   const economicsCache = useRef<Record<string, IncubatorCampaignEconomics>>({})
   const startRequestIds = useRef<Record<string, string>>({})
   const savedSetupSignatures = useRef<Record<string, string>>({})
@@ -931,6 +971,47 @@ export default function IncubatorBoardPage() {
     }
   }, [activeRound?.id, demoMode, inspectorOpen, selectedMember?.id])
 
+  useEffect(() => {
+    if (demoMode || !inspectorOpen || inspectorTab !== 'history' || !activeRound || !selectedMember) {
+      historyPositionGeneration.current += 1
+      setRealClosedPositions([])
+      setHistoryPositionLoading(false)
+      setHistoryPositionError(null)
+      return
+    }
+
+    let cancelled = false
+    const generation = ++historyPositionGeneration.current
+    const roundId = activeRound.id
+    const memberId = selectedMember.id
+    setHistoryPositionError(null)
+
+    const refreshHistory = async () => {
+      if (!peekCachedMemberPositionHistory(roundId, memberId)) setHistoryPositionLoading(true)
+      try {
+        const snapshot = await loadCachedMemberPositionHistory(roundId, memberId)
+        if (cancelled || generation !== historyPositionGeneration.current || readBoardDemoMode()) return
+        const next = historyView(snapshot)
+        setRealClosedPositions(next.positions)
+        setHistoryPositionError(next.error)
+      } catch (error) {
+        if (!cancelled && generation === historyPositionGeneration.current) {
+          setRealClosedPositions([])
+          setHistoryPositionError(error instanceof Error ? error.message : '历史持仓加载失败')
+        }
+      } finally {
+        if (!cancelled && generation === historyPositionGeneration.current) setHistoryPositionLoading(false)
+      }
+    }
+
+    void refreshHistory()
+    const timer = window.setInterval(refreshHistory, MEMBER_POSITION_CACHE_TTL_MS)
+    return () => {
+      cancelled = true
+      window.clearInterval(timer)
+    }
+  }, [activeRound?.id, demoMode, inspectorOpen, inspectorTab, selectedMember?.id])
+
   const setupDirty = Boolean(
     !demoMode &&
       activeRound &&
@@ -1016,7 +1097,7 @@ export default function IncubatorBoardPage() {
     return null
   })()
   const canEndProject = !endProjectBlockReason
-  const closedPositions = demoMode ? getLeaderClosedPositions(leader?.apiId) : []
+  const closedPositions = demoMode ? getLeaderClosedPositions(leader?.apiId) : realClosedPositions
   const inspectingLeader = Boolean(
     selectedMember && leader && (selectedMember.isLeader || selectedMember.id === leader.id)
   )
@@ -1124,22 +1205,19 @@ export default function IncubatorBoardPage() {
     for (const item of campaigns) {
       if (item.status === 'COMPLETED') continue
       for (const round of item.rounds) {
-        if (!demoMode && !round.runtimeClaimed) continue
-        if (demoMode && round.index !== item.currentRound) continue
-        for (const member of round.members) ids.add(member.apiId)
+        for (const member of round.members) {
+          if (member.result === 'ELIMINATED') continue
+          ids.add(member.apiId)
+        }
       }
     }
     return ids
-  }, [campaigns, demoMode])
+  }, [campaigns])
 
   const availableApis = useMemo(
     () => getAvailableApis(idleApis, createExchange, busyApiIds),
     [idleApis, createExchange, busyApiIds]
   )
-  const runtimeClaimedCount = idleApis.filter(
-    api => api.exchange === createExchange && busyApiIds.has(api.id)
-  ).length
-
   useEffect(() => {
     const availableIds = new Set(availableApis.map(api => api.id))
     setSelectedApiIds(previous => {
@@ -1322,7 +1400,6 @@ export default function IncubatorBoardPage() {
       return
     }
     if (!activeRound.setupVersion) return
-    toast.warning('请确认这些 API 未同时执行 CopyApes 跟单任务；Incubator 不会跨系统强制互斥')
     const submittedGeneration = realLoadGeneration.current
     const requestId = startRequestIds.current[activeRound.id] ?? crypto.randomUUID()
     startRequestIds.current[activeRound.id] = requestId
@@ -2149,12 +2226,14 @@ export default function IncubatorBoardPage() {
               )}
             </TabsContent>
             <TabsContent value='history' className='mt-0 flex-1 overflow-y-auto px-4 py-3'>
-              {!demoMode ? (
-                <p className='text-muted-foreground text-center text-[11px]'>真实历史持仓接口待接入</p>
-              ) : !leader ? (
+              {demoMode && !leader ? (
                 <p className='text-muted-foreground text-center text-[11px]'>尚未确认领单，暂无历史仓位</p>
+              ) : !demoMode && historyPositionLoading && closedPositions.length === 0 ? (
+                <p className='text-muted-foreground text-center text-[11px]'>历史持仓加载中…</p>
+              ) : !demoMode && historyPositionError ? (
+                <p className='text-red-600/90 dark:text-red-400/90 text-center text-[11px]'>{historyPositionError}</p>
               ) : closedPositions.length === 0 ? (
-                <p className='text-muted-foreground text-center text-[11px]'>{demoMode ? '暂无历史持仓' : '真实历史持仓接口待接入'}</p>
+                <p className='text-muted-foreground text-center text-[11px]'>暂无历史持仓</p>
               ) : (
                 <div className='grid grid-cols-2 gap-1.5'>
                   {closedPositions.map(position => (
@@ -2244,13 +2323,6 @@ export default function IncubatorBoardPage() {
                   )}
                 >
                   已选 {selectedApiIds.length}
-                  {runtimeClaimedCount > 0 ? ` · ${runtimeClaimedCount} 个运行占用已隐藏` : ''}
-                  {!selectionCountValid ? ` · ${selectionCountHint}` : ''}
-                  {availableMinBalance !== null
-                    ? ` · 可用最低 ${formatUsdt(availableMinBalance)} U`
-                    : availableBalancePending && availableApis.length > 0
-                      ? ' · 可用最低待接入'
-                      : ''}
                 </span>
               </div>
               <div className='border-border/60 max-h-56 space-y-1 overflow-y-auto rounded-md border p-2'>

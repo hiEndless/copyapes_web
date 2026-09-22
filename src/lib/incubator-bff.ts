@@ -23,7 +23,7 @@ function allowedRouteMethods(path: string[]): readonly string[] | undefined {
     path.length === 5 &&
     path[2] === 'members' &&
     UUID_PATTERN.test(path[3] || '') &&
-    path[4] === 'positions'
+    (path[4] === 'positions' || path[4] === 'position-history')
   ) {
     return ['GET']
   }

@@ -59,8 +59,9 @@ async function request<T>(path = 'campaigns', init?: RequestInit): Promise<T> {
   return (await response.json()) as T
 }
 
-export function listIncubatorCampaigns() {
-  return request<IncubatorCampaign[]>()
+export function listIncubatorCampaigns(status?: 'completed') {
+  const query = status ? `?status=${status}` : ''
+  return request<IncubatorCampaign[]>(`campaigns${query}`)
 }
 
 export function createIncubatorCampaign(name: string, apiAccountIds: string[]) {

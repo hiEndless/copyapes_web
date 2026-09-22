@@ -39,7 +39,10 @@ function DecimalPnlText({ value }: { value: string }) {
   const unsigned = normalized.replace(/^[+-]/, '')
   const [integerRaw = '0', fraction = ''] = unsigned.split('.', 2)
   const integer = integerRaw.replace(/^0+(?=\d)/, '') || '0'
-  const digits = (fraction + '0'.repeat(places)).slice(0, places).split('').map(char => Number(char) || 0)
+  const digits = (fraction + '0'.repeat(places)).slice(0, places).split('').map(char => {
+    const index = '0123456789'.indexOf(char)
+    return index < 0 ? 0 : index
+  })
   let carry = (fraction[places] ?? '0') >= '5' ? 1 : 0
   for (let index = digits.length - 1; index >= 0 && carry; index -= 1) {
     const next = digits[index] + carry
@@ -93,7 +96,7 @@ export default function IncubatorHistoryPage() {
       setLoadError(null)
 
       try {
-        const campaigns = (await listIncubatorCampaigns()).filter(
+        const campaigns = (await listIncubatorCampaigns('completed')).filter(
           campaign => campaign.status === 'COMPLETED'
         )
 
