@@ -124,6 +124,14 @@ function parseDecimalDisplay(value: string | null | undefined): number {
   return Number.isFinite(parsed) ? parsed : 0
 }
 
+function formatPositionOpenedAt(value: string | null | undefined) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  const pad = (part: number) => String(part).padStart(2, '0')
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`
+}
+
 function toLeaderOpenPosition(item: IncubatorLeaderPositionItem): OpenPosition {
   const side = item.position_side.trim().toUpperCase() === 'SHORT' ? 'SHORT' : 'LONG'
   const mode = item.margin_mode.trim().toLowerCase()
@@ -141,7 +149,7 @@ function toLeaderOpenPosition(item: IncubatorLeaderPositionItem): OpenPosition {
     qty: parseDecimalDisplay(item.quantity),
     qtyAsset,
     entryPrice: parseDecimalDisplay(item.entry_price),
-    openedAt: ''
+    openedAt: formatPositionOpenedAt(item.opened_at)
   }
 }
 
@@ -238,16 +246,25 @@ function PnlText({ value, className }: { value: number; className?: string }) {
 }
 
 function decimalParts(value: string) {
+  const places = 4
   const normalized = value.trim()
   const negative = normalized.startsWith('-')
   const unsigned = normalized.replace(/^[+-]/, '')
-  const [integer = '0', fraction = ''] = unsigned.split('.', 2)
-  const compactInteger = integer.replace(/^0+(?=\d)/, '') || '0'
-  const compactFraction = fraction.replace(/0+$/, '')
-  const zero = /^0*$/.test(compactInteger) && /^0*$/.test(compactFraction)
+  const [integerRaw = '0', fraction = ''] = unsigned.split('.', 2)
+  const integer = integerRaw.replace(/^0+(?=\d)/, '') || '0'
+  const digits = (fraction + '0'.repeat(places)).slice(0, places).split('').map(char => Number(char) || 0)
+  let carry = (fraction[places] ?? '0') >= '5' ? 1 : 0
+  for (let index = digits.length - 1; index >= 0 && carry; index -= 1) {
+    const next = digits[index] + carry
+    digits[index] = next % 10
+    carry = next >= 10 ? 1 : 0
+  }
+  const roundedInteger = carry ? (BigInt(integer) + 1n).toString() : integer
+  const roundedFraction = digits.join('')
+  const zero = roundedInteger === '0' && /^0+$/.test(roundedFraction)
   return {
     sign: zero ? 0 : negative ? -1 : 1,
-    text: `${negative && !zero ? '-' : ''}${compactInteger}${compactFraction ? `.${compactFraction}` : ''}`
+    text: `${negative && !zero ? '-' : ''}${zero ? '0' : roundedInteger}.${roundedFraction}`
   }
 }
 
@@ -992,8 +1009,9 @@ export default function IncubatorBoardPage() {
     if (openPositions.length > 0) {
       return '领单仍有未平仓位，请先全部平仓'
     }
-    if (campaignUnsettled > 0) {
-      return '仍有未结算周期，收益统计未完成'
+    const settlementPending = demoMode ? campaignUnsettled : economics?.settlement.pending ?? 0
+    if (settlementPending > 0) {
+      return '仍有结算任务在拉取，请稍后再结束项目'
     }
     return null
   })()
@@ -1087,6 +1105,15 @@ export default function IncubatorBoardPage() {
     viewingCurrent &&
     activeRound!.phase === 'RUNNING' &&
     campaign!.status === 'RUNNING'
+  const terminateBlockReason = !isRunning
+    ? null
+    : openPositions.length > 0
+      ? '领单仍有未平仓位，请先全部平仓'
+      : !demoMode && leaderPositionLoading
+        ? '正在确认领单仓位'
+        : !demoMode && leaderPositionError
+          ? '暂时无法确认领单仓位，请稍后重试'
+          : null
   const groupsBalanced = sameMembers.length === inverseMembers.length && sameMembers.length > 0
   const leaderIsSame = Boolean(leader?.isLeader && leader.relation === 'SAME')
   const canStart = Boolean(activeRound) && isPreparing && activeRound!.leaderConfirmed && leaderIsSame && groupsBalanced &&
@@ -1332,7 +1359,7 @@ export default function IncubatorBoardPage() {
   }
 
   const handleTerminate = async () => {
-    if (!campaign || !activeRound) return
+    if (!campaign || !activeRound || terminateBlockReason) return
     const eliminatedApiIds = new Set(
       activeRound.members.filter(member => member.relation !== pendingWinner).map(member => member.apiId)
     )
@@ -1739,6 +1766,7 @@ export default function IncubatorBoardPage() {
               </CardContent>
               <CardFooter className='border-border/60 border-t px-4 py-3'>
                 {viewingCurrent && campaign.status !== 'COMPLETED' ? (
+                  <div className='flex w-full flex-col gap-2'>
                   <div className='grid w-full grid-cols-3 gap-2'>
                     <Button
                       type='button'
@@ -1778,7 +1806,7 @@ export default function IncubatorBoardPage() {
                       size='sm'
                       variant='outline'
                       className='h-8 w-full gap-1.5 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
-                      disabled={!isRunning || terminateBusy}
+                      disabled={!isRunning || terminateBusy || Boolean(terminateBlockReason)}
                       onClick={() => {
                         setPendingWinner(sameNet >= inverseNet ? 'SAME' : 'INVERSE')
                         setTerminateOpen(true)
@@ -1787,6 +1815,10 @@ export default function IncubatorBoardPage() {
                       <Square className='size-3.5' />
                       {terminateBusy ? '终止中…' : '终止本轮'}
                     </Button>
+                  </div>
+                  {terminateBlockReason && (
+                    <p className='text-muted-foreground text-[11px] leading-snug'>{terminateBlockReason}</p>
+                  )}
                   </div>
                 ) : (
                   <>
@@ -2420,7 +2452,7 @@ export default function IncubatorBoardPage() {
             <Button type='button' variant='outline' disabled={terminateBusy} onClick={() => setTerminateOpen(false)}>
               取消
             </Button>
-            <Button type='button' disabled={terminateBusy} onClick={() => void handleTerminate()}>
+            <Button type='button' disabled={terminateBusy || Boolean(terminateBlockReason)} onClick={() => void handleTerminate()}>
               {terminateBusy ? '终止中…' : '确认终止'}
             </Button>
           </DialogFooter>

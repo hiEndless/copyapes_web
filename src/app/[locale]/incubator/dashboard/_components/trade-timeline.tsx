@@ -26,6 +26,15 @@ function formatExchangeError(error: { code: number | string; msg: string }) {
   return `{'code': ${code}, 'msg': ${JSON.stringify(error.msg)}}`
 }
 
+function shortEventAt(value: string) {
+  const trimmed = value.trim().replace(/(\.\d{3})\d+/, '$1')
+  if (!trimmed) return '-'
+  const parsed = new Date(trimmed.includes('T') ? trimmed : trimmed.replace(' ', 'T'))
+  if (Number.isNaN(parsed.getTime())) return value
+  const pad = (part: number) => String(part).padStart(2, '0')
+  return `${pad(parsed.getMonth() + 1)}-${pad(parsed.getDate())} ${pad(parsed.getHours())}:${pad(parsed.getMinutes())}:${pad(parsed.getSeconds())}`
+}
+
 function actionColor(action: string) {
   switch (action.toLowerCase()) {
     case 'open':
@@ -96,7 +105,7 @@ export function TradeTimeline({
             {showApiLabel && item.apiLabel && (
               <div className='text-foreground/90 text-xs leading-5 font-medium'>{item.apiLabel}</div>
             )}
-            <div className='text-muted-foreground text-[11px] tabular-nums'>{item.eventAt}</div>
+            <div className='text-muted-foreground text-[11px] tabular-nums'>{shortEventAt(item.eventAt)}</div>
             <div className='text-foreground/90 text-xs leading-5'>
               <span className={cn('mr-2 font-bold', actionColor(item.action))}>
                 {actionLabel(item.action)} {sideLabel(item.side, item.posSide)}

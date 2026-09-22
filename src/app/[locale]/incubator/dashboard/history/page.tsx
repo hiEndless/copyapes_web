@@ -33,15 +33,24 @@ function PnlText({ value }: { value: number }) {
 }
 
 function DecimalPnlText({ value }: { value: string }) {
+  const places = 4
   const normalized = value.trim()
   const negative = normalized.startsWith('-')
   const unsigned = normalized.replace(/^[+-]/, '')
-  const [integer = '0', fraction = ''] = unsigned.split('.', 2)
-  const compactInteger = integer.replace(/^0+(?=\d)/, '') || '0'
-  const compactFraction = fraction.replace(/0+$/, '')
-  const zero = /^0*$/.test(compactInteger) && /^0*$/.test(compactFraction)
+  const [integerRaw = '0', fraction = ''] = unsigned.split('.', 2)
+  const integer = integerRaw.replace(/^0+(?=\d)/, '') || '0'
+  const digits = (fraction + '0'.repeat(places)).slice(0, places).split('').map(char => Number(char) || 0)
+  let carry = (fraction[places] ?? '0') >= '5' ? 1 : 0
+  for (let index = digits.length - 1; index >= 0 && carry; index -= 1) {
+    const next = digits[index] + carry
+    digits[index] = next % 10
+    carry = next >= 10 ? 1 : 0
+  }
+  const roundedInteger = carry ? (BigInt(integer) + 1n).toString() : integer
+  const roundedFraction = digits.join('')
+  const zero = roundedInteger === '0' && /^0+$/.test(roundedFraction)
   const sign = zero ? 0 : negative ? -1 : 1
-  const text = `${negative && !zero ? '-' : ''}${compactInteger}${compactFraction ? `.${compactFraction}` : ''}`
+  const text = `${negative && !zero ? '-' : ''}${zero ? '0' : roundedInteger}.${roundedFraction}`
 
   return (
     <span

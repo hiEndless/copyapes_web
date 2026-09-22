@@ -17,6 +17,7 @@ export type IncubatorLeaderPositionItem = {
   unrealized_pnl: string | null
   unrealized_pnl_ratio?: string | null
   exchange_position_id: string | null
+  opened_at?: string | null
 }
 
 export type IncubatorLeaderPosition = {
