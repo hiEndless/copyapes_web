@@ -78,6 +78,7 @@ export type OpenPosition = {
 
 export type ClosedPosition = OpenPosition & {
   closedAt: string
+  exitPrice: number | null
 }
 
 export type Campaign = {
@@ -689,6 +690,7 @@ export const MOCK_LEADER_CLOSED_POSITIONS: ClosedPosition[] = [
     qty: 0.03,
     qtyAsset: 'BTC',
     entryPrice: 63210,
+    exitPrice: 66080,
     openedAt: '2026-09-18 09:12:40',
     closedAt: '2026-09-18 21:45:18'
   },
@@ -703,6 +705,7 @@ export const MOCK_LEADER_CLOSED_POSITIONS: ClosedPosition[] = [
     qty: 28,
     qtyAsset: 'SOL',
     entryPrice: 182.1,
+    exitPrice: 188.7,
     openedAt: '2026-09-18 11:05:22',
     closedAt: '2026-09-18 16:28:03'
   },
@@ -717,6 +720,7 @@ export const MOCK_LEADER_CLOSED_POSITIONS: ClosedPosition[] = [
     qty: 1.1,
     qtyAsset: 'ETH',
     entryPrice: 2465.3,
+    exitPrice: 2503.2,
     openedAt: '2026-09-17 14:33:09',
     closedAt: '2026-09-18 08:11:55'
   },
@@ -731,6 +735,7 @@ export const MOCK_LEADER_CLOSED_POSITIONS: ClosedPosition[] = [
     qty: 6,
     qtyAsset: 'BNB',
     entryPrice: 598.4,
+    exitPrice: 596.9,
     openedAt: '2026-09-17 20:02:14',
     closedAt: '2026-09-17 23:40:41'
   }

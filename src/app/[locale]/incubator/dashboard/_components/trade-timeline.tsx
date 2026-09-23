@@ -18,6 +18,7 @@ export type TradeTimelineItem = {
   apiLabel?: string
   /** 交易所原样错误，不做转译 */
   error?: { code: number | string; msg: string } | null
+  failed?: boolean
 }
 
 function formatExchangeError(error: { code: number | string; msg: string }) {
@@ -97,7 +98,7 @@ export function TradeTimeline({
           <span
             className={cn(
               'absolute top-[6px] left-0 size-2 rounded-full',
-              item.error ? 'bg-red-500' : 'bg-primary/80'
+              item.failed || item.error ? 'bg-red-500' : 'bg-primary/80'
             )}
           />
           <span className='bg-border/70 absolute top-4 left-[3px] h-[calc(100%-8px)] w-px' />

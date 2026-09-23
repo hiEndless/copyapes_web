@@ -37,6 +37,7 @@ export type IncubatorFollowerTradeRecord = {
   status: string
   exchange_order_id: string | null
   reason_code: string | null
+  exchange_error: { code: number | string; msg: string } | null
   retry_count: number
   occurred_at: string | null
   terminal_at: string | null

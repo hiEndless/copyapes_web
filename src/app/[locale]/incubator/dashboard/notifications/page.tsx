@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Info, Loader2, Save, Send } from 'lucide-react'
 
@@ -11,6 +11,13 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { cn } from '@/lib/utils'
+import {
+  getIncubatorDingtalkChannel,
+  saveIncubatorDingtalkChannel,
+  setIncubatorDingtalkEnabled,
+  testIncubatorDingtalkChannel,
+  type IncubatorDingtalkChannel
+} from '@/lib/incubator-notifications'
 
 const DINGTALK_STEPS = [
   '打开钉钉，进入需要接收通知的群聊',
@@ -20,18 +27,13 @@ const DINGTALK_STEPS = [
   '完成后复制 Webhook 地址，粘贴到下方输入框'
 ] as const
 
-type DingTalkConfig = {
-  enabled: boolean
-  webhook: string
-  secret: string
-  updatedAt: string
-}
-
-const INITIAL_CONFIG: DingTalkConfig = {
+const EMPTY_CHANNEL: IncubatorDingtalkChannel = {
   enabled: false,
+  configured: false,
   webhook: '',
   secret: '',
-  updatedAt: new Date().toISOString()
+  webhook_hint: '',
+  updated_at: null
 }
 
 function StatusDot({ enabled }: { enabled: boolean }) {
@@ -50,19 +52,50 @@ function StatusDot({ enabled }: { enabled: boolean }) {
 }
 
 export default function IncubatorNotificationsPage() {
-  const [config, setConfig] = useState<DingTalkConfig>(INITIAL_CONFIG)
+  const [config, setConfig] = useState<IncubatorDingtalkChannel>(EMPTY_CHANNEL)
   const [draftWebhook, setDraftWebhook] = useState('')
   const [draftSecret, setDraftSecret] = useState('')
+  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [testing, setTesting] = useState(false)
 
-  const handleToggle = (enabled: boolean) => {
-    if (enabled && !config.webhook.trim()) {
+  const applyChannel = (channel: IncubatorDingtalkChannel) => {
+    setConfig(channel)
+    setDraftWebhook(channel.webhook || '')
+    setDraftSecret(channel.secret || '')
+  }
+
+  useEffect(() => {
+    let cancelled = false
+    getIncubatorDingtalkChannel()
+      .then(channel => {
+        if (!cancelled) applyChannel(channel)
+      })
+      .catch(error => {
+        if (!cancelled) toast.error(error instanceof Error ? error.message : '钉钉配置读取失败')
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const handleToggle = async (enabled: boolean) => {
+    if (enabled && !config.configured) {
       toast.error('请先保存 Webhook 配置后再开启')
       return
     }
-    setConfig(prev => ({ ...prev, enabled, updatedAt: new Date().toISOString() }))
-    toast.success(enabled ? '已开启钉钉通知（演示）' : '已关闭钉钉通知（演示）')
+    setSaving(true)
+    try {
+      applyChannel(await setIncubatorDingtalkEnabled(enabled))
+      toast.success(enabled ? '已开启钉钉通知' : '已关闭钉钉通知')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '钉钉开关保存失败')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleSave = async () => {
@@ -72,18 +105,17 @@ export default function IncubatorNotificationsPage() {
       toast.error('请填写 Webhook 地址')
       return
     }
+    if (!secret) {
+      toast.error('请填写签名密钥')
+      return
+    }
 
     setSaving(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      setConfig(prev => ({
-        ...prev,
-        enabled: true,
-        webhook,
-        secret,
-        updatedAt: new Date().toISOString()
-      }))
-      toast.success('钉钉配置已保存（演示）')
+      applyChannel(await saveIncubatorDingtalkChannel(webhook, secret))
+      toast.success('钉钉配置已保存')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '钉钉配置保存失败')
     } finally {
       setSaving(false)
     }
@@ -94,15 +126,13 @@ export default function IncubatorNotificationsPage() {
       toast.error('请先开启并保存钉钉通知')
       return
     }
-    if (!config.webhook.trim()) {
-      toast.error('请先填写并保存 Webhook 地址')
-      return
-    }
 
     setTesting(true)
     try {
-      await new Promise(resolve => setTimeout(resolve, 600))
-      toast.success('测试消息已发送（演示）')
+      await testIncubatorDingtalkChannel()
+      toast.success('测试消息已发送')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '测试消息发送失败')
     } finally {
       setTesting(false)
     }
@@ -144,7 +174,8 @@ export default function IncubatorNotificationsPage() {
               <div onClick={event => event.stopPropagation()}>
                 <Switch
                   checked={config.enabled}
-                  onCheckedChange={handleToggle}
+                  disabled={loading || saving}
+                  onCheckedChange={checked => void handleToggle(checked)}
                   className='scale-75'
                 />
               </div>
@@ -156,7 +187,7 @@ export default function IncubatorNotificationsPage() {
           <CardHeader className='px-4 py-3'>
             <CardTitle className='text-base'>钉钉机器人 配置</CardTitle>
             <CardDescription className='text-xs'>
-              最近更新 {new Date(config.updatedAt).toLocaleDateString('zh-CN')}
+              {config.updated_at ? `最近更新 ${new Date(config.updated_at).toLocaleDateString('zh-CN')}` : '尚未配置'}
             </CardDescription>
           </CardHeader>
 
@@ -194,7 +225,6 @@ export default function IncubatorNotificationsPage() {
                 <Label htmlFor='ding-secret'>签名密钥</Label>
                 <Input
                   id='ding-secret'
-                  type='password'
                   placeholder='SEC...'
                   value={draftSecret}
                   onChange={event => setDraftSecret(event.target.value)}
@@ -210,7 +240,7 @@ export default function IncubatorNotificationsPage() {
                 variant='outline'
                 size='sm'
                 className='h-8 gap-1.5'
-                disabled={testing || !config.enabled}
+                disabled={testing || loading || !config.enabled}
                 onClick={() => void handleTest()}
               >
                 {testing ? <Loader2 className='size-3.5 animate-spin' /> : <Send className='size-3.5' />}
@@ -220,7 +250,7 @@ export default function IncubatorNotificationsPage() {
                 type='button'
                 size='sm'
                 className='h-8 gap-1.5'
-                disabled={saving}
+                disabled={saving || loading}
                 onClick={() => void handleSave()}
               >
                 {saving ? <Loader2 className='size-3.5 animate-spin' /> : <Save className='size-3.5' />}

@@ -21,6 +21,7 @@ export type IncubatorMemberPositionHistoryItem = {
   quantity: string
   leverage: string | null
   entry_price: string | null
+  exit_price?: string | null
   realized_pnl: string | null
   realized_pnl_ratio: string | null
   exchange_position_id: string | null
@@ -56,7 +57,7 @@ export function memberPositionReasonText(reasonCode: string | null | undefined):
   return REASON_TEXT[reasonCode] || '持仓暂不可用'
 }
 
-export const MEMBER_POSITION_CACHE_TTL_MS = 20_000
+export const MEMBER_POSITION_CACHE_TTL_MS = 10_000
 
 type MemberPositionCacheEntry = {
   expiresAt: number
@@ -68,6 +69,10 @@ const memberPositionPending = new Map<string, Promise<IncubatorMemberPositions>>
 
 function memberPositionCacheKey(roundId: string, memberId: string): string {
   return `${roundId}:${memberId}`
+}
+
+export function invalidateMemberPositions(roundId: string, memberId: string): void {
+  memberPositionCache.delete(memberPositionCacheKey(roundId, memberId))
 }
 
 export function peekCachedMemberPositions(roundId: string, memberId: string): IncubatorMemberPositions | null {

@@ -104,8 +104,8 @@ export default function IncubatorHistoryPage() {
 
         // Historical summaries load once and sequentially to avoid a burst of economics reads.
         for (const campaign of campaigns) {
-          if (campaign.exchange !== 'OKX') {
-            items.push({ campaign, error: '当前阶段仅支持 OKX 项目收益' })
+          if (campaign.exchange !== 'OKX' && campaign.exchange !== 'BINANCE') {
+            items.push({ campaign, error: '当前阶段仅支持 OKX 和币安项目收益' })
             continue
           }
 

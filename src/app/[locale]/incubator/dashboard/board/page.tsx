@@ -95,9 +95,9 @@ import {
 } from '@/lib/incubator-economics'
 import type { IncubatorLeaderPositionItem } from '@/lib/incubator-leader-position'
 import {
-  MEMBER_POSITION_CACHE_TTL_MS,
   loadCachedMemberPositionHistory,
   loadCachedMemberPositions,
+  invalidateMemberPositions,
   memberPositionReasonText,
   peekCachedMemberPositionHistory,
   peekCachedMemberPositions,
@@ -106,8 +106,7 @@ import {
   type IncubatorMemberPositions
 } from '@/lib/incubator-member-position'
 
-const STARTING_POLL_INTERVAL_MS = 2_500
-const ECONOMICS_POLL_INTERVAL_MS = 10_000
+const BOARD_POLL_INTERVAL_MS = 10_000
 
 function roiPercent(ratio: string | null | undefined): number | null {
   if (ratio == null || ratio.trim() === '') return null
@@ -126,6 +125,17 @@ function parseDecimalDisplay(value: string | null | undefined): number {
   if (value == null || value.trim() === '') return 0
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : 0
+}
+
+function formatPnlUsdt(value: number): string {
+  const abs = Math.abs(value)
+  const digits = abs === 0 ? 1 : abs < 0.01 ? 4 : abs < 1 ? 2 : 1
+  const text = value.toLocaleString(undefined, {
+    minimumFractionDigits: digits,
+    maximumFractionDigits: digits
+  })
+  if (value > 0) return `+${text}`
+  return text
 }
 
 function formatPositionOpenedAt(value: string | null | undefined) {
@@ -174,6 +184,7 @@ function toClosedPosition(item: IncubatorMemberPositionHistoryItem): ClosedPosit
     qty: parseDecimalDisplay(item.quantity),
     qtyAsset,
     entryPrice: parseDecimalDisplay(item.entry_price),
+    exitPrice: item.exit_price == null || item.exit_price === '' ? null : parseDecimalDisplay(item.exit_price),
     openedAt: formatPositionOpenedAt(item.opened_at),
     closedAt: formatPositionOpenedAt(item.closed_at)
   }
@@ -318,6 +329,29 @@ function DecimalPnlText({ value, className }: { value: string; className?: strin
   )
 }
 
+function MemberRoundPnlText({
+  demoMode,
+  demoPnl,
+  economics,
+  className
+}: {
+  demoMode: boolean
+  demoPnl: number
+  economics?: IncubatorMemberEconomics
+  className?: string
+}) {
+  if (demoMode) return <PnlText value={demoPnl} className={className} />
+  if (economics) return <DecimalPnlText value={economics.totals.realized_pnl} className={className} />
+  return <span className={cn('text-muted-foreground tabular-nums', className)}>-</span>
+}
+
+function compareRelationNet(left: string | undefined, right: string | undefined) {
+  const leftValue = Number(left ?? '0')
+  const rightValue = Number(right ?? '0')
+  if (!Number.isFinite(leftValue) || !Number.isFinite(rightValue)) return 0
+  return leftValue - rightValue
+}
+
 function economicsStatusLabel(status: IncubatorCampaignEconomics['settlement']['data_status']) {
   if (status === 'FINAL') return '最终数据'
   if (status === 'FAILED') return '结算异常'
@@ -381,7 +415,8 @@ function toTradeTimeline(
           symbol: record.symbol,
           quantity: record.quantity,
           apiLabel,
-          error: record.reason_code ? { code: record.reason_code, msg: record.status } : null
+          error: record.exchange_error?.msg ? record.exchange_error : null,
+          failed: record.status === 'FAILED_TERMINAL'
         })
       }
     }
@@ -430,11 +465,7 @@ function PositionCard({
               position.pnlUsdt < 0 && 'text-red-600 dark:text-red-400'
             )}
           >
-            {position.pnlUsdt > 0 ? '+' : ''}
-            {position.pnlUsdt.toLocaleString(undefined, {
-              minimumFractionDigits: 1,
-              maximumFractionDigits: 1
-            })}
+            {formatPnlUsdt(position.pnlUsdt)}
           </p>
         </div>
         <div className='text-right'>
@@ -451,7 +482,7 @@ function PositionCard({
         </div>
       </div>
 
-      <div className='mt-1.5 grid grid-cols-2 gap-1'>
+      <div className={cn('mt-1.5 grid gap-1', closedAt ? 'grid-cols-3' : 'grid-cols-2')}>
         <div>
           <p className='text-muted-foreground text-[9px]'>数量</p>
           <p className='truncate text-[10px] font-medium tabular-nums leading-tight'>
@@ -459,12 +490,22 @@ function PositionCard({
             {position.qtyAsset}
           </p>
         </div>
-        <div className='text-right'>
+        <div className={closedAt ? 'text-center' : 'text-right'}>
           <p className='text-muted-foreground text-[9px]'>开仓价</p>
           <p className='truncate text-[10px] font-medium tabular-nums leading-tight'>
             {position.entryPrice.toLocaleString(undefined, { maximumFractionDigits: 4 })}
           </p>
         </div>
+        {closedAt && (
+          <div className='text-right'>
+            <p className='text-muted-foreground text-[9px]'>平仓价</p>
+            <p className='truncate text-[10px] font-medium tabular-nums leading-tight'>
+              {'exitPrice' in position && position.exitPrice != null
+                ? position.exitPrice.toLocaleString(undefined, { maximumFractionDigits: 4 })
+                : '-'}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className={cn('text-muted-foreground mt-1 text-[9px] tabular-nums', closedAt && 'space-y-0.5')}>
@@ -503,6 +544,7 @@ function MemberCard({
   draggable,
   detailsAvailable,
   economics,
+  economicsUnavailableLabel,
   onSelect,
   onDragStart
 }: {
@@ -511,6 +553,7 @@ function MemberCard({
   draggable: boolean
   detailsAvailable: boolean
   economics?: IncubatorMemberEconomics
+  economicsUnavailableLabel?: string
   onSelect: () => void
   onDragStart: (event: DragEvent<HTMLButtonElement>) => void
 }) {
@@ -566,7 +609,7 @@ function MemberCard({
               </>
             ) : economics ? (
               <>{economics.totals.trade_count} 笔 · 结算 {economics.settlement.settled} / {economics.settlement.total}</>
-            ) : '收益数据加载中'}
+            ) : (economicsUnavailableLabel ?? '收益数据加载中')}
           </p>
         </div>
       </div>
@@ -577,7 +620,7 @@ function MemberCard({
         ) : economics ? (
           <DecimalPnlText value={economics.totals.realized_pnl} className='text-sm' />
         ) : (
-          <span className='text-muted-foreground text-xs'>加载中</span>
+          <span className='text-muted-foreground text-xs'>{economicsUnavailableLabel ?? '加载中'}</span>
         )}
       </div>
     </button>
@@ -604,6 +647,7 @@ export default function IncubatorBoardPage() {
   const [realTradeTimeline, setRealTradeTimeline] = useState<TradeTimelineItem[]>([])
   const [economicsByCampaign, setEconomicsByCampaign] = useState<Record<string, IncubatorCampaignEconomics>>({})
   const [economicsLoading, setEconomicsLoading] = useState(false)
+  const [economicsUnsupported, setEconomicsUnsupported] = useState(false)
   const [economicsError, setEconomicsError] = useState<string | null>(null)
   const [tradeTimelineLoading, setTradeTimelineLoading] = useState(false)
   const [tradeTimelineMoreLoading, setTradeTimelineMoreLoading] = useState(false)
@@ -782,6 +826,10 @@ export default function IncubatorBoardPage() {
     () => new Map(activeRoundEconomics?.members.map(member => [member.round_member_id, member]) ?? []),
     [activeRoundEconomics]
   )
+  const memberEconomicsByApiId = useMemo(
+    () => new Map(activeRoundEconomics?.members.map(member => [member.api_id, member]) ?? []),
+    [activeRoundEconomics]
+  )
 
   useEffect(() => {
     if (demoMode) {
@@ -789,19 +837,22 @@ export default function IncubatorBoardPage() {
       economicsCache.current = {}
       setEconomicsByCampaign({})
       setEconomicsLoading(false)
+      setEconomicsUnsupported(false)
       setEconomicsError(null)
       return
     }
     if (!campaign) {
       economicsGeneration.current += 1
       setEconomicsLoading(false)
+      setEconomicsUnsupported(false)
       setEconomicsError(null)
       return
     }
-    if (campaign.exchange !== 'OKX') {
+    if (campaign.exchange !== 'OKX' && campaign.exchange !== 'Binance') {
       economicsGeneration.current += 1
       setEconomicsLoading(false)
-      setEconomicsError('当前阶段仅支持 OKX 项目收益')
+      setEconomicsUnsupported(true)
+      setEconomicsError(null)
       return
     }
 
@@ -809,6 +860,7 @@ export default function IncubatorBoardPage() {
     let inFlight = false
     let timer: number | null = null
     const generation = ++economicsGeneration.current
+    setEconomicsUnsupported(false)
     setEconomicsError(null)
 
     const refreshEconomics = async () => {
@@ -838,7 +890,7 @@ export default function IncubatorBoardPage() {
     void refreshEconomics()
     timer = campaign.status === 'COMPLETED'
       ? null
-      : window.setInterval(refreshEconomics, ECONOMICS_POLL_INTERVAL_MS)
+      : window.setInterval(refreshEconomics, BOARD_POLL_INTERVAL_MS)
     return () => {
       cancelled = true
       if (timer !== null) window.clearInterval(timer)
@@ -875,7 +927,7 @@ export default function IncubatorBoardPage() {
     }
 
     void refreshStartingRound()
-    const timer = window.setInterval(refreshStartingRound, STARTING_POLL_INTERVAL_MS)
+    const timer = window.setInterval(refreshStartingRound, BOARD_POLL_INTERVAL_MS)
     return () => {
       cancelled = true
       window.clearInterval(timer)
@@ -886,11 +938,13 @@ export default function IncubatorBoardPage() {
   const leaderRoundId = activeRound?.id ?? null
 
   useEffect(() => {
-    if (demoMode || !leaderRoundId || !leaderMemberId) {
+    if (demoMode || !inspectorOpen || !leaderRoundId || !leaderMemberId) {
       leaderPositionGeneration.current += 1
-      setRealOpenPositions([])
       setLeaderPositionLoading(false)
-      setLeaderPositionError(null)
+      if (demoMode || !leaderRoundId || !leaderMemberId) {
+        setRealOpenPositions([])
+        setLeaderPositionError(null)
+      }
       return
     }
 
@@ -899,9 +953,10 @@ export default function IncubatorBoardPage() {
     const roundId = leaderRoundId
     setLeaderPositionError(null)
 
-    const refreshLeaderPosition = async () => {
-      if (!peekCachedMemberPositions(roundId, leaderMemberId)) setLeaderPositionLoading(true)
+    const refreshLeaderPosition = async (silent = false) => {
+      if (!silent && !peekCachedMemberPositions(roundId, leaderMemberId)) setLeaderPositionLoading(true)
       try {
+        if (silent) invalidateMemberPositions(roundId, leaderMemberId)
         const snapshot = await loadCachedMemberPositions(roundId, leaderMemberId)
         if (cancelled || generation !== leaderPositionGeneration.current || readBoardDemoMode()) return
         const next = positionView(snapshot)
@@ -917,13 +972,15 @@ export default function IncubatorBoardPage() {
       }
     }
 
-    void refreshLeaderPosition()
-    const timer = window.setInterval(refreshLeaderPosition, MEMBER_POSITION_CACHE_TTL_MS)
+    void refreshLeaderPosition(false)
+    const timer = window.setInterval(() => {
+      void refreshLeaderPosition(true)
+    }, BOARD_POLL_INTERVAL_MS)
     return () => {
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [demoMode, leaderMemberId, leaderRoundId])
+  }, [demoMode, inspectorOpen, leaderMemberId, leaderRoundId])
 
   const selectedMember = useMemo(() => {
     if (!activeRound) return null
@@ -945,9 +1002,10 @@ export default function IncubatorBoardPage() {
     const memberId = selectedMember.id
     setMemberPositionError(null)
 
-    const refreshMemberPosition = async () => {
-      if (!peekCachedMemberPositions(roundId, memberId)) setMemberPositionLoading(true)
+    const refreshMemberPosition = async (silent = false) => {
+      if (!silent && !peekCachedMemberPositions(roundId, memberId)) setMemberPositionLoading(true)
       try {
+        if (silent) invalidateMemberPositions(roundId, memberId)
         const snapshot = await loadCachedMemberPositions(roundId, memberId)
         if (cancelled || generation !== memberPositionGeneration.current || readBoardDemoMode()) return
         const next = positionView(snapshot)
@@ -963,8 +1021,10 @@ export default function IncubatorBoardPage() {
       }
     }
 
-    void refreshMemberPosition()
-    const timer = window.setInterval(refreshMemberPosition, MEMBER_POSITION_CACHE_TTL_MS)
+    void refreshMemberPosition(false)
+    const timer = window.setInterval(() => {
+      void refreshMemberPosition(true)
+    }, BOARD_POLL_INTERVAL_MS)
     return () => {
       cancelled = true
       window.clearInterval(timer)
@@ -1005,10 +1065,8 @@ export default function IncubatorBoardPage() {
     }
 
     void refreshHistory()
-    const timer = window.setInterval(refreshHistory, MEMBER_POSITION_CACHE_TTL_MS)
     return () => {
       cancelled = true
-      window.clearInterval(timer)
     }
   }, [activeRound?.id, demoMode, inspectorOpen, inspectorTab, selectedMember?.id])
 
@@ -1067,7 +1125,13 @@ export default function IncubatorBoardPage() {
     : activeRoundEconomics
       ? activeRoundEconomics.settlement.pending + activeRoundEconomics.settlement.failed
       : 0
-  const economicsFallback = economicsLoading ? '加载中' : economicsError ? '加载失败' : '暂无数据'
+  const economicsFallback = economicsLoading
+    ? '加载中'
+    : economicsUnsupported
+      ? '暂不支持'
+      : economicsError
+        ? '加载失败'
+        : '暂无数据'
   const openPositions = demoMode
     ? getLeaderOpenPositions(leader?.apiId, activeRound?.phase)
     : realOpenPositions
@@ -1105,7 +1169,11 @@ export default function IncubatorBoardPage() {
   useEffect(() => {
     const generation = ++tradeTimelineGeneration.current
     setTradeTimelineMoreLoading(false)
-    if (demoMode || !inspectorOpen || !campaign || !activeRound || !selectedMember) {
+    const campaignId = campaign?.id
+    const roundId = activeRound?.id
+    const apiId = selectedMember?.apiId
+    const apiLabel = selectedMember?.apiLabel
+    if (demoMode || !inspectorOpen || !campaignId || !roundId || !apiId || !apiLabel) {
       setRealTradeTimeline([])
       setTradeTimelineLoading(false)
       setTradeTimelineError(null)
@@ -1116,14 +1184,14 @@ export default function IncubatorBoardPage() {
     setTradeTimelineLoading(true)
     setTradeTimelineError(null)
     void listIncubatorTradeRecords({
-      campaignId: campaign.id,
-      roundId: activeRound.id,
-      apiId: selectedMember.apiId,
+      campaignId,
+      roundId,
+      apiId,
       limit: 100
     })
       .then(page => {
         if (cancelled || generation !== tradeTimelineGeneration.current) return
-        setRealTradeTimeline(toTradeTimeline(page.items, inspectingLeader, selectedMember.apiLabel))
+        setRealTradeTimeline(toTradeTimeline(page.items, inspectingLeader, apiLabel))
         setTradeTimelineCursor(page.next_cursor)
       })
       .catch(error => {
@@ -1139,7 +1207,7 @@ export default function IncubatorBoardPage() {
     return () => {
       cancelled = true
     }
-  }, [activeRound, campaign, demoMode, inspectingLeader, inspectorOpen, selectedMember])
+  }, [activeRound?.id, campaign?.id, demoMode, inspectingLeader, inspectorOpen, selectedMember?.apiId, selectedMember?.apiLabel])
 
   const loadMoreTradeTimeline = async () => {
     if (!campaign || !activeRound || !selectedMember || !tradeTimelineCursor || tradeTimelineMoreLoading) return
@@ -1602,7 +1670,24 @@ export default function IncubatorBoardPage() {
   }
 
   return (
-    <div className='bg-background text-foreground flex h-full flex-col gap-4 overflow-y-auto p-4 lg:p-6'>
+    <div className='relative flex h-full flex-col overflow-hidden'>
+      {isPreparing && (
+        <div
+          key={`prep-glow-${activeCampaignId}-${activeRound?.id ?? 'none'}`}
+          className='incubator-preparing-frame__glow'
+          role='status'
+          aria-label='本轮未开始，交易所下单不会跟单'
+        />
+      )}
+      {isRunning && (
+        <div
+          key={`run-glow-${activeCampaignId}-${activeRound?.id ?? 'none'}`}
+          className='incubator-running-frame__glow'
+          role='status'
+          aria-label='本轮进行中，跟单已生效'
+        />
+      )}
+      <div className='bg-background text-foreground flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto p-4 lg:p-6'>
       <div className='flex items-start justify-between gap-3'>
         <div className='flex flex-col gap-2'>
           <h1 className='text-2xl font-bold tracking-tight'>项目看板</h1>
@@ -1611,7 +1696,9 @@ export default function IncubatorBoardPage() {
               ? isPreparing
                 ? '模拟演示 · 准备中：可拖拽调整分组，确认领单后开始本轮'
                 : '模拟演示 · 点击账号打开详情'
-              : '真实模式 · 数据来自 Incubator 服务'}
+              : isPreparing
+                ? '真实模式 · 本轮未开始，确认领单后开始本轮才会跟单'
+                : '真实模式 · 数据来自 Incubator 服务'}
           </p>
         </div>
         <div className='flex shrink-0 items-center gap-2'>
@@ -1718,7 +1805,12 @@ export default function IncubatorBoardPage() {
         </Card>
       ) : (
         <>
-          {!demoMode && (economicsError || economics?.settlement.data_status === 'FAILED') && (
+          {!demoMode && economicsUnsupported && (
+            <div className='rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-700 dark:text-red-300'>
+              当前阶段仅支持 OKX 和币安项目收益
+            </div>
+          )}
+          {!demoMode && !economicsUnsupported && (economicsError || economics?.settlement.data_status === 'FAILED') && (
             <div className='rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-700 dark:text-red-300'>
               {economicsError ?? `有 ${economics?.settlement.failed ?? 0} 个结算任务失败，当前收益不是最终结果`}
             </div>
@@ -1806,11 +1898,12 @@ export default function IncubatorBoardPage() {
                         第 {activeRound.index} 轮
                       </CardTitle>
                       <p className='mt-1 text-xs text-white/75'>
-                        领单 {leader?.apiLabel ?? '未确认'} · {demoMode
+                        领单 {leader?.apiLabel ?? '未确认'}
+                        {economicsUnsupported ? '' : ` · ${demoMode
                           ? confidenceLabel(campaign.confidence)
                           : economics
                             ? economicsStatusLabel(economics.settlement.data_status)
-                            : economicsFallback}
+                            : economicsFallback}`}
                         {setupDirty ? ' · 配置未保存' : ''}
                       </p>
                     </div>
@@ -1885,7 +1978,18 @@ export default function IncubatorBoardPage() {
                       className='h-8 w-full gap-1.5 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
                       disabled={!isRunning || terminateBusy || Boolean(terminateBlockReason)}
                       onClick={() => {
-                        setPendingWinner(sameNet >= inverseNet ? 'SAME' : 'INVERSE')
+                        const preferred =
+                          demoMode
+                            ? sameNet >= inverseNet
+                              ? 'SAME'
+                              : 'INVERSE'
+                            : compareRelationNet(
+                                  activeRoundEconomics?.same_totals.realized_pnl,
+                                  activeRoundEconomics?.inverse_totals.realized_pnl
+                                ) >= 0
+                              ? 'SAME'
+                              : 'INVERSE'
+                        setPendingWinner(preferred)
                         setTerminateOpen(true)
                       }}
                     >
@@ -2056,6 +2160,7 @@ export default function IncubatorBoardPage() {
                           draggable={isPreparing}
                           detailsAvailable={demoMode}
                           economics={memberEconomics.get(member.id)}
+                          economicsUnavailableLabel={economicsUnsupported ? '暂不支持' : undefined}
                           onSelect={() => openInspector(member)}
                           onDragStart={onMemberDragStart(member)}
                         />
@@ -2482,7 +2587,12 @@ export default function IncubatorBoardPage() {
                             className='text-foreground flex items-center justify-between gap-2 text-xs'
                           >
                             <span className='truncate'>{member.apiLabel}</span>
-                            <PnlText value={member.pnl} className='shrink-0 text-[11px]' />
+                            <MemberRoundPnlText
+                              demoMode={demoMode}
+                              demoPnl={member.pnl}
+                              economics={memberEconomics.get(member.id)}
+                              className='shrink-0 text-[11px]'
+                            />
                           </li>
                         ))}
                         {promoteMembers.length === 0 && (
@@ -2502,7 +2612,12 @@ export default function IncubatorBoardPage() {
                             className='text-foreground flex items-center justify-between gap-2 text-xs'
                           >
                             <span className='truncate'>{member.apiLabel}</span>
-                            <PnlText value={member.pnl} className='shrink-0 text-[11px]' />
+                            <MemberRoundPnlText
+                              demoMode={demoMode}
+                              demoPnl={member.pnl}
+                              economics={memberEconomics.get(member.id)}
+                              className='shrink-0 text-[11px]'
+                            />
                           </li>
                         ))}
                         {eliminateMembers.length === 0 && (
@@ -2571,7 +2686,12 @@ export default function IncubatorBoardPage() {
                       className='flex items-center justify-between gap-2 text-xs'
                     >
                       <span className='truncate'>{member.apiLabel}</span>
-                      <PnlText value={member.pnl} className='shrink-0 text-[11px]' />
+                      <MemberRoundPnlText
+                        demoMode={demoMode}
+                        demoPnl={member.pnl}
+                        economics={memberEconomicsByApiId.get(member.apiId)}
+                        className='shrink-0 text-[11px]'
+                      />
                     </li>
                   ))}
                 </ul>
@@ -2588,7 +2708,12 @@ export default function IncubatorBoardPage() {
                       className='flex items-center justify-between gap-2 text-xs'
                     >
                       <span className='truncate'>{member.apiLabel}</span>
-                      <PnlText value={member.pnl} className='shrink-0 text-[11px]' />
+                      <MemberRoundPnlText
+                        demoMode={demoMode}
+                        demoPnl={member.pnl}
+                        economics={memberEconomicsByApiId.get(member.apiId)}
+                        className='shrink-0 text-[11px]'
+                      />
                     </li>
                   ))}
                 </ul>
@@ -2634,6 +2759,7 @@ export default function IncubatorBoardPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   )
 }
