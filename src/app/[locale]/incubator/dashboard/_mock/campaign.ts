@@ -895,20 +895,24 @@ export function reshuffleRoundMembers(members: RoundMember[]): RoundMember[] {
 }
 
 export type PromoteResultSummary = {
+  roundId: string
   roundIndex: number
   winner: MemberRelation
   promoted: Array<Pick<RoundMember, 'apiId' | 'apiLabel' | 'pnl'>>
   eliminated: Array<Pick<RoundMember, 'apiId' | 'apiLabel' | 'pnl'>>
   nextRoundIndex: number | null
   projectCompleted: boolean
+  undoExpiresAt: number | null
 }
 
 export function buildPromoteResultSummary(
   members: RoundMember[],
+  roundId: string,
   roundIndex: number,
   winner: MemberRelation,
   nextRoundIndex: number | null,
-  projectCompleted: boolean
+  projectCompleted: boolean,
+  undoWindowMs = 10 * 60 * 1000
 ): PromoteResultSummary {
   const promoted = members
     .filter(member => member.relation === winner)
@@ -918,12 +922,14 @@ export function buildPromoteResultSummary(
     .map(member => ({ apiId: member.apiId, apiLabel: member.apiLabel, pnl: member.pnl }))
 
   return {
+    roundId,
     roundIndex,
     winner,
     promoted,
     eliminated,
     nextRoundIndex,
-    projectCompleted
+    projectCompleted,
+    undoExpiresAt: projectCompleted ? null : Date.now() + undoWindowMs
   }
 }
 
@@ -1050,6 +1056,32 @@ export function terminateRound(campaign: Campaign, winner: MemberRelation): Camp
     totalRounds: Math.max(campaign.totalRounds, nextRound.index),
     campaignNet: campaign.campaignNet + roundNet,
     rounds: [...previousRounds, nextRound]
+  }
+}
+
+export function undoTerminateRound(campaign: Campaign, terminatedRoundId: string): Campaign {
+  const terminated = campaign.rounds.find(round => round.id === terminatedRoundId)
+  if (!terminated || terminated.phase !== 'SETTLED') return campaign
+  const next = campaign.rounds.find(round => round.index === terminated.index + 1)
+  if (!next || next.phase !== 'PREPARING' || next.leaderConfirmed) return campaign
+  if (campaign.currentRound !== next.index) return campaign
+
+  const restored: RoundSnapshot = {
+    ...terminated,
+    phase: 'RUNNING',
+    members: terminated.members.map(member => ({
+      ...member,
+      result: 'ACTIVE' as const
+    }))
+  }
+  return {
+    ...campaign,
+    status: 'RUNNING',
+    confidence: 'LIVE',
+    currentRound: restored.index,
+    rounds: campaign.rounds
+      .filter(round => round.id !== next.id)
+      .map(round => (round.id === restored.id ? restored : round))
   }
 }
 

@@ -62,6 +62,7 @@ import {
   roundPhaseLabel,
   startRound,
   terminateRound,
+  undoTerminateRound,
   updateMemberRelation,
   writeBoardDemoMode,
   type Campaign,
@@ -82,6 +83,7 @@ import {
   reconcileIncubatorRoundSettlement,
   startIncubatorRound,
   terminateIncubatorRound,
+  undoIncubatorRoundTerminate,
   updateIncubatorRoundSetup,
   type IncubatorCampaign
 } from '@/lib/incubator-campaigns'
@@ -687,6 +689,7 @@ export default function IncubatorBoardPage() {
   const [setupBusy, setSetupBusy] = useState(false)
   const [startBusy, setStartBusy] = useState(false)
   const [terminateBusy, setTerminateBusy] = useState(false)
+  const [undoTerminateBusy, setUndoTerminateBusy] = useState(false)
   const [reconcileSettlementBusy, setReconcileSettlementBusy] = useState(false)
   const [endProjectBusy, setEndProjectBusy] = useState(false)
   const [leaderOpen, setLeaderOpen] = useState(false)
@@ -1177,7 +1180,8 @@ export default function IncubatorBoardPage() {
     if (activeRound?.phase === 'RUNNING') {
       return '本轮运行中，请先终止本轮并完成平仓结算'
     }
-    if (openPositions.length > 0) {
+    // Demo mock opens are for inspector only; they must not block end/terminate forever.
+    if (!demoMode && openPositions.length > 0) {
       return '领单仍有未平仓位，请先全部平仓'
     }
     const settlementPending = demoMode ? campaignUnsettled : economics?.settlement.pending ?? 0
@@ -1287,7 +1291,7 @@ export default function IncubatorBoardPage() {
     campaign!.status === 'RUNNING'
   const terminateBlockReason = !canTerminateRound
     ? null
-    : openPositions.length > 0
+    : !demoMode && openPositions.length > 0
       ? '领单仍有未平仓位，请先全部平仓'
       : !demoMode && activeRound!.phase === 'RUNNING' && leaderPositionLoading
         ? '正在确认领单仓位'
@@ -1496,6 +1500,8 @@ export default function IncubatorBoardPage() {
     if (!canStart || !campaign || !activeRound) return
     if (demoMode) {
       patchActiveCampaign(prev => startRound(prev))
+      setPromoteResult(null)
+      setPromoteDetailOpen(false)
       return
     }
     if (!activeRound.setupVersion) return
@@ -1522,6 +1528,8 @@ export default function IncubatorBoardPage() {
       rememberPersistedCampaigns([updated])
       upsertCampaign(updated)
       focusCampaign(updated)
+      setPromoteResult(null)
+      setPromoteDetailOpen(false)
       toast.success('本轮正在启动，等待运行模块确认')
     } catch (error) {
       if (submittedGeneration !== realLoadGeneration.current || readBoardDemoMode()) return
@@ -1552,6 +1560,7 @@ export default function IncubatorBoardPage() {
         )
         const summary = buildPromoteResultSummary(
           activeRound.members,
+          activeRound.id,
           activeRound.index,
           pendingWinner,
           null,
@@ -1561,7 +1570,8 @@ export default function IncubatorBoardPage() {
         setPromoteResult({
           ...summary,
           nextRoundIndex: projectCompleted ? null : updated.currentRound,
-          projectCompleted
+          projectCompleted,
+          undoExpiresAt: projectCompleted ? null : summary.undoExpiresAt
         })
         setPromoteDetailOpen(true)
         rememberPersistedCampaigns([updated])
@@ -1587,6 +1597,7 @@ export default function IncubatorBoardPage() {
     }
     const summary = buildPromoteResultSummary(
       activeRound.members,
+      activeRound.id,
       activeRound.index,
       pendingWinner,
       null,
@@ -1598,7 +1609,8 @@ export default function IncubatorBoardPage() {
     setPromoteResult({
       ...summary,
       nextRoundIndex: projectCompleted ? null : next.currentRound,
-      projectCompleted
+      projectCompleted,
+      undoExpiresAt: projectCompleted ? null : summary.undoExpiresAt
     })
     setPromoteDetailOpen(true)
 
@@ -1613,6 +1625,46 @@ export default function IncubatorBoardPage() {
       syncRoundView(next)
     }
     setTerminateOpen(false)
+  }
+
+  const handleUndoTerminate = async () => {
+    if (!campaign || !promoteResult || promoteResult.projectCompleted || undoTerminateBusy) return
+    if (promoteResult.undoExpiresAt != null && Date.now() > promoteResult.undoExpiresAt) {
+      toast.error('撤销窗口已过期')
+      return
+    }
+    setUndoTerminateBusy(true)
+    try {
+      if (!demoMode) {
+        const updated = fromApiCampaign(
+          await undoIncubatorRoundTerminate({
+            roundId: promoteResult.roundId,
+            requestId: crypto.randomUUID()
+          })
+        )
+        rememberPersistedCampaigns([updated])
+        upsertCampaign(updated)
+        focusCampaign(updated)
+        syncRoundView(updated)
+      } else {
+        const next = undoTerminateRound(campaign, promoteResult.roundId)
+        const restoredApis = new Set([
+          ...promoteResult.promoted.map(member => member.apiId),
+          ...promoteResult.eliminated.map(member => member.apiId)
+        ])
+        setIdleApis(prev =>
+          prev.map(api => (restoredApis.has(api.id) ? { ...api, busy: true } : api))
+        )
+        syncRoundView(next)
+      }
+      setPromoteResult(null)
+      setPromoteDetailOpen(false)
+      toast.success('已撤销本次晋级，请重新选择分组后再终止')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '撤销终止失败')
+    } finally {
+      setUndoTerminateBusy(false)
+    }
   }
 
   const handleReconcileSettlement = async () => {
@@ -2095,6 +2147,20 @@ export default function IncubatorBoardPage() {
                 </p>
               </div>
               <div className='flex shrink-0 items-center gap-2'>
+                {!promoteResult.projectCompleted &&
+                  promoteResult.undoExpiresAt != null &&
+                  Date.now() <= promoteResult.undoExpiresAt && (
+                  <Button
+                    type='button'
+                    size='sm'
+                    variant='outline'
+                    className='h-8 text-xs'
+                    disabled={undoTerminateBusy}
+                    onClick={() => void handleUndoTerminate()}
+                  >
+                    {undoTerminateBusy ? '撤销中…' : '撤销本次晋级'}
+                  </Button>
+                )}
                 <Button
                   type='button'
                   size='sm'

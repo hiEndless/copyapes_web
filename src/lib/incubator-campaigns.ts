@@ -121,6 +121,15 @@ export function reconcileIncubatorRoundSettlement(roundId: string) {
   })
 }
 
+export function undoIncubatorRoundTerminate(input: { roundId: string; requestId: string }) {
+  return request<IncubatorCampaign>(`rounds/${encodeURIComponent(input.roundId)}/undo-terminate`, {
+    method: 'POST',
+    body: JSON.stringify({
+      request_id: input.requestId
+    })
+  })
+}
+
 export function endIncubatorCampaign(campaignId: string) {
   return request<IncubatorCampaign>(`campaigns/${encodeURIComponent(campaignId)}/end`, {
     method: 'POST'

@@ -34,6 +34,7 @@ function allowedRouteMethods(path: string[]): readonly string[] | undefined {
     if (path[2] === 'setup') return ['PUT']
     if (path[2] === 'start') return ['POST']
     if (path[2] === 'terminate') return ['POST']
+    if (path[2] === 'undo-terminate') return ['POST']
     if (path[2] === 'reconcile-settlement') return ['POST']
     if (path[2] === 'leader-position') return ['GET']
   }
