@@ -23,8 +23,8 @@ import { canBindIncubatorDemoApi } from '@/lib/incubator-auth'
 import { cn } from '@/lib/utils'
 
 const EXCHANGES = [
-  { label: 'OKX', value: 'okx', logo: '/exchanges/okx.png', available: true },
   { label: 'Binance', value: 'binance', logo: '/exchanges/binance.png', available: true },
+  { label: 'OKX', value: 'okx', logo: '/exchanges/okx.png', available: true },
   { label: 'Gate', value: 'gate', logo: '/exchanges/gate.png', available: true }
 ]
 
