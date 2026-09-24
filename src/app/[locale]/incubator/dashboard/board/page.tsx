@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type DragEvent, type ReactNode } from 'react'
 import { toast } from 'sonner'
 
-import { ChartColumn, CircleStop, Crown, GripVertical, Play, Plus, Square, Waypoints, X } from 'lucide-react'
+import { ChartColumn, Check, CircleStop, Crown, GripVertical, Play, Plus, Square, Waypoints, X } from 'lucide-react'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -79,6 +79,7 @@ import {
   createIncubatorCampaign,
   endIncubatorCampaign,
   listIncubatorCampaigns,
+  reconcileIncubatorRoundSettlement,
   startIncubatorRound,
   terminateIncubatorRound,
   updateIncubatorRoundSetup,
@@ -112,6 +113,17 @@ function roiPercent(ratio: string | null | undefined): number | null {
   if (ratio == null || ratio.trim() === '') return null
   const parsed = Number(ratio)
   return Number.isFinite(parsed) ? parsed * 100 : null
+}
+
+/** 无交易所收益率时：ROI ≈ 盈亏 / (|数量| × 开仓价 / 杠杆) */
+function estimateRoiPct(pnl: number, qty: number, entryPrice: number, leverage: number): number | null {
+  if (!Number.isFinite(pnl) || !Number.isFinite(qty) || !Number.isFinite(entryPrice) || !Number.isFinite(leverage)) {
+    return null
+  }
+  if (leverage <= 0 || qty === 0 || entryPrice <= 0) return null
+  const margin = Math.abs(qty) * entryPrice / leverage
+  if (margin === 0) return null
+  return (pnl / margin) * 100
 }
 
 function formatRoi(value: number): string {
@@ -151,18 +163,22 @@ function toLeaderOpenPosition(item: IncubatorLeaderPositionItem): OpenPosition {
   const mode = item.margin_mode.trim().toLowerCase()
   const marginMode = mode.includes('isolat') || mode.includes('逐仓') ? '逐仓' : '全仓'
   const qtyAsset = item.symbol.replace(/[-_]?USDT.*$/i, '').replace(/-/g, '') || item.symbol
+  const leverage = parseDecimalDisplay(item.leverage)
+  const pnlUsdt = parseDecimalDisplay(item.unrealized_pnl)
+  const qty = parseDecimalDisplay(item.quantity)
+  const entryPrice = parseDecimalDisplay(item.entry_price)
 
   return {
     id: item.exchange_position_id || `${item.symbol}:${item.position_side}:${item.margin_mode}`,
     symbol: item.symbol,
     side,
     marginMode,
-    leverage: parseDecimalDisplay(item.leverage),
-    pnlUsdt: parseDecimalDisplay(item.unrealized_pnl),
-    roiPct: roiPercent(item.unrealized_pnl_ratio),
-    qty: parseDecimalDisplay(item.quantity),
+    leverage,
+    pnlUsdt,
+    roiPct: roiPercent(item.unrealized_pnl_ratio) ?? estimateRoiPct(pnlUsdt, qty, entryPrice, leverage),
+    qty,
     qtyAsset,
-    entryPrice: parseDecimalDisplay(item.entry_price),
+    entryPrice,
     openedAt: formatPositionOpenedAt(item.opened_at)
   }
 }
@@ -172,18 +188,22 @@ function toClosedPosition(item: IncubatorMemberPositionHistoryItem): ClosedPosit
   const mode = item.margin_mode.trim().toLowerCase()
   const marginMode = mode.includes('isolat') || mode.includes('逐仓') ? '逐仓' : '全仓'
   const qtyAsset = item.symbol.replace(/[-_]?USDT.*$/i, '').replace(/-/g, '') || item.symbol
+  const leverage = parseDecimalDisplay(item.leverage)
+  const pnlUsdt = parseDecimalDisplay(item.realized_pnl)
+  const qty = parseDecimalDisplay(item.quantity)
+  const entryPrice = parseDecimalDisplay(item.entry_price)
 
   return {
     id: `${item.exchange_position_id || item.symbol}:${item.position_side}:${item.closed_at}`,
     symbol: item.symbol,
     side,
     marginMode,
-    leverage: parseDecimalDisplay(item.leverage),
-    pnlUsdt: parseDecimalDisplay(item.realized_pnl),
-    roiPct: roiPercent(item.realized_pnl_ratio),
-    qty: parseDecimalDisplay(item.quantity),
+    leverage,
+    pnlUsdt,
+    roiPct: roiPercent(item.realized_pnl_ratio) ?? estimateRoiPct(pnlUsdt, qty, entryPrice, leverage),
+    qty,
     qtyAsset,
-    entryPrice: parseDecimalDisplay(item.entry_price),
+    entryPrice,
     exitPrice: item.exit_price == null || item.exit_price === '' ? null : parseDecimalDisplay(item.exit_price),
     openedAt: formatPositionOpenedAt(item.opened_at),
     closedAt: formatPositionOpenedAt(item.closed_at)
@@ -667,6 +687,7 @@ export default function IncubatorBoardPage() {
   const [setupBusy, setSetupBusy] = useState(false)
   const [startBusy, setStartBusy] = useState(false)
   const [terminateBusy, setTerminateBusy] = useState(false)
+  const [reconcileSettlementBusy, setReconcileSettlementBusy] = useState(false)
   const [endProjectBusy, setEndProjectBusy] = useState(false)
   const [leaderOpen, setLeaderOpen] = useState(false)
   const [terminateOpen, setTerminateOpen] = useState(false)
@@ -678,7 +699,7 @@ export default function IncubatorBoardPage() {
   const [createExchange, setCreateExchange] = useState<ExchangeId>('Binance')
   const [selectedApiIds, setSelectedApiIds] = useState<string[]>([])
   const [pendingLeaderId, setPendingLeaderId] = useState<string | null>(null)
-  const [pendingWinner, setPendingWinner] = useState<MemberRelation>('SAME')
+  const [pendingWinner, setPendingWinner] = useState<MemberRelation | null>(null)
   const [dragOverRelation, setDragOverRelation] = useState<MemberRelation | null>(null)
   const realLoadGeneration = useRef(0)
   const tradeTimelineGeneration = useRef(0)
@@ -848,7 +869,7 @@ export default function IncubatorBoardPage() {
       setEconomicsError(null)
       return
     }
-    if (campaign.exchange !== 'OKX' && campaign.exchange !== 'Binance') {
+    if (campaign.exchange !== 'OKX' && campaign.exchange !== 'Binance' && campaign.exchange !== 'Gate') {
       economicsGeneration.current += 1
       setEconomicsLoading(false)
       setEconomicsUnsupported(true)
@@ -938,26 +959,31 @@ export default function IncubatorBoardPage() {
   const leaderRoundId = activeRound?.id ?? null
 
   useEffect(() => {
-    if (demoMode || !inspectorOpen || !leaderRoundId || !leaderMemberId) {
+    const shouldTrackLeaderPositions =
+      !demoMode &&
+      Boolean(leaderRoundId && leaderMemberId) &&
+      (inspectorOpen || activeRound?.phase === 'RUNNING')
+
+    if (!shouldTrackLeaderPositions) {
       leaderPositionGeneration.current += 1
       setLeaderPositionLoading(false)
-      if (demoMode || !leaderRoundId || !leaderMemberId) {
-        setRealOpenPositions([])
-        setLeaderPositionError(null)
-      }
+      // Drop stale opens so terminate/end gates do not keep a closed position.
+      setRealOpenPositions([])
+      setLeaderPositionError(null)
       return
     }
 
     let cancelled = false
     const generation = ++leaderPositionGeneration.current
-    const roundId = leaderRoundId
+    const roundId = leaderRoundId as string
+    const memberId = leaderMemberId as string
     setLeaderPositionError(null)
 
     const refreshLeaderPosition = async (silent = false) => {
-      if (!silent && !peekCachedMemberPositions(roundId, leaderMemberId)) setLeaderPositionLoading(true)
+      if (!silent && !peekCachedMemberPositions(roundId, memberId)) setLeaderPositionLoading(true)
       try {
-        if (silent) invalidateMemberPositions(roundId, leaderMemberId)
-        const snapshot = await loadCachedMemberPositions(roundId, leaderMemberId)
+        if (silent) invalidateMemberPositions(roundId, memberId)
+        const snapshot = await loadCachedMemberPositions(roundId, memberId)
         if (cancelled || generation !== leaderPositionGeneration.current || readBoardDemoMode()) return
         const next = positionView(snapshot)
         setRealOpenPositions(next.positions)
@@ -980,7 +1006,7 @@ export default function IncubatorBoardPage() {
       cancelled = true
       window.clearInterval(timer)
     }
-  }, [demoMode, inspectorOpen, leaderMemberId, leaderRoundId])
+  }, [activeRound?.phase, demoMode, inspectorOpen, leaderMemberId, leaderRoundId])
 
   const selectedMember = useMemo(() => {
     if (!activeRound) return null
@@ -1254,13 +1280,18 @@ export default function IncubatorBoardPage() {
     viewingCurrent &&
     activeRound!.phase === 'RUNNING' &&
     campaign!.status === 'RUNNING'
-  const terminateBlockReason = !isRunning
+  const canTerminateRound =
+    Boolean(campaign && activeRound) &&
+    viewingCurrent &&
+    (activeRound!.phase === 'RUNNING' || activeRound!.phase === 'ERROR') &&
+    campaign!.status === 'RUNNING'
+  const terminateBlockReason = !canTerminateRound
     ? null
     : openPositions.length > 0
       ? '领单仍有未平仓位，请先全部平仓'
-      : !demoMode && leaderPositionLoading
+      : !demoMode && activeRound!.phase === 'RUNNING' && leaderPositionLoading
         ? '正在确认领单仓位'
-        : !demoMode && leaderPositionError
+        : !demoMode && activeRound!.phase === 'RUNNING' && leaderPositionError
           ? '暂时无法确认领单仓位，请稍后重试'
           : null
   const groupsBalanced = sameMembers.length === inverseMembers.length && sameMembers.length > 0
@@ -1504,7 +1535,7 @@ export default function IncubatorBoardPage() {
   }
 
   const handleTerminate = async () => {
-    if (!campaign || !activeRound || terminateBlockReason) return
+    if (!campaign || !activeRound || !canTerminateRound || terminateBlockReason || !pendingWinner) return
     const eliminatedApiIds = new Set(
       activeRound.members.filter(member => member.relation !== pendingWinner).map(member => member.apiId)
     )
@@ -1582,6 +1613,35 @@ export default function IncubatorBoardPage() {
       syncRoundView(next)
     }
     setTerminateOpen(false)
+  }
+
+  const handleReconcileSettlement = async () => {
+    if (demoMode || !campaign || !activeRound || reconcileSettlementBusy) return
+    if (roundUnsettled <= 0 && economics?.settlement.data_status !== 'FAILED') return
+    setReconcileSettlementBusy(true)
+    try {
+      const updated = fromApiCampaign(await reconcileIncubatorRoundSettlement(activeRound.id))
+      rememberPersistedCampaigns([updated])
+      upsertCampaign(updated)
+      focusCampaign(updated)
+      const next = await getIncubatorCampaignEconomics(campaign.id)
+      if (!readBoardDemoMode()) {
+        economicsCache.current[campaign.id] = next
+        setEconomicsByCampaign(previous => ({ ...previous, [campaign.id]: next }))
+        setEconomicsError(null)
+      }
+      toast.success(
+        next.settlement.data_status === 'FINAL'
+          ? '结算已补齐'
+          : next.settlement.failed > 0
+            ? '已重试结算，仍有失败任务'
+            : '已触发重新结算'
+      )
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '重新结算失败')
+    } finally {
+      setReconcileSettlementBusy(false)
+    }
   }
 
   const handleEndProject = async () => {
@@ -1807,12 +1867,26 @@ export default function IncubatorBoardPage() {
         <>
           {!demoMode && economicsUnsupported && (
             <div className='rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-700 dark:text-red-300'>
-              当前阶段仅支持 OKX 和币安项目收益
+              当前项目交易所暂不支持收益查询
             </div>
           )}
           {!demoMode && !economicsUnsupported && (economicsError || economics?.settlement.data_status === 'FAILED') && (
-            <div className='rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-700 dark:text-red-300'>
-              {economicsError ?? `有 ${economics?.settlement.failed ?? 0} 个结算任务失败，当前收益不是最终结果`}
+            <div className='flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-xs text-red-700 dark:text-red-300'>
+              <span>
+                {economicsError ?? `有 ${economics?.settlement.failed ?? 0} 个结算任务失败，当前收益不是最终结果`}
+              </span>
+              {activeRound && roundUnsettled > 0 && (
+                <Button
+                  type='button'
+                  size='sm'
+                  variant='outline'
+                  className='h-7 border-red-500/40 bg-background/80 px-2.5 text-[11px] text-red-700 hover:border-red-500/50 hover:bg-red-500/15 hover:text-red-800 dark:text-red-300 dark:hover:bg-red-500/20 dark:hover:text-red-200'
+                  disabled={reconcileSettlementBusy}
+                  onClick={() => void handleReconcileSettlement()}
+                >
+                  {reconcileSettlementBusy ? '结算中…' : '重新结算'}
+                </Button>
+              )}
             </div>
           )}
           <div className='grid gap-4 xl:grid-cols-2'>
@@ -1976,20 +2050,9 @@ export default function IncubatorBoardPage() {
                       size='sm'
                       variant='outline'
                       className='h-8 w-full gap-1.5 border-red-500/40 bg-red-500/10 px-3 text-xs text-red-600 hover:bg-red-500/15 hover:text-red-700 disabled:border-red-500/20 disabled:bg-red-500/5 disabled:text-red-400 dark:text-red-400 dark:hover:text-red-300'
-                      disabled={!isRunning || terminateBusy || Boolean(terminateBlockReason)}
+                      disabled={!canTerminateRound || terminateBusy || Boolean(terminateBlockReason)}
                       onClick={() => {
-                        const preferred =
-                          demoMode
-                            ? sameNet >= inverseNet
-                              ? 'SAME'
-                              : 'INVERSE'
-                            : compareRelationNet(
-                                  activeRoundEconomics?.same_totals.realized_pnl,
-                                  activeRoundEconomics?.inverse_totals.realized_pnl
-                                ) >= 0
-                              ? 'SAME'
-                              : 'INVERSE'
-                        setPendingWinner(preferred)
+                        setPendingWinner(null)
                         setTerminateOpen(true)
                       }}
                     >
@@ -2532,115 +2595,185 @@ export default function IncubatorBoardPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={terminateOpen} onOpenChange={setTerminateOpen}>
+      <Dialog
+        open={terminateOpen}
+        onOpenChange={open => {
+          setTerminateOpen(open)
+          if (!open) setPendingWinner(null)
+        }}
+      >
         <DialogContent className='sm:max-w-lg'>
           <DialogHeader>
             <DialogTitle>终止本轮</DialogTitle>
             <DialogDescription>
-              选择晋级分组后确认。晋级侧进入下一轮；淘汰侧释放回空闲 API。
+              请先选择晋级分组。晋级侧进入下一轮；淘汰侧释放回空闲 API。
             </DialogDescription>
           </DialogHeader>
-          <div className='space-y-3'>
-            <div className='grid grid-cols-2 gap-2'>
-              {(['SAME', 'INVERSE'] as MemberRelation[]).map(relation => (
-                <button
-                  key={relation}
-                  type='button'
-                  onClick={() => setPendingWinner(relation)}
-                  className={cn(
-                    'rounded-lg border px-3 py-3 text-left text-sm transition-colors',
-                    pendingWinner === relation
-                      ? 'border-primary bg-primary/5'
-                      : 'border-border/60 hover:border-primary/20'
-                  )}
-                >
-                  晋级{relationLabel(relation)}
-                  <p className='text-muted-foreground mt-1 text-xs'>
-                    {(relation === 'SAME' ? sameMembers : inverseMembers).length} 账号
-                  </p>
-                </button>
-              ))}
+          <div className='space-y-4'>
+            <div className='grid grid-cols-2 gap-3'>
+              {(['SAME', 'INVERSE'] as MemberRelation[]).map(relation => {
+                const isSame = relation === 'SAME'
+                const selected = pendingWinner === relation
+                const dimmed = pendingWinner != null && !selected
+                const members = isSame ? sameMembers : inverseMembers
+                const count = members.length
+                const pnlValue = demoMode
+                  ? null
+                  : isSame
+                    ? activeRoundEconomics?.same_totals.realized_pnl
+                    : activeRoundEconomics?.inverse_totals.realized_pnl
+                const demoPnl = isSame ? sameNet : inverseNet
+                return (
+                  <button
+                    key={relation}
+                    type='button'
+                    onClick={() => setPendingWinner(relation)}
+                    className={cn(
+                      'relative rounded-xl border px-3.5 py-4 text-left transition-all',
+                      isSame
+                        ? selected
+                          ? 'border-sky-500 bg-sky-500/15 shadow-sm ring-2 ring-sky-500/20 dark:border-sky-400 dark:bg-sky-400/15'
+                          : 'border-sky-500/35 bg-sky-500/[0.06] hover:border-sky-500/60 hover:bg-sky-500/10 dark:border-sky-400/35 dark:hover:bg-sky-400/10'
+                        : selected
+                          ? 'border-rose-500 bg-rose-500/15 shadow-sm ring-2 ring-rose-500/20 dark:border-rose-400 dark:bg-rose-400/15'
+                          : 'border-rose-500/35 bg-rose-500/[0.06] hover:border-rose-500/60 hover:bg-rose-500/10 dark:border-rose-400/35 dark:hover:bg-rose-400/10',
+                      dimmed && 'opacity-45 hover:opacity-70'
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        'absolute top-2.5 right-2.5 flex size-5 items-center justify-center rounded-full border transition-colors',
+                        selected
+                          ? isSame
+                            ? 'border-sky-600 bg-sky-600 text-white dark:border-sky-400 dark:bg-sky-400 dark:text-slate-950'
+                            : 'border-rose-600 bg-rose-600 text-white dark:border-rose-400 dark:bg-rose-400 dark:text-slate-950'
+                          : isSame
+                            ? 'border-sky-500/40 bg-background/80'
+                            : 'border-rose-500/40 bg-background/80'
+                      )}
+                    >
+                      {selected ? <Check className='size-3 stroke-[2.5]' /> : null}
+                    </span>
+                    <p
+                      className={cn(
+                        'pr-6 text-sm font-semibold',
+                        isSame
+                          ? 'text-sky-900 dark:text-sky-100'
+                          : 'text-rose-900 dark:text-rose-100'
+                      )}
+                    >
+                      晋级{relationLabel(relation)}
+                    </p>
+                    <p className='text-muted-foreground mt-1.5 flex flex-wrap items-center gap-x-1.5 text-xs'>
+                      <span>{count} 账号</span>
+                      <span className='text-border'>·</span>
+                      {demoMode ? (
+                        <PnlText value={demoPnl} className='text-xs' />
+                      ) : pnlValue != null ? (
+                        <DecimalPnlText value={pnlValue} className='text-xs' />
+                      ) : (
+                        <span>收益待定</span>
+                      )}
+                    </p>
+                  </button>
+                )
+              })}
             </div>
 
-            {(() => {
-              const promoteMembers = pendingWinner === 'SAME' ? sameMembers : inverseMembers
-              const eliminateMembers = pendingWinner === 'SAME' ? inverseMembers : sameMembers
-              const isFinalRound = promoteMembers.length <= 1
-              const nextRoundNo = (activeRound?.index ?? campaign?.currentRound ?? 1) + 1
+            {!pendingWinner ? (
+              <p className='text-muted-foreground rounded-md border border-dashed border-border/70 bg-muted/20 px-3 py-4 text-center text-xs'>
+                选择上方晋级分组后，将显示拟晋级 / 拟淘汰名单
+              </p>
+            ) : (
+              (() => {
+                const promoteMembers = pendingWinner === 'SAME' ? sameMembers : inverseMembers
+                const eliminateMembers = pendingWinner === 'SAME' ? inverseMembers : sameMembers
+                const isFinalRound = promoteMembers.length <= 1
+                const nextRoundNo = (activeRound?.index ?? campaign?.currentRound ?? 1) + 1
 
-              return (
-                <div className='space-y-2'>
-                  <div className='grid grid-cols-2 gap-2'>
-                    <div className='rounded-md border border-sky-500/20 bg-sky-500/[0.04] p-2.5'>
-                      <p className='text-[11px] font-medium text-sky-800 dark:text-sky-200'>
-                        拟晋级 · {promoteMembers.length}
-                      </p>
-                      <p className='text-muted-foreground mt-0.5 text-[10px]'>
-                        {isFinalRound
-                          ? '将完成本项目（决赛）'
-                          : `进入第 ${nextRoundNo} 轮准备`}
-                      </p>
-                      <ul className='mt-2 max-h-36 space-y-1 overflow-y-auto'>
-                        {promoteMembers.map(member => (
-                          <li
-                            key={member.id}
-                            className='text-foreground flex items-center justify-between gap-2 text-xs'
-                          >
-                            <span className='truncate'>{member.apiLabel}</span>
-                            <MemberRoundPnlText
-                              demoMode={demoMode}
-                              demoPnl={member.pnl}
-                              economics={memberEconomics.get(member.id)}
-                              className='shrink-0 text-[11px]'
-                            />
-                          </li>
-                        ))}
-                        {promoteMembers.length === 0 && (
-                          <li className='text-muted-foreground text-xs'>暂无账号</li>
-                        )}
-                      </ul>
+                return (
+                  <div className='space-y-3 border-t border-border/50 pt-3'>
+                    <div className='grid grid-cols-2 gap-4'>
+                      <div className='min-w-0'>
+                        <p className='text-[11px] font-medium text-sky-700 dark:text-sky-300'>
+                          拟晋级 · {promoteMembers.length}
+                        </p>
+                        <p className='text-muted-foreground mt-0.5 text-[10px]'>
+                          {isFinalRound
+                            ? '将完成本项目（决赛）'
+                            : `进入第 ${nextRoundNo} 轮准备`}
+                        </p>
+                        <ul className='mt-2 max-h-36 space-y-1.5 overflow-y-auto border-l border-sky-500/25 pl-2.5'>
+                          {promoteMembers.map(member => (
+                            <li
+                              key={member.id}
+                              className='text-muted-foreground flex items-center justify-between gap-2 text-xs'
+                            >
+                              <span className='truncate'>{member.apiLabel}</span>
+                              <MemberRoundPnlText
+                                demoMode={demoMode}
+                                demoPnl={member.pnl}
+                                economics={memberEconomics.get(member.id)}
+                                className='shrink-0 text-[11px]'
+                              />
+                            </li>
+                          ))}
+                          {promoteMembers.length === 0 && (
+                            <li className='text-muted-foreground text-xs'>暂无账号</li>
+                          )}
+                        </ul>
+                      </div>
+                      <div className='min-w-0'>
+                        <p className='text-[11px] font-medium text-rose-700 dark:text-rose-300'>
+                          拟淘汰 · {eliminateMembers.length}
+                        </p>
+                        <p className='text-muted-foreground mt-0.5 text-[10px]'>释放回空闲 API</p>
+                        <ul className='mt-2 max-h-36 space-y-1.5 overflow-y-auto border-l border-rose-500/25 pl-2.5'>
+                          {eliminateMembers.map(member => (
+                            <li
+                              key={member.id}
+                              className='text-muted-foreground flex items-center justify-between gap-2 text-xs'
+                            >
+                              <span className='truncate'>{member.apiLabel}</span>
+                              <MemberRoundPnlText
+                                demoMode={demoMode}
+                                demoPnl={member.pnl}
+                                economics={memberEconomics.get(member.id)}
+                                className='shrink-0 text-[11px]'
+                              />
+                            </li>
+                          ))}
+                          {eliminateMembers.length === 0 && (
+                            <li className='text-muted-foreground text-xs'>暂无账号</li>
+                          )}
+                        </ul>
+                      </div>
                     </div>
-                    <div className='rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-2.5'>
-                      <p className='text-[11px] font-medium text-rose-800 dark:text-rose-200'>
-                        拟淘汰 · {eliminateMembers.length}
-                      </p>
-                      <p className='text-muted-foreground mt-0.5 text-[10px]'>释放回空闲 API</p>
-                      <ul className='mt-2 max-h-36 space-y-1 overflow-y-auto'>
-                        {eliminateMembers.map(member => (
-                          <li
-                            key={member.id}
-                            className='text-foreground flex items-center justify-between gap-2 text-xs'
-                          >
-                            <span className='truncate'>{member.apiLabel}</span>
-                            <MemberRoundPnlText
-                              demoMode={demoMode}
-                              demoPnl={member.pnl}
-                              economics={memberEconomics.get(member.id)}
-                              className='shrink-0 text-[11px]'
-                            />
-                          </li>
-                        ))}
-                        {eliminateMembers.length === 0 && (
-                          <li className='text-muted-foreground text-xs'>暂无账号</li>
-                        )}
-                      </ul>
-                    </div>
+                    <p className='text-muted-foreground text-[11px] leading-relaxed'>
+                      {isFinalRound
+                        ? '晋级侧仅剩 1 个账号时，确认后项目结束，全部账号释放回空闲池。'
+                        : `确认后：晋级 ${promoteMembers.length} 个进入第 ${nextRoundNo} 轮；淘汰 ${eliminateMembers.length} 个立即释放。`}
+                    </p>
                   </div>
-                  <p className='text-muted-foreground text-[11px] leading-relaxed'>
-                    {isFinalRound
-                      ? '晋级侧仅剩 1 个账号时，确认后项目结束，全部账号释放回空闲池。'
-                      : `确认后：晋级 ${promoteMembers.length} 个进入第 ${nextRoundNo} 轮；淘汰 ${eliminateMembers.length} 个立即释放。`}
-                  </p>
-                </div>
-              )
-            })()}
+                )
+              })()
+            )}
           </div>
           <DialogFooter>
             <Button type='button' variant='outline' disabled={terminateBusy} onClick={() => setTerminateOpen(false)}>
               取消
             </Button>
-            <Button type='button' disabled={terminateBusy || Boolean(terminateBlockReason)} onClick={() => void handleTerminate()}>
-              {terminateBusy ? '终止中…' : '确认终止'}
+            <Button
+              type='button'
+              disabled={
+                !pendingWinner ||
+                !canTerminateRound ||
+                terminateBusy ||
+                Boolean(terminateBlockReason)
+              }
+              onClick={() => void handleTerminate()}
+            >
+              {terminateBusy ? '终止中…' : pendingWinner ? '确认终止' : '请先选择晋级分组'}
             </Button>
           </DialogFooter>
         </DialogContent>

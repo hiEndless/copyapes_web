@@ -115,6 +115,12 @@ export function terminateIncubatorRound(input: {
   })
 }
 
+export function reconcileIncubatorRoundSettlement(roundId: string) {
+  return request<IncubatorCampaign>(`rounds/${encodeURIComponent(roundId)}/reconcile-settlement`, {
+    method: 'POST'
+  })
+}
+
 export function endIncubatorCampaign(campaignId: string) {
   return request<IncubatorCampaign>(`campaigns/${encodeURIComponent(campaignId)}/end`, {
     method: 'POST'

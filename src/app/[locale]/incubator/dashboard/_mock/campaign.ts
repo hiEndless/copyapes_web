@@ -831,7 +831,7 @@ export function roundPhaseLabel(phase: RoundPhase) {
     case 'SETTLED':
       return '已结算'
     case 'ERROR':
-      return '启动失败'
+      return '轮次异常'
     case 'UNKNOWN':
       return '未知状态'
     default:
