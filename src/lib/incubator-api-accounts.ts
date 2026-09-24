@@ -44,7 +44,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     try {
       const payload = (await response.json()) as { detail?: string | { message?: string; reason_code?: string } }
       if (typeof payload.detail === 'string') message = payload.detail
-      else message = payload.detail?.message || payload.detail?.reason_code || message
+      else {
+        const reason = payload.detail?.reason_code
+        if (reason === 'EXCHANGE_UID_DUPLICATE') message = '该交易所 UID 已绑定其他 API'
+        else if (reason === 'API_ACCOUNT_DUPLICATED') message = '相同 API 凭据已存在'
+        else message = payload.detail?.message || reason || message
+      }
     } catch {
       // keep stable fallback without exposing upstream bodies
     }
