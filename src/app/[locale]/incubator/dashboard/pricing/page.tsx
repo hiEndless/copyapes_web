@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+
 import Link from 'next/link'
 import { toast } from 'sonner'
 import { ChevronLeft, ChevronRight, ExternalLink, Minus, Plus, ShieldCheck } from 'lucide-react'
@@ -11,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from '@/components/ui/checkbox'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
+import { createSeatOrder, listPurchasedSeats, listSeatSnapshots } from '@/lib/incubator-seats'
 
 type ExchangeId = 'BINANCE' | 'OKX' | 'GATE'
 
@@ -20,6 +22,7 @@ type ExchangeMeta = {
   logo: string
   unitPriceUsdt: number
   giftSlots: number
+  grantedSlots: number
   usedSlots: number
 }
 
@@ -35,6 +38,7 @@ type ProxyIp = {
   ip: string
   hostId: 1 | 2
   source: 'included' | 'addon'
+
   /** 加购按「份」成对分配，同 pack 共到期、共续费 */
   packId: string | null
   expiresAt: string | null
@@ -42,6 +46,7 @@ type ProxyIp = {
 
 const GIFT_SLOTS_PER_EXCHANGE = 4
 const DAY_MS = 24 * 60 * 60 * 1000
+
 /** 1 份 = host_id 1/2 各 1 个 IP */
 const IP_PACK_PRICE_USDT = 10
 const IP_PER_PACK = 2
@@ -53,6 +58,7 @@ const EXCHANGES: ExchangeMeta[] = [
     logo: '/exchanges/binance.png',
     unitPriceUsdt: 15,
     giftSlots: GIFT_SLOTS_PER_EXCHANGE,
+    grantedSlots: 0,
     usedSlots: 2
   },
   {
@@ -61,6 +67,7 @@ const EXCHANGES: ExchangeMeta[] = [
     logo: '/exchanges/okx.png',
     unitPriceUsdt: 12,
     giftSlots: GIFT_SLOTS_PER_EXCHANGE,
+    grantedSlots: 0,
     usedSlots: 5
   },
   {
@@ -69,23 +76,9 @@ const EXCHANGES: ExchangeMeta[] = [
     logo: '/exchanges/gate.png',
     unitPriceUsdt: 12,
     giftSlots: GIFT_SLOTS_PER_EXCHANGE,
+    grantedSlots: 0,
     usedSlots: 1
   }
-]
-
-const INITIAL_SEATS: AddonSeat[] = [
-  { id: 'seat-okx-1', exchange: 'OKX', expiresAt: shiftDays(3) },
-  { id: 'seat-bn-1', exchange: 'BINANCE', expiresAt: shiftDays(5) },
-  { id: 'seat-gate-1', exchange: 'GATE', expiresAt: shiftDays(7) },
-  { id: 'seat-okx-2', exchange: 'OKX', expiresAt: shiftDays(12) },
-  { id: 'seat-bn-2', exchange: 'BINANCE', expiresAt: shiftDays(15) },
-  { id: 'seat-okx-3', exchange: 'OKX', expiresAt: shiftDays(20) },
-  { id: 'seat-gate-2', exchange: 'GATE', expiresAt: shiftDays(25) },
-  { id: 'seat-bn-3', exchange: 'BINANCE', expiresAt: shiftDays(30) },
-  { id: 'seat-okx-4', exchange: 'OKX', expiresAt: shiftDays(40) },
-  { id: 'seat-bn-4', exchange: 'BINANCE', expiresAt: shiftDays(45) },
-  { id: 'seat-gate-3', exchange: 'GATE', expiresAt: shiftDays(55) },
-  { id: 'seat-okx-5', exchange: 'OKX', expiresAt: shiftDays(90) }
 ]
 
 const INITIAL_IPS: ProxyIp[] = [
@@ -117,8 +110,10 @@ const EMPTY_QTY: Record<ExchangeId, number> = {
 
 function shiftDays(days: number, from = new Date()): string {
   const next = new Date(from)
+
   next.setHours(0, 0, 0, 0)
   next.setDate(next.getDate() + days)
+
   return formatDate(next)
 }
 
@@ -127,13 +122,17 @@ function addMonths(dateStr: string, months = 1): string {
   const today = startOfToday()
   const from = base.getTime() > today.getTime() ? base : today
   const next = new Date(from)
+
   next.setMonth(next.getMonth() + months)
+
   return formatDate(next)
 }
 
 function startOfToday() {
   const today = new Date()
+
   today.setHours(0, 0, 0, 0)
+
   return today
 }
 
@@ -141,12 +140,14 @@ function formatDate(date: Date): string {
   const y = date.getFullYear()
   const m = String(date.getMonth() + 1).padStart(2, '0')
   const d = String(date.getDate()).padStart(2, '0')
+
   return `${y}-${m}-${d}`
 }
 
 function daysUntil(dateStr: string | null): number | null {
   if (!dateStr) return null
   const target = new Date(`${dateStr}T00:00:00`)
+
   return Math.ceil((target.getTime() - startOfToday().getTime()) / DAY_MS)
 }
 
@@ -154,6 +155,7 @@ function expiryTone(days: number | null): 'none' | 'ok' | 'warn' | 'danger' {
   if (days === null) return 'none'
   if (days < 0) return 'danger'
   if (days <= 7) return 'warn'
+
   return 'ok'
 }
 
@@ -161,11 +163,28 @@ function expiryLabel(days: number | null, expiresAt: string | null): string {
   if (!expiresAt || days === null) return '—'
   if (days < 0) return `已过期 ${Math.abs(days)} 天`
   if (days === 0) return '今天到期'
+
   return `剩余 ${days} 天 · ${expiresAt}`
 }
 
 function exchangeMeta(id: ExchangeId) {
   return EXCHANGES.find(item => item.exchange === id)!
+}
+
+function seatIntentKey(kind: 'PURCHASE' | 'RENEWAL', exchange: ExchangeId, items: string[]) {
+  return `incubator-seat-intent:${kind}:${exchange}:${[...items].sort().join(',')}`
+}
+
+function requestIdForIntent(key: string) {
+  const existing = sessionStorage.getItem(key)
+
+  if (existing) return existing
+
+  const requestId = crypto.randomUUID()
+
+  sessionStorage.setItem(key, requestId)
+
+  return requestId
 }
 
 const SECTION_HEADER_CLASS =
@@ -178,8 +197,10 @@ const RENEW_BTN_CLASS =
   'h-7 border-amber-500/50 bg-transparent text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
 
 export default function IncubatorPricingPage() {
-  const [exchanges] = useState(EXCHANGES)
-  const [seats, setSeats] = useState(INITIAL_SEATS)
+  const [exchanges, setExchanges] = useState(EXCHANGES)
+  const [seats, setSeats] = useState<AddonSeat[]>([])
+  const [seatStateReady, setSeatStateReady] = useState(false)
+  const [seatStateError, setSeatStateError] = useState<string | null>(null)
   const [ips, setIps] = useState(INITIAL_IPS)
   const [apiQty, setApiQty] = useState(EMPTY_QTY)
   const [ipQty, setIpQty] = useState(1)
@@ -187,6 +208,33 @@ export default function IncubatorPricingPage() {
   const [seatPageSize, setSeatPageSize] = useState<10 | 20 | 30 | 40 | 50>(10)
   const [seatPage, setSeatPage] = useState(0)
   const [submittingKey, setSubmittingKey] = useState<string | null>(null)
+  const submitLock = useRef(false)
+
+  const refreshSeatState = async () => {
+    const [snapshots, purchased] = await Promise.all([listSeatSnapshots(), listPurchasedSeats()])
+
+    setExchanges(EXCHANGES.map(item => {
+      const snapshot = snapshots.find(row => row.exchange === item.exchange)
+
+      if (!snapshot) throw new Error('席位快照缺少交易所数据')
+
+      return {
+        ...item,
+        giftSlots: snapshot.base_seats,
+        grantedSlots: snapshot.granted_seats,
+        usedSlots: snapshot.active_chargeable,
+      }
+    }))
+    setSeats(purchased.map(item => ({
+      id: item.seat_id, exchange: item.exchange, expiresAt: item.expires_at.slice(0, 10),
+    })))
+    setSeatStateReady(true)
+    setSeatStateError(null)
+  }
+
+  useEffect(() => {
+    void refreshSeatState().catch(error => setSeatStateError(error instanceof Error ? error.message : '席位读取失败'))
+  }, [])
 
   const studioVip = {
     active: true,
@@ -195,19 +243,24 @@ export default function IncubatorPricingPage() {
 
   const seatsByExchange = useMemo(() => {
     const map: Record<ExchangeId, AddonSeat[]> = { BINANCE: [], OKX: [], GATE: [] }
+
     for (const seat of seats) map[seat.exchange].push(seat)
+
     return map
   }, [seats])
 
   const totalApiCapacity = useMemo(
-    () => exchanges.reduce((sum, item) => sum + item.giftSlots + seatsByExchange[item.exchange].length, 0),
-    [exchanges, seatsByExchange]
+    () => exchanges.reduce((sum, item) => sum + item.giftSlots + item.grantedSlots, 0),
+    [exchanges]
   )
+
   const totalApiUsed = useMemo(() => exchanges.reduce((sum, item) => sum + item.usedSlots, 0), [exchanges])
+
   const addonPackCount = useMemo(() => {
     const packs = new Set(
       ips.filter(item => item.source === 'addon' && item.packId).map(item => item.packId as string)
     )
+
     return packs.size
   }, [ips])
 
@@ -217,9 +270,11 @@ export default function IncubatorPricingPage() {
       .sort((a, b) => a.hostId - b.hostId)
 
     const packMap = new Map<string, ProxyIp[]>()
+
     for (const item of ips) {
       if (item.source !== 'addon' || !item.packId) continue
       const list = packMap.get(item.packId) ?? []
+
       list.push(item)
       packMap.set(item.packId, list)
     }
@@ -228,6 +283,7 @@ export default function IncubatorPricingPage() {
       .map(([packId, members]) => {
         const sorted = [...members].sort((a, b) => a.hostId - b.hostId)
         const expiresAt = sorted[0]?.expiresAt ?? null
+
         return { packId, members: sorted, expiresAt }
       })
       .sort((a, b) => (a.expiresAt ?? '').localeCompare(b.expiresAt ?? ''))
@@ -242,23 +298,27 @@ export default function IncubatorPricingPage() {
 
   const seatPageCount = Math.max(1, Math.ceil(sortedSeats.length / seatPageSize))
   const safeSeatPage = Math.min(seatPage, seatPageCount - 1)
+
   const pagedSeats = useMemo(() => {
     const start = safeSeatPage * seatPageSize
+
     return sortedSeats.slice(start, start + seatPageSize)
   }, [sortedSeats, safeSeatPage, seatPageSize])
 
   const selectedSeats = sortedSeats.filter(item => selectedSeatIds.includes(item.id))
+
   const selectedRenewFee = selectedSeats.reduce(
     (sum, seat) => sum + exchangeMeta(seat.exchange).unitPriceUsdt,
     0
   )
+
   const pageSelectedCount = pagedSeats.filter(item => selectedSeatIds.includes(item.id)).length
   const allPageSelected = pagedSeats.length > 0 && pageSelectedCount === pagedSeats.length
 
   const adjustApiQty = (exchange: ExchangeId, delta: number) => {
     setApiQty(prev => ({
       ...prev,
-      [exchange]: Math.max(1, prev[exchange] + delta)
+      [exchange]: Math.min(64, Math.max(1, prev[exchange] + delta))
     }))
   }
 
@@ -272,8 +332,10 @@ export default function IncubatorPricingPage() {
 
   const toggleAllSeatsOnPage = (checked: boolean) => {
     const pageIds = pagedSeats.map(item => item.id)
+
     setSelectedSeatIds(prev => {
       if (checked) return [...new Set([...prev, ...pageIds])]
+
       return prev.filter(id => !pageIds.includes(id))
     })
   }
@@ -284,70 +346,102 @@ export default function IncubatorPricingPage() {
   }
 
   const purchaseApi = async (exchange: ExchangeId) => {
+    if (submitLock.current) return
+
+    submitLock.current = true
     const qty = apiQty[exchange]
     const meta = exchangeMeta(exchange)
-    const fee = meta.unitPriceUsdt * qty
-    const expiresAt = addMonths(formatDate(startOfToday()), 1)
+    const intentKey = seatIntentKey('PURCHASE', exchange, [String(qty)])
 
     setSubmittingKey(`api-${exchange}`)
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      const created: AddonSeat[] = Array.from({ length: qty }, (_, index) => ({
-        id: `seat-${exchange.toLowerCase()}-${Date.now()}-${index}`,
-        exchange,
-        expiresAt
-      }))
-      setSeats(prev => [...prev, ...created])
-      toast.success(`已加购 ${meta.label} × ${qty}（各 1 个月），扣 ${fee} USDT（演示）`)
+      const order = await createSeatOrder({ request_id: requestIdForIntent(intentKey), kind: 'PURCHASE', exchange, quantity: qty })
+
+      if (order.status !== 'GRANTED') throw new Error(`席位尚未发放：${order.status}`)
+      await refreshSeatState()
+      sessionStorage.removeItem(intentKey)
+      toast.success(`已模拟加购 ${meta.label} × ${qty}（未实际扣款）`)
       setApiQty(prev => ({ ...prev, [exchange]: 1 }))
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '模拟购买失败')
     } finally {
       setSubmittingKey(null)
+      submitLock.current = false
     }
   }
 
   const renewSelectedSeats = async () => {
     if (selectedSeats.length === 0) return
+    if (submitLock.current) return
+
+    submitLock.current = true
     setSubmittingKey('renew-seats')
+    const completedKeys: string[] = []
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      const selectedSet = new Set(selectedSeatIds)
-      setSeats(prev =>
-        prev.map(seat =>
-          selectedSet.has(seat.id) ? { ...seat, expiresAt: addMonths(seat.expiresAt, 1) } : seat
-        )
-      )
-      toast.success(`已续费 ${selectedSeats.length} 个席位各 1 个月，扣 ${selectedRenewFee} USDT（演示）`)
+      for (const exchange of (['BINANCE', 'OKX', 'GATE'] as const)) {
+        const seatIds = selectedSeats.filter(item => item.exchange === exchange).map(item => item.id)
+
+        if (seatIds.length === 0) continue
+        const intentKey = seatIntentKey('RENEWAL', exchange, seatIds)
+        const order = await createSeatOrder({ request_id: requestIdForIntent(intentKey), kind: 'RENEWAL', exchange, quantity: seatIds.length, seat_ids: seatIds })
+
+        if (order.status !== 'GRANTED') throw new Error(`席位尚未发放：${order.status}`)
+        completedKeys.push(intentKey)
+      }
+
+      await refreshSeatState()
+      completedKeys.forEach(key => sessionStorage.removeItem(key))
+      toast.success(`已模拟续费 ${selectedSeats.length} 个席位（未实际扣款）`)
       setSelectedSeatIds([])
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '模拟续费失败，部分订单可能已成功')
     } finally {
+      await refreshSeatState().catch(() => undefined)
       setSubmittingKey(null)
+      submitLock.current = false
     }
   }
 
   const renewOneSeat = async (id: string) => {
+    if (submitLock.current) return
+
     const seat = seats.find(item => item.id === id)
+
     if (!seat) return
-    const fee = exchangeMeta(seat.exchange).unitPriceUsdt
+    submitLock.current = true
+    const intentKey = seatIntentKey('RENEWAL', seat.exchange, [id])
+
     setSubmittingKey(`renew-seat-${id}`)
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 400))
-      setSeats(prev =>
-        prev.map(item => (item.id === id ? { ...item, expiresAt: addMonths(item.expiresAt, 1) } : item))
-      )
-      toast.success(`已续费 1 席 · ${exchangeMeta(seat.exchange).label}，扣 ${fee} USDT（演示）`)
+      const order = await createSeatOrder({ request_id: requestIdForIntent(intentKey), kind: 'RENEWAL', exchange: seat.exchange, quantity: 1, seat_ids: [id] })
+
+      if (order.status !== 'GRANTED') throw new Error(`席位尚未发放：${order.status}`)
+      await refreshSeatState()
+      sessionStorage.removeItem(intentKey)
+      toast.success(`已模拟续费 1 席 · ${exchangeMeta(seat.exchange).label}（未实际扣款）`)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '模拟续费失败')
     } finally {
       setSubmittingKey(null)
+      submitLock.current = false
     }
   }
 
   const purchaseIp = async () => {
     setSubmittingKey('ip')
+
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
       const expiresAt = addMonths(formatDate(startOfToday()), 1)
       const created: ProxyIp[] = []
+
       for (let i = 0; i < ipQty; i += 1) {
         const packId = `pack-${Date.now()}-${i}`
         const base = 50 + ips.length + created.length
+
         created.push(
           {
             id: `${packId}-h1`,
@@ -367,6 +461,7 @@ export default function IncubatorPricingPage() {
           }
         )
       }
+
       setIps(prev => [...prev, ...created])
       toast.success(
         `已加购代理 IP × ${ipQty} 份（共 ${ipQty * IP_PER_PACK} 条），扣 ${ipQty * IP_PACK_PRICE_USDT} USDT（演示）`
@@ -379,12 +474,15 @@ export default function IncubatorPricingPage() {
 
   const renewIpPack = async (packId: string) => {
     const members = ips.filter(item => item.packId === packId)
+
     if (members.length === 0 || !members[0]?.expiresAt) return
 
     setSubmittingKey(`renew-ip-${packId}`)
+
     try {
       await new Promise(resolve => setTimeout(resolve, 500))
       const nextExpires = addMonths(members[0].expiresAt, 1)
+
       setIps(prev =>
         prev.map(item => (item.packId === packId ? { ...item, expiresAt: nextExpires } : item))
       )
@@ -392,6 +490,10 @@ export default function IncubatorPricingPage() {
     } finally {
       setSubmittingKey(null)
     }
+  }
+
+  if (!seatStateReady) {
+    return <div className='p-6 text-sm'>{seatStateError ? `席位读取失败：${seatStateError}` : '正在读取席位权益…'}</div>
   }
 
   return (
@@ -455,18 +557,19 @@ export default function IncubatorPricingPage() {
         <div>
           <h3 className='text-sm font-semibold tracking-tight'>交易所 API 席位</h3>
           <p className='text-muted-foreground mt-0.5 text-xs'>
-            仅负责加购。每次加购从今天起各算 1 个月，不与已有席位绑定期限。
+            当前仅支持模拟购买与续费，不会实际扣款；展示价格为原型参考价，订单金额以服务端冻结价为准。每席独立计算 1 个月有效期。
           </p>
         </div>
         <div className='grid items-stretch gap-2 lg:grid-cols-3'>
           {exchanges.map(item => {
             const addonSeats = seatsByExchange[item.exchange]
-            const capacity = item.giftSlots + addonSeats.length
+            const capacity = item.giftSlots + item.grantedSlots
             const ratio = capacity === 0 ? 0 : Math.min(100, Math.round((item.usedSlots / capacity) * 100))
             const remaining = Math.max(capacity - item.usedSlots, 0)
             const qty = apiQty[item.exchange]
             const fee = item.unitPriceUsdt * qty
             const busy = submittingKey === `api-${item.exchange}`
+
             const nearest = addonSeats
               .map(seat => seat.expiresAt)
               .sort()[0]
@@ -517,7 +620,7 @@ export default function IncubatorPricingPage() {
                   <Progress value={ratio} className='h-1.5' />
                   <div className='text-muted-foreground grid grid-cols-2 gap-1 text-[11px]'>
                     <span>赠送 {item.giftSlots}</span>
-                    <span className='text-right'>加购 {addonSeats.length}</span>
+                    <span className='text-right'>额外额度 {item.grantedSlots}</span>
                   </div>
                   <p className='text-muted-foreground mt-auto text-[10px]'>
                     {nearest ? `最近到期 ${nearest}` : '暂无加购席位'}
@@ -550,10 +653,10 @@ export default function IncubatorPricingPage() {
                     type='button'
                     size='sm'
                     className='h-7 min-w-0 flex-1 px-2 text-xs'
-                    disabled={busy}
+                    disabled={submittingKey !== null}
                     onClick={() => void purchaseApi(item.exchange)}
                   >
-                    {busy ? '提交中…' : `加购 · ${fee}U`}
+                    {busy ? '提交中…' : `模拟加购 · ${fee}U`}
                   </Button>
                 </CardFooter>
               </Card>
@@ -618,12 +721,12 @@ export default function IncubatorPricingPage() {
                 size='sm'
                 variant='outline'
                 className={cn(RENEW_BTN_CLASS, 'px-2.5')}
-                disabled={selectedSeats.length === 0 || submittingKey === 'renew-seats'}
+                  disabled={selectedSeats.length === 0 || submittingKey !== null}
                 onClick={() => void renewSelectedSeats()}
               >
                 {submittingKey === 'renew-seats'
                   ? '续费中…'
-                  : `批量续 1 个月 · ${selectedRenewFee} USDT`}
+                  : `模拟续 1 个月 · ${selectedRenewFee} USDT`}
               </Button>
             </div>
           </CardHeader>
@@ -641,6 +744,7 @@ export default function IncubatorPricingPage() {
                   const tone = expiryTone(days)
                   const busy = submittingKey === `renew-seat-${seat.id}`
                   const checked = selectedSeatIds.includes(seat.id)
+
                   const seatNo =
                     seatsByExchange[seat.exchange].findIndex(item => item.id === seat.id) + 1
 
@@ -683,7 +787,7 @@ export default function IncubatorPricingPage() {
                         size='sm'
                         variant='outline'
                         className={cn(RENEW_BTN_CLASS, 'px-2')}
-                        disabled={busy}
+                        disabled={submittingKey !== null}
                         onClick={() => void renewOneSeat(seat.id)}
                       >
                         {busy ? '续费中…' : `续 1 个月 · ${meta.unitPriceUsdt}U`}
