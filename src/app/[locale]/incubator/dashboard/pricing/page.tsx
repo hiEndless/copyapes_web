@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from '@/components/ui/checkbox'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
+import { createProxyPackOrder, listProxyPacks } from '@/lib/incubator-proxy-packs'
 import { createSeatOrder, listPurchasedSeats, listSeatSnapshots } from '@/lib/incubator-seats'
 
 type ExchangeId = 'BINANCE' | 'OKX' | 'GATE'
@@ -42,6 +43,7 @@ type ProxyIp = {
   /** 加购按「份」成对分配，同 pack 共到期、共续费 */
   packId: string | null
   expiresAt: string | null
+  enabled: boolean
 }
 
 const GIFT_SLOTS_PER_EXCHANGE = 4
@@ -81,51 +83,10 @@ const EXCHANGES: ExchangeMeta[] = [
   }
 ]
 
-const INITIAL_IPS: ProxyIp[] = [
-  { id: 'ip-1', ip: '203.0.113.18', hostId: 1, source: 'included', packId: null, expiresAt: null },
-  { id: 'ip-2', ip: '198.51.100.44', hostId: 2, source: 'included', packId: null, expiresAt: null },
-  {
-    id: 'ip-3',
-    ip: '203.0.113.77',
-    hostId: 1,
-    source: 'addon',
-    packId: 'pack-demo-1',
-    expiresAt: shiftDays(5)
-  },
-  {
-    id: 'ip-4',
-    ip: '198.51.100.88',
-    hostId: 2,
-    source: 'addon',
-    packId: 'pack-demo-1',
-    expiresAt: shiftDays(5)
-  }
-]
-
 const EMPTY_QTY: Record<ExchangeId, number> = {
   BINANCE: 1,
   OKX: 1,
   GATE: 1
-}
-
-function shiftDays(days: number, from = new Date()): string {
-  const next = new Date(from)
-
-  next.setHours(0, 0, 0, 0)
-  next.setDate(next.getDate() + days)
-
-  return formatDate(next)
-}
-
-function addMonths(dateStr: string, months = 1): string {
-  const base = new Date(`${dateStr}T00:00:00`)
-  const today = startOfToday()
-  const from = base.getTime() > today.getTime() ? base : today
-  const next = new Date(from)
-
-  next.setMonth(next.getMonth() + months)
-
-  return formatDate(next)
 }
 
 function startOfToday() {
@@ -134,14 +95,6 @@ function startOfToday() {
   today.setHours(0, 0, 0, 0)
 
   return today
-}
-
-function formatDate(date: Date): string {
-  const y = date.getFullYear()
-  const m = String(date.getMonth() + 1).padStart(2, '0')
-  const d = String(date.getDate()).padStart(2, '0')
-
-  return `${y}-${m}-${d}`
 }
 
 function daysUntil(dateStr: string | null): number | null {
@@ -201,7 +154,9 @@ export default function IncubatorPricingPage() {
   const [seats, setSeats] = useState<AddonSeat[]>([])
   const [seatStateReady, setSeatStateReady] = useState(false)
   const [seatStateError, setSeatStateError] = useState<string | null>(null)
-  const [ips, setIps] = useState(INITIAL_IPS)
+  const [ips, setIps] = useState<ProxyIp[]>([])
+  const [proxyStateReady, setProxyStateReady] = useState(false)
+  const [proxyStateError, setProxyStateError] = useState<string | null>(null)
   const [apiQty, setApiQty] = useState(EMPTY_QTY)
   const [ipQty, setIpQty] = useState(1)
   const [selectedSeatIds, setSelectedSeatIds] = useState<string[]>([])
@@ -232,8 +187,28 @@ export default function IncubatorPricingPage() {
     setSeatStateError(null)
   }
 
+  const refreshProxyState = async () => {
+    const listing = await listProxyPacks()
+
+    const included: ProxyIp[] = listing.included.map(item => ({
+      id: `included-${item.host_id}`, ip: item.ip, hostId: item.host_id as 1 | 2,
+      source: 'included', packId: null, expiresAt: null, enabled: true,
+    }))
+
+    const addons: ProxyIp[] = listing.packs.flatMap(pack => pack.members.map(member => ({
+      id: `${pack.pack_id}-${member.host_id}`, ip: member.ip,
+      hostId: member.host_id as 1 | 2, source: 'addon' as const,
+      packId: pack.pack_id, expiresAt: pack.expires_at.slice(0, 10), enabled: member.enabled,
+    })))
+
+    setIps([...included, ...addons])
+    setProxyStateReady(true)
+    setProxyStateError(null)
+  }
+
   useEffect(() => {
     void refreshSeatState().catch(error => setSeatStateError(error instanceof Error ? error.message : '席位读取失败'))
+    void refreshProxyState().catch(error => setProxyStateError(error instanceof Error ? error.message : '代理包读取失败'))
   }, [])
 
   const studioVip = {
@@ -323,7 +298,7 @@ export default function IncubatorPricingPage() {
   }
 
   const adjustIpQty = (delta: number) => {
-    setIpQty(prev => Math.max(1, prev + delta))
+    setIpQty(prev => Math.min(20, Math.max(1, prev + delta)))
   }
 
   const toggleSeat = (id: string, checked: boolean) => {
@@ -431,69 +406,63 @@ export default function IncubatorPricingPage() {
   }
 
   const purchaseIp = async () => {
+    if (submitLock.current) return
+
+    submitLock.current = true
+    const intentKey = `incubator-proxy-pack-intent:PURCHASE:${ipQty}`
+
     setSubmittingKey('ip')
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      const expiresAt = addMonths(formatDate(startOfToday()), 1)
-      const created: ProxyIp[] = []
+      const order = await createProxyPackOrder({
+        request_id: requestIdForIntent(intentKey), kind: 'PURCHASE', quantity: ipQty,
+      })
 
-      for (let i = 0; i < ipQty; i += 1) {
-        const packId = `pack-${Date.now()}-${i}`
-        const base = 50 + ips.length + created.length
-
-        created.push(
-          {
-            id: `${packId}-h1`,
-            ip: `203.0.113.${base}`,
-            hostId: 1,
-            source: 'addon',
-            packId,
-            expiresAt
-          },
-          {
-            id: `${packId}-h2`,
-            ip: `198.51.100.${base}`,
-            hostId: 2,
-            source: 'addon',
-            packId,
-            expiresAt
-          }
-        )
-      }
-
-      setIps(prev => [...prev, ...created])
-      toast.success(
-        `已加购代理 IP × ${ipQty} 份（共 ${ipQty * IP_PER_PACK} 条），扣 ${ipQty * IP_PACK_PRICE_USDT} USDT（演示）`
-      )
+      if (order.status !== 'GRANTED') throw new Error(`代理包尚未发放：${order.status}`)
+      await refreshProxyState()
+      sessionStorage.removeItem(intentKey)
+      toast.success(`已模拟分配代理 IP × ${ipQty} 份（共 ${ipQty * IP_PER_PACK} 条，未实际扣款）`)
       setIpQty(1)
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '模拟分配代理 IP 失败')
     } finally {
       setSubmittingKey(null)
+      submitLock.current = false
     }
   }
 
   const renewIpPack = async (packId: string) => {
+    if (submitLock.current) return
+
     const members = ips.filter(item => item.packId === packId)
 
     if (members.length === 0 || !members[0]?.expiresAt) return
+    submitLock.current = true
+    const intentKey = `incubator-proxy-pack-intent:RENEWAL:${packId}`
 
     setSubmittingKey(`renew-ip-${packId}`)
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 500))
-      const nextExpires = addMonths(members[0].expiresAt, 1)
+      const order = await createProxyPackOrder({
+        request_id: requestIdForIntent(intentKey), kind: 'RENEWAL', quantity: 1, pack_ids: [packId],
+      })
 
-      setIps(prev =>
-        prev.map(item => (item.packId === packId ? { ...item, expiresAt: nextExpires } : item))
-      )
-      toast.success(`已续费代理 IP 1 份（2 条）一个月，扣 ${IP_PACK_PRICE_USDT} USDT（演示）`)
+      if (order.status !== 'GRANTED') throw new Error(`代理包尚未续费：${order.status}`)
+      await refreshProxyState()
+      sessionStorage.removeItem(intentKey)
+      toast.success('代理 IP 包已模拟续期 1 个月（未实际扣款）')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '模拟续费代理包失败')
     } finally {
       setSubmittingKey(null)
+      submitLock.current = false
     }
   }
 
-  if (!seatStateReady) {
-    return <div className='p-6 text-sm'>{seatStateError ? `席位读取失败：${seatStateError}` : '正在读取席位权益…'}</div>
+  if (!seatStateReady || !proxyStateReady) {
+    const error = seatStateError || proxyStateError
+
+    return <div className='p-6 text-sm'>{error ? `权益读取失败：${error}` : '正在读取权益…'}</div>
   }
 
   return (
@@ -838,7 +807,7 @@ export default function IncubatorPricingPage() {
         <div>
           <h3 className='text-sm font-semibold tracking-tight'>代理 IP</h3>
           <p className='text-muted-foreground mt-0.5 text-xs'>
-            增加更多 IP 用于批量交易，减少账号关联性。
+            当前仅模拟分配与续费，不会实际扣款。IP 包已入权益账本；新增 API 选择加购 IP 的能力将在下一阶段接入。
           </p>
         </div>
 
@@ -852,7 +821,7 @@ export default function IncubatorPricingPage() {
             <div>
               <CardTitle className='text-sm'>已分配代理 IP</CardTitle>
               <CardDescription className='text-xs'>
-                当前 {ips.length} 条 · {IP_PACK_PRICE_USDT} USDT / 月 / 份（每份 2 条）
+                当前展示 {ips.length} 条 · 参考价 {IP_PACK_PRICE_USDT} USDT / 月 / 份（每份 2 条）
               </CardDescription>
             </div>
             <div className='flex flex-wrap items-center gap-2'>
@@ -884,10 +853,10 @@ export default function IncubatorPricingPage() {
                 type='button'
                 size='sm'
                 className='h-7 px-2.5 text-xs'
-                disabled={submittingKey === 'ip'}
+                disabled={submittingKey !== null}
                 onClick={() => void purchaseIp()}
               >
-                {submittingKey === 'ip' ? '提交中…' : `加购 ×${ipQty} 份`}
+                {submittingKey === 'ip' ? '提交中…' : `模拟加购 ×${ipQty} 份`}
               </Button>
             </div>
           </CardHeader>
@@ -956,10 +925,10 @@ export default function IncubatorPricingPage() {
                       size='sm'
                       variant='outline'
                       className={cn(RENEW_BTN_CLASS, 'px-2')}
-                      disabled={busy}
+                      disabled={submittingKey !== null || pack.members.some(item => !item.enabled)}
                       onClick={() => void renewIpPack(pack.packId)}
                     >
-                      {busy ? '续费中…' : `续 1 个月 · ${IP_PACK_PRICE_USDT}U`}
+                      {busy ? '续费中…' : `模拟续 1 个月 · ${IP_PACK_PRICE_USDT}U`}
                     </Button>
                   </div>
                 )
