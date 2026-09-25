@@ -11,6 +11,10 @@ export type ApiItem = {
   proxyHostId?: number | null
   proxyEgressIp?: string | null
   proxyEntitlementStatus?: string | null
+  rebateStatus?: string | null
+  healthStatus?: string | null
+  lastErrorCode?: string | null
+  lastCheckedAt?: string | null
 }
 
 export const MOCK_API_LIST: ApiItem[] = [

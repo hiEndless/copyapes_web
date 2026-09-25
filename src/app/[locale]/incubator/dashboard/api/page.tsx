@@ -32,7 +32,11 @@ function toApiItem(account: IncubatorApiAccount): ApiItem {
     flag: account.flag === 1 ? 1 : 0,
     proxyHostId: account.proxy_host_id,
     proxyEgressIp: account.proxy_egress_ip,
-    proxyEntitlementStatus: account.proxy_entitlement_status
+    proxyEntitlementStatus: account.proxy_entitlement_status,
+    rebateStatus: account.rebate_status ?? null,
+    healthStatus: account.status,
+    lastErrorCode: account.last_error_code,
+    lastCheckedAt: account.last_checked_at,
   }
 }
 

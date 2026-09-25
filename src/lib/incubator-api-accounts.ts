@@ -15,8 +15,9 @@ export type IncubatorApiAccount = {
   proxy_host_id?: number | null
   proxy_egress_ip?: string | null
   proxy_entitlement_status?: 'ACTIVE' | 'PROXY_NOT_ASSIGNED' | 'PROXY_ENDPOINT_DISABLED' | 'PROXY_ENTITLEMENT_EXPIRED' | 'PROXY_PACK_MODE_DISABLED' | null
-  last_checked_at: string | null
+  rebate_status?: string
   last_error_code: string | null
+  last_checked_at: string | null
   created_at: string
 }
 

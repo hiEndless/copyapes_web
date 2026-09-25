@@ -31,6 +31,7 @@ type ExchangeMeta = {
   giftSlots: number
   grantedSlots: number
   usedSlots: number
+  rebateFreeSlots: number
 }
 
 /** 每个加购席位独立订阅，互不影响 */
@@ -86,7 +87,8 @@ const EXCHANGES: ExchangeMeta[] = [
     unitPriceUsdt: 15,
     giftSlots: GIFT_SLOTS_PER_EXCHANGE,
     grantedSlots: 0,
-    usedSlots: 2
+    usedSlots: 2,
+    rebateFreeSlots: 0,
   },
   {
     exchange: 'OKX',
@@ -95,7 +97,8 @@ const EXCHANGES: ExchangeMeta[] = [
     unitPriceUsdt: 12,
     giftSlots: GIFT_SLOTS_PER_EXCHANGE,
     grantedSlots: 0,
-    usedSlots: 5
+    usedSlots: 5,
+    rebateFreeSlots: 0,
   },
   {
     exchange: 'GATE',
@@ -104,7 +107,8 @@ const EXCHANGES: ExchangeMeta[] = [
     unitPriceUsdt: 12,
     giftSlots: GIFT_SLOTS_PER_EXCHANGE,
     grantedSlots: 0,
-    usedSlots: 1
+    usedSlots: 1,
+    rebateFreeSlots: 0,
   }
 ]
 
@@ -205,6 +209,7 @@ export default function IncubatorPricingPage() {
         giftSlots: snapshot.base_seats,
         grantedSlots: snapshot.granted_seats,
         usedSlots: snapshot.active_chargeable,
+        rebateFreeSlots: snapshot.active_rebate_free,
       }
     }))
     setSeats(purchased.map(item => ({
@@ -251,12 +256,17 @@ export default function IncubatorPricingPage() {
     return map
   }, [seats])
 
-  const totalApiCapacity = useMemo(
-    () => exchanges.reduce((sum, item) => sum + item.giftSlots + item.grantedSlots, 0),
+  const rebateSeatSummary = useMemo(
+    () =>
+      exchanges
+        .map(item => {
+          const short =
+            item.exchange === 'BINANCE' ? 'BN' : item.exchange === 'OKX' ? 'OKX' : 'GATE'
+          return `${short} ${item.rebateFreeSlots}`
+        })
+        .join(' · '),
     [exchanges]
   )
-
-  const totalApiUsed = useMemo(() => exchanges.reduce((sum, item) => sum + item.usedSlots, 0), [exchanges])
 
   const addonPackCount = useMemo(() => {
     const packs = new Set(
@@ -577,7 +587,7 @@ export default function IncubatorPricingPage() {
           </div>
         </CardHeader>
         <CardContent className='dark:bg-muted/15 grid grid-cols-1 divide-y divide-border/60 p-0 sm:grid-cols-3 sm:divide-x sm:divide-y-0'>
-          <Metric label='API 总席位' value={`${totalApiUsed} / ${totalApiCapacity}`} />
+          <Metric label='返佣免占席' value={rebateSeatSummary} />
           <Metric label='赠送规则' value='每所 4 席' />
           <Metric label='代理 IP' value={`${ips.length} 条（加购 ${addonPackCount} 份）`} />
         </CardContent>

@@ -87,7 +87,6 @@ const getColumns = (
           </div>
           <div className='flex flex-col'>
             <span className='font-medium'>{row.getValue('api_name') || '-'}</span>
-            {row.original.proxyEgressIp ? <span className='text-muted-foreground text-[11px]'>Host {row.original.proxyHostId} · {row.original.proxyEgressIp}</span> : null}
             {row.original.proxyEntitlementStatus && row.original.proxyEntitlementStatus !== 'ACTIVE' ? (
               <span className='text-amber-600 text-[11px]' role='alert'>
                 {row.original.proxyEntitlementStatus === 'PROXY_ENTITLEMENT_EXPIRED' ? '加购 IP 已到期；新轮次无法启动' :
@@ -99,6 +98,11 @@ const getColumns = (
           {row.original.flag === 1 ? (
             <span className='bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded px-1.5 py-px text-[10px] font-semibold'>
               模拟盘
+            </span>
+          ) : null}
+          {row.original.rebateStatus === 'VERIFIED' ? (
+            <span className='bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 rounded px-1.5 py-px text-[10px] font-semibold'>
+              返佣
             </span>
           ) : null}
           {actionsEnabled && (
@@ -117,12 +121,54 @@ const getColumns = (
     }
   },
   {
-    header: '交易所',
-    accessorKey: 'platform',
+    header: 'API 状态',
+    accessorKey: 'healthStatus',
     cell: ({ row }) => {
-      const key = String(row.getValue('platform') || '').toLowerCase()
+      const code = String(row.original.healthStatus || '').toUpperCase()
+      const error = row.original.lastErrorCode
+      const checkedAt = row.original.lastCheckedAt
+      let label = '未知'
+      let tone = 'bg-muted text-muted-foreground'
 
-      return <span className='text-xs'>{PLATFORM_MAP[key]?.name ?? key.toUpperCase()}</span>
+      if (code === 'ACTIVE') {
+        label = '正常'
+        tone = 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400'
+      } else if (code === 'AUTH_FAILED' || code === 'PERMISSION_INVALID' || code === 'IP_INVALID') {
+        label = '可能失效'
+        tone = 'bg-destructive/10 text-destructive'
+      } else if (code === 'EXCHANGE_UNAVAILABLE' || code === 'RATE_LIMITED') {
+        label = '检查异常'
+        tone = 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
+      } else if (code === 'DISABLED') {
+        label = '已停用'
+        tone = 'bg-amber-500/10 text-amber-700 dark:text-amber-400'
+      } else if (code) {
+        label = code
+      }
+
+      const tip = [error ? `原因：${error}` : null, checkedAt ? `最近检查：${checkedAt.replace('T', ' ')}` : '尚未巡检']
+        .filter(Boolean)
+        .join(' · ')
+
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <div className='flex max-w-[140px] flex-col gap-0.5'>
+                <span className={cn('w-fit rounded px-1.5 py-px text-[10px] font-semibold', tone)}>{label}</span>
+                {checkedAt ? (
+                  <span className='text-muted-foreground text-[10px] tabular-nums'>
+                    {checkedAt.replace('T', ' ').slice(0, 19)}
+                  </span>
+                ) : null}
+              </div>
+            </TooltipTrigger>
+            <TooltipContent side='top' className='max-w-xs text-xs'>
+              {tip}
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )
     }
   },
   {
@@ -137,15 +183,6 @@ const getColumns = (
       const val = row.getValue('usdt')
 
       return <span className='text-xs tabular-nums'>{typeof val === 'number' ? val.toFixed(4) : '-'}</span>
-    }
-  },
-  {
-    header: '创建时间',
-    accessorKey: 'create_datetime',
-    cell: ({ row }) => {
-      const dateStr = row.getValue('create_datetime') as string
-
-      return <span className='text-muted-foreground text-xs'>{dateStr ? dateStr.replace('T', ' ') : '-'}</span>
     }
   },
   {

@@ -30,9 +30,18 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   })
 
   if (!response.ok) {
-    const body = await response.json().catch(() => ({})) as { detail?: { reason_code?: string } }
-
-    throw new Error(body.detail?.reason_code || `代理包请求失败（${response.status}）`)
+    const body = await response.json().catch(() => ({})) as {
+      detail?: string | { reason_code?: string; message?: string }
+    }
+    const detail = body.detail
+    if (typeof detail === 'string' && detail.trim()) {
+      throw new Error(detail)
+    }
+    if (detail && typeof detail === 'object') {
+      const message = detail.message?.trim() || detail.reason_code?.trim()
+      if (message) throw new Error(message)
+    }
+    throw new Error(`代理包请求失败（${response.status}）`)
   }
 
   return await response.json() as T
