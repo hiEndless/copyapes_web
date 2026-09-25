@@ -65,6 +65,7 @@ const getColumns = (
     accessorKey: 'api_name',
     cell: ({ row }) => {
       const platformKey = row.original.platform?.toLowerCase() || ''
+
       const platformInfo = PLATFORM_MAP[platformKey] || {
         name: platformKey.toUpperCase() || '未知',
         logo: '/exchanges/default.png'
@@ -84,7 +85,17 @@ const getColumns = (
               />
             ) : null}
           </div>
-          <span className='font-medium'>{row.getValue('api_name') || '-'}</span>
+          <div className='flex flex-col'>
+            <span className='font-medium'>{row.getValue('api_name') || '-'}</span>
+            {row.original.proxyEgressIp ? <span className='text-muted-foreground text-[11px]'>Host {row.original.proxyHostId} · {row.original.proxyEgressIp}</span> : null}
+            {row.original.proxyEntitlementStatus && row.original.proxyEntitlementStatus !== 'ACTIVE' ? (
+              <span className='text-amber-600 text-[11px]' role='alert'>
+                {row.original.proxyEntitlementStatus === 'PROXY_ENTITLEMENT_EXPIRED' ? '加购 IP 已到期；新轮次无法启动' :
+                  row.original.proxyEntitlementStatus === 'PROXY_ENDPOINT_DISABLED' ? '代理已停用；新轮次无法启动' :
+                  row.original.proxyEntitlementStatus === 'PROXY_PACK_MODE_DISABLED' ? '加购 IP 功能已关闭；新轮次无法启动' : '固定代理不可用'}
+              </span>
+            ) : null}
+          </div>
           {row.original.flag === 1 ? (
             <span className='bg-amber-500/10 text-amber-700 dark:text-amber-400 rounded px-1.5 py-px text-[10px] font-semibold'>
               模拟盘
@@ -110,6 +121,7 @@ const getColumns = (
     accessorKey: 'platform',
     cell: ({ row }) => {
       const key = String(row.getValue('platform') || '').toLowerCase()
+
       return <span className='text-xs'>{PLATFORM_MAP[key]?.name ?? key.toUpperCase()}</span>
     }
   },
@@ -123,6 +135,7 @@ const getColumns = (
     accessorKey: 'usdt',
     cell: ({ row }) => {
       const val = row.getValue('usdt')
+
       return <span className='text-xs tabular-nums'>{typeof val === 'number' ? val.toFixed(4) : '-'}</span>
     }
   },
@@ -131,6 +144,7 @@ const getColumns = (
     accessorKey: 'create_datetime',
     cell: ({ row }) => {
       const dateStr = row.getValue('create_datetime') as string
+
       return <span className='text-muted-foreground text-xs'>{dateStr ? dateStr.replace('T', ' ') : '-'}</span>
     }
   },
@@ -142,6 +156,7 @@ const getColumns = (
 
       const handleRefreshBalance = async () => {
         setBalanceBusy(true)
+
         try {
           await onRefreshBalance(row.original.id)
           toast.success('账号状态与余额已更新')
@@ -249,6 +264,7 @@ const ApiDatatable = ({
   )
 
   const pageSize = 10
+
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize
@@ -277,6 +293,7 @@ const ApiDatatable = ({
   })
 
   const from = table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1
+
   const to = Math.min(
     Math.max(
       table.getState().pagination.pageIndex * table.getState().pagination.pageSize +
@@ -285,6 +302,7 @@ const ApiDatatable = ({
     ),
     table.getRowCount()
   )
+
   const total = table.getRowCount()
 
   return (
@@ -370,6 +388,7 @@ const ApiDatatable = ({
               )}
               {pages.map(page => {
                 const isActive = page === table.getState().pagination.pageIndex + 1
+
                 return (
                   <PaginationItem key={page}>
                     <Button

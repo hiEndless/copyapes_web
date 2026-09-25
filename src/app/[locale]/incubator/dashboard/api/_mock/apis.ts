@@ -8,6 +8,9 @@ export type ApiItem = {
   status: number
   roleType?: string | null
   flag?: 0 | 1
+  proxyHostId?: number | null
+  proxyEgressIp?: string | null
+  proxyEntitlementStatus?: string | null
 }
 
 export const MOCK_API_LIST: ApiItem[] = [

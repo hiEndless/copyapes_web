@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+
 import { toast } from 'sonner'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -28,7 +29,10 @@ function toApiItem(account: IncubatorApiAccount): ApiItem {
     create_datetime: account.created_at,
     status: account.status === 'ACTIVE' ? 1 : 0,
     roleType: null,
-    flag: account.flag === 1 ? 1 : 0
+    flag: account.flag === 1 ? 1 : 0,
+    proxyHostId: account.proxy_host_id,
+    proxyEgressIp: account.proxy_egress_ip,
+    proxyEntitlementStatus: account.proxy_entitlement_status
   }
 }
 
@@ -52,17 +56,27 @@ export default function IncubatorApiPage() {
       passphrase: input.api_passphrase || undefined,
       flag: input.flag
     })
+
     setData(prev => [toApiItem(account), ...prev])
   }
 
   const handleRename = async (id: string, label: string) => {
     const account = await renameIncubatorApiAccount(id, label)
+
     setData(prev => prev.map(item => (item.id === id ? toApiItem(account) : item)))
   }
 
   const handleHealthCheck = async (id: string) => {
-    const account = await checkIncubatorApiAccountHealth(id)
-    setData(prev => prev.map(item => (item.id === id ? toApiItem(account) : item)))
+    try {
+      const account = await checkIncubatorApiAccountHealth(id)
+
+      setData(prev => prev.map(item => (item.id === id ? toApiItem(account) : item)))
+    } catch (error) {
+      const accounts = await listIncubatorApiAccounts()
+
+      setData(accounts.map(toApiItem))
+      throw error
+    }
   }
 
   const handleDelete = async (id: string) => {

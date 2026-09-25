@@ -35,7 +35,9 @@ export type IncubatorCampaign = {
 
 async function request<T>(path = 'campaigns', init?: RequestInit): Promise<T> {
   const token = localStorage.getItem('token')
+
   if (!token) throw new Error('请先登录 CopyApes')
+
   const response = await fetch(`/api/incubator/${path}`, {
     ...init,
     headers: {
@@ -45,22 +47,32 @@ async function request<T>(path = 'campaigns', init?: RequestInit): Promise<T> {
     },
     cache: 'no-store'
   })
+
   if (!response.ok) {
     let message = `请求失败（${response.status}）`
+
     try {
       const payload = (await response.json()) as { detail?: string | { message?: string; reason_code?: string } }
+
       if (typeof payload.detail === 'string') message = payload.detail
       else message = payload.detail?.message || payload.detail?.reason_code || message
+      if (message.includes('PROXY_PACK_MODE_DISABLED')) message = '加购 IP 功能已关闭，当前无法启动新轮次；请联系管理员'
+      else if (message.includes('PROXY_ENTITLEMENT_EXPIRED')) message = '参与 API 的加购 IP 已到期，续费后再启动'
+      else if (message.includes('PROXY_ENDPOINT_DISABLED')) message = '参与 API 的固定代理已停用，当前无法启动新轮次'
+      else if (message.includes('PROXY_NOT_ASSIGNED')) message = '参与 API 的固定代理不可用，当前无法启动新轮次'
     } catch {
       // Stable fallback; do not expose upstream response bodies.
     }
+
     throw new Error(message)
   }
+
   return (await response.json()) as T
 }
 
 export function listIncubatorCampaigns(status?: 'completed') {
   const query = status ? `?status=${status}` : ''
+
   return request<IncubatorCampaign[]>(`campaigns${query}`)
 }
 
