@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { toast } from 'sonner'
 import { ChevronLeft, ChevronRight, ExternalLink, Minus, Plus, ShieldCheck } from 'lucide-react'
 
+import { useIncubatorStudioAccess } from '@/components/dashboard/incubator-access-guard'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -150,6 +151,7 @@ const RENEW_BTN_CLASS =
   'h-7 border-amber-500/50 bg-transparent text-xs text-amber-700 hover:bg-amber-500/15 hover:text-amber-800 dark:text-amber-300 dark:hover:bg-amber-500/15 dark:hover:text-amber-200'
 
 export default function IncubatorPricingPage() {
+  const { canCreateOrStart } = useIncubatorStudioAccess()
   const [exchanges, setExchanges] = useState(EXCHANGES)
   const [seats, setSeats] = useState<AddonSeat[]>([])
   const [seatStateReady, setSeatStateReady] = useState(false)
@@ -321,7 +323,7 @@ export default function IncubatorPricingPage() {
   }
 
   const purchaseApi = async (exchange: ExchangeId) => {
-    if (submitLock.current) return
+    if (!canCreateOrStart || submitLock.current) return
 
     submitLock.current = true
     const qty = apiQty[exchange]
@@ -347,7 +349,7 @@ export default function IncubatorPricingPage() {
   }
 
   const renewSelectedSeats = async () => {
-    if (selectedSeats.length === 0) return
+    if (!canCreateOrStart || selectedSeats.length === 0) return
     if (submitLock.current) return
 
     submitLock.current = true
@@ -380,7 +382,7 @@ export default function IncubatorPricingPage() {
   }
 
   const renewOneSeat = async (id: string) => {
-    if (submitLock.current) return
+    if (!canCreateOrStart || submitLock.current) return
 
     const seat = seats.find(item => item.id === id)
 
@@ -406,7 +408,7 @@ export default function IncubatorPricingPage() {
   }
 
   const purchaseIp = async () => {
-    if (submitLock.current) return
+    if (!canCreateOrStart || submitLock.current) return
 
     submitLock.current = true
     const intentKey = `incubator-proxy-pack-intent:PURCHASE:${ipQty}`
@@ -432,7 +434,7 @@ export default function IncubatorPricingPage() {
   }
 
   const renewIpPack = async (packId: string) => {
-    if (submitLock.current) return
+    if (!canCreateOrStart || submitLock.current) return
 
     const members = ips.filter(item => item.packId === packId)
 
@@ -622,7 +624,7 @@ export default function IncubatorPricingPage() {
                     type='button'
                     size='sm'
                     className='h-7 min-w-0 flex-1 px-2 text-xs'
-                    disabled={submittingKey !== null}
+                    disabled={submittingKey !== null || !canCreateOrStart}
                     onClick={() => void purchaseApi(item.exchange)}
                   >
                     {busy ? '提交中…' : `模拟加购 · ${fee}U`}
@@ -690,7 +692,7 @@ export default function IncubatorPricingPage() {
                 size='sm'
                 variant='outline'
                 className={cn(RENEW_BTN_CLASS, 'px-2.5')}
-                  disabled={selectedSeats.length === 0 || submittingKey !== null}
+                  disabled={selectedSeats.length === 0 || submittingKey !== null || !canCreateOrStart}
                 onClick={() => void renewSelectedSeats()}
               >
                 {submittingKey === 'renew-seats'
@@ -756,7 +758,7 @@ export default function IncubatorPricingPage() {
                         size='sm'
                         variant='outline'
                         className={cn(RENEW_BTN_CLASS, 'px-2')}
-                        disabled={submittingKey !== null}
+                        disabled={submittingKey !== null || !canCreateOrStart}
                         onClick={() => void renewOneSeat(seat.id)}
                       >
                         {busy ? '续费中…' : `续 1 个月 · ${meta.unitPriceUsdt}U`}
@@ -853,7 +855,7 @@ export default function IncubatorPricingPage() {
                 type='button'
                 size='sm'
                 className='h-7 px-2.5 text-xs'
-                disabled={submittingKey !== null}
+                disabled={submittingKey !== null || !canCreateOrStart}
                 onClick={() => void purchaseIp()}
               >
                 {submittingKey === 'ip' ? '提交中…' : `模拟加购 ×${ipQty} 份`}
@@ -925,7 +927,7 @@ export default function IncubatorPricingPage() {
                       size='sm'
                       variant='outline'
                       className={cn(RENEW_BTN_CLASS, 'px-2')}
-                      disabled={submittingKey !== null || pack.members.some(item => !item.enabled)}
+                      disabled={submittingKey !== null || !canCreateOrStart || pack.members.some(item => !item.enabled)}
                       onClick={() => void renewIpPack(pack.packId)}
                     >
                       {busy ? '续费中…' : `模拟续 1 个月 · ${IP_PACK_PRICE_USDT}U`}

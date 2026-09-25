@@ -493,6 +493,7 @@
       "lockCancel": "稍后再说",
       "lockUpgrade": "去开通",
       "expiredReadOnly": "工作室 VIP 已失效：可查看历史并安全终止现有轮次，暂不能新建项目、启动轮次或购买权益。",
+      "checkingAccess": "正在核验工作室 VIP：新建、启动和购买操作暂不可用。",
       "accessUnavailable": "暂时无法核验工作室 VIP：可查看及终止现有轮次，新增操作暂不可用。",
       "authTitle": "授权进入带单系统",
       "authDesc": "带单系统通过 CopyApes SSO 登录。首次进入前请确认以下说明：",

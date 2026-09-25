@@ -491,6 +491,7 @@
       "lockCancel": "Not now",
       "lockUpgrade": "Upgrade",
       "expiredReadOnly": "Studio VIP has expired. You can review history and safely stop running rounds, but cannot create, start or purchase.",
+      "checkingAccess": "Checking Studio VIP. Creating, starting and purchasing are temporarily unavailable.",
       "accessUnavailable": "Studio VIP cannot be verified right now. Viewing and stopping existing rounds remain available; new actions are paused.",
       "authTitle": "Authorize Leader OS access",
       "authDesc": "Leader OS signs in via CopyApes SSO. Please confirm before first access:",

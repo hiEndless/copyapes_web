@@ -5,6 +5,7 @@ import { toast } from 'sonner'
 
 import { ChartColumn, Check, CircleStop, Crown, GripVertical, Play, Plus, Square, Waypoints, X } from 'lucide-react'
 
+import { useIncubatorStudioAccess } from '@/components/dashboard/incubator-access-guard'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -650,6 +651,7 @@ function MemberCard({
 }
 
 export default function IncubatorBoardPage() {
+  const { canCreateOrStart } = useIncubatorStudioAccess()
   const [demoMode, setDemoMode] = useState(false)
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [activeCampaignId, setActiveCampaignId] = useState('')
@@ -1301,7 +1303,7 @@ export default function IncubatorBoardPage() {
   const groupsBalanced = sameMembers.length === inverseMembers.length && sameMembers.length > 0
   const leaderIsSame = Boolean(leader?.isLeader && leader.relation === 'SAME')
   const canStart = Boolean(activeRound) && isPreparing && activeRound!.leaderConfirmed && leaderIsSame && groupsBalanced &&
-    (demoMode || activeRound!.canStart === true) && !setupDirty && !setupBusy && !startBusy
+    (demoMode || activeRound!.canStart === true) && canCreateOrStart && !setupDirty && !setupBusy && !startBusy
 
   const busyApiIds = useMemo(() => {
     const ids = new Set<string>()
@@ -1392,7 +1394,7 @@ export default function IncubatorBoardPage() {
   }
 
   const handleCreateCampaign = async () => {
-    if (!selectionValid) return
+    if (!selectionValid || !canCreateOrStart) return
     if (!demoMode && !confirmLeaveSetupDraft()) return
     const submittedInDemo = demoMode
     const submittedGeneration = realLoadGeneration.current
@@ -1628,7 +1630,7 @@ export default function IncubatorBoardPage() {
   }
 
   const handleUndoTerminate = async () => {
-    if (!campaign || !promoteResult || promoteResult.projectCompleted || undoTerminateBusy) return
+    if (!campaign || !promoteResult || promoteResult.projectCompleted || undoTerminateBusy || !canCreateOrStart) return
     if (promoteResult.undoExpiresAt != null && Date.now() > promoteResult.undoExpiresAt) {
       toast.error('撤销窗口已过期')
       return
@@ -1844,6 +1846,7 @@ export default function IncubatorBoardPage() {
           <Button
             type='button'
             size='sm'
+            disabled={!canCreateOrStart}
             onClick={() => setCreateOpen(true)}
           >
             <Plus className='size-4' />
@@ -1909,7 +1912,7 @@ export default function IncubatorBoardPage() {
                 ? '创建项目后可在此并行切换查看'
                 : '选择可用 API 创建第一个养号项目。'}
             </p>
-            <Button type='button' size='sm' className='mt-4' onClick={() => setCreateOpen(true)}>
+            <Button type='button' size='sm' className='mt-4' disabled={!canCreateOrStart} onClick={() => setCreateOpen(true)}>
               <Plus className='size-4' />
               创建项目
             </Button>
@@ -2155,7 +2158,7 @@ export default function IncubatorBoardPage() {
                     size='sm'
                     variant='outline'
                     className='h-8 text-xs'
-                    disabled={undoTerminateBusy}
+                    disabled={undoTerminateBusy || !canCreateOrStart}
                     onClick={() => void handleUndoTerminate()}
                   >
                     {undoTerminateBusy ? '撤销中…' : '撤销本次晋级'}
@@ -2611,7 +2614,7 @@ export default function IncubatorBoardPage() {
             <Button type='button' variant='outline' onClick={() => setCreateOpen(false)}>
               取消
             </Button>
-            <Button type='button' disabled={!selectionValid || createBusy} onClick={handleCreateCampaign}>
+            <Button type='button' disabled={!selectionValid || createBusy || !canCreateOrStart} onClick={handleCreateCampaign}>
               {createBusy ? '创建中…' : '创建并进入准备'}
             </Button>
           </DialogFooter>

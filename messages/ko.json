@@ -491,6 +491,7 @@
       "lockCancel": "나중에",
       "lockUpgrade": "업그레이드",
       "expiredReadOnly": "스튜디오 VIP가 만료되었습니다. 기록 조회와 실행 중인 라운드 종료는 가능하지만 생성, 시작, 구매는 할 수 없습니다.",
+      "checkingAccess": "스튜디오 VIP를 확인 중입니다. 생성, 시작, 구매는 잠시 이용할 수 없습니다.",
       "accessUnavailable": "스튜디오 VIP를 확인할 수 없습니다. 기존 라운드 조회와 종료는 가능하지만 새 작업은 일시 중지됩니다.",
       "authTitle": "리딩 시스템 인가",
       "authDesc": "리딩 시스템은 CopyApes SSO로 로그인합니다. 최초 진입 전 확인해 주세요:",

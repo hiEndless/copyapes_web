@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -21,15 +21,23 @@ import {
   loginIncubatorSso,
   markIncubatorSsoConsent
 } from '@/lib/incubator-auth'
+import { canCreateOrStart, parseStudioAccess, type StudioAccessStatus } from '@/lib/incubator-studio-access'
 
 type GatePhase = 'checking' | 'need_auth' | 'allowed'
+
+const StudioAccessContext = createContext<{ status: StudioAccessStatus | null; canCreateOrStart: boolean }>({
+  status: null,
+  canCreateOrStart: false
+})
+
+export const useIncubatorStudioAccess = () => useContext(StudioAccessContext)
 
 const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
   const router = useRouter()
   const t = useTranslations('DashboardShell.systemSwitch')
   const [phase, setPhase] = useState<GatePhase>('checking')
   const [submitting, setSubmitting] = useState(false)
-  const [accessStatus, setAccessStatus] = useState<string | null>(null)
+  const [accessStatus, setAccessStatus] = useState<StudioAccessStatus | null>(null)
 
   useEffect(() => {
     setPhase(hasIncubatorSsoConsent() ? 'allowed' : 'need_auth')
@@ -38,14 +46,6 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     if (phase !== 'allowed') return
     const controller = new AbortController()
-    const token = localStorage.getItem('token')
-
-    if (!token) {
-      setAccessStatus('UNAVAILABLE')
-
-      return
-    }
-
     let inFlight = false
 
     const refresh = async () => {
@@ -53,6 +53,10 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
       inFlight = true
 
       try {
+        const token = localStorage.getItem('token')
+
+        if (!token) throw new Error('studio_access_token_missing')
+
         const response = await fetch('/api/incubator/entitlements/access', {
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
@@ -60,9 +64,9 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
         })
 
         if (!response.ok) throw new Error('studio_access_unavailable')
-        const payload = (await response.json()) as { status?: string }
+        const status = parseStudioAccess(await response.json())
 
-        if (!controller.signal.aborted) setAccessStatus(payload.status || 'UNAVAILABLE')
+        if (!controller.signal.aborted) setAccessStatus(status)
       } catch {
         if (!controller.signal.aborted) setAccessStatus('UNAVAILABLE')
       } finally {
@@ -116,11 +120,15 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
   }
 
   if (phase === 'allowed') {
-    return <>
+    return <StudioAccessContext.Provider value={{
+      status: accessStatus,
+      canCreateOrStart: canCreateOrStart(accessStatus)
+    }}>
+      {accessStatus === null && <div role='status' className='mb-3 rounded-md border border-border/60 p-3 text-sm'>{t('checkingAccess')}</div>}
       {accessStatus === 'INACTIVE' && <div role='alert' className='mb-3 rounded-md border border-amber-500/40 p-3 text-sm'>{t('expiredReadOnly')}</div>}
       {accessStatus === 'UNAVAILABLE' && <div role='alert' className='mb-3 rounded-md border border-amber-500/40 p-3 text-sm'>{t('accessUnavailable')}</div>}
       {children}
-    </>
+    </StudioAccessContext.Provider>
   }
 
   return (
