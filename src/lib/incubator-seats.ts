@@ -56,6 +56,8 @@ export function createSeatOrder(input: {
   quantity: number
   seat_ids?: string[]
   request_id: string
+  payment_external_ref?: string
+  payment_pay_type?: 4 | 5
 }) {
   return request<SeatOrder>('seat-orders', { method: 'POST', body: JSON.stringify(input) })
 }

@@ -16,6 +16,11 @@ import { cn } from '@/lib/utils'
 import { createProxyPackOrder, listProxyPacks } from '@/lib/incubator-proxy-packs'
 import { createSeatOrder, listPurchasedSeats, listSeatSnapshots } from '@/lib/incubator-seats'
 
+import {
+  IncubatorPaymentDialog,
+  type IncubatorPaymentProof,
+} from './incubator-payment-dialog'
+
 type ExchangeId = 'BINANCE' | 'OKX' | 'GATE'
 
 type ExchangeMeta = {
@@ -34,6 +39,25 @@ type AddonSeat = {
   exchange: ExchangeId
   expiresAt: string
 }
+
+type PendingSeatPay =
+  | {
+      mode: 'PURCHASE'
+      exchange: ExchangeId
+      quantity: number
+      amountUsdt: number
+      intentKey: string
+      submittingKey: string
+    }
+  | {
+      mode: 'RENEWAL'
+      exchange: ExchangeId
+      seatIds: string[]
+      amountUsdt: number
+      intentKey: string
+      submittingKey: string
+      clearSelection: boolean
+    }
 
 type ProxyIp = {
   id: string
@@ -165,6 +189,7 @@ export default function IncubatorPricingPage() {
   const [seatPageSize, setSeatPageSize] = useState<10 | 20 | 30 | 40 | 50>(10)
   const [seatPage, setSeatPage] = useState(0)
   const [submittingKey, setSubmittingKey] = useState<string | null>(null)
+  const [pendingSeatPay, setPendingSeatPay] = useState<PendingSeatPay | null>(null)
   const submitLock = useRef(false)
 
   const refreshSeatState = async () => {
@@ -322,85 +347,119 @@ export default function IncubatorPricingPage() {
     setSeatPage(0)
   }
 
-  const purchaseApi = async (exchange: ExchangeId) => {
-    if (!canCreateOrStart || submitLock.current) return
+  const purchaseApi = (exchange: ExchangeId) => {
+    if (!canCreateOrStart || submitLock.current || pendingSeatPay) return
 
-    submitLock.current = true
     const qty = apiQty[exchange]
     const meta = exchangeMeta(exchange)
     const intentKey = seatIntentKey('PURCHASE', exchange, [String(qty)])
 
-    setSubmittingKey(`api-${exchange}`)
-
-    try {
-      const order = await createSeatOrder({ request_id: requestIdForIntent(intentKey), kind: 'PURCHASE', exchange, quantity: qty })
-
-      if (order.status !== 'GRANTED') throw new Error(`席位尚未发放：${order.status}`)
-      await refreshSeatState()
-      sessionStorage.removeItem(intentKey)
-      toast.success(`已模拟加购 ${meta.label} × ${qty}（未实际扣款）`)
-      setApiQty(prev => ({ ...prev, [exchange]: 1 }))
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : '模拟购买失败')
-    } finally {
-      setSubmittingKey(null)
-      submitLock.current = false
-    }
+    setPendingSeatPay({
+      mode: 'PURCHASE',
+      exchange,
+      quantity: qty,
+      amountUsdt: meta.unitPriceUsdt * qty,
+      intentKey,
+      submittingKey: `api-${exchange}`,
+    })
   }
 
-  const renewSelectedSeats = async () => {
-    if (!canCreateOrStart || selectedSeats.length === 0) return
-    if (submitLock.current) return
+  const renewSelectedSeats = () => {
+    if (!canCreateOrStart || selectedSeats.length === 0 || submitLock.current || pendingSeatPay) return
 
-    submitLock.current = true
-    setSubmittingKey('renew-seats')
-    const completedKeys: string[] = []
+    const exchanges = [...new Set(selectedSeats.map(item => item.exchange))]
 
-    try {
-      for (const exchange of (['BINANCE', 'OKX', 'GATE'] as const)) {
-        const seatIds = selectedSeats.filter(item => item.exchange === exchange).map(item => item.id)
-
-        if (seatIds.length === 0) continue
-        const intentKey = seatIntentKey('RENEWAL', exchange, seatIds)
-        const order = await createSeatOrder({ request_id: requestIdForIntent(intentKey), kind: 'RENEWAL', exchange, quantity: seatIds.length, seat_ids: seatIds })
-
-        if (order.status !== 'GRANTED') throw new Error(`席位尚未发放：${order.status}`)
-        completedKeys.push(intentKey)
-      }
-
-      await refreshSeatState()
-      completedKeys.forEach(key => sessionStorage.removeItem(key))
-      toast.success(`已模拟续费 ${selectedSeats.length} 个席位（未实际扣款）`)
-      setSelectedSeatIds([])
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : '模拟续费失败，部分订单可能已成功')
-    } finally {
-      await refreshSeatState().catch(() => undefined)
-      setSubmittingKey(null)
-      submitLock.current = false
+    if (exchanges.length > 1) {
+      toast.error('批量续费请选择同一交易所席位（转账号只能认领一次）')
+      return
     }
+
+    const exchange = exchanges[0]
+    if (!exchange) return
+    const seatIds = selectedSeats.map(item => item.id)
+    const intentKey = seatIntentKey('RENEWAL', exchange, seatIds)
+
+    setPendingSeatPay({
+      mode: 'RENEWAL',
+      exchange,
+      seatIds,
+      amountUsdt: selectedRenewFee,
+      intentKey,
+      submittingKey: 'renew-seats',
+      clearSelection: true,
+    })
   }
 
-  const renewOneSeat = async (id: string) => {
-    if (!canCreateOrStart || submitLock.current) return
+  const renewOneSeat = (id: string) => {
+    if (!canCreateOrStart || submitLock.current || pendingSeatPay) return
 
     const seat = seats.find(item => item.id === id)
 
     if (!seat) return
-    submitLock.current = true
-    const intentKey = seatIntentKey('RENEWAL', seat.exchange, [id])
 
-    setSubmittingKey(`renew-seat-${id}`)
+    const intentKey = seatIntentKey('RENEWAL', seat.exchange, [id])
+    const meta = exchangeMeta(seat.exchange)
+
+    setPendingSeatPay({
+      mode: 'RENEWAL',
+      exchange: seat.exchange,
+      seatIds: [id],
+      amountUsdt: meta.unitPriceUsdt,
+      intentKey,
+      submittingKey: `renew-seat-${id}`,
+      clearSelection: false,
+    })
+  }
+
+  const confirmSeatPayment = async (proof: IncubatorPaymentProof) => {
+    if (!pendingSeatPay || submitLock.current) return
+
+    submitLock.current = true
+    setSubmittingKey(pendingSeatPay.submittingKey)
 
     try {
-      const order = await createSeatOrder({ request_id: requestIdForIntent(intentKey), kind: 'RENEWAL', exchange: seat.exchange, quantity: 1, seat_ids: [id] })
+      const order =
+        pendingSeatPay.mode === 'PURCHASE'
+          ? await createSeatOrder({
+              request_id: requestIdForIntent(pendingSeatPay.intentKey),
+              kind: 'PURCHASE',
+              exchange: pendingSeatPay.exchange,
+              quantity: pendingSeatPay.quantity,
+              payment_external_ref: proof.externalRef,
+              payment_pay_type: proof.payType,
+            })
+          : await createSeatOrder({
+              request_id: requestIdForIntent(pendingSeatPay.intentKey),
+              kind: 'RENEWAL',
+              exchange: pendingSeatPay.exchange,
+              quantity: pendingSeatPay.seatIds.length,
+              seat_ids: pendingSeatPay.seatIds,
+              payment_external_ref: proof.externalRef,
+              payment_pay_type: proof.payType,
+            })
 
       if (order.status !== 'GRANTED') throw new Error(`席位尚未发放：${order.status}`)
+
       await refreshSeatState()
-      sessionStorage.removeItem(intentKey)
-      toast.success(`已模拟续费 1 席 · ${exchangeMeta(seat.exchange).label}（未实际扣款）`)
+      sessionStorage.removeItem(pendingSeatPay.intentKey)
+
+      if (pendingSeatPay.mode === 'PURCHASE') {
+        const meta = exchangeMeta(pendingSeatPay.exchange)
+        toast.success(`已加购 ${meta.label} × ${pendingSeatPay.quantity}`)
+        setApiQty(prev => ({ ...prev, [pendingSeatPay.exchange]: 1 }))
+      } else {
+        toast.success(
+          pendingSeatPay.seatIds.length === 1
+            ? `已续费 1 席 · ${exchangeMeta(pendingSeatPay.exchange).label}`
+            : `已续费 ${pendingSeatPay.seatIds.length} 个席位`,
+        )
+        if (pendingSeatPay.clearSelection) setSelectedSeatIds([])
+      }
+
+      setPendingSeatPay(null)
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : '模拟续费失败')
+      await refreshSeatState().catch(() => undefined)
+      throw error
     } finally {
       setSubmittingKey(null)
       submitLock.current = false
@@ -528,7 +587,7 @@ export default function IncubatorPricingPage() {
         <div>
           <h3 className='text-sm font-semibold tracking-tight'>交易所 API 席位</h3>
           <p className='text-muted-foreground mt-0.5 text-xs'>
-            当前仅支持模拟购买与续费，不会实际扣款；展示价格为原型参考价，订单金额以服务端冻结价为准。每席独立计算 1 个月有效期。
+            席位加购/续费需完成 USDT 转账并填写凭证；展示价为参考，订单金额以服务端冻结价为准。每席独立计算 1 个月有效期。
           </p>
         </div>
         <div className='grid items-stretch gap-2 lg:grid-cols-3'>
@@ -627,7 +686,7 @@ export default function IncubatorPricingPage() {
                     disabled={submittingKey !== null || !canCreateOrStart}
                     onClick={() => void purchaseApi(item.exchange)}
                   >
-                    {busy ? '提交中…' : `模拟加购 · ${fee}U`}
+                    {busy ? '提交中…' : `加购 · ${fee}U`}
                   </Button>
                 </CardFooter>
               </Card>
@@ -697,7 +756,7 @@ export default function IncubatorPricingPage() {
               >
                 {submittingKey === 'renew-seats'
                   ? '续费中…'
-                  : `模拟续 1 个月 · ${selectedRenewFee} USDT`}
+                  : `续 1 个月 · ${selectedRenewFee} USDT`}
               </Button>
             </div>
           </CardHeader>
@@ -939,6 +998,17 @@ export default function IncubatorPricingPage() {
           </CardContent>
         </Card>
       </section>
+
+      <IncubatorPaymentDialog
+        open={pendingSeatPay !== null}
+        onOpenChange={open => {
+          if (!open && submittingKey === null) setPendingSeatPay(null)
+        }}
+        amountUsdt={pendingSeatPay?.amountUsdt ?? 0}
+        title={pendingSeatPay?.mode === 'RENEWAL' ? '席位续费支付' : '席位加购支付'}
+        submitting={submittingKey !== null && pendingSeatPay !== null}
+        onConfirm={confirmSeatPayment}
+      />
     </div>
   )
 }
