@@ -492,6 +492,8 @@
       "lockDesc": "帶單系統僅對工作室 VIP 開放，開通後即可使用。",
       "lockCancel": "稍後再說",
       "lockUpgrade": "去開通",
+      "expiredReadOnly": "工作室 VIP 已失效：可查看歷史並安全終止現有輪次，暫不能新增項目、啟動輪次或購買權益。",
+      "accessUnavailable": "暫時無法核驗工作室 VIP：可查看及終止現有輪次，新增操作暫不可用。",
       "authTitle": "授權進入帶單系統",
       "authDesc": "帶單系統透過 CopyApes SSO 登入。首次進入前請確認以下說明：",
       "authPoint1": "跟單系統與帶單系統相互獨立，帳戶空間互不共用",

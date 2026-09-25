@@ -19,8 +19,7 @@ import {
 import {
   hasIncubatorSsoConsent,
   loginIncubatorSso,
-  markIncubatorSsoConsent,
-  readStudioVip
+  markIncubatorSsoConsent
 } from '@/lib/incubator-auth'
 
 type GatePhase = 'checking' | 'need_auth' | 'allowed'
@@ -30,58 +29,58 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
   const t = useTranslations('DashboardShell.systemSwitch')
   const [phase, setPhase] = useState<GatePhase>('checking')
   const [submitting, setSubmitting] = useState(false)
+  const [accessStatus, setAccessStatus] = useState<string | null>(null)
 
   useEffect(() => {
-    let redirected = false
-    let cancelled = false
+    setPhase(hasIncubatorSsoConsent() ? 'allowed' : 'need_auth')
+  }, [])
 
-    const redirectHome = () => {
-      if (redirected || cancelled) return
-      redirected = true
-      router.replace('/dashboard')
+  useEffect(() => {
+    if (phase !== 'allowed') return
+    const controller = new AbortController()
+    const token = localStorage.getItem('token')
+
+    if (!token) {
+      setAccessStatus('UNAVAILABLE')
+
+      return
     }
 
-    const enforce = async (isStudioVip: boolean | null) => {
-      if (cancelled) return
+    let inFlight = false
 
-      if (isStudioVip === null) return
+    const refresh = async () => {
+      if (inFlight) return
+      inFlight = true
 
-      if (!isStudioVip) {
-        toast.error(t('lockDesc'))
-        redirectHome()
+      try {
+        const response = await fetch('/api/incubator/entitlements/access', {
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+          cache: 'no-store'
+        })
 
-        return
+        if (!response.ok) throw new Error('studio_access_unavailable')
+        const payload = (await response.json()) as { status?: string }
+
+        if (!controller.signal.aborted) setAccessStatus(payload.status || 'UNAVAILABLE')
+      } catch {
+        if (!controller.signal.aborted) setAccessStatus('UNAVAILABLE')
+      } finally {
+        inFlight = false
       }
-
-      if (hasIncubatorSsoConsent()) {
-        setPhase('allowed')
-
-        return
-      }
-
-      setPhase('need_auth')
     }
 
-    void enforce(readStudioVip())
+    void refresh()
+    const timer = window.setInterval(() => void refresh(), 60_000)
 
-    const onProfileUpdated = () => {
-      void enforce(readStudioVip())
-    }
-
-    window.addEventListener('entitlementProfileUpdated', onProfileUpdated)
-
-    const timer = window.setTimeout(() => {
-      const current = readStudioVip()
-
-      void enforce(current === null ? false : current)
-    }, 1200)
+    window.addEventListener('focus', refresh)
 
     return () => {
-      cancelled = true
-      window.clearTimeout(timer)
-      window.removeEventListener('entitlementProfileUpdated', onProfileUpdated)
+      controller.abort()
+      window.clearInterval(timer)
+      window.removeEventListener('focus', refresh)
     }
-  }, [router, t])
+  }, [phase])
 
   const handleCancel = () => {
     router.replace('/dashboard')
@@ -117,7 +116,11 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
   }
 
   if (phase === 'allowed') {
-    return <>{children}</>
+    return <>
+      {accessStatus === 'INACTIVE' && <div role='alert' className='mb-3 rounded-md border border-amber-500/40 p-3 text-sm'>{t('expiredReadOnly')}</div>}
+      {accessStatus === 'UNAVAILABLE' && <div role='alert' className='mb-3 rounded-md border border-amber-500/40 p-3 text-sm'>{t('accessUnavailable')}</div>}
+      {children}
+    </>
   }
 
   return (

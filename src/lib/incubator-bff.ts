@@ -11,6 +11,7 @@ const ROUTE_METHODS: Readonly<Record<string, readonly string[]>> = {
   'notifications/dingtalk': ['GET', 'PUT', 'PATCH'],
   'notifications/dingtalk/test': ['POST'],
   'entitlements/seats': ['GET'],
+  'entitlements/access': ['GET'],
   'entitlements/purchased-seats': ['GET'],
   'entitlements/seat-orders': ['GET', 'POST'],
   'entitlements/proxy-packs': ['GET'],

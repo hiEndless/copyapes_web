@@ -1,23 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
-import { useTranslations } from 'next-intl'
-import { Lock } from 'lucide-react'
 
-import type { EntitlementProfileResponse } from '@/api/settings'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from '@/components/ui/alert-dialog'
+import { useTranslations } from 'next-intl'
+
 import { cn } from '@/lib/utils'
 
 export type DashboardSystem = 'copy' | 'incubator'
@@ -32,36 +18,8 @@ type SystemSwitcherProps = {
   className?: string
 }
 
-const readStudioVip = () => {
-  try {
-    const stored = localStorage.getItem('entitlementProfile')
-
-    if (!stored) return false
-
-    const profile = JSON.parse(stored) as EntitlementProfileResponse
-
-    return Boolean(profile?.is_studio_vip)
-  } catch {
-    return false
-  }
-}
-
 const SystemSwitcher = ({ active, className }: SystemSwitcherProps) => {
   const t = useTranslations('DashboardShell.systemSwitch')
-  const router = useRouter()
-  const [isStudioVip, setIsStudioVip] = useState(false)
-  const [lockDialogOpen, setLockDialogOpen] = useState(false)
-
-  useEffect(() => {
-    const sync = () => setIsStudioVip(readStudioVip())
-
-    sync()
-    window.addEventListener('entitlementProfileUpdated', sync)
-
-    return () => {
-      window.removeEventListener('entitlementProfileUpdated', sync)
-    }
-  }, [])
 
   const items: { id: DashboardSystem; label: string; href: string }[] = [
     { id: 'copy', label: t('copy'), href: SYSTEM_HREFS.copy },
@@ -80,27 +38,6 @@ const SystemSwitcher = ({ active, className }: SystemSwitcherProps) => {
       >
         {items.map(item => {
           const isActive = item.id === active
-          const isIncubatorLocked = item.id === 'incubator' && !isStudioVip
-
-          if (isIncubatorLocked) {
-            return (
-              <button
-                key={item.id}
-                type='button'
-                role='tab'
-                aria-selected={isActive}
-                aria-disabled
-                onClick={() => setLockDialogOpen(true)}
-                className={cn(
-                  'relative flex items-center justify-center gap-1 rounded-lg px-2 py-2 text-xs font-medium transition-all duration-200',
-                  'text-muted-foreground hover:bg-background/80 hover:text-foreground'
-                )}
-              >
-                <span className='truncate'>{item.label}</span>
-                <Lock className='size-3 shrink-0 opacity-70' />
-              </button>
-            )
-          }
 
           return (
             <Link
@@ -121,20 +58,6 @@ const SystemSwitcher = ({ active, className }: SystemSwitcherProps) => {
         })}
       </div>
 
-      <AlertDialog open={lockDialogOpen} onOpenChange={setLockDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t('lockTitle')}</AlertDialogTitle>
-            <AlertDialogDescription>{t('lockDesc')}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t('lockCancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={() => router.push('/dashboard/pricing')}>
-              {t('lockUpgrade')}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   )
 }

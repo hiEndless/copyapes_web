@@ -490,6 +490,8 @@
       "lockDesc": "Leader OS is available to Studio VIP members only. Upgrade to unlock it.",
       "lockCancel": "Not now",
       "lockUpgrade": "Upgrade",
+      "expiredReadOnly": "Studio VIP has expired. You can review history and safely stop running rounds, but cannot create, start or purchase.",
+      "accessUnavailable": "Studio VIP cannot be verified right now. Viewing and stopping existing rounds remain available; new actions are paused.",
       "authTitle": "Authorize Leader OS access",
       "authDesc": "Leader OS signs in via CopyApes SSO. Please confirm before first access:",
       "authPoint1": "Copy OS and Leader OS are independent and do not share account space",
