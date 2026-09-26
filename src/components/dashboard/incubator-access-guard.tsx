@@ -163,7 +163,7 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
 
     return <StudioAccessContext.Provider value={{
       status: accessStatus,
-      canCreateOrStart: canCreateOrStart(accessStatus) && localStudioVip !== false
+      canCreateOrStart: canCreateOrStart(accessStatus)
     }}>
       {accessStatus === null && (
         <div role='status' className='mb-3 flex items-start gap-2 rounded-md border border-border/60 bg-muted/40 p-3 text-sm'>
