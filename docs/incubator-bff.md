@@ -2,6 +2,9 @@
 
 `/api/incubator/[...path]` 是 `/dashboard/Sync` 模块访问 Incubator 后端的唯一浏览器入口。
 
+- 生产 Nginx 的 `/api/incubator/` 专用 location 原样转发到 Next.js 前端服务；不得直接代理 Incubator API，否则会绕过 BFF 的 Copyapes SSO 换票与路径白名单。其他 `/api/` 请求继续转发 Copyapes API。
+- Nginx 配置位于上级 Copyapes 仓库的 `nginx/templates/default.conf.template`，变更后需重新加载或重启 Nginx；回滚仅移除专用 location，恢复旧路由，但 Incubator 浏览器 API 会再次不可用。
+
 - 浏览器沿用现有 Copyapes `Authorization: Bearer <session>`，不保存第二套登录凭据。
 - BFF 通过 `COPYAPES_API_INTERNAL_URL` 换取最长 300 秒的 Incubator token，并仅用于当前服务端代理请求。
 - Incubator token、Copyapes token、内部 URL 不写日志、不写 Cookie、不写响应体。
