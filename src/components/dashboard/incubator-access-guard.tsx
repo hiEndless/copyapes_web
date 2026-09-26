@@ -4,7 +4,8 @@ import { createContext, useContext, useEffect, useState, type ReactNode } from '
 
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Lock } from 'lucide-react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -19,7 +20,8 @@ import {
 import {
   hasIncubatorSsoConsent,
   loginIncubatorSso,
-  markIncubatorSsoConsent
+  markIncubatorSsoConsent,
+  readStudioVip
 } from '@/lib/incubator-auth'
 import { canCreateOrStart, parseStudioAccess, type StudioAccessStatus } from '@/lib/incubator-studio-access'
 
@@ -38,6 +40,14 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
   const [phase, setPhase] = useState<GatePhase>('checking')
   const [submitting, setSubmitting] = useState(false)
   const [accessStatus, setAccessStatus] = useState<StudioAccessStatus | null>(null)
+  const [localStudioVip, setLocalStudioVip] = useState<boolean | null>(null)
+
+  useEffect(() => {
+    const refresh = () => setLocalStudioVip(readStudioVip())
+    refresh()
+    window.addEventListener('entitlementProfileUpdated', refresh)
+    return () => window.removeEventListener('entitlementProfileUpdated', refresh)
+  }, [])
 
   useEffect(() => {
     setPhase(hasIncubatorSsoConsent() ? 'allowed' : 'need_auth')
@@ -120,13 +130,53 @@ const IncubatorAccessGuard = ({ children }: { children: ReactNode }) => {
   }
 
   if (phase === 'allowed') {
+    const blockedByLocal = localStudioVip === false
+    const blockedByServer = accessStatus === 'INACTIVE'
+    if (blockedByLocal || blockedByServer) {
+      return (
+        <Dialog
+          open
+          onOpenChange={open => {
+            if (!open) handleCancel()
+          }}
+        >
+          <DialogContent className='gap-4 p-5 sm:max-w-sm' showCloseButton={false}>
+            <DialogHeader className='gap-1.5'>
+              <DialogTitle className='flex items-center gap-2 text-base'>
+                <Lock className='size-4' aria-hidden />
+                {t('lockTitle')}
+              </DialogTitle>
+              <DialogDescription className='text-xs leading-relaxed'>{t('lockDesc')}</DialogDescription>
+            </DialogHeader>
+            <DialogFooter className='gap-2 sm:justify-end'>
+              <Button type='button' variant='outline' size='sm' onClick={handleCancel}>
+                {t('lockCancel')}
+              </Button>
+              <Button asChild type='button' size='sm'>
+                <Link href='/dashboard/pricing'>{t('lockUpgrade')}</Link>
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )
+    }
+
     return <StudioAccessContext.Provider value={{
       status: accessStatus,
-      canCreateOrStart: canCreateOrStart(accessStatus)
+      canCreateOrStart: canCreateOrStart(accessStatus) && localStudioVip !== false
     }}>
-      {accessStatus === null && <div role='status' className='mb-3 rounded-md border border-border/60 p-3 text-sm'>{t('checkingAccess')}</div>}
-      {accessStatus === 'INACTIVE' && <div role='alert' className='mb-3 rounded-md border border-amber-500/40 p-3 text-sm'>{t('expiredReadOnly')}</div>}
-      {accessStatus === 'UNAVAILABLE' && <div role='alert' className='mb-3 rounded-md border border-amber-500/40 p-3 text-sm'>{t('accessUnavailable')}</div>}
+      {accessStatus === null && (
+        <div role='status' className='mb-3 flex items-start gap-2 rounded-md border border-border/60 bg-muted/40 p-3 text-sm'>
+          <Loader2 className='mt-0.5 size-4 shrink-0 animate-spin' aria-hidden />
+          <span>{t('checkingAccess')}</span>
+        </div>
+      )}
+      {accessStatus === 'UNAVAILABLE' && (
+        <div role='alert' className='mb-3 flex items-start gap-2 rounded-md border border-amber-500/50 bg-amber-500/10 p-3 text-sm'>
+          <Lock className='mt-0.5 size-4 shrink-0 text-amber-700 dark:text-amber-400' aria-hidden />
+          <span>{t('accessUnavailable')}</span>
+        </div>
+      )}
       {children}
     </StudioAccessContext.Provider>
   }
