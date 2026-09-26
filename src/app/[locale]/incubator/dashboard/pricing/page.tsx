@@ -13,6 +13,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Checkbox } from '@/components/ui/checkbox'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
+import type { EntitlementProfileResponse } from '@/api/settings'
 import { createProxyPackOrder, listProxyPacks } from '@/lib/incubator-proxy-packs'
 import { createSeatOrder, listPurchasedSeats, listSeatSnapshots } from '@/lib/incubator-seats'
 
@@ -169,6 +170,33 @@ function requestIdForIntent(key: string) {
   return requestId
 }
 
+function readStudioVipFromCache(): { active: boolean; expiresAt: string | null } {
+  try {
+    const raw = localStorage.getItem('entitlementProfile')
+    if (!raw) return { active: false, expiresAt: null }
+
+    const profile = JSON.parse(raw) as EntitlementProfileResponse
+    const active = Boolean(profile.is_studio_vip)
+    const days = Number(profile.studio_vip_days)
+
+    if (!Number.isFinite(days) || days <= 0) {
+      return { active, expiresAt: null }
+    }
+
+    const expires = new Date()
+    expires.setHours(0, 0, 0, 0)
+    expires.setDate(expires.getDate() + Math.floor(days))
+
+    const yyyy = expires.getFullYear()
+    const mm = String(expires.getMonth() + 1).padStart(2, '0')
+    const dd = String(expires.getDate()).padStart(2, '0')
+
+    return { active, expiresAt: `${yyyy}-${mm}-${dd}` }
+  } catch {
+    return { active: false, expiresAt: null }
+  }
+}
+
 const SECTION_HEADER_CLASS =
   'border-border/60 bg-gradient-to-b from-background to-muted/20 dark:to-muted/10'
 
@@ -194,6 +222,10 @@ export default function IncubatorPricingPage() {
   const [seatPage, setSeatPage] = useState(0)
   const [submittingKey, setSubmittingKey] = useState<string | null>(null)
   const [pendingSeatPay, setPendingSeatPay] = useState<PendingSeatPay | null>(null)
+  const [studioVip, setStudioVip] = useState<{ active: boolean; expiresAt: string | null }>({
+    active: false,
+    expiresAt: null
+  })
   const submitLock = useRef(false)
 
   const refreshSeatState = async () => {
@@ -243,10 +275,16 @@ export default function IncubatorPricingPage() {
     void refreshProxyState().catch(error => setProxyStateError(error instanceof Error ? error.message : '代理包读取失败'))
   }, [])
 
-  const studioVip = {
-    active: true,
-    expiresAt: '2026-12-31'
-  }
+  useEffect(() => {
+    const refresh = () => setStudioVip(readStudioVipFromCache())
+    refresh()
+    window.addEventListener('entitlementProfileUpdated', refresh)
+    window.addEventListener('storage', refresh)
+    return () => {
+      window.removeEventListener('entitlementProfileUpdated', refresh)
+      window.removeEventListener('storage', refresh)
+    }
+  }, [])
 
   const seatsByExchange = useMemo(() => {
     const map: Record<ExchangeId, AddonSeat[]> = { BINANCE: [], OKX: [], GATE: [] }
@@ -572,7 +610,9 @@ export default function IncubatorPricingPage() {
                 未开通
               </Badge>
             )}
-            <span className='text-muted-foreground text-xs'>到期 {studioVip.expiresAt}</span>
+            {studioVip.expiresAt ? (
+              <span className='text-muted-foreground text-xs'>到期 {studioVip.expiresAt}</span>
+            ) : null}
             <Button
               asChild
               variant='ghost'
