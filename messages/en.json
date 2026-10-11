@@ -1217,8 +1217,7 @@
     },
     "bind": {
       "bitgetUta": {
-        "account": "Bitget Unified Trading Accounts (UTA) only. Binding a trading API requests an upgrade for a Classic account; binding and orders require confirmed completion. Upgrade read-only accounts on Bitget first.",
-        "permissions": "Enable uta_mgt read access; trading APIs also require uta_trade. Lead-trader verification requires copy_futures_order read access. Upgrading never automatically closes positions, cancels orders or transfers funds."
+        "account": "Bitget supports unified accounts only. Classic accounts are automatically upgraded when adding an API. After upgrading, re-enable unified account management permissions for the API."
       },
       "title": "Connect API Key",
       "stepHint": "Step {current} of {total}",

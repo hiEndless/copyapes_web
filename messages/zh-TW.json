@@ -1219,8 +1219,7 @@
     },
     "bind": {
       "bitgetUta": {
-        "account": "僅支援 Bitget 統一帳戶（UTA）。綁定交易 API 時，經典帳戶將申請升級；完成後才能綁定及下單。唯讀 API 請先在交易所完成升級。",
-        "permissions": "需啟用統一帳戶管理讀取權限（uta_mgt）；交易 API 另需 uta_trade，帶單身分檢查另需 copy_futures_order 讀取權限。升級不會自動平倉、撤單或劃轉。"
+        "account": "Bitget僅支援統一帳戶模式，經典模式帳戶會在新增API時自動升級。升級完成後，請再次新增API的統一帳戶管理權限"
       },
       "title": "綁定 API Key",
       "stepHint": "第 {current} 步 / 共 {total} 步",

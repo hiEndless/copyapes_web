@@ -1217,8 +1217,7 @@
     },
     "bind": {
       "bitgetUta": {
-        "account": "Bitget 통합 계정(UTA)만 지원합니다. 거래 API 등록 시 클래식 계정 업그레이드를 신청하며, 완료 확인 후 등록과 주문이 가능합니다. 읽기 전용 계정은 먼저 거래소에서 업그레이드하세요.",
-        "permissions": "uta_mgt 읽기 권한이 필요합니다. 거래 API에는 uta_trade, 리드 트레이더 확인에는 copy_futures_order 읽기 권한도 필요합니다. 업그레이드 시 자동 청산, 주문 취소 또는 자금 이체를 하지 않습니다."
+        "account": "Bitget은 통합 계정 모드만 지원합니다. 클래식 계정은 API 추가 시 자동으로 업그레이드됩니다. 완료 후 API의 통합 계정 관리 권한을 다시 추가해 주세요."
       },
       "title": "API Key 연결",
       "stepHint": "{total}단계 중 {current}단계",
