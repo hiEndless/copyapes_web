@@ -1216,6 +1216,10 @@
       "checklist4": "You can delete the key on the exchange anytime to stop copying."
     },
     "bind": {
+      "bitgetUta": {
+        "account": "Bitget Unified Trading Accounts (UTA) only. Binding a trading API requests an upgrade for a Classic account; binding and orders require confirmed completion. Upgrade read-only accounts on Bitget first.",
+        "permissions": "Enable uta_mgt read access; trading APIs also require uta_trade. Lead-trader verification requires copy_futures_order read access. Upgrading never automatically closes positions, cancels orders or transfers funds."
+      },
       "title": "Connect API Key",
       "stepHint": "Step {current} of {total}",
       "formGuide": "Field guide",

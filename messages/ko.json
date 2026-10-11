@@ -1216,6 +1216,10 @@
       "checklist4": "거래소에서 키를 삭제하면 즉시 카피가 중단됩니다."
     },
     "bind": {
+      "bitgetUta": {
+        "account": "Bitget 통합 계정(UTA)만 지원합니다. 거래 API 등록 시 클래식 계정 업그레이드를 신청하며, 완료 확인 후 등록과 주문이 가능합니다. 읽기 전용 계정은 먼저 거래소에서 업그레이드하세요.",
+        "permissions": "uta_mgt 읽기 권한이 필요합니다. 거래 API에는 uta_trade, 리드 트레이더 확인에는 copy_futures_order 읽기 권한도 필요합니다. 업그레이드 시 자동 청산, 주문 취소 또는 자금 이체를 하지 않습니다."
+      },
       "title": "API Key 연결",
       "stepHint": "{total}단계 중 {current}단계",
       "formGuide": "필드 가이드",

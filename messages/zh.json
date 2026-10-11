@@ -1218,6 +1218,10 @@
       "checklist4": "可随时在交易所删除密钥以立即停止跟单。"
     },
     "bind": {
+      "bitgetUta": {
+        "account": "仅支持 Bitget 统一账户（UTA）。绑定交易 API 时，经典账户将申请升级；升级完成后才能绑定和下单。只读 API 请先在交易所完成升级。",
+        "permissions": "需开启统一账户管理读取权限（uta_mgt）；交易 API 还需统一账户交易权限（uta_trade）。带单身份校验还需 copy_futures_order 读取权限。升级不会自动平仓、撤单或划转。"
+      },
       "title": "绑定 API Key",
       "stepHint": "第 {current} 步 / 共 {total} 步",
       "formGuide": "填写说明",

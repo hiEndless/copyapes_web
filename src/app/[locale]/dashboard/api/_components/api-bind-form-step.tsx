@@ -332,6 +332,13 @@ export function ApiBindFormStep({
           </div>
         </div>
 
+        {formData.exchange === 'bitget' && (
+          <div className='border-l-2 border-amber-500 pl-3 text-[13px] leading-6 text-muted-foreground' role='note'>
+            <p>{t('bind.bitgetUta.account')}</p>
+            <p>{t('bind.bitgetUta.permissions')}</p>
+          </div>
+        )}
+
         <div {...tourAnchor(TOUR_ANCHORS.apiFormKey)}>
           <label htmlFor='api_key' className={FIELD_LABEL}>
             {t('bind.fields.apiKey')}
