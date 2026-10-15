@@ -61,9 +61,13 @@ const formatPrice = (value?: number | null) => {
   return parseFloat(strValue).toString();
 };
 
-const formatUplRatioPercent = (pnlRatio?: number | null) => {
+const formatUplRatioPercent = (pnlRatio?: number | null, platform?: string) => {
   if (pnlRatio === null || pnlRatio === undefined || !Number.isFinite(pnlRatio)) return '-';
-  const percent = Math.abs(pnlRatio) <= 1 ? pnlRatio * 100 : pnlRatio;
+
+  const percent = platform === 'okx' || Math.abs(pnlRatio) <= 1
+    ? pnlRatio * 100
+    : pnlRatio;
+
   const strValue = percent.toFixed(2);
   return `${parseFloat(strValue).toString()}%`;
 };
@@ -382,7 +386,7 @@ export default function PositionsPage() {
 
                                 <span className='text-muted-foreground'>{t('fields.pnlRate')}</span>
                                 <span className={`tabular-nums ${getUplClass(item.pnl_ratio)}`}>
-                                  {formatUplRatioPercent(item.pnl_ratio)}
+                                  {formatUplRatioPercent(item.pnl_ratio, item.platform)}
                                 </span>
 
                                 <span className='text-muted-foreground'>{t('fields.time')}</span>
@@ -466,7 +470,7 @@ export default function PositionsPage() {
                                     {formatUpl(item.pnl)}
                                   </TableCell>
                                   <TableCell className={getUplClass(item.pnl_ratio)}>
-                                    {formatUplRatioPercent(item.pnl_ratio)}
+                                    {formatUplRatioPercent(item.pnl_ratio, item.platform)}
                                   </TableCell>
                                   <TableCell>{formatOpenTime(item.opened_at)}</TableCell>
                                   <TableCell className='text-right'>
