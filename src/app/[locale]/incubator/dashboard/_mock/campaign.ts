@@ -1,8 +1,8 @@
 export type MemberRelation = 'SAME' | 'INVERSE'
 export type MemberResult = 'ACTIVE' | 'PROMOTED' | 'ELIMINATED' | 'WINNER'
-export type CampaignStatus = 'READY' | 'RUNNING' | 'COMPLETED' | 'PAUSED' | 'ERROR' | 'UNKNOWN'
+export type CampaignStatus = 'READY' | 'RUNNING' | 'COMPLETED' | 'PAUSED' | 'ERROR' | 'UNKNOWN' | 'CANCELLING' | 'CANCELLED'
 export type DataConfidence = 'LIVE' | 'PROVISIONAL' | 'FINAL'
-export type RoundPhase = 'PREPARING' | 'STARTING' | 'RUNNING' | 'SETTLED' | 'ERROR' | 'UNKNOWN'
+export type RoundPhase = 'PREPARING' | 'STARTING' | 'RUNNING' | 'SETTLED' | 'ERROR' | 'UNKNOWN' | 'STOPPING'
 export type ExchangeId = 'Binance' | 'OKX' | 'Gate'
 
 export type RoundMember = {
@@ -772,6 +772,8 @@ export function resultLabel(result: MemberResult) {
 }
 
 export function campaignStatusLabel(status: CampaignStatus) {
+  if (status === 'CANCELLING') return '停止中'
+  if (status === 'CANCELLED') return '异常结束'
   switch (status) {
     case 'READY':
       return '准备中'
@@ -821,6 +823,7 @@ export function fillStatusLabel(status: CopyRecord['status']) {
 }
 
 export function roundPhaseLabel(phase: RoundPhase) {
+  if (phase === 'STOPPING') return '停止中'
   switch (phase) {
     case 'PREPARING':
       return '准备中'

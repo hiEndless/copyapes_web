@@ -20,3 +20,11 @@
 - Campaign 状态采用显式白名单映射：仅后端 `ACTIVE` 映射为前端 `RUNNING`，`ERROR` 与未知值分别显示异常/未知状态。真实收益、交易记录和当前持仓已走只读 API。领单仓位与成员当前持仓都按 RoundMember 查询交易所，浏览器按轮次和账号缓存 20 秒，避免重复请求。结束项目的服务端仍用领单 Redis 快照判断是否还有仓。余额和历史持仓接入前统一显示“待接入”，不得用零值或 mock 数据伪装真实结果。
 - Campaign 只有 `READY/RUNNING` 可进入 Round Setup，只有 `RUNNING` 可执行运行态操作；`ERROR/UNKNOWN/COMPLETED/PAUSED` 对拖拽、Setup 与 Start 一律失败关闭。
 - 回滚：移除 `/dashboard/Sync` 入口或将流量切回旧版本即可；该路由不写本地状态。
+
+## 异常终止项目
+
+新增 POST `/api/incubator/campaigns/{uuid}/abort`，BFF 只允许合法 UUID 和 POST，沿用 Copyapes SSO 换票，不开放内部回执。前端必须勾选“停止不代表平仓，用户自行处理持仓和挂单”，提交 request_id 与 acknowledge_unmanaged_positions=true。按钮不受新建/启动权益限制，避免套餐失效阻断安全退出。
+
+看板将 CANCELLING 显示为“停止中”并继续轮询，不提前释放 API；后端确认 WS 与 Trade 已停止后归档 CANCELLED。历史页显示“异常结束 · 收益可能不完整，无 Winner”，不将已有部分收益冒充最终结算。正常结束/晋级入口保留。
+
+验收命令：`node --test scripts/test-incubator-abort.mjs` 与 `npm run check-types`。上线须先升级三个 WS 和 Trade，再升级 API，最后重新构建部署本前端。仅部署前端不能完成停止。

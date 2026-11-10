@@ -97,7 +97,7 @@ export default function IncubatorHistoryPage() {
 
       try {
         const campaigns = (await listIncubatorCampaigns('completed')).filter(
-          campaign => campaign.status === 'COMPLETED'
+          campaign => campaign.status === 'COMPLETED' || campaign.status === 'CANCELLED'
         )
 
         const items: RealHistoryItem[] = []
@@ -256,7 +256,7 @@ export default function IncubatorHistoryPage() {
                 </CardTitle>
                 <CardDescription className='text-xs'>
                   初始 {campaign.initial_account_count} 账号 · 共 {campaign.total_rounds} 轮 · 结算{' '}
-                  {economics
+                  {campaign.status === 'CANCELLED' ? '异常结束 · 收益可能不完整，无 Winner' : economics
                     ? `${economics.settlement.settled}/${economics.settlement.total} · ${settlementStatusLabel(economics)}`
                     : error ?? '加载中'}
                 </CardDescription>
@@ -264,7 +264,7 @@ export default function IncubatorHistoryPage() {
 
               <CardContent className='relative z-10 grid grid-cols-2 border-t-0 p-0 sm:grid-cols-4'>
                 <Metric
-                  label='项目净收益'
+                  label={campaign.status === 'CANCELLED' ? '已入账净收益（非最终）' : '项目净收益'}
                   value={economics ? <DecimalPnlText value={economics.totals.realized_pnl} /> : <span className='text-muted-foreground'>{error ?? '加载中'}</span>}
                 />
                 <Metric

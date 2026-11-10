@@ -80,6 +80,7 @@ import { listIncubatorApiAccounts } from '@/lib/incubator-api-accounts'
 import {
   createIncubatorCampaign,
   endIncubatorCampaign,
+  abortIncubatorCampaign,
   listIncubatorCampaigns,
   reconcileIncubatorRoundSettlement,
   startIncubatorRound,
@@ -258,7 +259,9 @@ function fromApiCampaign(item: IncubatorCampaign): Campaign {
             ? 'PAUSED'
             : item.status === 'ERROR'
               ? 'ERROR'
-              : 'UNKNOWN'
+              : item.status === 'CANCELLING' || item.status === 'CANCELLED'
+                ? item.status
+                : 'UNKNOWN'
   return {
     id: item.id,
     code: item.code,
@@ -278,7 +281,7 @@ function fromApiCampaign(item: IncubatorCampaign): Campaign {
       index: round.round_number,
       memberCount: round.expected_member_count,
       netPnl: 0,
-      phase: ['LOCKED', 'READY'].includes(round.status) ? 'PREPARING' : round.status === 'STARTING' ? 'STARTING' : round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : round.status === 'ERROR' ? 'ERROR' : 'UNKNOWN',
+      phase: item.status === 'CANCELLING' ? 'STOPPING' : ['LOCKED', 'READY'].includes(round.status) ? 'PREPARING' : round.status === 'STARTING' ? 'STARTING' : round.status === 'RUNNING' ? 'RUNNING' : round.status === 'COMPLETED' ? 'SETTLED' : round.status === 'ERROR' ? 'ERROR' : 'UNKNOWN',
       leaderConfirmed: round.leader_member_id !== null,
       setupVersion: round.setup_version,
       canStart: round.can_start,
@@ -697,6 +700,9 @@ export default function IncubatorBoardPage() {
   const [leaderOpen, setLeaderOpen] = useState(false)
   const [terminateOpen, setTerminateOpen] = useState(false)
   const [endProjectOpen, setEndProjectOpen] = useState(false)
+  const [abortProjectOpen, setAbortProjectOpen] = useState(false)
+  const [abortAcknowledged, setAbortAcknowledged] = useState(false)
+  const [abortBusy, setAbortBusy] = useState(false)
   const [promoteResult, setPromoteResult] = useState<PromoteResultSummary | null>(null)
   const [promoteDetailOpen, setPromoteDetailOpen] = useState(false)
 
@@ -924,7 +930,7 @@ export default function IncubatorBoardPage() {
   }, [campaign?.exchange, campaign?.id, campaign?.status, demoMode])
 
   useEffect(() => {
-    if (demoMode || activeRound?.phase !== 'STARTING') return
+    if (demoMode || (activeRound?.phase !== 'STARTING' && activeRound?.phase !== 'STOPPING')) return
 
     let cancelled = false
     let inFlight = false
@@ -1178,6 +1184,7 @@ export default function IncubatorBoardPage() {
     ? '持仓加载中…'
     : memberPositionError || '暂无当前持仓'
   const endProjectBlockReason = (() => {
+    if (campaign?.status === 'CANCELLING') return '异常终止中，等待运行服务停止确认，账号仍保持占用'
     if (!campaign || campaign.status === 'COMPLETED') return null
     if (activeRound?.phase === 'RUNNING') {
       return '本轮运行中，请先终止本轮并完成平仓结算'
@@ -1725,6 +1732,22 @@ export default function IncubatorBoardPage() {
     setEndProjectOpen(false)
   }
 
+  const handleAbortProject = async () => {
+    if (!campaign || demoMode || !abortAcknowledged || abortBusy) return
+    setAbortBusy(true)
+    try {
+      const updated = fromApiCampaign(await abortIncubatorCampaign(campaign.id, crypto.randomUUID()))
+      setCampaigns(prev => prev.map(item => item.id === campaign.id ? updated : item))
+      setAbortProjectOpen(false)
+      setAbortAcknowledged(false)
+      toast.info('已请求异常终止，等待 WS 关闭及交易服务停止确认；账号暂不释放')
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : '异常终止失败')
+    } finally {
+      setAbortBusy(false)
+    }
+  }
+
   const handleDrop = (relation: MemberRelation, memberId: string) => {
     setDragOverRelation(null)
     if (!isPreparing || !memberId || !campaign) return
@@ -1992,7 +2015,7 @@ export default function IncubatorBoardPage() {
                   tinted
                 />
               </CardContent>
-              {campaign.status !== 'COMPLETED' && (
+              {campaign.status !== 'COMPLETED' && campaign.status !== 'CANCELLED' && (
                 <CardFooter className='border-border/60 border-t px-4 py-3'>
                   <div className='flex w-full items-center justify-between gap-3'>
                     <p className='text-muted-foreground min-w-0 flex-1 text-[11px] leading-snug'>
@@ -2009,6 +2032,13 @@ export default function IncubatorBoardPage() {
                       <CircleStop className='size-3.5' />
                       {endProjectBusy ? '结束中…' : '结束项目'}
                     </Button>
+                    {!demoMode && (
+                      <Button type='button' size='sm' variant='destructive'
+                        disabled={abortBusy || campaign.status === 'CANCELLING'}
+                        onClick={() => { setAbortAcknowledged(false); setAbortProjectOpen(true) }}>
+                        {campaign.status === 'CANCELLING' ? '停止中，等待确认' : '异常终止项目'}
+                      </Button>
+                    )}
                   </div>
                 </CardFooter>
               )}
@@ -2936,6 +2966,26 @@ export default function IncubatorBoardPage() {
         </DialogContent>
       </Dialog>
 
+      <Dialog open={abortProjectOpen} onOpenChange={setAbortProjectOpen}>
+        <DialogContent className='sm:max-w-md'>
+          <DialogHeader>
+            <DialogTitle>异常终止项目</DialogTitle>
+            <DialogDescription>
+              用于 API 被撤销、失效或无法正常结算的情况。系统将停止跟单，等待运行服务确认后释放账号；不晋级、不产生 Winner，历史收益可能不完整。此操作不可撤销。
+            </DialogDescription>
+          </DialogHeader>
+          <label className='flex items-start gap-2 text-sm'>
+            <Checkbox checked={abortAcknowledged} onCheckedChange={value => setAbortAcknowledged(value === true)} />
+            我已知晓：停止跟单不等于平仓，我会自行检查并处理交易所全部账号的持仓和挂单。
+          </label>
+          <DialogFooter>
+            <Button variant='outline' disabled={abortBusy} onClick={() => setAbortProjectOpen(false)}>取消</Button>
+            <Button variant='destructive' disabled={!abortAcknowledged || abortBusy} onClick={() => void handleAbortProject()}>
+              {abortBusy ? '提交中…' : '确认异常终止'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Dialog open={endProjectOpen} onOpenChange={setEndProjectOpen}>
         <DialogContent className='sm:max-w-md'>
           <DialogHeader>

@@ -76,6 +76,13 @@ export function listIncubatorCampaigns(status?: 'completed') {
   return request<IncubatorCampaign[]>(`campaigns${query}`)
 }
 
+export function abortIncubatorCampaign(campaignId: string, requestId: string) {
+  return request<IncubatorCampaign>(`campaigns/${encodeURIComponent(campaignId)}/abort`, {
+    method: 'POST',
+    body: JSON.stringify({ request_id: requestId, acknowledge_unmanaged_positions: true })
+  })
+}
+
 export function createIncubatorCampaign(name: string, apiAccountIds: string[]) {
   return request<IncubatorCampaign>('campaigns', {
     method: 'POST',

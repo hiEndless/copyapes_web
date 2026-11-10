@@ -48,6 +48,12 @@ function allowedRouteMethods(path: string[]): readonly string[] | undefined {
   if (
     path[0] === 'campaigns' &&
     UUID_PATTERN.test(path[1] || '') &&
+    path.length === 3 && path[2] === 'abort'
+  ) return ['POST']
+
+  if (
+    path[0] === 'campaigns' &&
+    UUID_PATTERN.test(path[1] || '') &&
     path.length === 3 &&
     (path[2] === 'trade-records' || path[2] === 'economics' || path[2] === 'end')
   ) {
