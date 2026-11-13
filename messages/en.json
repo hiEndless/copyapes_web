@@ -1,4 +1,8 @@
 {
+  "DashboardAccess": {
+    "checking": "Checking access…",
+    "denied": "You do not have access to this page."
+  },
   "NotFound": {
     "title": "Page Not Found",
     "description": "We couldn't find the page you are looking for.",

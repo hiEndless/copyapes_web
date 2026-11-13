@@ -1,4 +1,8 @@
 {
+  "DashboardAccess": {
+    "checking": "正在核驗存取權限…",
+    "denied": "無權存取此頁面。"
+  },
   "NotFound": {
     "title": "頁面未找到",
     "description": "您訪問的頁面不存在。",

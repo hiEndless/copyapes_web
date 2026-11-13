@@ -1,4 +1,8 @@
 {
+  "DashboardAccess": {
+    "checking": "アクセス権限を確認しています…",
+    "denied": "このページにアクセスする権限がありません。"
+  },
   "NotFound": {
     "title": "ページが見つかりません",
     "description": "お探しのページは見つかりませんでした。",

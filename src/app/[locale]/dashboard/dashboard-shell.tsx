@@ -71,6 +71,7 @@ import { settingsApi } from '@/api/settings'
 import { isChineseLocale } from '@/i18n/locales'
 import { TOUR_ANCHORS, tourAnchor, type TourAnchor } from '@/features/tour/anchors'
 import { TourProvider } from '@/features/tour/tour-provider'
+import { DashboardAccessProvider, DashboardRouteGuard, useDashboardAccess } from '@/components/dashboard/dashboard-access-provider'
 import TourHelpMenu from '@/features/tour/components/tour-help-menu'
 
 type MenuSubItem = {
@@ -425,7 +426,7 @@ const SidebarGroupedMenuItems = ({ data, groupLabel }: { data: MenuItem[]; group
   )
 }
 
-const DashboardShell = ({
+const DashboardShellContent = ({
   children,
   system = 'copy'
 }: {
@@ -440,8 +441,9 @@ const DashboardShell = ({
   const topLoaderRef = useRef(topLoader)
   const pendingInitialLoadsRef = useRef(0)
   const completedInitialLoadsRef = useRef(0)
-  const [isAdmin, setIsAdmin] = useState(false)
-  const [isPartner, setIsPartner] = useState(false)
+  const access = useDashboardAccess()
+  const isAdmin = access.status === 'ready' && access.roles.is_admin
+  const isPartner = access.status === 'ready' && access.roles.is_partner
   const isIncubator = system === 'incubator'
 
   topLoaderRef.current = topLoader
@@ -455,19 +457,6 @@ const DashboardShell = ({
 
   useEffect(() => {
     setMounted(true)
-
-    try {
-      const userInfoStr = localStorage.getItem('userInfo')
-
-      if (userInfoStr) {
-        const userInfo = JSON.parse(userInfoStr)
-
-        setIsAdmin(userInfo.is_admin === true)
-        setIsPartner(userInfo.is_partner === true)
-      }
-    } catch (e) {
-      console.error('Failed to parse userInfo', e)
-    }
 
     const initialLoaders = 3
 
@@ -691,7 +680,7 @@ const DashboardShell = ({
               </div>
               </div>
 
-              <main className='mx-auto size-full max-w-7xl flex-1 px-4 py-6 sm:px-6'>{children}</main>
+              <main className='mx-auto size-full max-w-7xl flex-1 px-4 py-6 sm:px-6'><DashboardRouteGuard>{children}</DashboardRouteGuard></main>
 
               <footer>
                 <div className='text-muted-foreground mx-auto flex size-full max-w-7xl items-center justify-between gap-3 px-4 py-3 max-sm:flex-col sm:gap-6 sm:px-6'>
@@ -710,4 +699,6 @@ const DashboardShell = ({
   )
 }
 
-export default DashboardShell
+export default function DashboardShell(props: React.ComponentProps<typeof DashboardShellContent>) {
+  return <DashboardAccessProvider><DashboardShellContent {...props} /></DashboardAccessProvider>
+}

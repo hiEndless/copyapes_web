@@ -21,6 +21,7 @@ import { type UserInfo } from '@/api/auth'
 import { type EntitlementProfileResponse } from '@/api/settings'
 import { remainingVipCapacityDays } from '@/lib/format-vip-capacity-expiry'
 import { clearIncubatorAuthState } from '@/lib/incubator-auth'
+import { useDashboardAccess } from '@/components/dashboard/dashboard-access-provider'
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
@@ -42,6 +43,8 @@ type Props = {
 const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
   const t = useTranslations('DashboardShell.profile')
   const router = useRouter()
+  const access = useDashboardAccess()
+  const isPartner = access.status === 'ready' && access.roles.is_partner
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null)
   const [profile, setProfile] = useState<EntitlementProfileResponse | null>(null)
 
@@ -175,7 +178,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           </DropdownMenuGroup>
         )}
 
-        {userInfo?.is_partner && (
+        {isPartner && (
           <DropdownMenuGroup>
             <DropdownMenuItem className='px-3 py-2 text-sm'>
               <UserStar className='mr-2 size-4 text-blue-500' />
@@ -184,7 +187,7 @@ const ProfileDropdown = ({ trigger, defaultOpen, align = 'end' }: Props) => {
           </DropdownMenuGroup>
         )}
 
-        {!profile?.is_vip && !profile?.is_studio_vip && !userInfo?.is_partner && (
+        {!profile?.is_vip && !profile?.is_studio_vip && !isPartner && (
           <DropdownMenuGroup>
             <DropdownMenuItem className='px-3 py-2 text-sm'>
               <span className='text-muted-foreground'>{t('freeUser')}</span>

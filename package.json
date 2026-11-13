@@ -14,7 +14,9 @@
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx}\"",
     "check-types": "tsc --noEmit",
     "test:incubator-studio-access": "node --experimental-strip-types --test scripts/test-incubator-studio-access.mjs",
-    "test:grab-leader-identity": "node --test scripts/test-grab-leader-identity.mjs"
+    "test:grab-leader-identity": "node --test scripts/test-grab-leader-identity.mjs",
+    "test:dashboard-access": "node --test scripts/test-dashboard-access.mjs",
+    "test:dashboard-access:browser": "node scripts/test-dashboard-access-browser.mjs"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.8",

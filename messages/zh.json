@@ -1,4 +1,8 @@
 {
+  "DashboardAccess": {
+    "checking": "正在核验访问权限…",
+    "denied": "无权访问此页面。"
+  },
   "NotFound": {
     "title": "页面未找到",
     "description": "您访问的页面不存在。",
