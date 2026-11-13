@@ -1,4 +1,5 @@
 import { request } from './request';
+import { normalizeGrabLeaderId } from '../lib/grab-leader-identity'
 
 // 获取可用的跟单 API 列表
 export function getApiOptions() {
@@ -183,9 +184,13 @@ export type LeaderInfoData = {
 
 // 获取抢位目标交易员详情与限额
 export function getLeaderInfo(data: { uniqueName: string; exchange: number }) {
+  const uniqueName = normalizeGrabLeaderId(data.uniqueName, data.exchange)
+
+  if (!uniqueName) return Promise.reject(new Error('Invalid grab trader ID'))
+
   return request<LeaderInfoData>('/api/leader-info/', {
     method: 'POST',
-    body: data,
+    body: { ...data, uniqueName },
     silent: true
   })
 }
@@ -199,9 +204,13 @@ export function createGrabTask(data: {
   investAmount: number
   costPerOrder: number
 }) {
+  const uniqueName = normalizeGrabLeaderId(data.uniqueName, data.exchange)
+
+  if (!uniqueName) return Promise.reject(new Error('Invalid grab trader ID'))
+
   return request('/api/grabtask/', {
     method: 'POST',
-    body: data,
+    body: { ...data, uniqueName },
     silent: true
   })
 }

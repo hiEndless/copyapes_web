@@ -18,6 +18,7 @@ import { MotionPreset } from '@/components/ui/motion-preset'
 import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { GrabTaskConfigSheet } from './_components/grab-task-config-sheet'
 import { isInvalidUniqueName, parseTraderUrl } from '../add_task/_lib/trader-url'
+import { normalizeGrabLeaderId } from '@/lib/grab-leader-identity'
 import { getGrabTaskList, stopGrabTask } from '@/api/task'
 import { getCookies } from '@/api/cookie'
 
@@ -162,7 +163,9 @@ export default function GrabPage() {
 
     const parsed = parseTraderUrl(traderUrl, exchange)
 
-    setUniqueName(parsed ?? invalidTraderUrlText)
+    const validId = normalizeGrabLeaderId(parsed, exchange === 'okx' ? 1 : 2)
+
+    setUniqueName(validId ?? invalidTraderUrlText)
   }
 
   const exchangeDisplayName =
@@ -536,6 +539,7 @@ export default function GrabPage() {
                 disabled={
                   !exchange ||
                   isInvalidUniqueName(uniqueName, [invalidTraderUrlText, selectExchangeFirstText]) ||
+                  !normalizeGrabLeaderId(uniqueName, exchange === 'okx' ? 1 : 2) ||
                   !selectedTrader ||
                   selectedTrader.status !== 'active'
                 }

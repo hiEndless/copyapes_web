@@ -14,6 +14,7 @@ import { TOUR_ANCHORS, tourAnchor } from '@/features/tour/anchors'
 import { tourSafeDialogProps } from '@/features/tour/dialog-guard'
 import { TOUR_IDS } from '@/features/tour/registry'
 import { useTour } from '@/features/tour/tour-provider'
+import { normalizeGrabLeaderId } from '@/lib/grab-leader-identity'
 
 export interface GrabTaskConfigSheetProps {
   isOpen: boolean
@@ -90,11 +91,19 @@ export function GrabTaskConfigSheet({
   const fetchTraderData = async () => {
     if (!traderId || !platform) return
 
+    const exchange = platform === 'okx' ? 1 : 2
+    const uniqueName = normalizeGrabLeaderId(traderId, exchange)
+
+    if (!uniqueName) {
+      setMsg(t('form.invalidTraderUrl'))
+
+      return
+    }
+
     setIsFetchingData(true)
     setMsg('')
     try {
-      const exchange = platform === 'okx' ? 1 : 2
-      const res = await getLeaderInfo({ uniqueName: traderId, exchange })
+      const res = await getLeaderInfo({ uniqueName, exchange })
 
       if (res.code === 0 && res.data) {
         const data = res.data
@@ -204,13 +213,21 @@ export function GrabTaskConfigSheet({
   }
 
   const handleSubmit = async () => {
+    const uniqueName = normalizeGrabLeaderId(traderId, platform === 'okx' ? 1 : 2)
+
+    if (!uniqueName) {
+      toast.error(t('form.invalidTraderUrl'))
+
+      return
+    }
+
     if (!validateForm() || !traderId || !platform) return
 
     setIsLoading(true)
     try {
       const res = await createGrabTask({
         exchange: platform === 'okx' ? 1 : 2,
-        uniqueName: traderId,
+        uniqueName,
         nickname: nickname || traderName || traderId,
         follow_type: platform === 'binance' ? parseInt(followType, 10) : 1,
         costPerOrder: platform === 'binance' && followType === '2' ? parseFloat(costPerOrder) : 0,
